@@ -5,7 +5,7 @@ import android.support.annotation.CallSuper;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.gt.magicbox.utils.ToastUtil;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
 import java.io.IOException;
