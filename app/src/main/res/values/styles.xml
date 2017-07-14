@@ -1,12 +1,24 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+
+   <!-- <style name="ToolBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        &lt;!&ndash; Actionbar color &ndash;&gt;
+        <item name="colorPrimary">@color/toolbarBg</item>
+        &lt;!&ndash;Status bar color&ndash;&gt;
+        <item name="colorPrimaryDark">@color/toolbarBg</item>
+        &lt;!&ndash;Window color&ndash;&gt;
+        <item name="android:windowBackground">@color/white</item>
+    </style>-->
+    <style name="AppTheme.Base" parent="Theme.AppCompat">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-    </style>
+        <item name="android:windowBackground">@color/white</item></style>
+
     <style name="HttpRequestDialogStyle" parent="android:style/Theme.Dialog">
         <!--背景颜色及和透明程度-->
         <item name="android:windowBackground">@android:color/transparent</item>
