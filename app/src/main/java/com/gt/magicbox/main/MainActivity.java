@@ -4,17 +4,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.http.BaseObserver;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpCall;
 import com.gt.magicbox.http.RxObservableUtils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setToolBartitle("主页");
 
         /*HttpCall.getApiService()
                 .getZhihu()
