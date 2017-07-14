@@ -25,14 +25,14 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 public  class BaseActivity extends RxAppCompatActivity {
     private Toolbar mToolbar;
-    private TextView toolBartitle;
+    private TextView toolBarTitle;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
        // BarUtils.setStatusBarColor(this,getResources().getColor(R.color.toolbarBg));
         super.setContentView(R.layout.toolbar);
         mToolbar= (Toolbar) findViewById(R.id.toolbar);
-        toolBartitle= (TextView) findViewById(R.id.toolbar_title);
+        toolBarTitle= (TextView) findViewById(R.id.toolbar_title);
         setSupportActionBar(mToolbar);
     }
 
@@ -57,8 +57,8 @@ public  class BaseActivity extends RxAppCompatActivity {
         lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.toolbar_height),0,0);
 
     }
-    public void setToolBartitle(String title){
-        toolBartitle.setText(title);
+    public void setToolBarTitle(String title){
+        toolBarTitle.setText(title);
     }
 
 }
