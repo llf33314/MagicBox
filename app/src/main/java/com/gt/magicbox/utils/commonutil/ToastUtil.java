@@ -1,4 +1,4 @@
-package com.gt.magicbox.utils;
+package com.gt.magicbox.utils.commonutil;
 
 import android.os.Handler;
 import android.os.Looper;
