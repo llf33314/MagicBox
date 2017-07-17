@@ -5,8 +5,8 @@ package com.gt.magicbox.http;
  */
 
 public class HttpConfig {
-    public static final int SUCCESS_CODE=1000;
+    public static final int SUCCESS_CODE=200;
     public static final int NOT_TOKEN=-1;
-    public static final String BASE_URL="https://news-at.zhihu.com/api/4/version/android/";
+    public static final String BASE_URL="http://192.168.3.44:8080/magicBoxMobile/";
 
 }

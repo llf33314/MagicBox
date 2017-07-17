@@ -6,10 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.gt.magicbox.main.MainActivity">
 
-    <TextView
+    <Button
+        android:text="@string/login"
+        android:id="@+id/btn_request"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:onClick="request"
         android:background="#418745"
         android:textColor="#415544"
         />
