@@ -21,7 +21,7 @@ public class WifiRecyclerViewAdapter extends RecyclerView.Adapter<WifiRecyclerVi
 
     private List<WifiBean> wifiList;
 
-    private final int [] WIFI_SIGN_IOCN={R.mipmap.wifi_sign_1,R.mipmap.wifi_sign_2,R.mipmap.wifi_sign_3,R.mipmap.wifi_sign_4};
+    private final int [] WIFI_SIGN_IOCN={R.drawable.wifi_sign_1,R.drawable.wifi_sign_2,R.drawable.wifi_sign_3,R.drawable.wifi_sign_4};
 
     @Override
     public void onClick(View v) {

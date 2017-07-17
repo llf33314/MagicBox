@@ -37,7 +37,7 @@
             android:id="@+id/iv_wifi_lock"
             android:layout_width="18dp"
             android:layout_height="18dp"
-            android:src="@mipmap/iocn_wifi_lock"
+            android:src="@drawable/iocn_wifi_lock"
             android:layout_marginRight="5dp"
             />
         <ImageView
