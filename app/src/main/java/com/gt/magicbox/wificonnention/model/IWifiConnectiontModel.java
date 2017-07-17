@@ -2,12 +2,17 @@ package com.gt.magicbox.wificonnention.model;
 
 import android.net.wifi.ScanResult;
 
+import com.isupatches.wisefy.WiseFy;
+
 import java.util.List;
+
+import io.reactivex.Observable;
 
 /**
  * Created by wzb on 2017/7/14 0014.
  */
 
 public interface IWifiConnectiontModel {
-    List<ScanResult> scanWifi();
+    Observable<List<ScanResult>> scanWifi();
+    WiseFy getWiseFy();
 }

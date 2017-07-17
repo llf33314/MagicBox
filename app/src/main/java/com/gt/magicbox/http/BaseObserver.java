@@ -5,7 +5,6 @@ import android.support.annotation.CallSuper;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
 import java.io.IOException;
@@ -24,7 +23,7 @@ import io.reactivex.disposables.Disposable;
 
 public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
 
-    private Disposable disposable;//按返回键 取消对话框 取消订阅 取消请求
+    //private Disposable disposable;//按返回键 取消对话框 取消订阅 取消请求
 
     private final String TAG=BaseObserver.class.getSimpleName();
     private Context mContext;
@@ -57,9 +56,9 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
     @CallSuper
     @Override
     public void onSubscribe(@NonNull Disposable d) {
-        this.disposable=d;
+       // this.disposable=d;
         if (showDialog){
-            showProgressDialog();
+            showProgressDialog(d);
         }
     }
     /**
@@ -73,9 +72,8 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
     /**
      * 显示网络加载对话框
      */
-    private void showProgressDialog(){
-
-        HttpRequestDialog.getInstance().show(disposable);
+    private void showProgressDialog(Disposable d){
+        HttpRequestDialog.getInstance().show(d);
     }
 
     private void dismissProgressDialog(){
@@ -97,7 +95,7 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
      */
     @Override
     public void onError(@NonNull Throwable e) {
-
+        Log.e(TAG,e.getMessage());
         dismissProgressDialog();
 
         if (e instanceof HttpException) {
@@ -110,10 +108,10 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
             errorMsg = "服务器响应超时";
         } else if (e instanceof ConnectException) {
             errorCode = RESPONSE_CODE_FAILED;
-            errorMsg = "网络连接异常，请检查网络";
+            errorMsg = "连接服务器异常";
         } else if (e instanceof RuntimeException) {
             errorCode = RESPONSE_CODE_FAILED;
-            errorMsg = "RuntimeException";
+            errorMsg = "程序出错";
             Log.e(TAG,e.getMessage());
         } else if (e instanceof UnknownHostException) {
             errorCode = RESPONSE_CODE_FAILED;
@@ -161,7 +159,8 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
         }
     }
     public void disposeErrCode(int code ,String msg){
-        ToastUtil.getInstance().showToast(msg);
+        Log.e(TAG,"errorCode="+code+"\n"+msg);
+        //ToastUtils.showShort(msg);
     }
 
     /**

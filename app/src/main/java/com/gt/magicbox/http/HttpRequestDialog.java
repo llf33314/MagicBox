@@ -66,4 +66,5 @@ public class HttpRequestDialog extends Dialog{
 
         return super.onKeyDown(keyCode, event);
     }
+
 }
