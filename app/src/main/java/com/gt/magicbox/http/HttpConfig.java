@@ -7,6 +7,7 @@ package com.gt.magicbox.http;
 public class HttpConfig {
     public static final int SUCCESS_CODE=200;
     public static final int NOT_TOKEN=-1;
+    //public static final String BASE_URL="http://192.168.3.44:8080/magicBoxMobile/";
     public static final String BASE_URL="http://hz1.yifriend.net/magicBoxMobile/";
 
 }
