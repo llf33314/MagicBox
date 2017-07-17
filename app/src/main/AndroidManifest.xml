@@ -16,16 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Base"
         android:name=".base.MyApplication">
-        <activity android:name=".main.LoadingActivity">
+        <activity android:name=".main.MainActivity">
            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.MainActivity"
-            android:launchMode="singleTask"/>
-        <activity android:name=".login.LoginActivity"
-            android:launchMode="singleTask"/>
         <activity android:name=".wificonnention.WifiConnectionActivity">
            <!-- <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,8 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
-        <activity android:name=".login.LoginActivity"
-            android:launchMode="singleTask"/>
+        <activity android:name=".login.LoginActivity"/>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>

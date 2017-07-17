@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import com.gt.magicbox.wificonnention.view.IWifiConectionView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
@@ -31,6 +33,7 @@ public class WifiConnectionPresenter {
     private final String TAG=WifiConnectionPresenter.class.getSimpleName();
     IWifiConectionView wifiConectionView;
     IWifiConnectiontModel wifiConnectiontModel;
+    private List<WifiBean> resultWfifs=new ArrayList<WifiBean>();
 
     public WifiConnectionPresenter(IWifiConectionView wifiConectionView){
         this.wifiConectionView=wifiConectionView;
@@ -38,30 +41,35 @@ public class WifiConnectionPresenter {
     }
 
     public void  scanWifi(){
-       /* wifiConnectiontModel.scanWifi()
+        wifiConnectiontModel.scanWifi()
                 .compose(RxObservableUtils.<List<ScanResult>>applySchedulers())
                 .compose(((BaseActivity)wifiConectionView).<List<ScanResult>>bindToLifecycle())
                 .flatMap(new Function<List<ScanResult>, ObservableSource<List<WifiBean>>>() {
                     @Override
                     public ObservableSource<List<WifiBean>> apply(@NonNull List<ScanResult> scanResults) throws Exception {
+                        //当前连接的网络wifi
                         WifiInfo wifiInfo=wifiConnectiontModel.getWiseFy().getCurrentNetwork();
                         //当ssid="";会有问题？
-                        String currentSsid= wifiInfo==null?"":wifiInfo.getSSID();
+                        String currentSsid= wifiInfo==null?"":wifiInfo.getBSSID();
 
+                        //已保存过的wifi
                         List<WifiConfiguration> savedNetworks =wifiConnectiontModel.getWiseFy().getSavedNetworks();
 
+                        resultWfifs.clear();
 
-                        List<WifiBean> resultWfifs=new ArrayList<WifiBean>();
                         for (ScanResult s:scanResults){
                             WifiBean wifiBean=new WifiBean();
+                            if (TextUtils.isEmpty(s.SSID)){ //去除SSID为空字符的WIFI？  setting是这样子
+                                continue;
+                            }
                             wifiBean.setName(s.SSID);
-                            wifiBean.setConnecting(currentSsid==null?false:currentSsid.equals(s.SSID));
-                            *//**
+                            wifiBean.setConnecting(TextUtils.isEmpty(currentSsid)?false:currentSsid.equals(s.BSSID));
+                            /**
                              * 加密类型  0：不加密
                              *           1：WEP
                              *           2：PSK
                              *           3:EAP
-                             *//*
+                             */
                             if (s.capabilities.contains("WEP")){
                                 wifiBean.setLockType(1);
                             }else if (s.capabilities.contains("PSK")){
@@ -74,34 +82,32 @@ public class WifiConnectionPresenter {
 
                             for (WifiConfiguration saved:savedNetworks){
                                 if (s.SSID!=null&&saved.SSID!=null){ //静态coding 判断
-                                    if( s.SSID.equals(saved.SSID)){
+                                    if(("\""+s.SSID+"\"").equals(saved.SSID)){ //debug 发现会多个双引号？
                                         wifiBean.setSave(true);
                                         break;
                                     }
                                 }else{
                                     wifiBean.setSave(false);
-                                    break;
                                 }
                             }
-                           // int signLevel=wifiConnectiontModel.getWiseFy().
-                           // wifiBean.setSignLevel();
-
-
-
+                            int signLevel=wifiConnectiontModel.getWiseFy().calculateBars(s.level,4);
+                            wifiBean.setSignLevel(signLevel);
+                            resultWfifs.add(wifiBean);
                         }
-                        return null;
+
+                        return Observable.just(resultWfifs);
                     }
                 })
-                .subscribe((Observer<? super List<WifiBean>>) new Observer<List<ScanResult>>() {
+                .subscribe(new Observer<List<WifiBean>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(@NonNull List<ScanResult> scanResults) {
-                        // Toast.makeText((Context) wifiConectionView,scanResults.size()+"",Toast.LENGTH_LONG).show();
-                        //ToastUtils.showShort(scanResults.size()+"");
+                    public void onNext(@NonNull List<WifiBean> resultWfifs) {
+                       // Toast.makeText((Context) wifiConectionView,resultWfifs.size()+"\n"+resultWfifs.get(0).getName(),Toast.LENGTH_LONG).show();
+                        wifiConectionView.showScanWifi(resultWfifs);
                     }
 
                     @Override
@@ -115,7 +121,13 @@ public class WifiConnectionPresenter {
 
                     }
                 });
-*/
+    }
+
+    public WifiBean getWifiBeanFormPosition(int position){
+        if (resultWfifs.size()>0){
+            return  resultWfifs.get(position);
+        }
+        return null;
     }
 
 }

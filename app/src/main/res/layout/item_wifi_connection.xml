@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="25dp"
+        >
+        <TextView
+            android:id="@+id/tv_wifi_ssid"
+            android:layout_width="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/wifi_connection_ssid"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            />
+        <TextView
+            android:id="@+id/tv_wifi_state"
+            android:layout_width="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/wifi_connection_tv_color"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_alignParentBottom="true"
+            />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginRight="25dp"
+        android:layout_gravity="right"
+        android:gravity="center_vertical"
+        >
+        <ImageView
+            android:id="@+id/iv_wifi_lock"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@mipmap/iocn_wifi_lock"
+            android:layout_marginRight="5dp"
+            />
+        <ImageView
+            android:id="@+id/iv_wifi_sign"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            />
+    </LinearLayout>
+
+</FrameLayout>
