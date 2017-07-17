@@ -31,5 +31,6 @@
         </activity>
         <activity android:name=".login.LoginActivity"/>
     </application>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>
