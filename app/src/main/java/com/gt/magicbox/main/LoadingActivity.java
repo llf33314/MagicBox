@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.login.LoginActivity;
 
 import static java.lang.Thread.sleep;
 
@@ -27,7 +28,7 @@ public class LoadingActivity extends Activity{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Intent intent=new Intent(LoadingActivity.this,MainActivity.class);
+                Intent intent=new Intent(LoadingActivity.this,LoginActivity.class);
                 startActivity(intent);
                 finish();
             }

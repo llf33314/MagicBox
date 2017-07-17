@@ -3,20 +3,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="64dp"
+        android:layout_height="56dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="58dp"
+        android:src="@drawable/icon_duofen" />
+
     <EditText
         android:id="@+id/userEditText"
+        style="@style/LoginEditText"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:layout_below="@id/logo"
         android:layout_margin="20dp"
-        android:hint="@string/login_user_tip" />
+        android:drawableLeft="@drawable/icon_user"
+        android:drawablePadding="13dp"
+        android:hint="@string/login_user_tip"
+        android:textColor="@color/login_input_text_color"
+        android:textColorHint="#999999" />
 
     <EditText
         android:id="@+id/passwordEditText"
+        style="@style/LoginEditText"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_below="@id/userEditText"
         android:layout_margin="20dp"
-        android:hint="@string/login_password_tip" />
+        android:drawableLeft="@drawable/icon_pwd"
+        android:drawablePadding="13dp"
+        android:hint="@string/login_password_tip"
+        android:inputType="textPassword"
+        android:textColor="@color/login_input_text_color"
+        android:textColorHint="#999999" />
 
     <Button
         android:id="@+id/loginButton"
@@ -24,5 +44,20 @@
         android:layout_height="40dp"
         android:layout_below="@id/passwordEditText"
         android:layout_margin="20dp"
-        android:text="@string/login" />
+        android:text="@string/login"
+        android:textColor="@color/white"
+        android:background="@drawable/selector_red_button"
+        style="?android:attr/borderlessButtonStyle"
+        />
+    <Button
+        android:id="@+id/netSettingButton"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@id/loginButton"
+        android:layout_margin="20dp"
+        android:text="@string/net_setting"
+        android:textColor="@drawable/selector_text_color"
+        android:background="@drawable/selector_white_button"
+        style="?android:attr/borderlessButtonStyle"
+        />
 </RelativeLayout>
