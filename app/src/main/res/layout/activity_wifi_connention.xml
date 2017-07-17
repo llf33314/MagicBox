@@ -9,13 +9,15 @@
     android:layout_height="wrap_content"
     android:text="选取网络"
     android:textColor="@color/wifi_connection_tv_color"
+    android:layout_marginTop="25dp"
+    android:layout_marginLeft="15dp"
     />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_wifi_result"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="350dp"
         android:scrollbars="vertical"
-        android:visibility="gone"/>
+        />
 
     <Button
         android:id="@+id/btn_scan_wifi"

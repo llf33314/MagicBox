@@ -7,6 +7,10 @@
     <color name="white">#ffffff</color>
     <color name="wifi_connection_bg">#ececec</color>
     <color name="wifi_connection_tv_color">#999999</color>
+    <color name="wifi_connection_ssid">#333333</color>
+    <color name="theme_orange">#f04a4a</color>
+    <color name="black">#000000</color>
+
 
 
 </resources>

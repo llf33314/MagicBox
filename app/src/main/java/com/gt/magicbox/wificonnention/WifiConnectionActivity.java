@@ -9,8 +9,11 @@ import android.widget.Button;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.wificonnention.model.WifiBean;
 import com.gt.magicbox.wificonnention.presenter.WifiConnectionPresenter;
 import com.gt.magicbox.wificonnention.view.IWifiConectionView;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +32,10 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
     RecyclerView rvWifiResult;
 
     WifiConnectionPresenter presenter;
+    JoinWifiDialog dialog;
+
+    private WifiRecyclerViewAdapter rvAdapter;
+    private WifiRecyclerViewAdapter.OnRecyclerViewItemClickListener rvListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,11 +45,33 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
         presenter=new WifiConnectionPresenter(this);
         setToolBarTitle("无线网络");
         rvWifiResult.setLayoutManager(new LinearLayoutManager(this));
+        rvWifiResult.setHasFixedSize(true);
     }
 
     @Override
-    public void showScanWifi() {
+    public void showScanWifi(List<WifiBean> wifiList) {
+        rvWifiResult.setAdapter(rvAdapter=new WifiRecyclerViewAdapter(wifiList));
+        if (rvListener==null){
+            rvListener=new WifiRecyclerViewAdapter.OnRecyclerViewItemClickListener() {
+                @Override
+                public void onItemClick(View view) {
+                    int position=rvWifiResult.getChildPosition(view);
+                    WifiBean bean =presenter.getWifiBeanFormPosition(position);
+                    if (bean!=null){
+                        if (dialog==null){
+                            dialog=new JoinWifiDialog(WifiConnectionActivity.this,R.style.HttpRequestDialogStyle);
+                        }
+                            dialog.show(bean);
+                    }
+                }
 
+                @Override
+                public void onItemLongClick(View view) {
+
+                }
+            };
+        }
+        rvAdapter.setOnItemClickListener(rvListener);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class MainActivity extends BaseActivity {
                 .userLogin("123456", "jindao", "gt123456")
                 .compose(RxObservableUtils.<BaseResponse<LoginBean>>applySchedulers())//线程处理
                 .compose(MainActivity.this.<BaseResponse<LoginBean>>bindToLifecycle())//内存泄漏处理
-                .subscribe(new BaseObserver<LoginBean>(MainActivity.this, false) {
+                .subscribe(new BaseObserver<LoginBean>(MainActivity.this,true) {
                     @Override
                     public void onSuccess(LoginBean data) {
                         Log.i(TAG, "data=" + data.toString());
@@ -39,7 +39,6 @@ public class MainActivity extends BaseActivity {
                     public void onFailure(int code, String msg) {
                         super.onFailure(code, msg);
                         Log.i(TAG, "code=" + code + "  msg=" + msg);
-
                     }
                 });
     }
