@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/wifi_connection_bg"
+    >
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="选取网络"
+    android:textColor="@color/wifi_connection_tv_color"
+    />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_wifi_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btn_scan_wifi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="刷新网络"
+        android:layout_gravity="center_horizontal"
+        />
+</LinearLayout>
