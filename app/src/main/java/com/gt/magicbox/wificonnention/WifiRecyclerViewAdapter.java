@@ -71,15 +71,28 @@ public class WifiRecyclerViewAdapter extends RecyclerView.Adapter<WifiRecyclerVi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.ssidName.setText(wifiList.get(position).getName());
-        holder.connectionState.setText(wifiList.get(position).isConnecting()?"已连接":wifiList.get(position).isSave()?"已保存":"未连接");
-        if (wifiList.get(position).getLockType()==0){
+        WifiBean wifiBean=wifiList.get(position);
+        holder.ssidName.setText(wifiBean.getName());
+        String connectStateStr="";
+        switch (wifiBean.getConnectState()){
+            case 0:
+                connectStateStr=wifiBean.isSave()?"已保存":"未连接";
+                break;
+            case 1:
+                connectStateStr="已连接";
+                break;
+            case 2:
+                connectStateStr="连接中...";
+                break;
+        }
+        holder.connectionState.setText(connectStateStr);
+        if (wifiBean.getLockType()==0){
             holder.lock.setVisibility(View.INVISIBLE);
         }else{
             holder.lock.setVisibility(View.VISIBLE);
         }
-        if (wifiList.get(position).getSignLevel()>=1&&wifiList.get(position).getSignLevel()<=4){
-            holder.sign.setImageResource(WIFI_SIGN_IOCN[wifiList.get(position).getSignLevel()-1]);
+        if (wifiBean.getSignLevel()>=1&&wifiBean.getSignLevel()<=4){
+            holder.sign.setImageResource(WIFI_SIGN_IOCN[wifiBean.getSignLevel()-1]);
         }
 
     }

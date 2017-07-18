@@ -16,6 +16,8 @@ import com.gt.magicbox.wificonnention.model.WifiConnectionModel;
 import com.gt.magicbox.wificonnention.view.IWifiConectionView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -34,11 +36,34 @@ public class WifiConnectionPresenter {
     IWifiConectionView wifiConectionView;
     IWifiConnectiontModel wifiConnectiontModel;
     private List<WifiBean> resultWfifs=new ArrayList<WifiBean>();
+    private  List<WifiConfiguration> savedNetworks=new ArrayList<WifiConfiguration>();
 
     public WifiConnectionPresenter(IWifiConectionView wifiConectionView){
         this.wifiConectionView=wifiConectionView;
         wifiConnectiontModel=new WifiConnectionModel((Context) this.wifiConectionView);
     }
+
+    Comparator<WifiBean> comparator=new Comparator<WifiBean>() {
+        @Override
+        public int compare(WifiBean o2, WifiBean o1) {
+            if (o1.getConnectState()-o2.getConnectState()!=0){
+                return o1.getConnectState()-o2.getConnectState();
+            }
+            if (o1.isSave()&&o2.isSave()){
+                return 0;
+            }
+            if (o1.isSave()&&!o2.isSave()){
+                return 1;
+            }
+            if (!o1.isSave()&&o2.isSave()){
+                return -1;
+            }
+            if (o1.getSignLevel()==o2.getSignLevel()){
+                return 0;
+            }
+            return o1.getSignLevel()>o2.getSignLevel()?1:-1;
+        }
+    };
 
     public void  scanWifi(){
         wifiConnectiontModel.scanWifi()
@@ -52,10 +77,13 @@ public class WifiConnectionPresenter {
                         //当ssid="";会有问题？
                         String currentSsid= wifiInfo==null?"":wifiInfo.getBSSID();
 
-                        //已保存过的wifi
-                        List<WifiConfiguration> savedNetworks =wifiConnectiontModel.getWiseFy().getSavedNetworks();
 
                         resultWfifs.clear();
+                        //已保存过的wifi
+                        savedNetworks.clear();
+                        savedNetworks =wifiConnectiontModel.getWiseFy().getSavedNetworks();
+
+
 
                         for (ScanResult s:scanResults){
                             WifiBean wifiBean=new WifiBean();
@@ -63,7 +91,16 @@ public class WifiConnectionPresenter {
                                 continue;
                             }
                             wifiBean.setName(s.SSID);
-                            wifiBean.setConnecting(TextUtils.isEmpty(currentSsid)?false:currentSsid.equals(s.BSSID));
+                            if (TextUtils.isEmpty(currentSsid)?false:currentSsid.equals(s.BSSID)){
+                                if (wifiConnectiontModel.getWiseFy().isDeviceConnectedToWifiNetwork()){//设备是否已经连接到wifi网络  用于区别连接中
+                                    wifiBean.setConnectState(1);
+                                }else{
+                                    wifiBean.setConnectState(2);
+                                }
+                            }else{
+                                wifiBean.setConnectState(0);
+                            }
+
                             /**
                              * 加密类型  0：不加密
                              *           1：WEP
@@ -94,6 +131,7 @@ public class WifiConnectionPresenter {
                             wifiBean.setSignLevel(signLevel);
                             resultWfifs.add(wifiBean);
                         }
+                        Collections.sort(resultWfifs,comparator);
 
                         return Observable.just(resultWfifs);
                     }
@@ -142,9 +180,25 @@ public class WifiConnectionPresenter {
         return wifiConnectiontModel.getWiseFy().addWPA2Network(ssid,psd);
     }
 
-    public boolean connectToNetwork(String ssid,int number){
-        return wifiConnectiontModel.getWiseFy().connectToNetwork(ssid,number);
+    public boolean connectToNetwork(String ssid,int timeOut){
+        return wifiConnectiontModel.getWiseFy().connectToNetwork(ssid,timeOut);
     }
+
+    public boolean removeNetworkAndDisConnect(String ssid){
+        return wifiConnectiontModel.getWiseFy().removeNetwork(ssid);
+    }
+    public boolean removeNetworkConfig(String ssid){
+        for (WifiConfiguration saved:savedNetworks){
+        if(("\""+ssid+"\"").equals(saved.SSID)){
+           return wifiConnectiontModel.getWiseFy().mWifiManager.removeNetwork(saved.networkId);
+        }
+        }
+        return false;
+    }
+    public boolean disconnectFromCurrentNetwork(){
+        return wifiConnectiontModel.getWiseFy().disconnectFromCurrentNetwork();
+    }
+
 
 
 }

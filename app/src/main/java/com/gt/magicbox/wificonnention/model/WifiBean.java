@@ -6,9 +6,6 @@ package com.gt.magicbox.wificonnention.model;
 
 public class WifiBean {
     private String name;
-    private boolean connecting;
-    private boolean save;
-    private int signLevel;
     /**
      * 加密类型  0：不加密
      *           1：WEP
@@ -16,6 +13,21 @@ public class WifiBean {
      *           3:EAP
      */
     private int lockType;
+    private int signLevel;
+    private boolean save;
+
+    public int getConnectState() {
+        return connectState;
+    }
+
+    public void setConnectState(int connectState) {
+        this.connectState = connectState;
+    }
+
+    /**
+     * 0:未连接 1：已连接 2：连接中
+     */
+    private int connectState;
 
     public String getName() {
         return name;
@@ -25,20 +37,12 @@ public class WifiBean {
         this.name = name;
     }
 
-    public boolean isConnecting() {
-        return connecting;
+    public int getLockType() {
+        return lockType;
     }
 
-    public void setConnecting(boolean connecting) {
-        this.connecting = connecting;
-    }
-
-    public boolean isSave() {
-        return save;
-    }
-
-    public void setSave(boolean save) {
-        this.save = save;
+    public void setLockType(int lockType) {
+        this.lockType = lockType;
     }
 
     public int getSignLevel() {
@@ -49,11 +53,13 @@ public class WifiBean {
         this.signLevel = signLevel;
     }
 
-    public int getLockType() {
-        return lockType;
+    public boolean isSave() {
+        return save;
     }
 
-    public void setLockType(int lockType) {
-        this.lockType = lockType;
+    public void setSave(boolean save) {
+        this.save = save;
     }
+
+
 }

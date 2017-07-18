@@ -17,5 +17,6 @@
     <color name="custom_red">#f04a4a</color>
     <drawable name="custom_red">#f04a4a</drawable>
     <drawable name="white">#fff</drawable>
+    <color name="gray">#dadada</color>
 
 </resources>
