@@ -1,7 +1,5 @@
 package com.gt.magicbox.main;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -18,12 +16,11 @@ import java.util.ArrayList;
  * Created by jack-lin on 2017/7/18 0018.
  */
 
-public class MoreActivity extends BaseActivity {
-    private String[] itemNameArray = {"打印设置", "网络设置", "设备管理"};
-    private Integer[] imageResArray = {R.drawable.more_printer_setting, R.drawable.more_network_setting,
-            R.drawable.more_devices_setting};
-    private int[] colorNormalArray = {0xfffdd451, 0xffb177f2, 0xffff9a54};
-    private int[] colorFocusedArray = {0x99fdd451, 0x99b177f2, 0x99ff9a54};
+public class DevicesMangerActivity extends BaseActivity {
+    private String[] itemNameArray = {"音量设置","设备状态"};
+    private Integer[] imageResArray = {R.drawable.devices_volume_setting, R.drawable.devices_status};
+    private int[] colorNormalArray = {0xfffdd451, 0xffb177f2};
+    private int[] colorFocusedArray = {0x99fdd451, 0x99b177f2};
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
@@ -33,7 +30,7 @@ public class MoreActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        setToolBarTitle("更多应用");
+        setToolBarTitle("设备管理");
         initView();
     }
 
@@ -46,10 +43,6 @@ public class MoreActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
-                    case 2:
-                        Intent intent=new Intent(MoreActivity.this,DevicesMangerActivity.class);
-                        startActivity(intent);
-                        break;
                 }
             }
         });
