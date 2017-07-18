@@ -19,8 +19,8 @@ import java.util.ArrayList;
 public class DevicesMangerActivity extends BaseActivity {
     private String[] itemNameArray = {"音量设置","设备状态"};
     private Integer[] imageResArray = {R.drawable.devices_volume_setting, R.drawable.devices_status};
-    private int[] colorNormalArray = {0xfffdd451, 0xffb177f2};
-    private int[] colorFocusedArray = {0x99fdd451, 0x99b177f2};
+    private int[] colorNormalArray = {0xffff9a54, 0xff4db3ff};
+    private int[] colorFocusedArray = {0x99ff9a54, 0x994db3ff};
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;

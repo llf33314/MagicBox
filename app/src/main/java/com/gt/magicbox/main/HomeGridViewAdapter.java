@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
+import com.gt.magicbox.utils.commonutil.DrawableUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
 
 import java.util.ArrayList;
@@ -44,9 +45,6 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         int toolbarHeight = ConvertUtils.px2dp(context.getResources().getDimension(R.dimen.toolbar_height));
         displayAreaHeight = screenHeight - toolbarHeight - ScreenUtils.getBottomStatusHeight();
         itemHeight = displayAreaHeight / 3 + ConvertUtils.dp2px(2);
-
-        Log.i("test", "screenHeight=" + screenHeight + "  toolbarHeight=" + toolbarHeight + "   BottomStatusHeight()=" + ScreenUtils.getBottomStatusHeight() +
-                "  getStatusHeight=" + ScreenUtils.getStatusHeight() + "  itemHeight=" + itemHeight);
     }
 
     @Override
@@ -82,7 +80,7 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         }
         GridItem item = mGridData.get(position);
         if (item != null) {
-            convertView.setBackgroundDrawable(addStateDrawable(item.getNormalColor(), item.getFocusedColor(),
+            convertView.setBackgroundDrawable(DrawableUtils.addColorStateDrawable(item.getNormalColor(), item.getFocusedColor(),
                     item.getFocusedColor()));
             holder.textView.setText(item.getName());
             holder.imageView.setBackgroundResource(item.getImgRes());
@@ -101,19 +99,5 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         notifyDataSetChanged();
     }
 
-    private StateListDrawable addStateDrawable(int colorNormal, int colorPressed, int colorFocused) {
-        StateListDrawable sd = new StateListDrawable();
-        Drawable normal = colorNormal == -1 ? null : new ColorDrawable(colorNormal);
-        Drawable pressed = colorPressed == -1 ? null : new ColorDrawable(colorPressed);
-        Drawable focus = colorFocused == -1 ? null : new ColorDrawable(colorFocused);
-        //注意该处的顺序，只要有一个状态与之相配，背景就会被换掉
-        //所以不要把大范围放在前面了，如果sd.addState(new[]{},normal)放在第一个的话，就没有什么效果了
-        sd.addState(new int[]{android.R.attr.state_enabled, android.R.attr.state_focused}, focus);
-        sd.addState(new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled}, pressed);
-        sd.addState(new int[]{android.R.attr.state_focused}, focus);
-        sd.addState(new int[]{android.R.attr.state_pressed}, pressed);
-        sd.addState(new int[]{android.R.attr.state_enabled}, normal);
-        sd.addState(new int[]{}, normal);
-        return sd;
-    }
+
 }
