@@ -1,5 +1,10 @@
 package com.gt.magicbox.wificonnention;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +42,8 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
     private WifiRecyclerViewAdapter rvAdapter;
     private WifiRecyclerViewAdapter.OnRecyclerViewItemClickListener rvListener;
 
+    private ConnectionChangeBroadCast broadCast;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +53,21 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
         setToolBarTitle("无线网络");
         rvWifiResult.setLayoutManager(new LinearLayoutManager(this));
         rvWifiResult.setHasFixedSize(true);
+
+        presenter.scanWifi();
+        setBoradCase();
+    }
+
+    private void setBoradCase(){
+        broadCast=new ConnectionChangeBroadCast();
+        IntentFilter intentFilter=new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        this.registerReceiver(broadCast,intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(broadCast);
     }
 
     @Override
@@ -64,9 +86,15 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
                             if (dialog==null){
                                 dialog=new JoinWifiDialog(WifiConnectionActivity.this,R.style.HttpRequestDialogStyle,presenter);
                             }
-                            dialog.show(bean);
-                        }
 
+                            if (bean.getConnectState()==1||bean.getConnectState()==2){//已连接或者连接中
+                                dialog.show(bean,0);
+                            }else if((bean.getConnectState()==0)&&bean.isSave()){//已保存未连接
+                                dialog.show(bean,1);
+                            }else{//未连接
+                                dialog.show(bean,2);
+                            }
+                        }
                     }
                 }
 
@@ -87,5 +115,15 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
     @OnClick(R.id.btn_scan_wifi)
     public void onViewClicked(View v) {
         presenter.scanWifi();
+    }
+
+    private class ConnectionChangeBroadCast extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())){
+                presenter.scanWifi();
+            }
+        }
     }
 }
