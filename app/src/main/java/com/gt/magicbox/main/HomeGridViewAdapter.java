@@ -2,6 +2,9 @@ package com.gt.magicbox.main;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,18 +34,19 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
     private ArrayList<GridItem> mGridData = new ArrayList<GridItem>();
     private int itemHeight;
     private int displayAreaHeight;
+
     public HomeGridViewAdapter(@NonNull Context context, int resource, ArrayList<GridItem> objects) {
         super(context, resource);
         this.mContext = context;
         this.layoutResourceId = resource;
         this.mGridData = objects;
-        int  screenHeight= ScreenUtils.getScreenHeight();
-        int  toolbarHeight= ConvertUtils.px2dp(context.getResources().getDimension(R.dimen.toolbar_height));
-        displayAreaHeight=screenHeight-toolbarHeight-ScreenUtils.getBottomStatusHeight();
-        itemHeight=displayAreaHeight/3+3;
+        int screenHeight = ScreenUtils.getScreenHeight();
+        int toolbarHeight = ConvertUtils.px2dp(context.getResources().getDimension(R.dimen.toolbar_height));
+        displayAreaHeight = screenHeight - toolbarHeight - ScreenUtils.getBottomStatusHeight();
+        itemHeight = displayAreaHeight / 3 + ConvertUtils.dp2px(2);
 
-        Log.i("test","screenHeight="+screenHeight+"  toolbarHeight="+toolbarHeight+"   BottomStatusHeight()=" +ScreenUtils.getBottomStatusHeight()+
-                "  getStatusHeight="+ScreenUtils.getStatusHeight()+"  itemHeight="+itemHeight);
+        Log.i("test", "screenHeight=" + screenHeight + "  toolbarHeight=" + toolbarHeight + "   BottomStatusHeight()=" + ScreenUtils.getBottomStatusHeight() +
+                "  getStatusHeight=" + ScreenUtils.getStatusHeight() + "  itemHeight=" + itemHeight);
     }
 
     @Override
@@ -66,8 +70,8 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         if (convertView == null) {
             LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
             convertView = inflater.inflate(layoutResourceId, parent, false);
-            AbsListView.LayoutParams params= (AbsListView.LayoutParams) convertView.getLayoutParams();
-            params.height=itemHeight;
+            AbsListView.LayoutParams params = (AbsListView.LayoutParams) convertView.getLayoutParams();
+            params.height = itemHeight;
             convertView.setLayoutParams(params);
             holder = new ViewHolder();
             holder.textView = (TextView) convertView.findViewById(R.id.name_item);
@@ -78,7 +82,8 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         }
         GridItem item = mGridData.get(position);
         if (item != null) {
-            convertView.setBackgroundColor(item.getColor());
+            convertView.setBackgroundDrawable(addStateDrawable(item.getNormalColor(), item.getFocusedColor(),
+                    item.getFocusedColor()));
             holder.textView.setText(item.getName());
             holder.imageView.setBackgroundResource(item.getImgRes());
         }
@@ -94,5 +99,21 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
     public void setGridData(ArrayList<GridItem> mGridData) {
         this.mGridData = mGridData;
         notifyDataSetChanged();
+    }
+
+    private StateListDrawable addStateDrawable(int colorNormal, int colorPressed, int colorFocused) {
+        StateListDrawable sd = new StateListDrawable();
+        Drawable normal = colorNormal == -1 ? null : new ColorDrawable(colorNormal);
+        Drawable pressed = colorPressed == -1 ? null : new ColorDrawable(colorPressed);
+        Drawable focus = colorFocused == -1 ? null : new ColorDrawable(colorFocused);
+        //注意该处的顺序，只要有一个状态与之相配，背景就会被换掉
+        //所以不要把大范围放在前面了，如果sd.addState(new[]{},normal)放在第一个的话，就没有什么效果了
+        sd.addState(new int[]{android.R.attr.state_enabled, android.R.attr.state_focused}, focus);
+        sd.addState(new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled}, pressed);
+        sd.addState(new int[]{android.R.attr.state_focused}, focus);
+        sd.addState(new int[]{android.R.attr.state_pressed}, pressed);
+        sd.addState(new int[]{android.R.attr.state_enabled}, normal);
+        sd.addState(new int[]{}, normal);
+        return sd;
     }
 }

@@ -1,12 +1,10 @@
 package com.gt.magicbox.main;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 
@@ -26,11 +24,12 @@ public class MainActivity extends BaseActivity {
     private String[] itemNameArray = {"收银", "订单", "会员", "卡券核销", "派券", "更多"};
     private Integer[] imageResArray = {R.drawable.home_payment, R.drawable.home_order,
             R.drawable.home_member, R.drawable.home_card_verification, R.drawable.home_send_coupon, R.drawable.home_more};
-    private int[] colorArray = {0xfffdd451, 0xffb177f2, 0xffff9a54, 0xff47d09c, 0xfffc7473, 0xff4db3ff};
+    private int[] colorNormalArray = {0xfffdd451, 0xffb177f2, 0xffff9a54, 0xff47d09c, 0xfffc7473, 0xff4db3ff};
+    private int[] colorFocusedArray = {0x99fdd451, 0x99b177f2, 0x99ff9a54, 0x9947d09c, 0x99fc7473, 0x994db3ff};
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
-    private RelativeLayout parent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,16 +42,26 @@ public class MainActivity extends BaseActivity {
     private void initView() {
         initViewData();
         home_grid = (GridView) findViewById(R.id.gird);
-
-
-        gridViewAdapter=new HomeGridViewAdapter(this,R.layout.home_grid_item,homeData);
+        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData);
         home_grid.setAdapter(gridViewAdapter);
+        home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 5:
+                        Intent intent=new Intent(MainActivity.this,MoreActivity.class);
+                        startActivity(intent);
+                        break;
+                }
+            }
+        });
     }
 
     private void initViewData() {
         for (int i = 0; i < itemNameArray.length; i++) {
             GridItem item = new GridItem();
-            item.setColor(colorArray[i]);
+            item.setNormalColor(colorNormalArray[i]);
+            item.setFocusedColor(colorFocusedArray[i]);
             item.setImgRes(imageResArray[i]);
             item.setName(itemNameArray[i]);
             homeData.add(item);
