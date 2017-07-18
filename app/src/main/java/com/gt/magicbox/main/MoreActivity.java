@@ -23,8 +23,8 @@ public class MoreActivity extends BaseActivity {
     private String[] itemNameArray = {"打印设置", "网络设置", "设备管理"};
     private Integer[] imageResArray = {R.drawable.more_printer_setting, R.drawable.more_network_setting,
             R.drawable.more_devices_setting};
-    private int[] colorNormalArray = {0xfffdd451, 0xffb177f2, 0xffff9a54};
-    private int[] colorFocusedArray = {0x99fdd451, 0x99b177f2, 0x99ff9a54};
+    private int[] colorNormalArray = {0xff4db3ff, 0xff47d09c, 0xffff9a54};
+    private int[] colorFocusedArray = {0x994db3ff, 0x9947d09c, 0x99ff9a54};
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;

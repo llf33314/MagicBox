@@ -15,6 +15,7 @@ import com.gt.magicbox.http.BaseObserver;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpCall;
 import com.gt.magicbox.http.RxObservableUtils;
+import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.utils.commonutil.Utils;
 
 import java.util.ArrayList;
@@ -47,9 +48,14 @@ public class MainActivity extends BaseActivity {
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i){
+                Intent intent;
+                switch (i) {
+                    case 0:
+                        intent = new Intent(MainActivity.this, PaymentActivity.class);
+                        startActivity(intent);
+                        break;
                     case 5:
-                        Intent intent=new Intent(MainActivity.this,MoreActivity.class);
+                        intent = new Intent(MainActivity.this, MoreActivity.class);
                         startActivity(intent);
                         break;
                 }
