@@ -10,6 +10,7 @@ import android.widget.GridView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.wificonnention.WifiConnectionActivity;
 
 import java.util.ArrayList;
 
@@ -45,9 +46,14 @@ public class MoreActivity extends BaseActivity {
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent;
                 switch (i) {
                     case 2:
-                        Intent intent=new Intent(MoreActivity.this,DevicesMangerActivity.class);
+                        intent=new Intent(MoreActivity.this,DevicesMangerActivity.class);
+                        startActivity(intent);
+                        break;
+                    case 3:
+                        intent=new Intent(MoreActivity.this,WifiConnectionActivity.class);
                         startActivity(intent);
                         break;
                 }

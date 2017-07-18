@@ -14,15 +14,18 @@ import android.widget.Button;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.http.RxObservableUtils;
 import com.gt.magicbox.wificonnention.model.WifiBean;
 import com.gt.magicbox.wificonnention.presenter.WifiConnectionPresenter;
 import com.gt.magicbox.wificonnention.view.IWifiConectionView;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
 
 /**
  * Created by wzb on 2017/7/14 0014.
@@ -54,7 +57,8 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
         rvWifiResult.setLayoutManager(new LinearLayoutManager(this));
         rvWifiResult.setHasFixedSize(true);
 
-        presenter.scanWifi();
+        //presenter.scanWifi();
+        presenter.startLoopScanWifi();
         setBoradCase();
     }
 
@@ -126,4 +130,6 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
             }
         }
     }
+
+
 }
