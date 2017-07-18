@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#484848">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,31 +12,38 @@
 
         <GridView
             android:id="@+id/grid_keyboard"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="3"
+            android:verticalSpacing="1px"
             android:horizontalSpacing="1px"
             android:numColumns="3" />
          <LinearLayout
-             android:layout_weight="3"
+             android:layout_weight="1"
              android:orientation="vertical"
-             android:layout_width="match_parent"
+             android:layout_width="0dp"
              android:layout_height="match_parent">
              <Button
-                 android:layout_weight="1.5"
+                 android:layout_weight="1"
                  android:background="@drawable/selector_clear_button"
                  android:layout_width="match_parent"
-                 android:layout_height="wrap_content" />
-             <Button
-                 android:layout_weight="1.5"
-                 android:background="@drawable/selector_delete_button"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content" />
+                 android:layout_height="0dp"
+                 style="?android:attr/borderlessButtonStyle"
+                 />
              <Button
                  android:layout_weight="1"
+                 android:background="@drawable/selector_delete_button"
+                 android:layout_width="match_parent"
+                 android:layout_height="0dp"
+                 style="?android:attr/borderlessButtonStyle"
+                 />
+             <Button
+                 android:layout_weight="2"
                  android:background="@drawable/selector_pay_button"
                  android:layout_width="match_parent"
-                 android:layout_height="wrap_content" />
+                 android:layout_height="0dp"
+                 style="?android:attr/borderlessButtonStyle"
+                 />
          </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
