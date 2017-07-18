@@ -58,10 +58,15 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
                     int position=rvWifiResult.getChildPosition(view);
                     WifiBean bean =presenter.getWifiBeanFormPosition(position);
                     if (bean!=null){
-                        if (dialog==null){
-                            dialog=new JoinWifiDialog(WifiConnectionActivity.this,R.style.HttpRequestDialogStyle);
-                        }
+                        if (bean.getLockType()==0){//无加锁 wifi
+                            presenter.addOpenNetwork(bean.getName());
+                        }else {
+                            if (dialog==null){
+                                dialog=new JoinWifiDialog(WifiConnectionActivity.this,R.style.HttpRequestDialogStyle,presenter);
+                            }
                             dialog.show(bean);
+                        }
+
                     }
                 }
 

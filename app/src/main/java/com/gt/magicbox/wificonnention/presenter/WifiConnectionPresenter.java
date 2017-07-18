@@ -130,4 +130,21 @@ public class WifiConnectionPresenter {
         return null;
     }
 
+    public int addOpenNetwork(String ssid){
+        return wifiConnectiontModel.getWiseFy().addOpenNetwork(ssid);
+    }
+
+    public int addWEPNetwork(String ssid,String psd){
+        return wifiConnectiontModel.getWiseFy().addWEPNetwork(ssid,psd);
+    }
+
+    public int addWPA2Network(String ssid,String psd){
+        return wifiConnectiontModel.getWiseFy().addWPA2Network(ssid,psd);
+    }
+
+    public boolean connectToNetwork(String ssid,int number){
+        return wifiConnectiontModel.getWiseFy().connectToNetwork(ssid,number);
+    }
+
+
 }
