@@ -19,12 +19,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Function;
 
 /**
@@ -199,6 +202,35 @@ public class WifiConnectionPresenter {
         return wifiConnectiontModel.getWiseFy().disconnectFromCurrentNetwork();
     }
 
+    /**
+     * 每隔3秒更新页面
+     */
+    public void startLoopScanWifi(){
+        Observable.interval(3000,3000, TimeUnit.MILLISECONDS)
+                .compose(((BaseActivity)wifiConectionView).<Long>bindToLifecycle())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Long>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Long aLong) {
+                        scanWifi();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
 
 
 }
