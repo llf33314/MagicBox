@@ -19,13 +19,11 @@ import io.reactivex.annotations.NonNull;
 
 public class WifiConnectionModel implements IWifiConnectiontModel{
     private Context mContext ;
-    private  WiseFy mWiseFy;;
+    private  WiseFy mWiseFy;
     public WifiConnectionModel(Context context){
         this.mContext=context;
         mWiseFy = new WiseFy.withContext(mContext).getSmarts();
     }
-
-
 
     @Override
     public Observable<List<ScanResult>> scanWifi() {

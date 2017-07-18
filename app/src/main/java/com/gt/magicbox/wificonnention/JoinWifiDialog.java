@@ -10,7 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.wificonnention.model.WifiBean;
+import com.gt.magicbox.wificonnention.presenter.WifiConnectionPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,12 +34,15 @@ public class JoinWifiDialog extends Dialog {
 
     private WifiBean wifiBean;
 
+    WifiConnectionPresenter presenter;
+
     public JoinWifiDialog(@NonNull Context context) {
         super(context);
     }
 
-    public JoinWifiDialog(@NonNull Context context, @StyleRes int themeResId) {
+    public JoinWifiDialog(@NonNull Context context, @StyleRes int themeResId, WifiConnectionPresenter p) {
         super(context, themeResId);
+        this.presenter=p;
     }
 
     @Override
@@ -60,6 +65,38 @@ public class JoinWifiDialog extends Dialog {
                 dismiss();
                 break;
             case R.id.join_wifi_join:
+                String psd=joinWifiPsd.getText().toString().trim();
+                //-1 密码错误  3 成功  -1001 已经添加过  -1000账号密码为空
+                int result=-2;
+
+                switch (wifiBean.getLockType()){
+                    case 1:
+                        result= presenter.addWEPNetwork(wifiBean.getName(),psd);
+                        break;
+                    case 2:
+                    case 3:
+                        result= presenter.addWPA2Network(wifiBean.getName(),psd);
+                        break;
+                }
+                switch (result){
+                    case -1:
+                    case -1001:
+                    case -1000:
+                        ToastUtil.getInstance().showToast("密码有误");
+                        break;
+                    case 3:
+                        //这里会阻塞
+                       boolean success=presenter.connectToNetwork(wifiBean.getName(),10*1000);
+                     //   处理线程问题
+                        ToastUtil.getInstance().showToast("success:"+success);
+                        break;
+                    default:
+                        ToastUtil.getInstance().showToast("连接失败");
+                        break;
+                }
+
+                dismiss();
+
                 break;
         }
     }
