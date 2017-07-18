@@ -9,14 +9,23 @@ public class GridItem {
     private String name = "";
     private Integer imgRes;
     private int messageCount;
-    private int color;
+    private int normalColor;
+    private int focusedColor;
 
-    public int getColor() {
-        return color;
+    public int getFocusedColor() {
+        return focusedColor;
     }
 
-    public void setColor(int color) {
-        this.color = color;
+    public void setFocusedColor(int focusedColor) {
+        this.focusedColor = focusedColor;
+    }
+
+    public int getNormalColor() {
+        return normalColor;
+    }
+
+    public void setNormalColor(int normalColor) {
+        this.normalColor = normalColor;
     }
 
     public int getMessageCount() {
@@ -42,5 +51,4 @@ public class GridItem {
     public void setImgRes(Integer imgRes) {
         this.imgRes = imgRes;
     }
-
 }

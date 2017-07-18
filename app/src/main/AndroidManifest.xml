@@ -30,7 +30,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
-        <activity android:name=".login.LoginActivity"/>
+        <activity
+            android:name=".login.LoginActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".main.MoreActivity"
+            android:launchMode="singleTask" />
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
