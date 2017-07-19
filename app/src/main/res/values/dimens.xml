@@ -2,4 +2,6 @@
 <resources>
     <dimen name="toolbar_height">50dp</dimen>
     <dimen name="button_conner">5dp</dimen>
+    <dimen name="text_size_23">23.0sp</dimen>
+
 </resources>
