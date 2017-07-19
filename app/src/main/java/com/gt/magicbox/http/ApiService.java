@@ -23,4 +23,8 @@ public interface ApiService {
    Observable<BaseResponse<LoginBean>> userLogin(@Query("eqCode")String eqCode,
                                                  @Query("userName")String user,
                                                  @Query("passWord")String pwd);
+   @GET("79B4DE7C/checkLogin.do")
+   Observable<BaseResponse<LoginBean>> pay(@Query("eqCode")String eqCode,
+                                                 @Query("money")double money,
+                                                 @Query("type")int type);
 }
