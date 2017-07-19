@@ -1,4 +1,4 @@
-package com.gt.magicbox.wificonnention;
+package com.gt.magicbox.setting.wificonnention;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
-import com.gt.magicbox.wificonnention.model.WifiBean;
+import com.gt.magicbox.setting.wificonnention.model.WifiBean;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.gt.magicbox.wificonnention;
+package com.gt.magicbox.setting.wificonnention;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,9 +14,8 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.http.RxObservableUtils;
-import com.gt.magicbox.utils.commonutil.ToastUtil;
-import com.gt.magicbox.wificonnention.model.WifiBean;
-import com.gt.magicbox.wificonnention.presenter.WifiConnectionPresenter;
+import com.gt.magicbox.setting.wificonnention.model.WifiBean;
+import com.gt.magicbox.setting.wificonnention.presenter.WifiConnectionPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

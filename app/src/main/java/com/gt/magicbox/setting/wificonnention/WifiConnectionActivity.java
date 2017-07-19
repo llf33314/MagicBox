@@ -1,4 +1,4 @@
-package com.gt.magicbox.wificonnention;
+package com.gt.magicbox.setting.wificonnention;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,18 +14,15 @@ import android.widget.Button;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
-import com.gt.magicbox.http.RxObservableUtils;
-import com.gt.magicbox.wificonnention.model.WifiBean;
-import com.gt.magicbox.wificonnention.presenter.WifiConnectionPresenter;
-import com.gt.magicbox.wificonnention.view.IWifiConectionView;
+import com.gt.magicbox.setting.wificonnention.model.WifiBean;
+import com.gt.magicbox.setting.wificonnention.presenter.WifiConnectionPresenter;
+import com.gt.magicbox.setting.wificonnention.view.IWifiConectionView;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
 
 /**
  * Created by wzb on 2017/7/14 0014.
@@ -51,7 +48,6 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_connention);
-        ButterKnife.bind(this);
         presenter=new WifiConnectionPresenter(this);
         setToolBarTitle("无线网络");
         rvWifiResult.setLayoutManager(new LinearLayoutManager(this));

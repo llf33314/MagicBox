@@ -1,6 +1,6 @@
-package com.gt.magicbox.wificonnention.view;
+package com.gt.magicbox.setting.wificonnention.view;
 
-import com.gt.magicbox.wificonnention.model.WifiBean;
+import com.gt.magicbox.setting.wificonnention.model.WifiBean;
 
 import java.util.List;
 
