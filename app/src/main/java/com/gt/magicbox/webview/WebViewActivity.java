@@ -46,6 +46,8 @@ public class WebViewActivity extends BaseActivity{
     /*定义组件*/
     private WebView web;
     private ProgressBar bar;
+    public final static int WEB_TYPE_PAY=0;
+    public final static int WEB_TYPE_ORDER=1;
 
     private Socket mSocket; // socket
 
@@ -61,7 +63,7 @@ public class WebViewActivity extends BaseActivity{
     private static boolean flag = true; // 返回控制flag
 
     // 定义变量
-    private String webUrl = HttpConfig.BASE_URL;
+    private String webUrl ="";
 
     private String nowUrl = webUrl;
 
@@ -71,10 +73,8 @@ public class WebViewActivity extends BaseActivity{
         if (RootUtils.getRootAhth()) {
             PromptUtils.getInstance(WebViewActivity.this).showToastLong("检测到设备开启了ROOT权限!");
         }
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
         setContentView(R.layout.activity_webview);
-
+        combineURL();
         // 获取组件
         web = (WebView) findViewById(R.id.web);
         bar = (ProgressBar) findViewById(R.id.bar);
@@ -113,7 +113,23 @@ public class WebViewActivity extends BaseActivity{
         mSocket.on("chatevent", socketEvent);
         mSocket.connect();
     }
-
+    private void combineURL() {
+        if (this.getIntent() != null) {
+            int webType = this.getIntent().getIntExtra("webType", 0);
+            switch (webType) {
+                case WEB_TYPE_PAY:
+                    double money = this.getIntent().getDoubleExtra("money", 0);
+                    int type = this.getIntent().getIntExtra("payMode", 0);
+                    webUrl = HttpConfig.BASE_URL + "123456/" + money + "/" + type + "/" + HttpConfig.PAYMENT_URL;
+                    break;
+                case WEB_TYPE_ORDER:
+                    int status = this.getIntent().getIntExtra("status", 0);
+                    webUrl = HttpConfig.BASE_URL + "123456/"  + status + "/" + HttpConfig.ORDER_URL;
+                    break;
+            }
+            Log.i(TAG,"webUrl="+webUrl);
+        }
+    }
     // 初始化UUID
     private void initUUID() {
         Log.d(TAG, "initUUID: ");
@@ -197,7 +213,7 @@ public class WebViewActivity extends BaseActivity{
                                             int whichButton) {
                             if (ObjectUtils.isNotEmpty(web))
                                 web.destroy();
-                            System.exit(0);
+                            finish();
                         }
                     }).show();
             return true;

@@ -15,8 +15,10 @@ import com.gt.magicbox.http.BaseObserver;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpCall;
 import com.gt.magicbox.http.RxObservableUtils;
+import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.utils.commonutil.Utils;
+import com.gt.magicbox.webview.WebViewActivity;
 
 import java.util.ArrayList;
 
@@ -52,6 +54,12 @@ public class MainActivity extends BaseActivity {
                 switch (i) {
                     case 0:
                         intent = new Intent(MainActivity.this, PaymentActivity.class);
+                        startActivity(intent);
+                        break;
+                    case 1:
+                         intent=new Intent(MainActivity.this, WebViewActivity.class);
+                        intent.putExtra("webType",WebViewActivity.WEB_TYPE_ORDER);
+                        intent.putExtra("status",0);
                         startActivity(intent);
                         break;
                     case 5:

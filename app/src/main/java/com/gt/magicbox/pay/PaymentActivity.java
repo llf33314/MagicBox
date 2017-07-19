@@ -1,5 +1,6 @@
 package com.gt.magicbox.pay;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.main.MainActivity;
 
 /**
  * Description:
@@ -32,7 +34,9 @@ public class PaymentActivity extends BaseActivity {
         keyboardView.setOnKeyboardDoListener(new OnKeyboardDoListener() {
             @Override
             public void onPay(double money) {
-
+               Intent intent = new Intent(PaymentActivity.this, ChosePayModeActivity.class);
+               intent.putExtra("money",money);
+               startActivity(intent);
             }
         });
     }
