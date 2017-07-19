@@ -1,4 +1,4 @@
-package com.gt.magicbox.wificonnention.model;
+package com.gt.magicbox.setting.wificonnention.model;
 
 /**
  * Created by wzb on 2017/7/17 0017.

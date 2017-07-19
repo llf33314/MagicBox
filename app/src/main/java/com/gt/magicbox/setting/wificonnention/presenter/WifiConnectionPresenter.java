@@ -1,4 +1,4 @@
-package com.gt.magicbox.wificonnention.presenter;
+package com.gt.magicbox.setting.wificonnention.presenter;
 
 import android.content.Context;
 import android.net.wifi.ScanResult;
@@ -6,14 +6,13 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.http.RxObservableUtils;
-import com.gt.magicbox.wificonnention.model.IWifiConnectiontModel;
-import com.gt.magicbox.wificonnention.model.WifiBean;
-import com.gt.magicbox.wificonnention.model.WifiConnectionModel;
-import com.gt.magicbox.wificonnention.view.IWifiConectionView;
+import com.gt.magicbox.setting.wificonnention.model.IWifiConnectiontModel;
+import com.gt.magicbox.setting.wificonnention.model.WifiBean;
+import com.gt.magicbox.setting.wificonnention.model.WifiConnectionModel;
+import com.gt.magicbox.setting.wificonnention.view.IWifiConectionView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +26,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Function;
 
 /**

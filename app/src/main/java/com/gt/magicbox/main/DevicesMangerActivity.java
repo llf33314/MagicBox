@@ -1,5 +1,6 @@
 package com.gt.magicbox.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -8,6 +9,8 @@ import android.widget.GridView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.setting.DeviceInfoActivity;
+import com.gt.magicbox.setting.VolumeSettingActivity;
 
 import java.util.ArrayList;
 
@@ -42,7 +45,16 @@ public class DevicesMangerActivity extends BaseActivity {
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent;
                 switch (i) {
+                    case 0:
+                        intent=new Intent(DevicesMangerActivity.this, VolumeSettingActivity.class);
+                        startActivity(intent);
+                            break;
+                    case 1:
+                        intent=new Intent(DevicesMangerActivity.this, DeviceInfoActivity.class);
+                        startActivity(intent);
+                        break;
                 }
             }
         });

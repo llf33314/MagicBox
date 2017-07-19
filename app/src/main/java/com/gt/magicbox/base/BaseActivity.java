@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by wzb on 2017/7/14 0014.
  */
@@ -41,7 +43,7 @@ public  class BaseActivity extends RxAppCompatActivity {
         //空出边距给toolbar
         FrameLayout.LayoutParams lp= (FrameLayout.LayoutParams) activityView.getLayoutParams();
         lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.toolbar_height),0,0);
-
+        ButterKnife.bind(this);
     }
 
     @CallSuper
@@ -51,10 +53,13 @@ public  class BaseActivity extends RxAppCompatActivity {
         viewGroup.addView(view);
         FrameLayout.LayoutParams lp= (FrameLayout.LayoutParams) view.getLayoutParams();
         lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.toolbar_height),0,0);
-
+        ButterKnife.bind(this);
     }
     public void setToolBarTitle(String title){
         toolBarTitle.setText(title);
+    }
+    public void goneToolBar(){
+        mToolbar.setVisibility(View.GONE);
     }
 
 }

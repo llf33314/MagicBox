@@ -1,6 +1,5 @@
-package com.gt.magicbox.wificonnention.model;
+package com.gt.magicbox.setting.wificonnention.model;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.ScanResult;
 

@@ -1,6 +1,5 @@
 package com.gt.magicbox.main;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,7 +9,7 @@ import android.widget.GridView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
-import com.gt.magicbox.wificonnention.WifiConnectionActivity;
+import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 
 import java.util.ArrayList;
 
