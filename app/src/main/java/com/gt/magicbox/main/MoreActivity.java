@@ -48,12 +48,12 @@ public class MoreActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent;
                 switch (i) {
-                    case 2:
-                        intent=new Intent(MoreActivity.this,DevicesMangerActivity.class);
+                    case 1:
+                        intent=new Intent(MoreActivity.this,WifiConnectionActivity.class);
                         startActivity(intent);
                         break;
-                    case 3:
-                        intent=new Intent(MoreActivity.this,WifiConnectionActivity.class);
+                    case 2:
+                        intent=new Intent(MoreActivity.this,DevicesMangerActivity.class);
                         startActivity(intent);
                         break;
                 }
