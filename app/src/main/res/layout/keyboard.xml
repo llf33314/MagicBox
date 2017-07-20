@@ -12,11 +12,11 @@
         android:orientation="horizontal">
 
         <GridView
-            android:focusable="true"
             android:id="@+id/grid_keyboard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
+            android:focusable="true"
             android:horizontalSpacing="1px"
             android:numColumns="3"
             android:verticalSpacing="1px" />
@@ -53,15 +53,86 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/showNumber"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@id/input"
-        android:layout_margin="5dp"
-        android:gravity="right"
-        android:singleLine="true"
-        android:text=""
-        android:textColor="@color/white"
-        android:textSize="34dp" />
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:visibility="invisible"
+            android:id="@+id/chargeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/gray">
+
+            <TextView
+                android:id="@+id/text_should_paid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/should_paid"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dp"
+                android:text="@string/charge"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/should_pay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="right"
+                android:singleLine="true"
+                android:text="116"
+                android:textColor="@color/black"
+                android:textSize="28dp" />
+
+            <TextView
+                android:id="@+id/charge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="5dp"
+                android:gravity="right"
+                android:singleLine="true"
+                android:text="22"
+                android:textColor="@color/black"
+                android:textSize="20dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/showNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="5dp"
+                android:gravity="right"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="34dp" />
+
+            <TextView
+                android:visibility="invisible"
+                android:id="@+id/text_paid_in_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/paid_in_amount"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+    </LinearLayout>
 </RelativeLayout>

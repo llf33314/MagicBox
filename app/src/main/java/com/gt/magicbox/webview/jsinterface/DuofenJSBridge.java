@@ -1,9 +1,14 @@
 package com.gt.magicbox.webview.jsinterface;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
+import com.gt.magicbox.pay.ChosePayModeActivity;
+import com.gt.magicbox.pay.PayResultActivity;
+import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.webview.WebViewActivity;
 import com.gt.magicbox.webview.service.UUIDService;
 import com.gt.magicbox.webview.util.PromptUtils;
@@ -53,7 +58,7 @@ public class DuofenJSBridge {
         if ("1".equals(unqiueStatus)){
             ((WebViewActivity) context).reloadSocket();
         }
-        String json = "{'uuid':'" + unqiueId +"','status':'" + unqiueStatus + "'}";
+        String json = "{'uuid':'" + 123456 +"','status':'" + unqiueStatus + "'}";
         Log.d(TAG, "getUniqueUuId" + json);
         return json;
     }
@@ -98,6 +103,28 @@ public class DuofenJSBridge {
             return false;
         }
         return flag;
+    }
+    /**
+     * 重新选择支付方式
+     */
+    @JavascriptInterface
+    public void reselection(){
+        ((WebViewActivity) context).finish();
+
+    }
+    @JavascriptInterface
+    public void payResult(boolean success,String message){
+        if (success) {
+            Intent intent=new Intent(context, PayResultActivity.class);
+            intent.putExtra("success",success);
+            intent.putExtra("message",message);
+            context.startActivity(intent);
+
+            AppManager.getInstance().finishActivity(WebViewActivity.class);
+            AppManager.getInstance().finishActivity(PaymentActivity.class);
+            AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
+        }
+
     }
 
     /**

@@ -48,7 +48,7 @@ public class WebViewActivity extends BaseActivity{
     private ProgressBar bar;
     public final static int WEB_TYPE_PAY=0;
     public final static int WEB_TYPE_ORDER=1;
-
+    private int webType;
     private Socket mSocket; // socket
 
     {
@@ -78,6 +78,8 @@ public class WebViewActivity extends BaseActivity{
         // 获取组件
         web = (WebView) findViewById(R.id.web);
         bar = (ProgressBar) findViewById(R.id.bar);
+        initSocket();
+
         //其他初始化
         initUUID();
         // webView初始化事件
@@ -115,7 +117,7 @@ public class WebViewActivity extends BaseActivity{
     }
     private void combineURL() {
         if (this.getIntent() != null) {
-            int webType = this.getIntent().getIntExtra("webType", 0);
+            webType = this.getIntent().getIntExtra("webType", 0);
             switch (webType) {
                 case WEB_TYPE_PAY:
                     double money = this.getIntent().getDoubleExtra("money", 0);
@@ -163,7 +165,11 @@ public class WebViewActivity extends BaseActivity{
         disSocket();
         initSocket();
     }
-
+    public void finishWebview(){
+        if (ObjectUtils.isNotEmpty(web))
+            web.destroy();
+        finish();
+    }
     /**
      * 扫码
      * 调用zbar
@@ -200,26 +206,24 @@ public class WebViewActivity extends BaseActivity{
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d(TAG, "keyCode --> " + keyCode);
         /** 按下键盘上返回按钮 */
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (webViewGoBack()) {
-                return false;
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            if (webType == WebViewActivity.WEB_TYPE_PAY) {
+                new AlertDialog.Builder(this)
+                        .setTitle("提示")
+                        .setMessage("确定要退出支付吗？")
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int whichButton) {
+                                finishWebview();
+                            }
+                        }).show();
+            }else {
+                finishWebview();
             }
-            new AlertDialog.Builder(this)
-                    .setTitle("提示")
-                    .setMessage("确定要退出吗？")
-                    .setNegativeButton("取消", null)
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,
-                                            int whichButton) {
-                            if (ObjectUtils.isNotEmpty(web))
-                                web.destroy();
-                            finish();
-                        }
-                    }).show();
             return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     /**
@@ -243,6 +247,7 @@ public class WebViewActivity extends BaseActivity{
             public void onPageFinished(WebView view, String url) {
                 addViewPage();
                 nowUrl = url;
+               // scanCode();
                 super.onPageFinished(view, url);
             }
         });

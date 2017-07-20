@@ -55,6 +55,9 @@
             android:name=".pay.ChosePayModeActivity"
             android:launchMode="singleTask" />
         <activity
+            android:name=".pay.PayResultActivity"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".webview.WebViewActivity"
             android:launchMode="singleTask" />
         <activity

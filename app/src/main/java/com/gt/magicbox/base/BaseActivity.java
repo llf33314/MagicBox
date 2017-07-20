@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import butterknife.ButterKnife;
@@ -32,6 +33,7 @@ public  class BaseActivity extends RxAppCompatActivity {
         mToolbar= (Toolbar) findViewById(R.id.toolbar);
         toolBarTitle= (TextView) findViewById(R.id.toolbar_title);
         setSupportActionBar(mToolbar);
+        AppManager.getInstance().addActivity(this);
     }
 
     @CallSuper

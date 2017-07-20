@@ -36,7 +36,9 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private StringBuffer numberString = new StringBuffer();
     private OnKeyboardDoListener onKeyboardDoListener;
     private int maxLength = 15;
-
+    private int keyboardType;
+    public static final int TYPE_INPUT_MONEY=0;
+    public static final int TYPE_CHARGE=1;
     public KeyboardView(Context context) {
         this(context, null);
     }
@@ -125,10 +127,17 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     }
     private void showMoney(){
         SpannableStringBuilder spannableString = new SpannableStringBuilder();
-        spannableString.append("¥ "+numberString);
-        AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(ConvertUtils.dp2px(20));
-        spannableString.setSpan(absoluteSizeSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        if (numberString.length()!=0) {
+            spannableString.append("¥ " + numberString);
+            AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(ConvertUtils.dp2px(20));
+            spannableString.setSpan(absoluteSizeSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        }
         showNumber.setText(spannableString);
 
     }
+
+    public void setKeyboardType(int keyboardType) {
+        this.keyboardType = keyboardType;
+    }
+
 }

@@ -9,6 +9,9 @@ public class HttpConfig {
     public static final int NOT_TOKEN=-1;
     //public static final String BASE_URL="http://192.168.3.44:8080/magicBoxMobile/";
     public static final String BASE_URL="http://hz1.yifriend.net/magicBoxMobile/";
+ //   public static final String BASE_URL="http:/192.168.3.44:8080/magicBoxMobile/";
+
+
     public static final String SOCKET_SERVER_URL = "http://14.29.79.226:8881";
     // socket auth 链接socket时的key值
     public static final String SOCKET_ANDROID_AUTH = "androidAuth";

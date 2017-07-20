@@ -9,5 +9,12 @@
     <string name="zfb">支付宝</string>
     <string name="wechat">微信</string>
     <string name="cash">现金</string>
+    <string name="paid_in_amount">实收金额:</string>
+    <string name="should_paid">应收金额:</string>
+    <string name="charge">找零:</string>
+    <string name="print_receipt">打印小票</string>
+    <string name="confirm">确认</string>
+    <string name="pay_success">支付成功</string>
+    <string name="cash_success">收银成功</string>
 
 </resources>
