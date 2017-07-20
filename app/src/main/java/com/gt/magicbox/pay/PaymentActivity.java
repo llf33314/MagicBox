@@ -21,6 +21,9 @@ import com.gt.magicbox.main.MainActivity;
 public class PaymentActivity extends BaseActivity {
     private GridView gridView;
     private KeyboardView keyboardView;
+    private int type=0;
+    public static final int TYPE_INPUT=0;
+    public static final int TYPE_CALC=1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

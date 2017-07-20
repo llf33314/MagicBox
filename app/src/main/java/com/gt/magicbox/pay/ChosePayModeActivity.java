@@ -44,11 +44,17 @@ public class ChosePayModeActivity extends BaseActivity {
                 startERCodePay(0);
                 break;
             case R.id.pay_zfb:
-                startERCodePay(1);
+                test();
                 break;
             case R.id.pay_cash:
                 break;
         }
+    }
+    private void test(){
+        Intent intent=new Intent(ChosePayModeActivity.this, PayResultActivity.class);
+        intent.putExtra("success",true);
+        intent.putExtra("message",""+money);
+        startActivity(intent);
     }
     private void startERCodePay(int type){
         Intent intent=new Intent(ChosePayModeActivity.this, WebViewActivity.class);

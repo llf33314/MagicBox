@@ -50,7 +50,7 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".pay.PaymentActivity"
-            android:launchMode="singleTask" />
+             />
         <activity
             android:name=".pay.ChosePayModeActivity"
             android:launchMode="singleTask" />

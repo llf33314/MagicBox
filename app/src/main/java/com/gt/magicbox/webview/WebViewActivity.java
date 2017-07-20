@@ -75,6 +75,9 @@ public class WebViewActivity extends BaseActivity{
         }
         setContentView(R.layout.activity_webview);
         combineURL();
+        if (webType==WEB_TYPE_PAY){
+            setToolBarTitle("");
+        }
         // 获取组件
         web = (WebView) findViewById(R.id.web);
         bar = (ProgressBar) findViewById(R.id.bar);

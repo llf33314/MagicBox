@@ -42,7 +42,6 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     public KeyboardView(Context context) {
         this(context, null);
     }
-
     public KeyboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;

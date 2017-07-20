@@ -2,9 +2,20 @@ package com.gt.magicbox.pay;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.AbsoluteSizeSpan;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.utils.commonutil.ConvertUtils;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Description:
@@ -12,9 +23,46 @@ import com.gt.magicbox.base.BaseActivity;
  */
 
 public class PayResultActivity extends BaseActivity {
+    @BindView(R.id.text_pay_success)
+    TextView textPaySuccess;
+    @BindView(R.id.payNumber)
+    TextView payNumber;
+    @BindView(R.id.confirmButton)
+    Button confirmButton;
+    @BindView(R.id.printButton)
+    Button printButton;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay_result);
+        setToolBarTitle("");
+        initView();
+    }
+    private void initView(){
+        if (this.getIntent()!=null){
+            boolean success=getIntent().getBooleanExtra("success",true);
+            String message=getIntent().getStringExtra("message");
+            showMoney(message);
+        }
+    }
+    @OnClick({R.id.confirmButton, R.id.printButton})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.confirmButton:
+                break;
+            case R.id.printButton:
+                break;
+        }
+    }
+    private void showMoney(String numberString){
+        SpannableStringBuilder spannableString = new SpannableStringBuilder();
+        if (numberString.length()!=0) {
+            spannableString.append("¥ " + numberString);
+            AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(ConvertUtils.dp2px(35));
+            spannableString.setSpan(absoluteSizeSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        }
+        payNumber.setText(spannableString);
+
     }
 }
