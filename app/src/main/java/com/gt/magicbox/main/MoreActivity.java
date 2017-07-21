@@ -9,6 +9,7 @@ import android.widget.GridView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.setting.printersetting.PrinterSettingActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 
 import java.util.ArrayList;
@@ -47,6 +48,10 @@ public class MoreActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent;
                 switch (i) {
+                    case 0:
+                        intent=new Intent(MoreActivity.this,PrinterSettingActivity.class);
+                        startActivity(intent);
+                        break;
                     case 1:
                         intent=new Intent(MoreActivity.this,WifiConnectionActivity.class);
                         startActivity(intent);

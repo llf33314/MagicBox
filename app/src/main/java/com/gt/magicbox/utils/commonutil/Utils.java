@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.gt.magicbox.base.MyApplication;
+
 /**
  * <pre>
  *     author: Blankj
@@ -36,7 +38,9 @@ public final class Utils {
      * @return ApplicationContext
      */
     public static Context getContext() {
-        if (context != null) return context;
-        throw new NullPointerException("u should init first");
+        context= MyApplication.getAppContext();
+        return context;
+       /* if (context != null) return context;
+        throw new NullPointerException("u should init first");*/
     }
 }
