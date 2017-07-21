@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ParcelUuid;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.OnRecyclerViewItemClickListener;
+import com.gt.magicbox.utils.commonutil.BluetoothUtil;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import java.io.IOException;
@@ -55,6 +57,7 @@ public class BluetoothSettingActivity extends BaseActivity {
 
     @BindView(R.id.bluetooth_scan_pb)
     ProgressBar scanProgressBar;
+    public static final String PIN="0000";
 
     BluetoothAdapter mBluetoothAdapter;
 
@@ -71,6 +74,8 @@ public class BluetoothSettingActivity extends BaseActivity {
     private final int REFRESH_BOND=1000;
 
     private final int REFRESH_BOND_SCAN=1001;
+
+    private final int CONNECTIONED=1002;
 
     //android 固定的
     private final UUID MY_UUID=UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -96,6 +101,13 @@ public class BluetoothSettingActivity extends BaseActivity {
                     btnScanBluetooth.performClick();
                     rvBluetoothBonded.requestLayout();
                     break;
+                case CONNECTIONED:
+                    refreshBonded();
+                    rvBluetoothBonded.requestLayout();
+                   // scanResultAdapter.removeDevice((BluetoothDevice) msg.obj);
+                    btnScanBluetooth.performClick();
+                    break;
+
             }
 
         }
@@ -217,15 +229,22 @@ public class BluetoothSettingActivity extends BaseActivity {
         public void run() {
             //未知原因connect报异常
             try {
-                mBluetoothSocket=device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
-                mBluetoothSocket.connect();
-                sendRefreshUi(device);
+                //device.getType();手机是1  打印机是3
+                if (device.getType()==1){
+                    mBluetoothSocket=device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+                     mBluetoothSocket.connect();
+                }else{
+                    BluetoothUtil.createBond(BluetoothDevice.class,device);
+                  //  boolean ret = BluetoothUtil.setPin(BluetoothDevice.class, device, PIN);
+                }
+               //ToastUtil.getInstance().showToast("ret:"+ret+"\n"+device.getType()+"\n"+ device.getUuids());
+               // sendRefreshUi(device);
             } catch (IOException connectException) {
                 //处理连接建立失败的异常
                 try {
                     mBluetoothSocket= (BluetoothSocket) device.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(device,1);
                     mBluetoothSocket.connect();
-                    sendRefreshUi(device);
+                  //  sendRefreshUi(device);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (InvocationTargetException e) {
@@ -233,11 +252,13 @@ public class BluetoothSettingActivity extends BaseActivity {
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
                 }  catch (IOException e) {
-                    sendRefreshUi(device);
+                  //  sendRefreshUi(device);
                     e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-          //  doSomething(mmSocket);
+            //  doSomething(mmSocket);
         }
 
         /*//关闭一个正在进行的连接
@@ -253,6 +274,9 @@ public class BluetoothSettingActivity extends BaseActivity {
         super.onDestroy();
         if (mFindBlueToothReceiver!=null){
             this.unregisterReceiver(mFindBlueToothReceiver);
+        }
+        if (mBluetoothAdapter.isDiscovering()){
+            mBluetoothAdapter.cancelDiscovery();
         }
     }
 
@@ -279,6 +303,10 @@ public class BluetoothSettingActivity extends BaseActivity {
             filter= new IntentFilter();
             filter.addAction(BluetoothDevice.ACTION_FOUND);
             filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+            filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+            filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+
+
             this.registerReceiver(mFindBlueToothReceiver, filter);
         }else{
             scanResultAdapter.clearItem();
@@ -305,14 +333,17 @@ public class BluetoothSettingActivity extends BaseActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // If it's already paired, skip it, because it's been listed
                 // already
-                if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
+                if (device.getBondState() != BluetoothDevice.BOND_BONDED&&device.getBondState()!=BluetoothDevice.BOND_BONDING) {
                     scanResultAdapter.addItem(device);
                 }
                 // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 scanProgressBar.setVisibility(View.INVISIBLE);
               ToastUtil.getInstance().showToast("扫描完成");
+            }else if ( BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)||
+                BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)){
+                refreshBondedHandler.sendEmptyMessage(CONNECTIONED);
             }
         }
-    };
+    }
 }

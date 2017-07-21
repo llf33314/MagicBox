@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 
 import butterknife.BindView;
@@ -32,6 +33,7 @@ public class PayResultActivity extends BaseActivity {
     @BindView(R.id.printButton)
     Button printButton;
 
+    String message;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +44,7 @@ public class PayResultActivity extends BaseActivity {
     private void initView(){
         if (this.getIntent()!=null){
             boolean success=getIntent().getBooleanExtra("success",true);
-            String message=getIntent().getStringExtra("message");
+             message=getIntent().getStringExtra("message");
             showMoney(message);
         }
     }
@@ -52,6 +54,7 @@ public class PayResultActivity extends BaseActivity {
             case R.id.confirmButton:
                 break;
             case R.id.printButton:
+                RxBus.get().post(message);
                 break;
         }
     }

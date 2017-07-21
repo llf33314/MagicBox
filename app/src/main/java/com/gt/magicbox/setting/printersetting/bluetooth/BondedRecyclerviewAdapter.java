@@ -62,6 +62,11 @@ public class BondedRecyclerviewAdapter extends RecyclerView.Adapter<BondedRecycl
     }
 
     public void addItem(BluetoothDevice device){
+        for (BluetoothDevice d:devices){//去除重复的蓝牙
+            if (d.getAddress().equals(device.getAddress())){
+                return;
+            }
+        }
         this.devices.add(device);
         notifyItemInserted(devices.size());
     }
@@ -72,7 +77,7 @@ public class BondedRecyclerviewAdapter extends RecyclerView.Adapter<BondedRecycl
     }
     public void removeDevice(BluetoothDevice device){
         for (int i=0;i<devices.size();i++){
-           if(device.getName().equals(devices.get(i).getName())) {
+           if(device.getAddress().equals(devices.get(i).getAddress())) {
                notifyItemRemoved(i);
             }
             break;
