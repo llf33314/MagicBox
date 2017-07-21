@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.base.OnRecyclerViewItemClickListener;
 import com.gt.magicbox.setting.wificonnention.model.WifiBean;
 
 import java.util.ArrayList;
@@ -38,11 +39,7 @@ public class WifiRecyclerViewAdapter extends RecyclerView.Adapter<WifiRecyclerVi
         return false;
     }
 
-    //自定义监听事件
-    public static interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view);
-        void onItemLongClick(View view);
-    }
+
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;
 
     public void setOnItemClickListener(OnRecyclerViewItemClickListener listener) {

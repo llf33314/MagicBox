@@ -16,6 +16,8 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
     <application
         android:allowBackup="true"
@@ -71,6 +73,10 @@
         android:name=".setting.DeviceInfoActivity" />
         <activity
             android:name=".setting.VolumeSettingActivity" />
+        <activity
+            android:name=".setting.printersetting.PrinterSettingActivity" />
+        <activity
+            android:name=".setting.printersetting.bluetooth.BluetoothSettingActivity" />
     </application>
 
 

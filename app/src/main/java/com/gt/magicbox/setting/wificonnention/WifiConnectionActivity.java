@@ -14,6 +14,7 @@ import android.widget.Button;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.OnRecyclerViewItemClickListener;
 import com.gt.magicbox.setting.wificonnention.model.WifiBean;
 import com.gt.magicbox.setting.wificonnention.presenter.WifiConnectionPresenter;
 import com.gt.magicbox.setting.wificonnention.view.IWifiConectionView;
@@ -40,7 +41,7 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
     JoinWifiDialog dialog;
 
     private WifiRecyclerViewAdapter rvAdapter;
-    private WifiRecyclerViewAdapter.OnRecyclerViewItemClickListener rvListener;
+    private OnRecyclerViewItemClickListener rvListener;
 
     private ConnectionChangeBroadCast broadCast;
 
@@ -74,10 +75,10 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
     public void showScanWifi(List<WifiBean> wifiList) {
         rvWifiResult.setAdapter(rvAdapter=new WifiRecyclerViewAdapter(wifiList));
         if (rvListener==null){
-            rvListener=new WifiRecyclerViewAdapter.OnRecyclerViewItemClickListener() {
+            rvListener=new OnRecyclerViewItemClickListener() {
                 @Override
                 public void onItemClick(View view) {
-                    int position=rvWifiResult.getChildPosition(view);
+                    int position=rvWifiResult.getChildLayoutPosition(view);
                     WifiBean bean =presenter.getWifiBeanFormPosition(position);
                     if (bean!=null){
                         if (bean.getLockType()==0){//无加锁 wifi
