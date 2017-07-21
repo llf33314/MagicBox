@@ -23,4 +23,12 @@
     <color name="viewfinder_mask">#60000000</color>
     <color name="possible_result_points">#c0ffff00</color>
     <color name="main_bg">#2C3941</color>
+    <color name="green_wechat">#7FC750</color>
+    <color name="green_wechat_select">#997FC750</color>
+    <color name="blue_zfb">#3FB4FF</color>
+    <color name="blue_zfb_select">#993FB4FF</color>
+    <color name="yellow_cash">#FFD05A</color>
+    <color name="yellow_cash_select">#99FFD05A</color>
+
+
 </resources>
