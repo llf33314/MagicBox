@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
@@ -28,14 +29,6 @@ public class KeyboardAdapter extends BaseAdapter {
     private int count = 3 * 4;
     private int itemHeight;
     private int displayAreaHeight;
-    private Integer[] itemNormalRes = {R.drawable.keyboard_1, R.drawable.keyboard_2, R.drawable.keyboard_3
-            , R.drawable.keyboard_4, R.drawable.keyboard_5, R.drawable.keyboard_6
-            , R.drawable.keyboard_7, R.drawable.keyboard_8, R.drawable.keyboard_9
-            , R.drawable.keyboard_00, R.drawable.keyboard_0, R.drawable.keyboard_dot};
-    private Integer[] itemPressedRes = {R.drawable.keyboard_1_pressed, R.drawable.keyboard_2_pressed, R.drawable.keyboard_3_pressed
-            , R.drawable.keyboard_4_pressed, R.drawable.keyboard_5_pressed, R.drawable.keyboard_6_pressed
-            , R.drawable.keyboard_7_pressed, R.drawable.keyboard_8_pressed, R.drawable.keyboard_9_pressed
-            , R.drawable.keyboard_00_pressed, R.drawable.keyboard_0_pressed, R.drawable.keyboard_dot_pressed};
 
     public KeyboardAdapter(Context context) {
         this.mContext = context;
@@ -74,8 +67,17 @@ public class KeyboardAdapter extends BaseAdapter {
         } else {
             convertView = (View) convertView.getTag();
         }
-        convertView.setBackgroundDrawable(DrawableUtils.addImageStateDrawable(itemNormalRes[position]
-                , itemPressedRes[position], itemPressedRes[position]));
+        if (position <= 8) {
+            ((TextView)convertView).setText("" + (position + 1));
+        } else if (position == 9) {
+            ((TextView)convertView).setText("00");
+        } else if (position == 10) {
+            ((TextView)convertView).setText("0");
+        } else if (position == 11) {
+            ((TextView)convertView).setText("·");
+        }
+//        convertView.setBackgroundDrawable(DrawableUtils.addImageStateDrawable(itemNormalRes[position]
+//                , itemPressedRes[position], itemPressedRes[position]));
         return convertView;
     }
 

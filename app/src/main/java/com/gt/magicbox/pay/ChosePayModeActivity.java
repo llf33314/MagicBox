@@ -44,18 +44,20 @@ public class ChosePayModeActivity extends BaseActivity {
                 startERCodePay(0);
                 break;
             case R.id.pay_zfb:
-                test();
+                startERCodePay(1);
                 break;
             case R.id.pay_cash:
+                Intent intent=new Intent(ChosePayModeActivity.this,PaymentActivity.class);
+                intent.putExtra("type",1);
+                intent.putExtra("orderMoney",money);
+                startActivity(intent);
                 break;
         }
     }
-    private void test(){
-        Intent intent=new Intent(ChosePayModeActivity.this, PayResultActivity.class);
-        intent.putExtra("success",true);
-        intent.putExtra("message",""+money);
-        startActivity(intent);
-    }
+
+    /**
+     * @param type 0-微信，1-支付宝
+     */
     private void startERCodePay(int type){
         Intent intent=new Intent(ChosePayModeActivity.this, WebViewActivity.class);
         intent.putExtra("webType",WebViewActivity.WEB_TYPE_PAY);

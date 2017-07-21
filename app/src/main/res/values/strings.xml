@@ -16,5 +16,8 @@
     <string name="confirm">确认</string>
     <string name="pay_success">支付成功</string>
     <string name="cash_success">收银成功</string>
+    <string name="clear">清空</string>
+    <string name="delete">删除</string>
+    <string name="collect">收银</string>
 
 </resources>

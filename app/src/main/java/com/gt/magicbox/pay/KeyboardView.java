@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.utils.SpannableStringUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 
 /**
@@ -35,13 +36,23 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private TextView showNumber;
     private StringBuffer numberString = new StringBuffer();
     private OnKeyboardDoListener onKeyboardDoListener;
+    private RelativeLayout chargeLayout;
+    private TextView should_pay;
+    private TextView charge;
+    private TextView text_paid_in_amount;
     private int maxLength = 15;
-    private int keyboardType;
-    public static final int TYPE_INPUT_MONEY=0;
-    public static final int TYPE_CHARGE=1;
+    private int keyboardType = 0;
+    private double chargeMoney;
+    private double realPay;
+
+    private double orderMoney;
+    public static final int TYPE_INPUT_MONEY = 0;
+    public static final int TYPE_CHARGE = 1;
+
     public KeyboardView(Context context) {
         this(context, null);
     }
+
     public KeyboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
@@ -51,6 +62,11 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         delete = (Button) view.findViewById(R.id.keyboard_delete);
         pay = (Button) view.findViewById(R.id.keyboard_pay);
         showNumber = (TextView) view.findViewById(R.id.showNumber);
+        should_pay = (TextView) view.findViewById(R.id.should_pay);
+        charge = (TextView) view.findViewById(R.id.charge);
+        text_paid_in_amount = (TextView) view.findViewById(R.id.text_paid_in_amount);
+        chargeLayout = (RelativeLayout) view.findViewById(R.id.chargeLayout);
+
         clear.setOnClickListener(this);
         delete.setOnClickListener(this);
         pay.setOnClickListener(this);
@@ -83,6 +99,8 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             case R.id.keyboard_clear:
                 numberString.setLength(0);
                 showMoney();
+                charge.setText("");
+                showNumber.setText("");
                 break;
             case R.id.keyboard_delete:
                 if (numberString.length() > 0) {
@@ -92,11 +110,17 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                 break;
             case R.id.keyboard_pay:
                 if (onKeyboardDoListener != null) {
-                    if (!TextUtils.isEmpty(numberString)) {
-                        double money = Double.parseDouble(numberString.toString());
-                        if (money != 0) {
-                            onKeyboardDoListener.onPay(money);
+                    if (keyboardType == TYPE_INPUT_MONEY) {
+                        if (!TextUtils.isEmpty(numberString)) {
+                            double money = Double.parseDouble(numberString.toString());
+                            if (money != 0) {
+                                onKeyboardDoListener.onPay(money);
+                            }
                         }
+                    } else if (keyboardType == TYPE_CHARGE) {
+                    if (chargeMoney>=0&&realPay>0){
+                        onKeyboardDoListener.onPay(orderMoney);
+                    }
                     }
                 }
                 break;
@@ -124,19 +148,33 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             showMoney();
         }
     }
-    private void showMoney(){
-        SpannableStringBuilder spannableString = new SpannableStringBuilder();
-        if (numberString.length()!=0) {
-            spannableString.append("¥ " + numberString);
-            AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(ConvertUtils.dp2px(20));
-            spannableString.setSpan(absoluteSizeSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+
+    private void showMoney() {
+        if (numberString.length() != 0) {
+            if (keyboardType == TYPE_CHARGE) {
+                realPay = Double.parseDouble(numberString.toString());
+                chargeMoney = realPay - orderMoney;
+                if (chargeMoney >= 0) {
+                    charge.setText(SpannableStringUtils.diffTextSize("¥ " + chargeMoney, 16, 0, 1));
+                } else charge.setText("");
+            }
         }
-        showNumber.setText(spannableString);
+        showNumber.setText(SpannableStringUtils.diffTextSize("¥ " + numberString, 20, 0, 1));
 
     }
 
     public void setKeyboardType(int keyboardType) {
         this.keyboardType = keyboardType;
+        if (keyboardType == TYPE_CHARGE) {
+            chargeLayout.setVisibility(VISIBLE);
+            text_paid_in_amount.setVisibility(VISIBLE);
+            should_pay.setText(SpannableStringUtils.diffTextSize("¥ " + orderMoney, 14, 0, 1));
+            pay.setText("确认");
+        }
+    }
+
+    public void setOrderMoney(double orderMoney) {
+        this.orderMoney = orderMoney;
     }
 
 }

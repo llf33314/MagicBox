@@ -54,6 +54,7 @@ public class MainActivity extends BaseActivity {
                 switch (i) {
                     case 0:
                         intent = new Intent(MainActivity.this, PaymentActivity.class);
+                        intent.putExtra("type",0);
                         startActivity(intent);
                         break;
                     case 1:
