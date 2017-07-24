@@ -116,6 +116,7 @@
         </service>
 
         <service android:name=".setting.printersetting.PrinterConnectSerivce"/>
+        <service android:name="com.service.OrderPushService"/>
     </application>
 
 
