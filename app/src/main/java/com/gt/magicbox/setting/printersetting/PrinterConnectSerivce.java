@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.Log;
@@ -26,10 +27,13 @@ import com.gprinter.io.PortParameters;
 import com.gprinter.service.GpPrintService;
 import com.gt.magicbox.R;
 import com.gt.magicbox.main.PrintTestActivity;
+import com.gt.magicbox.setting.printersetting.bluetooth.OpenPrinterPortMsg;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.SimpleObserver;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +44,12 @@ import butterknife.OnClick;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by wzb on 2017/7/21 0021.
+ * 还需很多优化 USB等
  */
 
 public class PrinterConnectSerivce extends Service {
@@ -64,36 +71,58 @@ public class PrinterConnectSerivce extends Service {
         super.onCreate();
         mBluetoothAdapter =BluetoothAdapter.getDefaultAdapter();
         //  mBluetoothAdapter.getProfileProxy()
-        connection();
-        RxBus.get().toObservable(String.class).subscribe(new Observer<String>() {
+
+        //打印
+        RxBus.get().toObservable(String.class).subscribe(new SimpleObserver<String>(new Consumer<String>() {
             @Override
-            public void onSubscribe(@NonNull Disposable d) {
-
+            public void accept(@NonNull String money) throws Exception {
+              /* String printerStatus= getPrinterStatusClicked();
+                if (!"打印机正常".equals(printerStatus)){
+                    ToastUtil.getInstance().showToast(printerStatus,3000);
+                    return;
+                }*/
+                printReceiptClicked(money);
             }
+        }));
 
+        RxBus.get().toObservable(OpenPrinterPortMsg.class).subscribe(new SimpleObserver<OpenPrinterPortMsg>(new Consumer<OpenPrinterPortMsg>() {
             @Override
-            public void onNext(@NonNull String s) {
-                printReceiptClicked(s);
+            public void accept(@NonNull OpenPrinterPortMsg openPrinterPortMsg) throws Exception {
+                switch (openPrinterPortMsg.getBluetoothState()){
+                    case OpenPrinterPortMsg.CLOSE_PROT:
+                        closeProt();
+                        break;
+                    case OpenPrinterPortMsg.OPEN_PROT:
+                        openProt();
+                        break;
+                }
             }
+        }));
 
-            @Override
-            public void onError(@NonNull Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-     //   registerBoothCloseBroadcast();
+        registerBoothCloseBroadcast();
 
         // getPrinterStatusClicked();
     }
+
+    @Override
+    public int onStartCommand(Intent intent,int flags, int startId) {
+        connection();
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     private void connection() {
         conn = new PrinterServiceConnection();
         Intent intent = new Intent(this, GpPrintService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE); // bindService
+    }
+
+
+    public void closeProt(){
+        try {
+            mGpService.closePort(mPrinterIndex);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -111,13 +140,13 @@ public class PrinterConnectSerivce extends Service {
             }
         }
         if (printDevice==null){
-            ToastUtil.getInstance().showToast("未连接蓝牙打印机");
+            ToastUtil.getInstance().showToast("端口打开失败，请确认蓝牙是否已连接，或重启应用");
             return;
         }
         try {
             int rel = mGpService.openPort(mPrinterIndex, PortParameters.BLUETOOTH ,printDevice.getAddress(),0);
             GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
-            ToastUtil.getInstance().showToast("result :" + String.valueOf(r));
+            //ToastUtil.getInstance().showToast("result :" + String.valueOf(r));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -190,10 +219,11 @@ public class PrinterConnectSerivce extends Service {
     /**
      * 打印机状态
      */
-    public void getPrinterStatusClicked() {
+    public String getPrinterStatusClicked() {
+        String str = "";
         try {
             int status = mGpService.queryPrinterStatus(mPrinterIndex, 500);
-            String str = "";
+
             if (status == GpCom.STATE_NO_ERR) {
                 str = "打印机正常";
             } else {
@@ -214,11 +244,13 @@ public class PrinterConnectSerivce extends Service {
                     str += "查询超时";
                 }
             }
-            ToastUtil.getInstance().showToast("打印机：" + mPrinterIndex + " 状态：" + str);
+           // ToastUtil.getInstance().showToast("打印机：" + mPrinterIndex + " 状态：" + str);
         } catch (RemoteException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
+            return "打印机状态未知错误";
         }
+        return str;
     }
 
     @Override
@@ -286,7 +318,7 @@ public class PrinterConnectSerivce extends Service {
         esc.addText("会员折扣：8.5\n");
         esc.addText("--------------------------------\n");
         esc.addText("开单时间：2017-07-21 14:23\n");
-        esc.addText("收银员：\n");
+        esc.addText("收银员：多粉\n");
         esc.addText("--------------------------------\n");
         esc.addText("联系电话：0752-3851585\n");
         esc.addText("地址：惠州市惠城区赛格假日广场1007室\n");
@@ -331,7 +363,7 @@ public class PrinterConnectSerivce extends Service {
             rel = mGpService.sendEscCommand(mPrinterIndex, str);
             GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
             if (r != GpCom.ERROR_CODE.SUCCESS) {
-                ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
+                    ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
             }
         } catch (RemoteException e) {
             // TODO Auto-generated catch block

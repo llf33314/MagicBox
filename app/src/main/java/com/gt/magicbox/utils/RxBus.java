@@ -3,7 +3,6 @@ package com.gt.magicbox.utils;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
-
 /**
  * Created by wzb on 2017/7/21 0021.
  */

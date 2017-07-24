@@ -75,6 +75,22 @@ public class BondedRecyclerviewAdapter extends RecyclerView.Adapter<BondedRecycl
         notifyItemRangeRemoved(0,devices.size()>0?devices.size():0);
         this.devices.clear();
     }
+
+    public void updateStateStr(BluetoothDevice bluetoothDevice){
+        int position=-1;
+        for (int i=0;i<devices.size();i++){
+         if(devices.get(i).getAddress().equals(bluetoothDevice.getAddress())){
+             position=i;
+             devices.set(position,bluetoothDevice);
+             break;
+         }
+        }
+        if (position!=-1){
+            notifyItemChanged(position);
+        }
+
+    }
+
     public void removeDevice(BluetoothDevice device){
         for (int i=0;i<devices.size();i++){
            if(device.getAddress().equals(devices.get(i).getAddress())) {
@@ -82,7 +98,6 @@ public class BondedRecyclerviewAdapter extends RecyclerView.Adapter<BondedRecycl
             }
             break;
         }
-
     }
 
     public String getMacAddress(int position){

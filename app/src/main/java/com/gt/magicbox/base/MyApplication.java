@@ -12,13 +12,14 @@ import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
  */
 
 public class MyApplication extends Application {
+    private static Intent portIntent;
     private static Context applicationContext;
     @Override
     public void onCreate() {
         super.onCreate();
         applicationContext=getApplicationContext();
-        Intent intent=new Intent(this, PrinterConnectSerivce.class);
-        startService(intent);
+         portIntent=new Intent(this, PrinterConnectSerivce.class);
+        startService(portIntent);
     }
     public static Context getAppContext(){
         if (applicationContext==null){ //后台挂着 applicationContext被回收
@@ -28,7 +29,9 @@ public class MyApplication extends Application {
     }
 
     public static void appExit(){
+        getAppContext().stopService(portIntent);
         Process.killProcess(Process.myPid());
+
     }
 
 }

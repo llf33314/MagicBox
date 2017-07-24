@@ -197,9 +197,7 @@ public class JoinWifiDialog extends Dialog {
 
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull Boolean s) {
-                      //  presenter.scanWifi();
-                        //调试使用 不要弹出
-                        //ToastUtil.getInstance().showToast(s?"已连上"+wifiBean.getName():"连接"+wifiBean.getName()+"失败");
+
                     }
 
                     @Override
