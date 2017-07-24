@@ -45,7 +45,7 @@
             android:textSize="18sp"
             android:gravity="center"
             android:textColor="@color/theme_orange"
-            android:background="@drawable/btn_orange_borrer_and_white"
+            android:background="@drawable/btn_orange_border_and_white"
             />
         <Button
             android:id="@+id/join_wifi_join"

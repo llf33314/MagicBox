@@ -32,6 +32,7 @@ public class MainActivity extends BaseActivity {
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
+    private MoreFunctionDialog mMoreFunctionDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,11 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent;
                 switch (i) {
+                    case 2:
+                    case 3:
+                    case 4:
+                        showMoreDialog();
+                        break;
                     case 0:
                         intent = new Intent(MainActivity.this, PaymentActivity.class);
                         intent.putExtra("type",0);
@@ -81,6 +87,13 @@ public class MainActivity extends BaseActivity {
             item.setName(itemNameArray[i]);
             homeData.add(item);
         }
+    }
+
+    private void showMoreDialog(){
+        if (mMoreFunctionDialog==null){
+            mMoreFunctionDialog=new MoreFunctionDialog(this,R.style.HttpRequestDialogStyle);
+        }
+        mMoreFunctionDialog.show();
     }
 
     public void request(View view) {

@@ -96,7 +96,7 @@ public class JoinWifiDialog extends Dialog {
                 joinWifiPsd.setVisibility(View.GONE);
                 joinWifiCancel.setText("取消");
                 joinWifiCancel.setTextColor(getContext().getResources().getColor(R.color.theme_orange));
-                joinWifiCancel.setBackgroundResource(R.drawable.btn_orange_borrer_and_white);
+                joinWifiCancel.setBackgroundResource(R.drawable.btn_orange_border_and_white);
                 joinWifiJoin.setText("取消保存");
                 joinWifiJoin.setEnabled(true);
                 break;
@@ -112,7 +112,7 @@ public class JoinWifiDialog extends Dialog {
                 joinWifiPsd.setVisibility(View.VISIBLE);
                 joinWifiCancel.setText("取消");
                 joinWifiCancel.setTextColor(getContext().getResources().getColor(R.color.theme_orange));
-                joinWifiCancel.setBackgroundResource(R.drawable.btn_orange_borrer_and_white);
+                joinWifiCancel.setBackgroundResource(R.drawable.btn_orange_border_and_white);
                 joinWifiJoin.setEnabled(joinWifiPsd.getText().length()>=8);
                 joinWifiJoin.setText("确定");
                 break;

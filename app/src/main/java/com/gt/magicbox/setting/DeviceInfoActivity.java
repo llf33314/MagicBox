@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
 import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.CameraUtils;
 import com.gt.magicbox.utils.commonutil.DeviceUtils;
@@ -47,7 +48,7 @@ public class DeviceInfoActivity extends BaseActivity {
         tvDeviceType.setText(DeviceUtils.getModel());
         tvDeviceVersion.setText(AppUtils.getAppVersionName());
 
-        tvDevicePrinter.setText("后续获取");
+        tvDevicePrinter.setText(PrinterConnectSerivce.getPrinterStatus());
 
         tvDeviceCamera.setText(CameraUtils.hasBackFacingCamera()|CameraUtils.hasFrontFacingCamera()?"正常":"不能使用");
         tvDeviceNetwork.setText(NetworkUtils.isConnected()?"正常":"断开");

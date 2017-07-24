@@ -56,9 +56,9 @@ public class PrinterConnectSerivce extends Service {
 
     BluetoothAdapter mBluetoothAdapter ;
 
-    private GpService mGpService = null;
+    private static GpService mGpService = null;
     private PrinterServiceConnection conn = null;
-    private int mPrinterIndex = 0;
+    private static int mPrinterIndex = 0;
 
     @Nullable
     @Override
@@ -85,6 +85,7 @@ public class PrinterConnectSerivce extends Service {
             }
         }));
 
+        //打开、关闭端口
         RxBus.get().toObservable(OpenPrinterPortMsg.class).subscribe(new SimpleObserver<OpenPrinterPortMsg>(new Consumer<OpenPrinterPortMsg>() {
             @Override
             public void accept(@NonNull OpenPrinterPortMsg openPrinterPortMsg) throws Exception {
@@ -219,7 +220,7 @@ public class PrinterConnectSerivce extends Service {
     /**
      * 打印机状态
      */
-    public String getPrinterStatusClicked() {
+    public static String getPrinterStatus() {
         String str = "";
         try {
             int status = mGpService.queryPrinterStatus(mPrinterIndex, 500);
@@ -311,7 +312,6 @@ public class PrinterConnectSerivce extends Service {
         esc.addText("--------------------------------\n");
         esc.addText("消费总额："+money+"\n");
         esc.addText("--------------------------------\n");
-        esc.addText("会员折扣：8.5\n");
         esc.addText("抵扣方式：100粉币（-10.00）\n");
         esc.addText("实付金额：46.10\n");
         esc.addText("支付方式：微信支付\n");

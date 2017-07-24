@@ -24,7 +24,7 @@
         android:textColor="@color/theme_orange"
         android:gravity="center"
         android:text="配置USB打印机"
-        android:background="@drawable/btn_orange_borrer_and_white"
+        android:background="@drawable/btn_orange_border_and_white"
         android:layout_marginTop="15dp"
         />
     <TextView
@@ -34,7 +34,7 @@
         android:textSize="16sp"
         android:textColor="@color/theme_orange"
         android:gravity="center"
-        android:background="@drawable/btn_orange_borrer_and_white"
+        android:background="@drawable/btn_orange_border_and_white"
         android:text="配置客显"
         android:layout_marginTop="15dp"
         />

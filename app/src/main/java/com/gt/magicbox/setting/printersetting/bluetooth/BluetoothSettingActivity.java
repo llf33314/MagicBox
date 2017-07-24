@@ -158,6 +158,7 @@ public class BluetoothSettingActivity extends BaseActivity {
                     BluetoothDevice bluetoothDevice=mBondedRecyclerviewAdapter.getBluetoothDevice(position);
                     try {
                         if (removeBond(BluetoothDevice.class,bluetoothDevice)){
+                            ToastUtil.getInstance().showToast("蓝牙已断开");
                             //改为用广播更新Ui
                        /* refreshBondedHandler.postDelayed(new Runnable() {//不加延迟数据无法刷新 机制问题
                             @Override
