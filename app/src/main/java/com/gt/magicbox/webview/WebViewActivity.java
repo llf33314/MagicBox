@@ -75,7 +75,7 @@ public class WebViewActivity extends BaseActivity{
         }
         setContentView(R.layout.activity_webview);
         combineURL();
-        if (webType==WEB_TYPE_PAY){
+        if (webType == WEB_TYPE_PAY) {
             setToolBarTitle("");
         }
         // 获取组件
@@ -92,21 +92,16 @@ public class WebViewActivity extends BaseActivity{
         // 这个将Java对象注入到webView，会允许JavaScript可以访问这个对象中的注解为@JavascriptInterface且是public的方法
         web.addJavascriptInterface(new DuofenJSBridge(WebViewActivity.this), "dfmb");
         web.removeJavascriptInterface("searchBoxJavaBridge_");
-        // 刷新
-//        address.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "flush");
-//                webReload();
-//            }
-//        });
+        if (webType == WEB_TYPE_PAY) {
+          //  scanCode();
+        }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Log.d(TAG, "onNewIntent: ");
-        getCode(intent);;
+        getCode(intent);
     }
 
     // 初始化socket服务

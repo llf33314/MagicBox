@@ -1,7 +1,10 @@
 package com.gt.magicbox.main;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +23,7 @@ import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.utils.commonutil.Utils;
 import com.gt.magicbox.webview.WebViewActivity;
+import com.service.OrderPushService;
 
 import java.util.ArrayList;
 
@@ -42,8 +46,16 @@ public class MainActivity extends BaseActivity {
         setToolBarTitle("主页");
         Utils.init(this);
         initView();
+        bindOrderService();
     }
 
+    /**
+     * 与服务器建立socket连接，监听订单的推送
+     */
+    private void bindOrderService(){
+        Intent intent=new Intent(MainActivity.this, OrderPushService.class);
+        startService(intent);
+    }
     private void initView() {
         initViewData();
         home_grid = (GridView) findViewById(R.id.gird);
