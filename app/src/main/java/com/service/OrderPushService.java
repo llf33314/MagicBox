@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.gt.magicbox.bean.OrderBean;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.pay.ChosePayModeActivity;
+import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.webview.WebViewActivity;
 
 import org.json.JSONException;
@@ -39,8 +40,14 @@ public class OrderPushService extends Service {
 
     @Override
     public void onCreate() {
-        initSocketHttp();
-        connectSocket();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                initSocketHttp();
+                connectSocket();
+            }
+        }).start();
+
         super.onCreate();
     }
 
@@ -63,7 +70,7 @@ public class OrderPushService extends Service {
         @Override
         public void call(Object... args) {
             Log.d(TAG, "onConnect");
-            String UUID = "123456";
+            String UUID = PhoneUtils.getIMEI();
             Log.d(TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
             mSocket.emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
             Log.d(TAG, "call: send android auth over");

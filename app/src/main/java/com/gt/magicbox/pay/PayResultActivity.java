@@ -1,5 +1,6 @@
 package com.gt.magicbox.pay;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Spannable;
@@ -52,6 +53,9 @@ public class PayResultActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.confirmButton:
+                Intent intent=new Intent(PayResultActivity.this,PaymentActivity.class);
+                startActivity(intent);
+                finish();
                 break;
             case R.id.printButton:
                 RxBus.get().post(message);

@@ -1,10 +1,12 @@
 package com.gt.magicbox.http;
 
 import android.content.Context;
+import android.nfc.Tag;
 import android.support.annotation.CallSuper;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
 import java.io.IOException;
@@ -85,6 +87,7 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
         dismissProgressDialog();
         if (baseResponse.getCode()==HttpConfig.SUCCESS_CODE){
             onSuccess(baseResponse.getData());
+            Log.i(TAG,"baseResponse.getData()="+baseResponse.getData());
         }else{
             onFailure(baseResponse.getCode(),baseResponse.getMsg().toString());
         }
@@ -95,7 +98,6 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
      */
     @Override
     public void onError(@NonNull Throwable e) {
-        Log.e(TAG,e.getMessage());
         dismissProgressDialog();
 
         if (e instanceof HttpException) {
@@ -160,7 +162,7 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
     }
     public void disposeErrCode(int code ,String msg){
         Log.e(TAG,"errorCode="+code+"\n"+msg);
-        //ToastUtils.showShort(msg);
+        ToastUtil.getInstance().showToast(msg);
     }
 
     /**

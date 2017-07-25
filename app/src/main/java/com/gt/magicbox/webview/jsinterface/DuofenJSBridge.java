@@ -9,6 +9,7 @@ import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PayResultActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.webview.WebViewActivity;
 import com.gt.magicbox.webview.service.UUIDService;
 import com.gt.magicbox.webview.util.PromptUtils;
@@ -58,7 +59,7 @@ public class DuofenJSBridge {
         if ("1".equals(unqiueStatus)){
             ((WebViewActivity) context).reloadSocket();
         }
-        String json = "{'uuid':'" + 123456 +"','status':'" + unqiueStatus + "'}";
+        String json = "{'uuid':'" + PhoneUtils.getIMEI()+"','status':'" + unqiueStatus + "'}";
         Log.d(TAG, "getUniqueUuId" + json);
         return json;
     }

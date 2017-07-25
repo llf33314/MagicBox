@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.login.LoginActivity;
+import com.gt.magicbox.utils.commonutil.SPUtils;
 
 import static java.lang.Thread.sleep;
 
@@ -28,7 +29,11 @@ public class LoadingActivity extends Activity{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Intent intent=new Intent(LoadingActivity.this,LoginActivity.class);
+
+                boolean loginSuccess = SPUtils.getInstance().getBoolean("LoginSuccess", false);
+                Intent intent;
+                intent = loginSuccess ? new Intent(LoadingActivity.this, MainActivity.class)
+                        : new Intent(LoadingActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }

@@ -1,27 +1,14 @@
 package com.gt.magicbox.main;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.RelativeLayout;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
-import com.gt.magicbox.bean.LoginBean;
-import com.gt.magicbox.http.BaseObserver;
-import com.gt.magicbox.http.BaseResponse;
-import com.gt.magicbox.http.HttpCall;
-import com.gt.magicbox.http.RxObservableUtils;
-import com.gt.magicbox.main.menu.ShortcutMenuDialog;
-import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
-import com.gt.magicbox.utils.commonutil.Utils;
 import com.gt.magicbox.webview.WebViewActivity;
 import com.service.OrderPushService;
 
@@ -44,7 +31,6 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setToolBarTitle("主页");
-        Utils.init(this);
         initView();
         bindOrderService();
     }
@@ -110,23 +96,5 @@ public class MainActivity extends BaseActivity {
         mMoreFunctionDialog.show();
     }
 
-    public void request(View view) {
-        HttpCall.getApiService()
-                .userLogin("123456", "jindao", "gt123456")
-                .compose(RxObservableUtils.<BaseResponse<LoginBean>>applySchedulers())//线程处理
-                .compose(MainActivity.this.<BaseResponse<LoginBean>>bindToLifecycle())//内存泄漏处理
-                .subscribe(new BaseObserver<LoginBean>(MainActivity.this, true) {
-                    @Override
-                    public void onSuccess(LoginBean data) {
-                        Log.i(TAG, "data=" + data.toString());
-                    }
 
-                    @Override
-                    public void onFailure(int code, String msg) {
-                        super.onFailure(code, msg);
-                        Log.i(TAG, "code=" + code + "  msg=" + msg);
-
-                    }
-                });
-    }
 }

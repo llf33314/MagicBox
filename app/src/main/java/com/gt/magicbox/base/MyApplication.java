@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Process;
 
 import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
+import com.gt.magicbox.utils.commonutil.Utils;
 
 /**
  * Created by wzb on 2017/7/11 0011.
@@ -18,7 +19,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         applicationContext=getApplicationContext();
-         portIntent=new Intent(this, PrinterConnectSerivce.class);
+        Utils.init(applicationContext);
+        portIntent=new Intent(this, PrinterConnectSerivce.class);
         startService(portIntent);
     }
     public static Context getAppContext(){

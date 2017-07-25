@@ -21,6 +21,7 @@
         android:drawableLeft="@drawable/icon_user"
         android:drawablePadding="13dp"
         android:hint="@string/login_user_tip"
+        android:inputType="textVisiblePassword"
         android:textColor="@color/login_input_text_color"
         android:textColorHint="#999999" />
 

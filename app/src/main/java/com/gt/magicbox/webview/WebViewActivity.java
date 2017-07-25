@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.http.HttpConfig;
+import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.webview.jsinterface.DuofenJSBridge;
 import com.gt.magicbox.webview.service.UUIDService;
 import com.gt.magicbox.webview.util.ObjectUtils;
@@ -93,7 +94,7 @@ public class WebViewActivity extends BaseActivity{
         web.addJavascriptInterface(new DuofenJSBridge(WebViewActivity.this), "dfmb");
         web.removeJavascriptInterface("searchBoxJavaBridge_");
         if (webType == WEB_TYPE_PAY) {
-          //  scanCode();
+            scanCode();
         }
     }
 
@@ -120,11 +121,11 @@ public class WebViewActivity extends BaseActivity{
                 case WEB_TYPE_PAY:
                     double money = this.getIntent().getDoubleExtra("money", 0);
                     int type = this.getIntent().getIntExtra("payMode", 0);
-                    webUrl = HttpConfig.BASE_URL + "123456/" + money + "/" + type + "/" + HttpConfig.PAYMENT_URL;
+                    webUrl = HttpConfig.BASE_URL + PhoneUtils.getIMEI()+ "/" + money + "/" + type + "/" + HttpConfig.PAYMENT_URL;
                     break;
                 case WEB_TYPE_ORDER:
                     int status = this.getIntent().getIntExtra("status", 0);
-                    webUrl = HttpConfig.BASE_URL + "123456/"  + status + "/" + HttpConfig.ORDER_URL;
+                    webUrl = HttpConfig.BASE_URL + PhoneUtils.getIMEI()+"/"  + status + "/" + HttpConfig.ORDER_URL;
                     break;
             }
             Log.i(TAG,"webUrl="+webUrl);
@@ -357,7 +358,7 @@ public class WebViewActivity extends BaseActivity{
         @Override
         public void call(Object... args) {
             Log.d(TAG, "onConnect");
-            String UUID = "123456";
+            String UUID = PhoneUtils.getIMEI();
             Log.d(TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
             mSocket.emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
             Log.d(TAG, "call: send android auth over");

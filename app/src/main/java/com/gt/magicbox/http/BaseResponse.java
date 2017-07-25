@@ -1,5 +1,7 @@
 package com.gt.magicbox.http;
 
+import android.util.Log;
+
 /**
  * 接口数据类型
  */

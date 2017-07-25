@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.Utils;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import butterknife.ButterKnife;
