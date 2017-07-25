@@ -34,9 +34,12 @@ import io.reactivex.functions.Function;
 
 public class WifiConnectionPresenter {
     private final String TAG=WifiConnectionPresenter.class.getSimpleName();
+
     IWifiConectionView wifiConectionView;
     IWifiConnectiontModel wifiConnectiontModel;
+
     private List<WifiBean> resultWfifs=new ArrayList<WifiBean>();
+
     private  List<WifiConfiguration> savedNetworks=new ArrayList<WifiConfiguration>();
 
     public WifiConnectionPresenter(IWifiConectionView wifiConectionView){
@@ -132,6 +135,7 @@ public class WifiConnectionPresenter {
                             wifiBean.setSignLevel(signLevel);
                             resultWfifs.add(wifiBean);
                         }
+                        //排序wifi
                         Collections.sort(resultWfifs,comparator);
 
                         return Observable.just(resultWfifs);

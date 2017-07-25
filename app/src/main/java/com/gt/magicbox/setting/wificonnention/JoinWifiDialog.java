@@ -16,6 +16,8 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.http.RxObservableUtils;
 import com.gt.magicbox.setting.wificonnention.model.WifiBean;
 import com.gt.magicbox.setting.wificonnention.presenter.WifiConnectionPresenter;
+import com.gt.magicbox.utils.SimpleObserver;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +27,7 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by wzb on 2017/7/17 0017.
@@ -150,7 +153,7 @@ public class JoinWifiDialog extends Dialog {
                             break;
                     }
                     //-1 密码错误 0 密码错误跟密码正确都是0   3 成功  -1001 已经添加过  -1000账号密码为空   1又是什么鬼 2正确错误都是2貌似已经在连接的时候请求就是2
-                    presenter.disconnectFromCurrentNetwork();
+                  //  presenter.disconnectFromCurrentNetwork();
                     conncetionWifi();
 
                     /*switch (result){
@@ -189,26 +192,13 @@ public class JoinWifiDialog extends Dialog {
             }
         })
                 .compose(RxObservableUtils.<Boolean>applySchedulers())
-                .subscribe(new Observer<Boolean>() {
+                .subscribe(new SimpleObserver<Boolean>(new Consumer<Boolean>() {
                     @Override
-                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
-
+                    public void accept(@io.reactivex.annotations.NonNull Boolean aBoolean) throws Exception {
+                        if (!aBoolean){
+                            ToastUtil.getInstance().showToast("连接 "+wifiBean.getName()+" 密码错误");
+                        }
                     }
-
-                    @Override
-                    public void onNext(@io.reactivex.annotations.NonNull Boolean s) {
-
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
     }
 }

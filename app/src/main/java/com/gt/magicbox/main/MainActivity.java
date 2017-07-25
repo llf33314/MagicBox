@@ -15,6 +15,7 @@ import com.gt.magicbox.http.BaseObserver;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpCall;
 import com.gt.magicbox.http.RxObservableUtils;
+import com.gt.magicbox.main.menu.ShortcutMenuDialog;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.utils.commonutil.Utils;
@@ -76,6 +77,7 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
+       // new ShortcutMenuDialog(this,R.style.ShortcutMenuDialog).show();
     }
 
     private void initViewData() {
