@@ -49,7 +49,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
     @BindView(R.id.netSettingButton)
     Button netSettingButton;
     private ILoginPresenter loginPresenter;
-
+    private String token="";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,14 +66,14 @@ public class LoginActivity extends BaseActivity implements ILoginView {
 
     @Override
     public void showLoginView() {
-        SPUtils.getInstance().put("LoginSuccess", true);
+        SPUtils.getInstance().put("token", token);
         Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
-    public void login(String userName, String password) {
+    private void login(String userName, String password) {
         HttpCall.getApiService()
                 .userLogin(PhoneUtils.getIMEI(), userName, password)
                 .compose(RxObservableUtils.<BaseResponse<LoginBean>>applySchedulers())//线程处理
@@ -82,6 +82,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                     @Override
                     public void onSuccess(LoginBean data) {
                         Log.i(TAG, "onSuccess data=" + data.token);
+                        token=data.token;
                         showLoginView();
                     }
 

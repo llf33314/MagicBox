@@ -72,7 +72,9 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
             params.height = itemHeight;
             convertView.setLayoutParams(params);
             holder = new ViewHolder();
+            holder.badge = (TextView) convertView.findViewById(R.id.badge);
             holder.textView = (TextView) convertView.findViewById(R.id.name_item);
+
             holder.imageView = (ImageView) convertView.findViewById(R.id.img_item);
             convertView.setTag(holder);
         } else {
@@ -84,17 +86,26 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
                     item.getFocusedColor()));
             holder.textView.setText(item.getName());
             holder.imageView.setBackgroundResource(item.getImgRes());
+            if (item.getMessageCount()>0){
+                holder.badge.setVisibility(View.VISIBLE);
+                holder.badge.setText(""+item.getMessageCount());
+            }else {
+                holder.badge.setVisibility(View.INVISIBLE);
+
+            }
         }
         return convertView;
 
     }
 
     private class ViewHolder {
+        TextView badge;
         TextView textView;
         ImageView imageView;
     }
 
     public void setGridData(ArrayList<GridItem> mGridData) {
+        Log.i("grid","setGridData");
         this.mGridData = mGridData;
         notifyDataSetChanged();
     }

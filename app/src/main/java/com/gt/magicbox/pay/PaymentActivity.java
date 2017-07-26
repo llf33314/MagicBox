@@ -55,6 +55,7 @@ public class PaymentActivity extends BaseActivity {
                         intent=new Intent(PaymentActivity.this, PayResultActivity.class);
                         intent.putExtra("success",true);
                         intent.putExtra("message",""+money);
+                        intent.putExtra("payType",PayResultActivity.TYPE_CASH);
                         startActivity(intent);
                         AppManager.getInstance().finishActivity(PaymentActivity.class);
                         AppManager.getInstance().finishActivity(ChosePayModeActivity.class);

@@ -2,6 +2,7 @@ package com.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -9,9 +10,16 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.gt.magicbox.bean.OrderBean;
+import com.gt.magicbox.bean.UnpaidOrderBean;
+import com.gt.magicbox.http.BaseObserver;
+import com.gt.magicbox.http.BaseResponse;
+import com.gt.magicbox.http.HttpCall;
 import com.gt.magicbox.http.HttpConfig;
+import com.gt.magicbox.http.RxObservableUtils;
 import com.gt.magicbox.pay.ChosePayModeActivity;
+import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.webview.WebViewActivity;
 
 import org.json.JSONException;
@@ -40,6 +48,7 @@ public class OrderPushService extends Service {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -48,7 +57,7 @@ public class OrderPushService extends Service {
             }
         }).start();
 
-        super.onCreate();
+
     }
 
     @Override
@@ -93,18 +102,38 @@ public class OrderPushService extends Service {
             OrderBean orderBean= new Gson().fromJson(retData,OrderBean.class);
             Log.d(TAG, "socket --> " + retData.toString()+"  orderBean.orderNo="+orderBean.pay_type+"  time="+orderBean.money);
             if (orderBean!=null){
-                startERCodePay(orderBean.pay_type,Double.parseDouble(orderBean.money));
+                //startERCodePay(orderBean.orderId);
+                getUnpaidOrderCount();
             }
         }
     };
+    private void getUnpaidOrderCount(){
+        HttpCall.getApiService()
+                .getUnpaidOrderCount(PhoneUtils.getIMEI(), SPUtils.getInstance().getString("token"))
+                .compose(RxObservableUtils.<BaseResponse<UnpaidOrderBean>>applySchedulers())
+                .subscribe(new BaseObserver<UnpaidOrderBean>(getApplicationContext(),false) {
+                    @Override
+                    public void onSuccess(UnpaidOrderBean data) {
+                        Log.i(TAG,"UnpaidOrderBean onSuccess");
+                        RxBus.get().post(data);
+
+
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        Log.i(TAG,"onFailure code="+code+"  msg="+msg);
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
     /**
-     * @param type 0-微信，1-支付宝
+     * @param orderId 订单编号
      */
-    private void startERCodePay(int type,double money){
+    private void startERCodePay(int orderId){
         Intent intent=new Intent(getApplicationContext(), WebViewActivity.class);
-        intent.putExtra("webType",WebViewActivity.WEB_TYPE_PAY);
-        intent.putExtra("money",money);
-        intent.putExtra("payMode",type);
+        intent.putExtra("webType",WebViewActivity.WEB_TYPE_SERVER_PUSH);
+        intent.putExtra("orderId",orderId);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }

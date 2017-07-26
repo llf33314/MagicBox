@@ -12,6 +12,7 @@ import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.CameraUtils;
 import com.gt.magicbox.utils.commonutil.DeviceUtils;
 import com.gt.magicbox.utils.commonutil.NetworkUtils;
+import com.gt.magicbox.utils.commonutil.PhoneUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +45,7 @@ public class DeviceInfoActivity extends BaseActivity {
     }
 
     private void init(){
-        tvDeviceNum.setText("AAAAAA");
+        tvDeviceNum.setText(PhoneUtils.getIMEI());
         tvDeviceType.setText(DeviceUtils.getModel());
         tvDeviceVersion.setText(AppUtils.getAppVersionName());
 

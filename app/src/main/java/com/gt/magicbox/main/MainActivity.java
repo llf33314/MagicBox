@@ -2,17 +2,32 @@ package com.gt.magicbox.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.UnpaidOrderBean;
+import com.gt.magicbox.http.BaseObserver;
+import com.gt.magicbox.http.BaseResponse;
+import com.gt.magicbox.http.HttpCall;
+import com.gt.magicbox.http.RxObservableUtils;
 import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.SimpleObserver;
+import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.webview.WebViewActivity;
 import com.service.OrderPushService;
 
 import java.util.ArrayList;
+
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends BaseActivity {
     private String TAG = "MainActivity";
@@ -25,7 +40,21 @@ public class MainActivity extends BaseActivity {
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
     private MoreFunctionDialog mMoreFunctionDialog;
+    private final int MSG_UPDATE_UI=0;
+    private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case MSG_UPDATE_UI:
+                    Log.i("grid","msg.arg1="+msg.arg1+"  msg.arg2="+msg.arg2);
 
+                    homeData.get(msg.arg1).setMessageCount(msg.arg2);
+                    gridViewAdapter.setGridData(homeData);
+                    break;
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +105,19 @@ public class MainActivity extends BaseActivity {
             }
         });
        // new ShortcutMenuDialog(this,R.style.ShortcutMenuDialog).show();
+        RxBus.get().toObservable(UnpaidOrderBean.class).subscribe(new SimpleObserver<UnpaidOrderBean>(new Consumer<UnpaidOrderBean>() {
+            @Override
+            public void accept(@NonNull UnpaidOrderBean unpaidOrderBean) throws Exception {
+                Log.i("grid","unpaidOrderBean.count="+unpaidOrderBean.count);
+                updateUnpaid(unpaidOrderBean);
+            }
+        }));
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                getUnpaidOrderCount();
+            }
+        });
     }
 
     private void initViewData() {
@@ -88,13 +130,36 @@ public class MainActivity extends BaseActivity {
             homeData.add(item);
         }
     }
-
+    private void updateUnpaid(UnpaidOrderBean unpaidOrderBean){
+        Message msg=new Message();
+        msg.what=MSG_UPDATE_UI;
+        msg.arg1=1;
+        msg.arg2=unpaidOrderBean.count;
+        handler.sendMessage(msg);
+    }
     private void showMoreDialog(){
         if (mMoreFunctionDialog==null){
             mMoreFunctionDialog=new MoreFunctionDialog(this,R.style.HttpRequestDialogStyle);
         }
         mMoreFunctionDialog.show();
     }
+    private void getUnpaidOrderCount(){
+        HttpCall.getApiService()
+                .getUnpaidOrderCount(PhoneUtils.getIMEI(), SPUtils.getInstance().getString("token"))
+                .compose(RxObservableUtils.<BaseResponse<UnpaidOrderBean>>applySchedulers())
+                .subscribe(new BaseObserver<UnpaidOrderBean>(getApplicationContext(),false) {
+                    @Override
+                    public void onSuccess(UnpaidOrderBean data) {
+                        Log.i(TAG,"UnpaidOrderBean onSuccess");
+                        updateUnpaid(data);
+                    }
 
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        Log.i(TAG,"onFailure code="+code+"  msg="+msg);
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
 
 }

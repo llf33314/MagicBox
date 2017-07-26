@@ -5,8 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -15,9 +20,13 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.dtr.zbar.build.ZBarDecoder;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.http.HttpConfig;
@@ -27,10 +36,15 @@ import com.gt.magicbox.webview.service.UUIDService;
 import com.gt.magicbox.webview.util.ObjectUtils;
 import com.gt.magicbox.webview.util.PromptUtils;
 import com.gt.magicbox.webview.util.RootUtils;
+import com.zbar.scan.CameraManager;
+import com.zbar.scan.CameraPreview;
 import com.zbar.scan.ScanCaptureAct;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -49,16 +63,22 @@ public class WebViewActivity extends BaseActivity{
     private ProgressBar bar;
     public final static int WEB_TYPE_PAY=0;
     public final static int WEB_TYPE_ORDER=1;
+    public final static int WEB_TYPE_SERVER_PUSH=2;
     private int webType;
-    private Socket mSocket; // socket
+    private Camera mCamera;
+    private CameraPreview mPreview;
+    private Handler autoFocusHandler;
+    private CameraManager mCameraManager;
+    private FrameLayout scanPreview;
+    private Button scanRestart;
+    private RelativeLayout scanContainer;
+    private RelativeLayout scanCropView;
+    //private ImageView scanLine;
 
-    {
-        try {
-            mSocket = IO.socket(HttpConfig.SOCKET_SERVER_URL);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private Rect mCropRect = null;
+    private boolean barcodeScanned = false;
+    private boolean previewing = true;
+
 
     private static int viewPage = 0; // 缓存页数
     private static boolean flag = true; // 返回控制flag
@@ -76,13 +96,12 @@ public class WebViewActivity extends BaseActivity{
         }
         setContentView(R.layout.activity_webview);
         combineURL();
-        if (webType == WEB_TYPE_PAY) {
+        if (webType == WEB_TYPE_PAY||webType ==WEB_TYPE_SERVER_PUSH) {
             setToolBarTitle("");
         }
         // 获取组件
         web = (WebView) findViewById(R.id.web);
         bar = (ProgressBar) findViewById(R.id.bar);
-        initSocket();
 
         //其他初始化
         initUUID();
@@ -93,8 +112,9 @@ public class WebViewActivity extends BaseActivity{
         // 这个将Java对象注入到webView，会允许JavaScript可以访问这个对象中的注解为@JavascriptInterface且是public的方法
         web.addJavascriptInterface(new DuofenJSBridge(WebViewActivity.this), "dfmb");
         web.removeJavascriptInterface("searchBoxJavaBridge_");
-        if (webType == WEB_TYPE_PAY) {
-            scanCode();
+        if (webType == WEB_TYPE_PAY||webType ==WEB_TYPE_SERVER_PUSH) {
+            initCameraViews();
+        }else if (webType == WEB_TYPE_ORDER){
         }
     }
 
@@ -105,15 +125,6 @@ public class WebViewActivity extends BaseActivity{
         getCode(intent);
     }
 
-    // 初始化socket服务
-    private void initSocket() {
-        mSocket.on(Socket.EVENT_CONNECT, onConnect);
-        mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-        mSocket.on("chatevent", socketEvent);
-        mSocket.connect();
-    }
     private void combineURL() {
         if (this.getIntent() != null) {
             webType = this.getIntent().getIntExtra("webType", 0);
@@ -122,6 +133,11 @@ public class WebViewActivity extends BaseActivity{
                     double money = this.getIntent().getDoubleExtra("money", 0);
                     int type = this.getIntent().getIntExtra("payMode", 0);
                     webUrl = HttpConfig.BASE_URL + PhoneUtils.getIMEI()+ "/" + money + "/" + type + "/" + HttpConfig.PAYMENT_URL;
+                    break;
+                case WEB_TYPE_SERVER_PUSH:
+                    int orderId = this.getIntent().getIntExtra("orderId",0);
+                    if (orderId!=0)
+                    webUrl = HttpConfig.BASE_URL + PhoneUtils.getIMEI()+ "/" + orderId +  "/" + HttpConfig.PAYMENT_URL;
                     break;
                 case WEB_TYPE_ORDER:
                     int status = this.getIntent().getIntExtra("status", 0);
@@ -141,19 +157,19 @@ public class WebViewActivity extends BaseActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        disSocket();
+      //  disSocket();
     }
 
     /**
      * 关闭所有socket链接
      */
     private void disSocket() {
-        mSocket.disconnect();
-        mSocket.off("chatevent", socketEvent);
-        mSocket.off(Socket.EVENT_CONNECT, onConnect);
-        mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
-        mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+//        mSocket.disconnect();
+//        mSocket.off("chatevent", socketEvent);
+//        mSocket.off(Socket.EVENT_CONNECT, onConnect);
+//        mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
+//        mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+//        mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
     }
 
     /**
@@ -162,7 +178,7 @@ public class WebViewActivity extends BaseActivity{
     public void reloadSocket() {
         Log.d(TAG, "reloadSocket: ");
         disSocket();
-        initSocket();
+       // initSocket();
     }
     public void finishWebview(){
         if (ObjectUtils.isNotEmpty(web))
@@ -206,7 +222,7 @@ public class WebViewActivity extends BaseActivity{
         Log.d(TAG, "keyCode --> " + keyCode);
         /** 按下键盘上返回按钮 */
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (webType == WebViewActivity.WEB_TYPE_PAY) {
+            if (webType == WEB_TYPE_PAY||webType ==WEB_TYPE_SERVER_PUSH) {
                 new AlertDialog.Builder(this)
                         .setTitle("提示")
                         .setMessage("确定要退出支付吗？")
@@ -353,50 +369,131 @@ public class WebViewActivity extends BaseActivity{
         });
     }
 
-    // socket连接
-    private Emitter.Listener onConnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            Log.d(TAG, "onConnect");
-            String UUID = PhoneUtils.getIMEI();
-            Log.d(TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
-            mSocket.emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
-            Log.d(TAG, "call: send android auth over");
+    private void initCameraViews() {
+        scanContainer=(RelativeLayout)findViewById(R.id.container);
+        scanPreview = (FrameLayout) findViewById(R.id.capture_preview);
+        scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
+
+        autoFocusHandler = new Handler();
+        mCameraManager = new CameraManager(this);
+        try {
+            mCameraManager.openDriver();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Display display = this.getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();
+        int height = display.getHeight();
+        RelativeLayout.LayoutParams linearParams =  (RelativeLayout.LayoutParams)scanCropView.getLayoutParams();
+        linearParams.height = (int) (width*0.8);
+        linearParams.width = (int) (width*0.8);
+        scanCropView.setLayoutParams(linearParams);
+
+
+        mCamera = mCameraManager.getCamera();
+        mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
+
+        scanPreview.addView(mPreview);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (webType == WEB_TYPE_PAY||webType ==WEB_TYPE_SERVER_PUSH){
+            releaseCamera();
+        }
+    }
+
+    private void releaseCamera() {
+        if (mCamera != null) {
+            previewing = false;
+            mCamera.setPreviewCallback(null);
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
+    private Runnable doAutoFocus = new Runnable() {
+        public void run() {
+            if (previewing)
+                mCamera.autoFocus(autoFocusCB);
         }
     };
 
-    // 接收推送事件
-    private Emitter.Listener socketEvent = new Emitter.Listener() {
-        @Override
-        public void call(Object... objects) {
-            Log.d(TAG, "socketEvent");
-            JSONObject data = (JSONObject) objects[0];
-            String retData = null;
-            try {
-                retData = data.get("message").toString();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                retData = "";
+    Camera.PreviewCallback previewCb = new Camera.PreviewCallback() {
+        public void onPreviewFrame(byte[] data, Camera camera) {
+            Camera.Size size = camera.getParameters().getPreviewSize();
+
+            byte[] rotatedData = new byte[data.length];
+            for (int y = 0; y < size.height; y++) {
+                for (int x = 0; x < size.width; x++)
+                    rotatedData[x * size.height + size.height - y - 1] = data[x + y * size.width];
             }
-            Log.d(TAG, "socket --> " + retData.toString());
-            webLoadJS("socketCallBack", retData.toString());
+
+            int tmp = size.width;
+            size.width = size.height;
+            size.height = tmp;
+
+            initCrop();
+            ZBarDecoder zBarDecoder = new ZBarDecoder();
+            String result = zBarDecoder.decodeCrop(rotatedData, size.width, size.height, mCropRect.left, mCropRect.top, mCropRect.width(), mCropRect.height());
+
+            if (!TextUtils.isEmpty(result)) {
+                previewing = false;
+                mCamera.setPreviewCallback(null);
+                mCamera.stopPreview();
+                releaseCamera();
+                barcodeScanned = true;
+                Log.d(TAG, "getCode: " + result);
+                webLoadJS("scanCallBack", result);
+
+            }
         }
     };
 
-    // socket disConnect
-    private Emitter.Listener onDisconnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            Log.d(TAG, "diconnected");
-        }
-    };
+    private void initCrop() {
+        int cameraWidth = mCameraManager.getCameraResolution().y;
+        int cameraHeight = mCameraManager.getCameraResolution().x;
 
-    // socket connectError
-    private Emitter.Listener onConnectError = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            Log.d(TAG, "Error connecting");
+        int[] location = new int[2];
+        scanCropView.getLocationInWindow(location);
+
+        int cropLeft = location[0];
+        int cropTop = location[1] - getStatusBarHeight();
+
+        int cropWidth = scanCropView.getWidth();
+        int cropHeight = scanCropView.getHeight();
+
+        int containerWidth = scanContainer.getWidth();
+        int containerHeight = scanContainer.getHeight();
+
+        int x = cropLeft * cameraWidth / containerWidth;
+        int y = cropTop * cameraHeight / containerHeight;
+
+        int width = cropWidth * cameraWidth / containerWidth;
+        int height = cropHeight * cameraHeight / containerHeight;
+
+        mCropRect = new Rect(x, y, width + x, height + y);
+    }
+    // Mimic continuous auto-focusing
+    Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {
+        public void onAutoFocus(boolean success, Camera camera) {
+            autoFocusHandler.postDelayed(doAutoFocus, 1000);
         }
     };
+    private int getStatusBarHeight() {
+        try {
+            Class<?> c = Class.forName("com.android.internal.R$dimen");
+            Object obj = c.newInstance();
+            Field field = c.getField("status_bar_height");
+            int x = Integer.parseInt(field.get(obj).toString());
+            return getResources().getDimensionPixelSize(x);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
 }

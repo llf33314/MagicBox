@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.login.LoginActivity;
@@ -29,10 +30,9 @@ public class LoadingActivity extends Activity{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                boolean loginSuccess = SPUtils.getInstance().getBoolean("LoginSuccess", false);
+                String token = SPUtils.getInstance().getString("token", "");
                 Intent intent;
-                intent = loginSuccess ? new Intent(LoadingActivity.this, MainActivity.class)
+                intent = !TextUtils.isEmpty(token) ? new Intent(LoadingActivity.this, MainActivity.class)
                         : new Intent(LoadingActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
