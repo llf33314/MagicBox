@@ -9,9 +9,10 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.setting.printersetting.bluetooth.BluetoothSettingActivity;
+import com.gt.magicbox.setting.printersetting.usb.RxBusUsbMsg;
+import com.gt.magicbox.utils.RxBus;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -30,7 +31,6 @@ public class PrinterSettingActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_printer_setting);
-        ButterKnife.bind(this);
         setToolBarTitle("打印设置");
     }
 
@@ -43,9 +43,13 @@ public class PrinterSettingActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.tv_config_usb:
+                RxBus.get().post(new RxBusUsbMsg());
                 break;
             case R.id.tv_config_show:
                 break;
         }
     }
+
+
+
 }

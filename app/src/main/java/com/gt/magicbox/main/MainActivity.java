@@ -18,6 +18,7 @@ import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpCall;
 import com.gt.magicbox.http.RxObservableUtils;
 import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.SimpleObserver;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -41,6 +42,10 @@ public class MainActivity extends BaseActivity {
     private HomeGridViewAdapter gridViewAdapter;
     private MoreFunctionDialog mMoreFunctionDialog;
     private final int MSG_UPDATE_UI=0;
+
+    //打印机连接
+    public static Intent portIntent;
+
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -118,6 +123,10 @@ public class MainActivity extends BaseActivity {
                 getUnpaidOrderCount();
             }
         });
+
+
+        portIntent=new Intent(this, PrinterConnectSerivce.class);
+        startService(portIntent);
     }
 
     private void initViewData() {

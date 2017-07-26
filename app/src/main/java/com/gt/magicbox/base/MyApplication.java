@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Process;
 
+import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
 import com.gt.magicbox.utils.commonutil.Utils;
 
@@ -13,15 +14,14 @@ import com.gt.magicbox.utils.commonutil.Utils;
  */
 
 public class MyApplication extends Application {
-    private static Intent portIntent;
+
     private static Context applicationContext;
     @Override
     public void onCreate() {
         super.onCreate();
         applicationContext=getApplicationContext();
         Utils.init(applicationContext);
-        portIntent=new Intent(this, PrinterConnectSerivce.class);
-        startService(portIntent);
+
     }
     public static Context getAppContext(){
         if (applicationContext==null){ //后台挂着 applicationContext被回收
@@ -31,7 +31,7 @@ public class MyApplication extends Application {
     }
 
     public static void appExit(){
-        getAppContext().stopService(portIntent);
+        getAppContext().stopService(MainActivity.portIntent);
         Process.killProcess(Process.myPid());
 
     }

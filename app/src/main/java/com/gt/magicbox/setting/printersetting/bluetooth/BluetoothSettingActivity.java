@@ -21,7 +21,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
@@ -35,6 +37,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -55,6 +58,10 @@ public class BluetoothSettingActivity extends BaseActivity {
     RecyclerView rvBluetootoScanResult;
     @BindView(R.id.btn_scan_bluetooth)
     Button btnScanBluetooth;
+    @BindView(R.id.sw_bluetooth)
+    Switch swBluetooth;
+    @BindView(R.id.tv_bluetooth_switch)
+    TextView tvBluetoothSwitch;
 
     @BindView(R.id.bluetooth_scan_pb)
     ProgressBar scanProgressBar;
@@ -68,7 +75,9 @@ public class BluetoothSettingActivity extends BaseActivity {
     List<BluetoothDevice> scanDevices=new ArrayList<>();
 
     IntentFilter filter;
+
     private BleBroadcastReceiver mFindBlueToothReceiver;
+
 
     private BluetoothSocket mBluetoothSocket;
 
@@ -129,6 +138,32 @@ public class BluetoothSettingActivity extends BaseActivity {
         rvBluetootoScanResult.setHasFixedSize(true);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        if (mBluetoothAdapter.isEnabled()){
+            swBluetooth.setChecked(true);
+            tvBluetoothSwitch.setText("开启");
+
+        }else{
+            swBluetooth.setChecked(false);
+            tvBluetoothSwitch.setText("关闭");
+        }
+
+
+        swBluetooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    if (!mBluetoothAdapter.isEnabled()){
+                        mBluetoothAdapter.enable();
+                    }
+                }else{
+                   if (mBluetoothAdapter.isDiscovering()){
+                        mBluetoothAdapter.cancelDiscovery();
+                    }
+                    mBluetoothAdapter.disable();
+                }
+            }
+        });
+
        // mPortParam = new PortParameters();
        // mPortParam.setPortType(PortParameters.BLUETOOTH);
         if (mBluetoothAdapter == null) {
@@ -142,24 +177,29 @@ public class BluetoothSettingActivity extends BaseActivity {
                    }).show();
 
         } else {
-            if (!mBluetoothAdapter.isEnabled()) {
-                mBluetoothAdapter.enable();
+            if (mBluetoothAdapter.isEnabled()) {
+                initBluetoothUi();
             }
-            //已配对的蓝牙
-            refreshBonded();
+         }
+        regiesterBroad();
+    }
 
-            rvBluetootoScanResult.setAdapter(scanResultAdapter=new BondedRecyclerviewAdapter(scanDevices));
+    private void initBluetoothUi(){
+        //已配对的蓝牙
+        refreshBonded();
 
-            //点击断开连接
-            mBondedRecyclerviewAdapter.setOnItemClickListener(new OnRecyclerViewItemClickListener() {
-                @Override
-                public void onItemClick(View view) {
-                    int position=rvBluetoothBonded.getChildLayoutPosition(view);
-                    BluetoothDevice bluetoothDevice=mBondedRecyclerviewAdapter.getBluetoothDevice(position);
-                    try {
-                        if (removeBond(BluetoothDevice.class,bluetoothDevice)){
-                            ToastUtil.getInstance().showToast("蓝牙已断开");
-                            //改为用广播更新Ui
+        rvBluetootoScanResult.setAdapter(scanResultAdapter=new BondedRecyclerviewAdapter(scanDevices));
+
+        //点击断开连接
+        mBondedRecyclerviewAdapter.setOnItemClickListener(new OnRecyclerViewItemClickListener() {
+            @Override
+            public void onItemClick(View view) {
+                int position=rvBluetoothBonded.getChildLayoutPosition(view);
+                BluetoothDevice bluetoothDevice=mBondedRecyclerviewAdapter.getBluetoothDevice(position);
+                try {
+                    if (removeBond(BluetoothDevice.class,bluetoothDevice)){
+                     //   ToastUtil.getInstance().showToast("蓝牙已断开");
+                        //改为用广播更新Ui
                        /* refreshBondedHandler.postDelayed(new Runnable() {//不加延迟数据无法刷新 机制问题
                             @Override
                             public void run() {
@@ -171,20 +211,20 @@ public class BluetoothSettingActivity extends BaseActivity {
                         TextView connectState= (TextView) viewGroup.findViewById(R.id.tv_item_bluetooth_conncetion_state);
                         connectState.setText("断开中...");*/
 
-                        }else{
-                            ToastUtil.getInstance().showToast("取消失败");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    }else{
                         ToastUtil.getInstance().showToast("取消失败");
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastUtil.getInstance().showToast("取消失败");
                 }
+            }
 
-                @Override
-                public void onItemLongClick(View view) {
+            @Override
+            public void onItemLongClick(View view) {
 
-                }
-            });
+            }
+        });
 
         scanResultAdapter.setOnItemClickListener(new OnRecyclerViewItemClickListener() {
             @Override
@@ -211,12 +251,11 @@ public class BluetoothSettingActivity extends BaseActivity {
         });
 
     }
-        regiesterBroad();
-    }
 
     private void regiesterBroad(){
             mFindBlueToothReceiver=new BleBroadcastReceiver();
             filter= new IntentFilter();
+            filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
             filter.addAction(BluetoothDevice.ACTION_FOUND);
             filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
             filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
@@ -245,6 +284,7 @@ public class BluetoothSettingActivity extends BaseActivity {
         }
        // ToastUtil.getInstance().showToast(+devices.size()+"");
         mBondedRecyclerviewAdapter.notifiDevice(devices);
+        rvBluetoothBonded.requestLayout();
     }
 
     private class ConnectThread implements Runnable {
@@ -328,6 +368,10 @@ public class BluetoothSettingActivity extends BaseActivity {
     }
     @OnClick(R.id.btn_scan_bluetooth)
     public void onViewClicked(View v) {
+        if (!mBluetoothAdapter.isEnabled()){
+            ToastUtil.getInstance().showToast("请开启蓝牙后再扫描");
+            return;
+        }
 
         scanResultAdapter.clearItem();
         // If we're already discovering, stop it
@@ -346,8 +390,52 @@ public class BluetoothSettingActivity extends BaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            // When discovery finds a device
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+            //蓝牙打开关闭
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)){
+                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.STATE_OFF);
+                switch (state){
+                    case BluetoothAdapter.STATE_ON:
+                        tvBluetoothSwitch.setText("开启");
+                        //初始化ui界面
+                        initBluetoothUi();
+                        //扫描蓝牙
+                        onViewClicked(btnScanBluetooth);
+                        //打开端口连接
+                        Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
+                        Iterator<BluetoothDevice> i= bondedDevices.iterator();
+                        while (i.hasNext()){
+                            BluetoothDevice d=i.next();
+                            if (d.getType()==BluetoothDevice.DEVICE_TYPE_DUAL){//打印机
+                                //打开端口
+                                OpenPrinterPortMsg rxMsg=new OpenPrinterPortMsg(OpenPrinterPortMsg.OPEN_PROT);
+                                rxMsg.setBluetoothDevice(d);
+                                RxBus.get().post(rxMsg);
+                            }
+                        }
+
+                        break;
+                    case BluetoothAdapter.STATE_OFF:
+                        tvBluetoothSwitch.setText("关闭");
+                        if (mBondedRecyclerviewAdapter!=null){
+                            mBondedRecyclerviewAdapter.clearItem();
+                            rvBluetoothBonded.requestLayout();
+                        }
+                        if (scanResultAdapter!=null){
+                            scanResultAdapter.clearItem();
+                        }
+
+
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_OFF :
+                        tvBluetoothSwitch.setText("关闭中...");
+                        //关闭端口
+                        RxBus.get().post(new OpenPrinterPortMsg(OpenPrinterPortMsg.CLOSE_PROT));
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_ON :
+                        tvBluetoothSwitch.setText("开启中...");
+                        break;
+                }
+            }else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // If it's already paired, skip it, because it's been listed
@@ -381,10 +469,14 @@ public class BluetoothSettingActivity extends BaseActivity {
                       //  Log.i(TAG,"BOND_BONDED");
                         refreshBondedHandler.sendEmptyMessage(CONNECTIONED);
                         //打开端口
-                        RxBus.get().post(new OpenPrinterPortMsg(OpenPrinterPortMsg.OPEN_PROT));
+                        OpenPrinterPortMsg rxMsg=new OpenPrinterPortMsg(OpenPrinterPortMsg.OPEN_PROT);
+                        rxMsg.setBluetoothDevice(device);
+                        RxBus.get().post(rxMsg);
                         break;
                 }
             }
         }
     }
+
+
 }

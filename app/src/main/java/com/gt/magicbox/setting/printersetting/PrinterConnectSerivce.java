@@ -11,6 +11,8 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.IntDef;
@@ -28,6 +30,7 @@ import com.gprinter.service.GpPrintService;
 import com.gt.magicbox.R;
 import com.gt.magicbox.main.PrintTestActivity;
 import com.gt.magicbox.setting.printersetting.bluetooth.OpenPrinterPortMsg;
+import com.gt.magicbox.setting.printersetting.usb.RxBusUsbMsg;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.SimpleObserver;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
@@ -36,6 +39,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -54,11 +59,24 @@ import io.reactivex.functions.Consumer;
 
 public class PrinterConnectSerivce extends Service {
 
+    private static final String ACTION_USB_PERMISSION =
+            "com.android.example.USB_PERMISSION";
+
+    public static final String CONNECTION_ACTION="action.connect.status";
     BluetoothAdapter mBluetoothAdapter ;
 
     private static GpService mGpService = null;
     private PrinterServiceConnection conn = null;
     private static int mPrinterIndex = 0;
+
+    UsbManager mUsbManager ;
+
+    private UsbDevice mUsbDevice;
+
+    /**
+     * 端口连接状态广播
+     */
+    private PortConnectionStateBroad mPortConnectionStateBroad;
 
     @Nullable
     @Override
@@ -70,6 +88,7 @@ public class PrinterConnectSerivce extends Service {
     public void onCreate() {
         super.onCreate();
         mBluetoothAdapter =BluetoothAdapter.getDefaultAdapter();
+       mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         //  mBluetoothAdapter.getProfileProxy()
 
         //打印
@@ -94,14 +113,26 @@ public class PrinterConnectSerivce extends Service {
                         closeProt();
                         break;
                     case OpenPrinterPortMsg.OPEN_PROT:
-                        openProt();
+                        BluetoothDevice d=openPrinterPortMsg.getBluetoothDevice();
+                        //不做蓝牙是否打印机判断  后面的广播会判断提示
+                      //  if (d.getType()==BluetoothDevice.DEVICE_TYPE_DUAL){
+                            openBluetoothProtFromDevice(d);
+                       // }
                         break;
                 }
             }
         }));
 
+       /* RxBus.get().toObservable(RxBusUsbMsg.class).subscribe(new SimpleObserver<RxBusUsbMsg>(new Consumer<RxBusUsbMsg>() {
+            @Override
+            public void accept(@NonNull RxBusUsbMsg rxBusUsbMsg) throws Exception {
+                openUsbProt(openUsbProt);
+            }
+        }));*/
+
         registerBoothCloseBroadcast();
 
+        registerUsbBroad();
         // getPrinterStatusClicked();
     }
 
@@ -120,6 +151,10 @@ public class PrinterConnectSerivce extends Service {
 
     public void closeProt(){
         try {
+            int state=mGpService.getPrinterConnectStatus(mPrinterIndex);
+            if (state==GpDevice. STATE_CONNECTING||state==GpDevice. STATE_CONNECTED ){
+                return;
+            }
             mGpService.closePort(mPrinterIndex);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -127,10 +162,22 @@ public class PrinterConnectSerivce extends Service {
     }
 
 
+    private void openBluetoothProtFromDevice(BluetoothDevice bluetoothDevice){
+        try {
+            int rel = mGpService.openPort(mPrinterIndex, PortParameters.BLUETOOTH ,bluetoothDevice.getAddress(),0);
+            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
+            //ToastUtil.getInstance().showToast("result :" + String.valueOf(r));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      * 打开端口连接
+     * 优先选择蓝牙
      */
-    public void openProt() {
+    public void openBluetoothOrUsbProt() {
         Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
         List<BluetoothDevice> devices=new ArrayList<BluetoothDevice>(bondedDevices);
         BluetoothDevice printDevice=null;
@@ -140,8 +187,11 @@ public class PrinterConnectSerivce extends Service {
                 break;
             }
         }
-        if (printDevice==null){
-            ToastUtil.getInstance().showToast("端口打开失败，请确认蓝牙是否已连接，或重启应用");
+        if (printDevice==null||!mBluetoothAdapter.isEnabled()){   //蓝牙打印机不可用
+          //  ToastUtil.getInstance().showToast("请确认蓝牙是否已连接");
+           // connectionUsbProt();
+
+            firstOpenUsbPort();
             return;
         }
         try {
@@ -153,6 +203,17 @@ public class PrinterConnectSerivce extends Service {
         }
     }
 
+    private void firstOpenUsbPort(){
+        HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
+        Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
+        while(deviceIterator.hasNext()){
+            mUsbDevice  = deviceIterator.next();
+            break;
+        }
+        if (mUsbDevice!=null){
+            openUsbProt();
+        }
+    }
 
     private void registerBoothCloseBroadcast() {
         IntentFilter filter = new IntentFilter();
@@ -184,20 +245,47 @@ public class PrinterConnectSerivce extends Service {
     };
 
 
+
     class PrinterServiceConnection implements ServiceConnection {
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.i("ServiceConnection", "onServiceDisconnected() called");
             mGpService = null;
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mGpService = GpService.Stub.asInterface(service);
-            openProt();
+            if (mPortConnectionStateBroad==null){
+                mPortConnectionStateBroad=new PortConnectionStateBroad();
+                IntentFilter intentFilter=new IntentFilter(CONNECTION_ACTION);
+                PrinterConnectSerivce.this.registerReceiver(mPortConnectionStateBroad,intentFilter);
+            }
+            //打开端口
+            openBluetoothOrUsbProt();
         }
     }
 
+    private int openUsbProt( ){
+        if (mUsbDevice==null){
+            ToastUtil.getInstance().showToast("请连接USB打印机");
+            return -1;
+        }
+
+        int rel = -1;
+        try {
+            int state=mGpService.getPrinterConnectStatus(mPrinterIndex);
+            if (state==GpDevice.STATE_NONE ||state==GpDevice. STATE_LISTEN ){
+                rel = mGpService.openPort(mPrinterIndex, PortParameters.USB, mUsbDevice.getDeviceName(), 0);
+                GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
+               // ToastUtil.getInstance().showToast("result :" + String.valueOf(r));
+            }
+            return rel;
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return rel;
+        }
+    }
 
     public boolean[] getConnectState() {
         boolean[] state = new boolean[GpPrintService.MAX_PRINTER_CNT];
@@ -241,8 +329,8 @@ public class PrinterConnectSerivce extends Service {
                 if ((byte) (status & GpCom.STATE_ERR_OCCURS) > 0) {
                     str += "打印机出错";
                 }
-                if ((byte) (status & GpCom.STATE_TIMES_OUT) > 0) {
-                    str += "查询超时";
+                if ((byte) (status & GpCom.STATE_TIMES_OUT) > 0) {//wzb 自己修改的 因为正常的时候也显示打印机超时
+                    str = "正常";
                 }
             }
            // ToastUtil.getInstance().showToast("打印机：" + mPrinterIndex + " 状态：" + str);
@@ -272,6 +360,12 @@ public class PrinterConnectSerivce extends Service {
             e.printStackTrace();
         }
 
+        if (mPortConnectionStateBroad!=null){
+            this.unregisterReceiver(mPortConnectionStateBroad);
+        }
+
+        this.unregisterReceiver(mUsbReceiver);
+
     }
 
 
@@ -279,7 +373,21 @@ public class PrinterConnectSerivce extends Service {
      * 打印调用的方法
      */
     public void printReceiptClicked(String money) {
-        try {
+
+        try {//拔插的时候这个sdk有毒  要这么处理
+            int state=mGpService.getPrinterConnectStatus(mPrinterIndex);
+           // ToastUtil.getInstance().showToast("state："+state);
+            if (state==GpDevice.STATE_CONNECTING){
+                ToastUtil.getInstance().showToast("打印机正在连接请稍后再试");
+                return;
+            }
+            if (state==GpDevice.STATE_NONE){
+                mGpService.closePort(mPrinterIndex);
+                if (mUsbDevice!=null){
+                    openUsbProt();
+                }
+
+            }
             int type = mGpService.getPrinterCommandType(mPrinterIndex);
             if (type == GpCom.ESC_COMMAND) {
                 sendReceipt(money);
@@ -304,7 +412,7 @@ public class PrinterConnectSerivce extends Service {
         esc.addText("多粉餐厅（赛格）\n"); // 打印文字
         esc.addPrintAndLineFeed();
 
-		/* 打印文字 */
+		/* 打印文字 *//*
         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
         esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
         esc.addText("--------------------------------\n");// 打印文字
@@ -326,7 +434,7 @@ public class PrinterConnectSerivce extends Service {
         esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
         esc.addText("欢迎再次光临！\n"); // 打印文字
-        esc.addPrintAndFeedLines((byte)5);
+        esc.addPrintAndFeedLines((byte)5);*/
 
 
         Vector<Byte> datas = esc.getCommand(); // 发送数据
@@ -338,7 +446,7 @@ public class PrinterConnectSerivce extends Service {
             rs = mGpService.sendEscCommand(mPrinterIndex, sss);
             GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rs];
             if (r != GpCom.ERROR_CODE.SUCCESS) {
-                ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
+               // ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
             }
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
@@ -346,28 +454,85 @@ public class PrinterConnectSerivce extends Service {
         }
     }
 
-    void sendReceiptBmp(int i) {
-        EscCommand esc = new EscCommand();
-        /* 打印图片 */
-        esc.addText("Print bitmap!\n"); // 打印文字openPortDialogueClicked
-        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard_0);
-        esc.addRastBitImage(b, 384, 0); // 打印图片
-        esc.addText("第 " + i + " 份\n"); // 打印文字
 
-        Vector<Byte> datas = esc.getCommand(); // 发送数据
-        Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
-        byte[] bytes = ArrayUtils.toPrimitive(Bytes);
-        String str = Base64.encodeToString(bytes, Base64.DEFAULT);
-        int rel;
-        try {
-            rel = mGpService.sendEscCommand(mPrinterIndex, str);
-            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
-            if (r != GpCom.ERROR_CODE.SUCCESS) {
-                    ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
-            }
-        } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    private class PortConnectionStateBroad extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+                    int type = intent.getIntExtra(GpPrintService.CONNECT_STATUS, 0);
+                    switch (type){
+                        case GpDevice. STATE_NONE: //连接断开
+                            ToastUtil.getInstance().showToast("打印机连接断开");
+                            break;
+                        case GpDevice. STATE_LISTEN : //监听状态
+                            break;
+                        case  GpDevice. STATE_CONNECTING : //正在连接
+                            break;
+                        case  GpDevice. STATE_CONNECTED : //已连接
+                            //ToastUtil.getInstance().showToast("已连接设备");
+                             break;
+                        case  GpDevice. STATE_INVALID_PRINTER : //无效的打印机
+                            ToastUtil.getInstance().showToast("无效的打印机");
+                              break;
+                        case  GpDevice. STATE_VALID_PRINTER : //有效的打印机
+                            ToastUtil.getInstance().showToast("已连接打印机");
+                              break;
+
+                    }
+                }
         }
+
+    private void registerUsbBroad(){
+        IntentFilter intentFilter=new IntentFilter();
+        //intentFilter.addAction(ACTION_USB_PERMISSION);
+        intentFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        intentFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        this.registerReceiver(mUsbReceiver,intentFilter);
     }
-}
+
+    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ACTION_USB_PERMISSION)) {
+                //sdk这条广播会去连接  SB SDK
+                synchronized (this) {
+                    UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        if (usbDevice != null) {//申请权限成功 打开端口
+                                ToastUtil.getInstance().showToast("usb端口打开中...");
+
+                             /*   int rel = 0;
+                                try {
+                                    rel = mGpService.openPort(mPrinterIndex, PortParameters.USB, usbDevice.getDeviceName(), 0);
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+*/
+                        }else{
+                            ToastUtil.getInstance().showToast("usb打印机连接失败");
+                        }
+                    } else {
+                        ToastUtil.getInstance().showToast("usb打印机连接被拒绝");
+                    }
+                }
+            } else if (action.equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+               // ToastUtil.getInstance().showToast("usb打印机断开");
+
+                UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                if (usbDevice != null) {
+                    //close connection
+                    ToastUtil.getInstance().showToast("usb打印机断开...");
+                }
+                mUsbDevice=null;
+                closeProt();
+            }else if (action.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)){
+              //  ToastUtil.getInstance().showToast("usb打印机接入");
+                UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                mUsbDevice=usbDevice;
+                openUsbProt();
+            }
+        }
+    };
+    }
+

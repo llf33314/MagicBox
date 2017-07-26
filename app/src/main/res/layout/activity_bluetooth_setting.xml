@@ -4,14 +4,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/wifi_connection_bg">
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="可配对设备"
-        android:textColor="@color/wifi_connection_tv_color"
-        android:layout_marginTop="25dp"
-        android:layout_marginLeft="15dp"
-        />
+        android:orientation="horizontal"
+        android:paddingRight="10dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="可配对设备"
+            android:textColor="@color/wifi_connection_tv_color"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="15dp"
+            android:layout_centerVertical="true"
+            />
+        <Switch
+            android:id="@+id/sw_bluetooth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            />
+        <TextView
+            android:id="@+id/tv_bluetooth_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/sw_bluetooth"
+            android:text="开启"
+            android:textColor="@color/wifi_connection_tv_color"
+            android:layout_marginRight="10dp"
+            />
+    </RelativeLayout>
+
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_bluetooth_bonded"

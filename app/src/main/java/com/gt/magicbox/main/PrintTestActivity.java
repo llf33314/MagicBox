@@ -171,40 +171,7 @@ public class PrintTestActivity extends BaseActivity {
         return state;
     }
 
-    /**
-     * 打印机状态
-     */
-    public void getPrinterStatusClicked() {
-        try {
-            mTotalCopies = 0;
-            int status = mGpService.queryPrinterStatus(mPrinterIndex, 500);
-            String str = "";
-            if (status == GpCom.STATE_NO_ERR) {
-                str = "打印机正常";
-            } else {
-                str = "打印机 ";
-                if ((byte) (status & GpCom.STATE_OFFLINE) > 0) {
-                    str += "脱机";
-                }
-                if ((byte) (status & GpCom.STATE_PAPER_ERR) > 0) {
-                    str += "缺纸";
-                }
-                if ((byte) (status & GpCom.STATE_COVER_OPEN) > 0) {
-                    str += "打印机开盖";
-                }
-                if ((byte) (status & GpCom.STATE_ERR_OCCURS) > 0) {
-                    str += "打印机出错";
-                }
-                if ((byte) (status & GpCom.STATE_TIMES_OUT) > 0) {
-                    str += "查询超时";
-                }
-            }
-            ToastUtil.getInstance().showToast("打印机：" + mPrinterIndex + " 状态：" + str);
-        } catch (RemoteException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-    }
+
 
     @Override
     public void onDestroy() {
