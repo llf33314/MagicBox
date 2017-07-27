@@ -174,17 +174,5 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode){
-            case KeyEvent.KEYCODE_0:
-                ToastUtil.getInstance().showToast("KEYCODE_0");
 
-                return true;
-            case KeyEvent.KEYCODE_NUMPAD_0:
-                ToastUtil.getInstance().showToast("KEYCODE_NUMPAD_0");
-                return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 }

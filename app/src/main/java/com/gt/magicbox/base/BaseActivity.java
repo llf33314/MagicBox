@@ -1,10 +1,13 @@
 package com.gt.magicbox.base;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +16,11 @@ import android.widget.TextView;
 
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.utils.commonutil.ActivityUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.AppUtils;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.utils.commonutil.Utils;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
@@ -35,6 +42,13 @@ public  class BaseActivity extends RxAppCompatActivity {
         toolBarTitle= (TextView) findViewById(R.id.toolbar_title);
         setSupportActionBar(mToolbar);
         AppManager.getInstance().addActivity(this);
+
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i("activity","activity="+ ActivityUtils.getTopActivity(this));
+        super.onResume();
     }
 
     @CallSuper
@@ -63,6 +77,21 @@ public  class BaseActivity extends RxAppCompatActivity {
     }
     public void goneToolBar(){
         mToolbar.setVisibility(View.GONE);
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //ToastUtil.getInstance().showToast(""+keyCode);
+        if (((keyCode>=KeyEvent.KEYCODE_NUMPAD_0&&keyCode<=KeyEvent.KEYCODE_NUMPAD_RIGHT_PAREN)
+                ||keyCode==KeyEvent.KEYCODE_DEL)
+                &&!(ActivityUtils.getTopActivity(BaseActivity.this).contains("PaymentActivity"))
+                &&!(ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity"))
+                &&!(ActivityUtils.getTopActivity(BaseActivity.this).contains("ChosePayModeActivity"))){
+            Intent intent=new Intent(BaseActivity.this,PaymentActivity.class);
+            intent.putExtra("type",PaymentActivity.TYPE_INPUT);
+            intent.putExtra("keyCode",keyCode);
+            startActivity(intent);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }

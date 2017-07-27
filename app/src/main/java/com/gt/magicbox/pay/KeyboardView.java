@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.gt.magicbox.R;
 import com.gt.magicbox.utils.SpannableStringUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 /**
  * Description:
@@ -40,7 +41,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private TextView should_pay;
     private TextView charge;
     private TextView text_paid_in_amount;
-    private int maxLength = 15;
+    private int maxLength = 8;
     private int keyboardType = 0;
     private double chargeMoney;
     private double realPay;
@@ -97,32 +98,13 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.keyboard_clear:
-                numberString.setLength(0);
-                showMoney();
-                charge.setText("");
-                showNumber.setText("");
+                clearAll();
                 break;
             case R.id.keyboard_delete:
-                if (numberString.length() > 0) {
-                    numberString.deleteCharAt(numberString.length() - 1);
-                    showMoney();
-                }
+                backspace();
                 break;
             case R.id.keyboard_pay:
-                if (onKeyboardDoListener != null) {
-                    if (keyboardType == TYPE_INPUT_MONEY) {
-                        if (!TextUtils.isEmpty(numberString)) {
-                            double money = Double.parseDouble(numberString.toString());
-                            if (money != 0) {
-                                onKeyboardDoListener.onPay(money);
-                            }
-                        }
-                    } else if (keyboardType == TYPE_CHARGE) {
-                    if (chargeMoney>=0&&realPay>0){
-                        onKeyboardDoListener.onPay(orderMoney);
-                    }
-                    }
-                }
+                enter();
                 break;
         }
     }
@@ -133,6 +115,10 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             if (position <= 8) {
                 if (numberString.toString().equals("0")) {
                     numberString.deleteCharAt(0);
+                }
+                if (numberString.toString().contains(".")
+                        &&numberString.toString().substring(numberString.toString().indexOf("."),numberString.toString().length()).length()>2){
+                return;
                 }
                 numberString.append("" + (position + 1));
             } else if (position == 9) {
@@ -176,5 +162,48 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     public void setOrderMoney(double orderMoney) {
         this.orderMoney = orderMoney;
     }
-
+    public void input(String str){
+        Log.i("keycode","input numberString="+numberString.toString());
+        if (numberString.length() <= maxLength){
+            if (numberString.toString().equals("0")&&!str.equals(".")) {
+                Log.i("keycode","input numberString.deleteCharAt(0)="+numberString.toString());
+                numberString.deleteCharAt(0);
+            }
+            if (str.equals(".")&&(numberString.toString().contains(".") &&numberString.length()==0))//已经有小数点了或者小数点不能作为开头
+                return;
+            if (numberString.toString().contains(".")
+                    &&numberString.toString().substring(numberString.toString().indexOf("."),numberString.toString().length()).length()>2)
+                return;
+            numberString.append(str);
+            showMoney();
+        }
+    }
+    public void clearAll(){
+        numberString.setLength(0);
+        showMoney();
+        charge.setText("");
+        showNumber.setText("");
+    }
+    public void backspace(){
+        if (numberString.length() > 0) {
+            numberString.deleteCharAt(numberString.length() - 1);
+            showMoney();
+        }
+    }
+    public void enter(){
+        if (onKeyboardDoListener != null) {
+            if (keyboardType == TYPE_INPUT_MONEY) {
+                if (!TextUtils.isEmpty(numberString)) {
+                    double money = Double.parseDouble(numberString.toString());
+                    if (money != 0) {
+                        onKeyboardDoListener.onPay(money);
+                    }
+                }
+            } else if (keyboardType == TYPE_CHARGE) {
+                if (chargeMoney >= 0 && realPay > 0) {
+                    onKeyboardDoListener.onPay(orderMoney);
+                }
+            }
+        }
+    }
 }

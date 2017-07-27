@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -27,7 +28,7 @@ public class PaymentActivity extends BaseActivity {
     private double orderMoney=0;
     public static final int TYPE_INPUT=0;
     public static final int TYPE_CALC=1;
-
+    private int code;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +40,7 @@ public class PaymentActivity extends BaseActivity {
         if (getIntent()!=null){
             type=getIntent().getIntExtra("type",0);
             orderMoney=getIntent().getDoubleExtra("orderMoney",0);
+            code=getIntent().getIntExtra("keyCode",0);
         }
         keyboardView = (KeyboardView) findViewById(R.id.keyboard);
         keyboardView.setOrderMoney(orderMoney);
@@ -62,5 +64,26 @@ public class PaymentActivity extends BaseActivity {
                 }
             }
         });
+        if (code>0)onKeyDown(code,null);
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyboardView!=null)
+        if (keyCode>=KeyEvent.KEYCODE_NUMPAD_0&&keyCode<=KeyEvent.KEYCODE_NUMPAD_9){
+            keyboardView.input(""+(keyCode-144));
+            return true;
+        }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_DOT){
+            keyboardView.input(".");
+            return true;
+        }else if (keyCode==KeyEvent.KEYCODE_DEL){
+            keyboardView.backspace();
+            return true;
+        }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_ENTER){
+            keyboardView.enter();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
