@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -23,6 +24,7 @@ import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.SimpleObserver;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.WebViewActivity;
 import com.service.OrderPushService;
 
@@ -171,4 +173,17 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode){
+            case KeyEvent.KEYCODE_0:
+                ToastUtil.getInstance().showToast("KEYCODE_0");
+
+                return true;
+            case KeyEvent.KEYCODE_NUMPAD_0:
+                ToastUtil.getInstance().showToast("KEYCODE_NUMPAD_0");
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

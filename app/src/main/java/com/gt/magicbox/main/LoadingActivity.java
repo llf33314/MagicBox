@@ -18,6 +18,7 @@ import static java.lang.Thread.sleep;
  */
 
 public class LoadingActivity extends Activity{
+    private boolean isCreate;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,16 +27,19 @@ public class LoadingActivity extends Activity{
             @Override
             public void run() {
                 try {
+                    if (!isCreate)
                     sleep(2000);
+                    isCreate=true;
+                    String token = SPUtils.getInstance().getString("token", "");
+                    Intent intent;
+                    intent = !TextUtils.isEmpty(token) ? new Intent(LoadingActivity.this, MainActivity.class)
+                            : new Intent(LoadingActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                String token = SPUtils.getInstance().getString("token", "");
-                Intent intent;
-                intent = !TextUtils.isEmpty(token) ? new Intent(LoadingActivity.this, MainActivity.class)
-                        : new Intent(LoadingActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+
             }
         }).start();
     }

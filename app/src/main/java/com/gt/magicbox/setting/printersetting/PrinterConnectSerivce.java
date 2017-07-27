@@ -412,7 +412,7 @@ public class PrinterConnectSerivce extends Service {
         esc.addText("多粉餐厅（赛格）\n"); // 打印文字
         esc.addPrintAndLineFeed();
 
-		/* 打印文字 *//*
+		// 打印文字 *//*
         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
         esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
         esc.addText("--------------------------------\n");// 打印文字
@@ -434,7 +434,7 @@ public class PrinterConnectSerivce extends Service {
         esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
         esc.addText("欢迎再次光临！\n"); // 打印文字
-        esc.addPrintAndFeedLines((byte)5);*/
+        esc.addPrintAndFeedLines((byte)5);
 
 
         Vector<Byte> datas = esc.getCommand(); // 发送数据

@@ -36,11 +36,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Base"
         android:name=".base.MyApplication">
-        <activity android:name=".main.LoadingActivity">
+        <activity android:name=".main.LoadingActivity"
+            android:launchMode="singleTask"
+            >
            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+               <category android:name="android.intent.category.MONKEY"/>
+               <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:name=".setting.wificonnention.WifiConnectionActivity">

@@ -102,7 +102,7 @@ public class OrderPushService extends Service {
             OrderBean orderBean= new Gson().fromJson(retData,OrderBean.class);
             Log.d(TAG, "socket --> " + retData.toString()+"  orderBean.orderNo="+orderBean.pay_type+"  time="+orderBean.money);
             if (orderBean!=null){
-                //startERCodePay(orderBean.orderId);
+                startERCodePay(orderBean.orderId);
                 getUnpaidOrderCount();
             }
         }
@@ -193,5 +193,4 @@ public class OrderPushService extends Service {
     public class PushBinder extends Binder{
 
     }
-
 }

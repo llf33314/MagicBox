@@ -96,11 +96,11 @@ public class PayResultActivity extends BaseActivity {
     private void createCashOrder(String money) {
         HttpCall.getApiService()
                 .createCashOrder(PhoneUtils.getIMEI(), money, "2")
-                .compose(RxObservableUtils.<BaseResponse<VoidBean>>applySchedulers())//线程处理
-                .compose(PayResultActivity.this.<BaseResponse<VoidBean>>bindToLifecycle())//内存泄漏处理
-                .subscribe(new BaseObserver<VoidBean>(PayResultActivity.this, true) {
+                .compose(RxObservableUtils.<BaseResponse<String>>applySchedulers())//线程处理
+                .compose(PayResultActivity.this.<BaseResponse<String>>bindToLifecycle())//内存泄漏处理
+                .subscribe(new BaseObserver<String>(PayResultActivity.this, true) {
                     @Override
-                    public void onSuccess(VoidBean data) {
+                    public void onSuccess(String data) {
                         Log.i(TAG, "createCashOrder Success");
                     }
 
