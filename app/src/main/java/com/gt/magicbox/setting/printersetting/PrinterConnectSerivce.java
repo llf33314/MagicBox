@@ -92,7 +92,7 @@ public class PrinterConnectSerivce extends Service {
         //  mBluetoothAdapter.getProfileProxy()
 
         //打印
-        RxBus.get().toObservable(String.class).subscribe(new SimpleObserver<String>(new Consumer<String>() {
+        RxBus.get().toObservable(String.class).subscribe(new Consumer<String>() {
             @Override
             public void accept(@NonNull String money) throws Exception {
               /* String printerStatus= getPrinterStatusClicked();
@@ -102,10 +102,10 @@ public class PrinterConnectSerivce extends Service {
                 }*/
                 printReceiptClicked(money);
             }
-        }));
+        });
 
         //打开、关闭端口
-        RxBus.get().toObservable(OpenPrinterPortMsg.class).subscribe(new SimpleObserver<OpenPrinterPortMsg>(new Consumer<OpenPrinterPortMsg>() {
+        RxBus.get().toObservable(OpenPrinterPortMsg.class).subscribe(new Consumer<OpenPrinterPortMsg>() {
             @Override
             public void accept(@NonNull OpenPrinterPortMsg openPrinterPortMsg) throws Exception {
                 switch (openPrinterPortMsg.getBluetoothState()){
@@ -121,7 +121,7 @@ public class PrinterConnectSerivce extends Service {
                         break;
                 }
             }
-        }));
+        });
 
        /* RxBus.get().toObservable(RxBusUsbMsg.class).subscribe(new SimpleObserver<RxBusUsbMsg>(new Consumer<RxBusUsbMsg>() {
             @Override

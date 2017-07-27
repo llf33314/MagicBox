@@ -112,13 +112,14 @@ public class MainActivity extends BaseActivity {
             }
         });
        // new ShortcutMenuDialog(this,R.style.ShortcutMenuDialog).show();
-        RxBus.get().toObservable(UnpaidOrderBean.class).subscribe(new SimpleObserver<UnpaidOrderBean>(new Consumer<UnpaidOrderBean>() {
+        RxBus.get().toObservable(UnpaidOrderBean.class).subscribe(new Consumer<UnpaidOrderBean>() {
             @Override
-            public void accept(@NonNull UnpaidOrderBean unpaidOrderBean) throws Exception {
-                Log.i("grid","unpaidOrderBean.count="+unpaidOrderBean.count);
+            public void accept(@io.reactivex.annotations.NonNull UnpaidOrderBean unpaidOrderBean) throws Exception {
                 updateUnpaid(unpaidOrderBean);
             }
-        }));
+        });
+
+
         handler.post(new Runnable() {
             @Override
             public void run() {

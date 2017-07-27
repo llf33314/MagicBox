@@ -26,6 +26,7 @@
         android:text="配置USB打印机"
         android:background="@drawable/btn_orange_border_and_white"
         android:layout_marginTop="15dp"
+        android:visibility="gone"
         />
     <TextView
         android:id="@+id/tv_config_show"

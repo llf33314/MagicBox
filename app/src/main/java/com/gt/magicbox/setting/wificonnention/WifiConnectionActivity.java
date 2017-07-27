@@ -69,6 +69,7 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
     protected void onDestroy() {
         super.onDestroy();
         this.unregisterReceiver(broadCast);
+        presenter.cancelScan();
     }
 
     @Override
@@ -127,6 +128,4 @@ public class WifiConnectionActivity extends BaseActivity implements IWifiConecti
             }
         }
     }
-
-
 }

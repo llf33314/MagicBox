@@ -47,6 +47,8 @@ public class WifiConnectionPresenter {
         wifiConnectiontModel=new WifiConnectionModel((Context) this.wifiConectionView);
     }
 
+    private Disposable loopDisposable;
+
     Comparator<WifiBean> comparator=new Comparator<WifiBean>() {
         @Override
         public int compare(WifiBean o2, WifiBean o1) {
@@ -73,9 +75,10 @@ public class WifiConnectionPresenter {
         wifiConnectiontModel.scanWifi()
                 .compose(RxObservableUtils.<List<ScanResult>>applySchedulers())
                 .compose(((BaseActivity)wifiConectionView).<List<ScanResult>>bindToLifecycle())
-                .flatMap(new Function<List<ScanResult>, ObservableSource<List<WifiBean>>>() {
+                .map(new Function<List<ScanResult>, List<WifiBean>>() {
+
                     @Override
-                    public ObservableSource<List<WifiBean>> apply(@NonNull List<ScanResult> scanResults) throws Exception {
+                    public List<WifiBean> apply(@NonNull List<ScanResult> scanResults) throws Exception {
                         //当前连接的网络wifi
                         WifiInfo wifiInfo=wifiConnectiontModel.getWiseFy().getCurrentNetwork();
                         //当ssid="";会有问题？
@@ -138,7 +141,7 @@ public class WifiConnectionPresenter {
                         //排序wifi
                         Collections.sort(resultWfifs,comparator);
 
-                        return Observable.just(resultWfifs);
+                        return resultWfifs;
                     }
                 })
                 .subscribe(new Observer<List<WifiBean>>() {
@@ -214,7 +217,7 @@ public class WifiConnectionPresenter {
                 .subscribe(new Observer<Long>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-
+                        loopDisposable=d;
                     }
 
                     @Override
@@ -233,6 +236,10 @@ public class WifiConnectionPresenter {
                     }
                 });
     }
-
+    public void cancelScan(){
+        if (loopDisposable!=null&&!loopDisposable.isDisposed()){
+            loopDisposable.dispose();
+        }
+    }
 
 }

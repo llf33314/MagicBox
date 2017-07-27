@@ -192,13 +192,13 @@ public class JoinWifiDialog extends Dialog {
             }
         })
                 .compose(RxObservableUtils.<Boolean>applySchedulers())
-                .subscribe(new SimpleObserver<Boolean>(new Consumer<Boolean>() {
+                .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Boolean aBoolean) throws Exception {
                         if (!aBoolean){
                             ToastUtil.getInstance().showToast("连接 "+wifiBean.getName()+" 密码错误");
                         }
                     }
-                }));
+                });
     }
 }

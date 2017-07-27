@@ -27,7 +27,7 @@ public interface ApiService {
                                                  @Query("passWord")String pwd);
 
    @POST(HttpConfig.CASH_ORDER_URL)
-   Observable<BaseResponse<String>> createCashOrder(@Query("eqCode") String eqCode,
+   Observable<BaseResponse<VoidBean>> createCashOrder(@Query("eqCode") String eqCode,
                                                       @Query("money") String money,
                                                       @Query("type") String type);
    @POST(HttpConfig.GET_UNPAID_ORDER_URL)
