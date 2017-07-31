@@ -2,6 +2,9 @@ package com.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Binder;
 import android.os.IBinder;
@@ -40,6 +43,8 @@ public class OrderPushService extends Service {
     public static final String TAG = "OrderPushService";
     private Socket mSocket;
     private PushBinder binder=new PushBinder();
+
+    private Ringtone mRingtone;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -131,11 +136,21 @@ public class OrderPushService extends Service {
      * @param orderId 订单编号
      */
     private void startERCodePay(int orderId){
+        playOrderSound();
         Intent intent=new Intent(getApplicationContext(), WebViewActivity.class);
         intent.putExtra("webType",WebViewActivity.WEB_TYPE_SERVER_PUSH);
         intent.putExtra("orderId",orderId);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    private void playOrderSound(){
+        if (mRingtone==null){
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            mRingtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        }
+        mRingtone.play();
+
     }
     // socket disConnect
     private Emitter.Listener onDisconnect = new Emitter.Listener() {

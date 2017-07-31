@@ -6,5 +6,5 @@ package com.gt.magicbox.bean;
  */
 
 public class UnpaidOrderBean {
-    public int count;
+    public int count=-1;
 }

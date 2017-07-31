@@ -15,6 +15,7 @@
         android:textColor="@color/login_input_color"
         />
     <TextView
+        android:id="@+id/hint_msg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textColor="@color/login_input_color"

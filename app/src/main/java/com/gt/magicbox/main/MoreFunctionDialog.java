@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,12 +19,19 @@ public class MoreFunctionDialog extends Dialog {
 
     private TextView tvCancel;
 
+    private String msg="";
+
+    private TextView hintMsg;
     public MoreFunctionDialog(@NonNull Context context) {
         super(context);
     }
 
     public MoreFunctionDialog(@NonNull Context context, @StyleRes int themeResId) {
         super(context, themeResId);
+    }
+    public MoreFunctionDialog(@NonNull Context context,String msg, @StyleRes int themeResId) {
+        super(context, themeResId);
+        this.msg=msg;
     }
 
     @Override
@@ -34,11 +42,16 @@ public class MoreFunctionDialog extends Dialog {
     }
     private void init(){
         tvCancel= (TextView) this.findViewById(R.id.tv_more_function_cancel);
+        hintMsg= (TextView) this.findViewById(R.id.hint_msg);
+        if (!TextUtils.isEmpty(msg)){
+            hintMsg.setText(msg);
+        }
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MoreFunctionDialog.this.dismiss();
             }
         });
+
     }
 }

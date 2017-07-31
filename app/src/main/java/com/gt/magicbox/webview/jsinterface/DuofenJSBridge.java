@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
+import com.gt.magicbox.bean.UnpaidOrderBean;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PayResultActivity;
 import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.webview.WebViewActivity;
@@ -146,6 +148,15 @@ public class DuofenJSBridge {
         Log.d(TAG, "scanCode");
         ((WebViewActivity) context).scanCode();
         return true;
+    }
+
+    /**
+     * 删除订单后刷新主页订单数量
+     */
+    @JavascriptInterface
+    public void refreshHomeOrder(){
+        RxBus.get().post(new UnpaidOrderBean());
+        //((WebViewActivity) context).scanCode();
     }
 
 }

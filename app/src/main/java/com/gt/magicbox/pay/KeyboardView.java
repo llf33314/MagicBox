@@ -23,6 +23,8 @@ import com.gt.magicbox.utils.SpannableStringUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
+import java.math.BigDecimal;
+
 /**
  * Description:
  * Created by jack-lin on 2017/7/18 0018.
@@ -139,13 +141,24 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         if (numberString.length() != 0) {
             if (keyboardType == TYPE_CHARGE) {
                 realPay = Double.parseDouble(numberString.toString());
-                chargeMoney = realPay - orderMoney;
+              //  chargeMoney = realPay - orderMoney;
+                chargeMoney =sub(realPay,orderMoney);
                 if (chargeMoney >= 0) {
                     charge.setText(SpannableStringUtils.diffTextSize("¥ " + chargeMoney, 16, 0, 1));
                 } else charge.setText("");
             }
         }
         showNumber.setText(SpannableStringUtils.diffTextSize("¥ " + numberString, 20, 0, 1));
+
+    }
+
+    public double sub(double d1,double d2){
+
+        BigDecimal bd1 = new BigDecimal(Double.toString(d1));
+
+        BigDecimal bd2 = new BigDecimal(Double.toString(d2));
+
+        return bd1.subtract(bd2).doubleValue();
 
     }
 
