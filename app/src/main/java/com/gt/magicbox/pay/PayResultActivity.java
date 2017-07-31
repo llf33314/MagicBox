@@ -21,6 +21,7 @@ import com.gt.magicbox.http.HttpCall;
 import com.gt.magicbox.http.RxObservableUtils;
 import com.gt.magicbox.login.LoginActivity;
 import com.gt.magicbox.setting.printersetting.PrintBean;
+import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.SimpleObserver;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
@@ -80,7 +81,8 @@ public class PayResultActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.printButton:
-                RxBus.get().post(new PrintBean(message));
+                PrinterConnectSerivce.printReceiptClicked(message);
+               // RxBus.get().post(new PrintBean(message));
                 break;
         }
     }

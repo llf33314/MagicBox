@@ -29,6 +29,7 @@ import com.gprinter.io.GpDevice;
 import com.gprinter.io.PortParameters;
 import com.gprinter.service.GpPrintService;
 import com.gt.magicbox.R;
+import com.gt.magicbox.base.MyApplication;
 import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.main.PrintTestActivity;
@@ -67,6 +68,10 @@ public class PrinterConnectSerivce extends Service {
             "com.android.example.USB_PERMISSION";
 
     public static final String CONNECTION_ACTION="action.connect.status";
+
+    public static final int PRINTER_CONNECTING=14;
+    public static final int PRINTER_NOT_INTI=15;
+
     BluetoothAdapter mBluetoothAdapter ;
 
     Intent intentGpPrintService;
@@ -76,14 +81,15 @@ public class PrinterConnectSerivce extends Service {
     private boolean usbOut=false;
 
     private static GpService mGpService = null;
+
     private PrinterServiceConnection conn = null;
     private static int mPrinterIndex = 0;
 
     UsbManager mUsbManager ;
 
-    private UsbDevice mUsbDevice;
+    private static UsbDevice mUsbDevice;
 
-    private MoreFunctionDialog hintNotConnectDialog;
+    private  static MoreFunctionDialog hintNotConnectDialog;
 
     /**
      * 端口连接状态广播
@@ -104,13 +110,13 @@ public class PrinterConnectSerivce extends Service {
         //  mBluetoothAdapter.getProfileProxy()
 
         //打印
-        RxBus.get().toObservable(PrintBean.class).subscribe(new Consumer<PrintBean>() {
+        /*RxBus.get().toObservable(PrintBean.class).subscribe(new Consumer<PrintBean>() {
             @Override
             public void accept(@NonNull PrintBean printBean) throws Exception {
 
                 printReceiptClicked(printBean.getMoney());
             }
-        });
+        });*/
 
         //打开、关闭端口
         RxBus.get().toObservable(OpenPrinterPortMsg.class).subscribe(new Consumer<OpenPrinterPortMsg>() {
@@ -302,7 +308,7 @@ public class PrinterConnectSerivce extends Service {
         }
     }
 
-    private int openUsbProt( ){
+    private static int openUsbProt( ){
         if (mUsbDevice==null){
             ToastUtil.getInstance().showToast("请连接USB打印机");
             return -1;
@@ -408,9 +414,9 @@ public class PrinterConnectSerivce extends Service {
 
     }
 
-    private void showHintNotConnectDialog(){
+    private static void showHintNotConnectDialog(){
         if (hintNotConnectDialog==null){
-            hintNotConnectDialog=new MoreFunctionDialog(this,"打印机未连接请连接后再打印",R.style.HttpRequestDialogStyle);
+            hintNotConnectDialog=new MoreFunctionDialog(MyApplication.getAppContext(),"打印机未连接请连接后再打印",R.style.HttpRequestDialogStyle);
             hintNotConnectDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         }
         hintNotConnectDialog.show();
@@ -420,15 +426,18 @@ public class PrinterConnectSerivce extends Service {
     /**
      * 打印调用的方法
      */
-    public void printReceiptClicked(String money) {
+    public static int  printReceiptClicked(String money) {
 
+        if (mGpService==null){
+            return PRINTER_NOT_INTI;
+        }
 
         try {//拔插的时候这个sdk有毒  要这么处理
             int state=mGpService.getPrinterConnectStatus(mPrinterIndex);
            // ToastUtil.getInstance().showToast("state："+state);
             if (state==GpDevice.STATE_CONNECTING){
                 ToastUtil.getInstance().showToast("打印机正在连接请稍后再试");
-                return;
+                return PRINTER_CONNECTING;
             }
             if (state==GpDevice.STATE_NONE){
                 //mGpService.closePort(mPrinterIndex);
@@ -440,7 +449,7 @@ public class PrinterConnectSerivce extends Service {
             }
             int type = mGpService.getPrinterCommandType(mPrinterIndex);
             if (type == GpCom.ESC_COMMAND) {
-                sendReceipt(money);
+              return sendReceipt(money);
 //                int status = mGpService.queryPrinterStatus(mPrinterIndex, 500);
 //                if (status == GpCom.STATE_NO_ERR) {
 //                    sendReceipt();
@@ -452,9 +461,10 @@ public class PrinterConnectSerivce extends Service {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
+        return -1;
     }
 
-    void sendReceipt(String money) {
+    private static int sendReceipt(String money) {
         EscCommand esc = new EscCommand();
         esc.addPrintAndFeedLines((byte) 1);
         esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
@@ -491,7 +501,7 @@ public class PrinterConnectSerivce extends Service {
         Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
         byte[] bytes = ArrayUtils.toPrimitive(Bytes);
         String sss = Base64.encodeToString(bytes, Base64.DEFAULT);
-        int rs;
+        int rs=-1;
         try {
             rs = mGpService.sendEscCommand(mPrinterIndex, sss);
             GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rs];
@@ -502,6 +512,7 @@ public class PrinterConnectSerivce extends Service {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return rs;
     }
 
 
