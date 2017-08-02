@@ -142,7 +142,6 @@ public class DuofenJSBridge {
 
     /**
      * 开启扫码
-     * @return
      */
     @JavascriptInterface
     public boolean scanCode(){
@@ -161,6 +160,23 @@ public class DuofenJSBridge {
     }
   /**
      * web打印接口
+    @return
+   -1：未知错误
+   0：SUCCESS,
+   1：FAILED,
+   2：TIMEOUT,
+   3：INVALID_DEVICE_PARAMETERS,
+   4：DEVICE_ALREADY_OPEN,
+   5：INVALID_PORT_NUMBER,
+   6：INVALID_IP_ADDRESS,
+   7：INVALID_CALLBACK_OBJECT,
+   8：BLUETOOTH_IS_NOT_SUPPORT,
+   9：OPEN_BLUETOOTH,
+   10：PORT_IS_NOT_OPEN,
+   11：INVALID_BLUETOOTH_ADDRESS,
+   12：PORT_IS_DISCONNECT;
+   14：打印机正在连接
+   15：打印机没初始化
      */
     @JavascriptInterface
     public int printPaper(String message) {

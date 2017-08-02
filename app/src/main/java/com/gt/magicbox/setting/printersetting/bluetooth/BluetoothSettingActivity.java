@@ -396,6 +396,7 @@ public class BluetoothSettingActivity extends BaseActivity {
                 switch (state){
                     case BluetoothAdapter.STATE_ON:
                         tvBluetoothSwitch.setText("开启");
+                        swBluetooth.setEnabled(true);
                         //初始化ui界面
                         initBluetoothUi();
                         //扫描蓝牙
@@ -416,6 +417,7 @@ public class BluetoothSettingActivity extends BaseActivity {
                         break;
                     case BluetoothAdapter.STATE_OFF:
                         tvBluetoothSwitch.setText("关闭");
+                        swBluetooth.setEnabled(true);
                         if (mBondedRecyclerviewAdapter!=null){
                             mBondedRecyclerviewAdapter.clearItem();
                             rvBluetoothBonded.requestLayout();
@@ -423,16 +425,16 @@ public class BluetoothSettingActivity extends BaseActivity {
                         if (scanResultAdapter!=null){
                             scanResultAdapter.clearItem();
                         }
-
-
                         break;
                     case BluetoothAdapter.STATE_TURNING_OFF :
                         tvBluetoothSwitch.setText("关闭中...");
+                        swBluetooth.setEnabled(false);
                         //关闭端口
                         RxBus.get().post(new OpenPrinterPortMsg(OpenPrinterPortMsg.CLOSE_PROT));
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON :
                         tvBluetoothSwitch.setText("开启中...");
+                        swBluetooth.setEnabled(false);
                         break;
                 }
             }else if (BluetoothDevice.ACTION_FOUND.equals(action)) {

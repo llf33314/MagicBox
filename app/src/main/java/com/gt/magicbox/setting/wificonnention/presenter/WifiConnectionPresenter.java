@@ -87,10 +87,11 @@ public class WifiConnectionPresenter {
 
                         resultWfifs.clear();
                         //已保存过的wifi
+                        if (savedNetworks==null){
+                            savedNetworks=new ArrayList<WifiConfiguration>();
+                        }
                         savedNetworks.clear();
                         savedNetworks =wifiConnectiontModel.getWiseFy().getSavedNetworks();
-
-
 
                         for (ScanResult s:scanResults){
                             WifiBean wifiBean=new WifiBean();
@@ -211,7 +212,7 @@ public class WifiConnectionPresenter {
      * 每隔3秒更新页面
      */
     public void startLoopScanWifi(){
-        Observable.interval(3000,3000, TimeUnit.MILLISECONDS)
+        Observable.interval(300,3000, TimeUnit.MILLISECONDS)
                 .compose(((BaseActivity)wifiConectionView).<Long>bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Long>() {
@@ -239,6 +240,18 @@ public class WifiConnectionPresenter {
     public void cancelScan(){
         if (loopDisposable!=null&&!loopDisposable.isDisposed()){
             loopDisposable.dispose();
+        }
+    }
+
+    public boolean isWifiEnabled(){
+        return wifiConnectiontModel.getWiseFy().isWifiEnabled();
+    }
+
+    public void setWifiEnable(boolean enable){
+        if (enable){
+            wifiConnectiontModel.getWiseFy().enableWifi();
+        }else{
+            wifiConnectiontModel.getWiseFy().disableWifi();
         }
     }
 
