@@ -281,6 +281,7 @@ public class WebViewActivity extends BaseActivity{
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 bar.setVisibility(View.VISIBLE);
+                Log.i(TAG,"newProgress="+newProgress);
                 bar.setProgress(newProgress);
                 if (newProgress >= 100) {
                     bar.setVisibility(View.GONE);

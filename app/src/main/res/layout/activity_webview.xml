@@ -3,13 +3,6 @@
     android:id="@+id/container"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <ProgressBar
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:id="@+id/bar"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:indeterminate="false"
-        android:progressDrawable="@android:color/holo_green_dark" />
 
     <WebView
         android:id="@+id/web"
@@ -27,5 +20,12 @@
         android:layout_height="250dp"
         android:layout_centerInParent="true"
         android:background="@drawable/qr_code_bg" />
-
+    <ProgressBar
+        android:max="100"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:progressDrawable="@drawable/progressbar_style"
+         />
 </RelativeLayout>
