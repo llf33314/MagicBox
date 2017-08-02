@@ -37,6 +37,7 @@
         android:theme="@style/AppTheme.Base"
         android:name=".base.MyApplication">
         <activity android:name=".main.LoadingActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             >
            <intent-filter>

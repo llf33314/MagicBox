@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--屏幕适配：viewport-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font: 400 14px/1.5 Tahoma,"Lucida Grande",Verdana,"Microsoft Yahei",STXihei,hei;
+        }
+
+        button{
+            border-style: none;
+            width: 94%;
+            border-radius: 8px;
+            background-color:#3F51B5;
+            margin-top: 10px;
+            margin-left: 3%;
+            margin-right: 3%;
+            height: 42px;
+            font-size: 18px;
+            color: white;
+        }
+
+        button:active{
+            background-color: #18b0ff;
+        }
+        #wrap{
+                position:fixed;
+                top:50%;
+                left:0;
+                width:100%;
+              }
+        #cen{
+            position:relative;
+            height:200px;
+            top:-100px;
+            width:300px;
+            margin:0px auto;
+            font-size:26px;
+            color:#B9BBBF;
+            text-align:center;
+        }
+         #retry_img{
+            position:relative;
+            top:-160px;
+            margin:0px auto;
+
+        }
+    </style>
+</head>
+<body id="parent">
+<div id="wrap">
+    <div id="retry_img"  align="center"><img src="retry.png"/></div>
+
+    <div id="cen">轻触屏幕重新加载</div>
+</div>
+<script>
+      var WebMethod={};
+       function reload(){
+          dfmb.reload() ;
+          var retry_img=document.getElementById("retry_img");
+       }
+    document.onclick=reload;
+</script>
+</body>
+
+</html>
