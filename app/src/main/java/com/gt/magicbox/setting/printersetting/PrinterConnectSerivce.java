@@ -9,17 +9,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.gprinter.aidl.GpService;
 import com.gprinter.command.EscCommand;
 import com.gprinter.command.GpCom;
+import com.gprinter.command.LabelCommand;
 import com.gprinter.io.GpDevice;
 import com.gprinter.io.PortParameters;
 import com.gprinter.service.GpPrintService;
@@ -59,6 +65,7 @@ public class PrinterConnectSerivce extends Service {
     BluetoothAdapter mBluetoothAdapter ;
 
     Intent intentGpPrintService;
+
 
     public static GpService mGpService = null;
 
@@ -452,9 +459,12 @@ public class PrinterConnectSerivce extends Service {
                     showHintNotConnectDialog();
                 }
             }
+            //这里很关键   打印机类型是ESC 还是TSC
             int type = mGpService.getPrinterCommandType(mPrinterIndex);
             if (type == GpCom.ESC_COMMAND) {
-              return sendReceipt(money);
+              return sendESCReceipt(money);
+            }else if (type == GpCom.LABEL_COMMAND){ //TSC
+                return sendLabelReceipt();
             }
         } catch (RemoteException e1) {
             e1.printStackTrace();
@@ -462,7 +472,7 @@ public class PrinterConnectSerivce extends Service {
         return -1;
     }
 
-    private static int sendReceipt(String money) {
+    private static int sendESCReceipt(String money) {
         EscCommand esc = new EscCommand();
         esc.addPrintAndFeedLines((byte) 1);
         esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
@@ -513,6 +523,128 @@ public class PrinterConnectSerivce extends Service {
         return rs;
     }
 
+    private static int sendLabelReceipt() {
+         int LEFT=15;
+        String name="超级英式奶茶";
+
+        //总共320*240
+        LabelCommand tsc = new LabelCommand();
+        tsc.addSize(40, 30); // 设置标签尺寸，按照实际尺寸设置
+        tsc.addGap(3); // 设置标签间隙，按照实际尺寸设置，如果为无间隙纸则设置为0
+        tsc.addDirection(LabelCommand.DIRECTION.FORWARD , LabelCommand.MIRROR.NORMAL);// 设置打印方向
+        tsc.addReference(0, 0);// 设置原点坐标
+        tsc.addTear(EscCommand.ENABLE.ON); // 撕纸模式开启
+        tsc.addCls();// 清除打印缓冲区
+        // 绘制简体中文
+
+        if (name.length()<=6){//中文的小于等于6 则字体变大打印一行
+            tsc.addText(LEFT,LEFT , LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
+                    "0279");
+            tsc.addText(LEFT,75, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
+                    name);
+            tsc.addText(LEFT, 140, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
+                    "大杯，热 x1");
+            tsc.addText(LEFT, 170, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
+                    "备注：少冰，加糖，果粒");
+        }else{
+
+            String oneLine=name.substring(0,6);
+            String twoLine=name.substring(6,12);//最多只能打12个字
+            tsc.addText(LEFT,LEFT , LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
+                    "0279");
+            tsc.addText(LEFT,70, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
+                    oneLine);
+            tsc.addText(LEFT,125, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
+                    twoLine);
+            tsc.addText(LEFT,180, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
+                    "大杯，热 x1");
+            tsc.addText(LEFT, 210, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
+                    "备注：123456");
+        }
+
+
+        tsc.addPrint(1, 1); // 打印标签
+        // tsc.addSound(2, 100); // 打印标签后 蜂鸣器响
+        //打印机打印密度
+        tsc.addDensity(LabelCommand.DENSITY.DNESITY10);
+        tsc.addCashdrwer(LabelCommand.FOOT.F5, 255, 255);
+        Vector<Byte> datas = tsc.getCommand(); // 发送数据
+        Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
+        byte[] bytes = ArrayUtils.toPrimitive(Bytes);
+        String str = Base64.encodeToString(bytes, Base64.DEFAULT);
+        int rel=-1;
+        try {
+            rel = mGpService.sendLabelCommand(mPrinterIndex, str);
+            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
+            if (r != GpCom.ERROR_CODE.SUCCESS) {
+                //Toast.makeText(getApplicationContext(), GpCom.getErrorText(r), Toast.LENGTH_SHORT).show();
+            }
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return  rel;
+    }
+
+
+
+    /*private static int sendLabelReceipt() {
+        //总共320*240
+        LabelCommand tsc = new LabelCommand();
+        tsc.addSize(40, 30); // 设置标签尺寸，按照实际尺寸设置
+        tsc.addGap(3); // 设置标签间隙，按照实际尺寸设置，如果为无间隙纸则设置为0
+        tsc.addDirection(LabelCommand.DIRECTION.FORWARD , LabelCommand.MIRROR.NORMAL);// 设置打印方向
+        tsc.addReference(0, 0);// 设置原点坐标
+        tsc.addTear(EscCommand.ENABLE.ON); // 撕纸模式开启
+        tsc.addCls();// 清除打印缓冲区
+        // 绘制简体中文
+        tsc.addText(60, 12, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
+                "多粉餐饮");
+        tsc.addReverse(45,5,320-95,63);
+
+
+        tsc.addText(15,75, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
+                "海贼王连锁店");
+        tsc.addText(10, 130, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
+                "加糖拿铁 小杯");
+        tsc.addText(10, 160, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
+                "价格：15.00元");
+        tsc.addText(10, 195, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
+                "外卖：123456");
+
+        //二维码
+        tsc.addQRCode(190, 130, LabelCommand.EEC.LEVEL_L, 4, LabelCommand.ROTATION.ROTATION_0, " http://www.duofriend.com/");
+
+
+        // 绘制图片
+     *//*   Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.gprinter);
+        tsc.addBitmap(20, 50, BITMAP_MODE.OVERWRITE, b.getWidth() * 2, b);
+*//*
+
+        // 绘制一维条码
+       // tsc.add1DBarcode(20, 250, LabelCommand.BARCODETYPE.CODE128, 100, LabelCommand.READABEL.EANBEL, LabelCommand.ROTATION.ROTATION_0, "Gprinter");
+        tsc.addPrint(1, 1); // 打印标签
+       // tsc.addSound(2, 100); // 打印标签后 蜂鸣器响
+        //打印机打印密度
+        tsc.addDensity(LabelCommand.DENSITY.DNESITY10);
+        tsc.addCashdrwer(LabelCommand.FOOT.F5, 255, 255);
+        Vector<Byte> datas = tsc.getCommand(); // 发送数据
+        Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
+        byte[] bytes = ArrayUtils.toPrimitive(Bytes);
+        String str = Base64.encodeToString(bytes, Base64.DEFAULT);
+        int rel=-1;
+        try {
+            rel = mGpService.sendLabelCommand(mPrinterIndex, str);
+            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
+            if (r != GpCom.ERROR_CODE.SUCCESS) {
+                //Toast.makeText(getApplicationContext(), GpCom.getErrorText(r), Toast.LENGTH_SHORT).show();
+            }
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return  rel;
+    }*/
 
     private class PortConnectionStateBroad extends BroadcastReceiver{
 
