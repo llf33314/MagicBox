@@ -1,26 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="280dp"
     android:layout_height="160dp"
     android:background="@drawable/white_radius_bg"
     >
     <TextView
+        android:layout_alignParentRight="true"
         android:id="@+id/tv_more_function_cancel"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:textSize="28sp"
         android:text="×"
-        android:layout_gravity="right|top"
         android:gravity="center"
         android:textColor="@color/login_input_color"
         />
-    <TextView
-        android:id="@+id/hint_msg"
+    <RelativeLayout
+        android:gravity="center_vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textColor="@color/login_input_color"
-        android:textSize="16sp"
-        android:text="精彩功能即将开启，敬请期待。"
-        android:gravity="center"
-        />
-</FrameLayout>
+        android:layout_height="match_parent">
+        <TextView
+            android:singleLine="true"
+            android:id="@+id/hint_msg"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:textColor="@color/login_input_color"
+            android:textSize="16sp"
+            android:text="精彩功能即将开启，敬请期待。"
+            android:gravity="center"
+            />
+        <Button
+            android:layout_below="@id/hint_msg"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/selector_white_button"
+            android:text="@string/net_setting"
+            android:id="@+id/confirm"
+            android:layout_marginTop="20dp"
+            android:layout_width="100dp"
+            android:layout_height="40dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

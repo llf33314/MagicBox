@@ -2,6 +2,8 @@ package com.gt.magicbox.webview.jsinterface;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
@@ -67,6 +69,15 @@ public class DuofenJSBridge {
         return json;
     }
 
+    @JavascriptInterface
+    public void reload() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                ((WebViewActivity) context).reload();
+            }
+        });
+    }
     /**
      * 返回上一页
      * @return

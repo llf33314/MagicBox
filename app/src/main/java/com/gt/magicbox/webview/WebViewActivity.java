@@ -31,6 +31,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.jsinterface.DuofenJSBridge;
 import com.gt.magicbox.webview.service.UUIDService;
 import com.gt.magicbox.webview.util.ObjectUtils;
@@ -265,12 +266,22 @@ public class WebViewActivity extends BaseActivity{
                // scanCode();
                 super.onPageFinished(view, url);
             }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                ToastUtil.getInstance().showToast(""+errorCode);
+                web.loadUrl("file:///android_asset/retry.html");
+                web.addJavascriptInterface(new DuofenJSBridge(WebViewActivity.this), "dfmb");
+
+            }
         });
 
         web.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 bar.setVisibility(View.VISIBLE);
+                Log.i(TAG,"newProgress="+newProgress);
                 bar.setProgress(newProgress);
                 if (newProgress >= 100) {
                     bar.setVisibility(View.GONE);
@@ -496,4 +507,9 @@ public class WebViewActivity extends BaseActivity{
         return 0;
     }
 
+    public void reload() {
+        Log.i(TAG,"getUrl="+webUrl);
+
+        web.loadUrl(webUrl);
+    }
 }

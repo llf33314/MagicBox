@@ -1,6 +1,8 @@
 package com.gt.magicbox.base;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
@@ -16,7 +18,10 @@ import android.widget.TextView;
 
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.main.MoreFunctionDialog;
+import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.ActivityUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.AppUtils;
@@ -36,7 +41,8 @@ public  class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // BarUtils.setStatusBarColor(this,getResources().getColor(R.color.toolbarBg));
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        // BarUtils.setStatusBarColor(this,getResources().getColor(R.color.toolbarBg));
         super.setContentView(R.layout.toolbar);
         mToolbar= (Toolbar) findViewById(R.id.toolbar);
         toolBarTitle= (TextView) findViewById(R.id.toolbar_title);

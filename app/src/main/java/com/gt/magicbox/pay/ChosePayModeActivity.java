@@ -8,6 +8,10 @@ import android.widget.RelativeLayout;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.main.MainActivity;
+import com.gt.magicbox.main.MoreFunctionDialog;
+import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
+import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.webview.WebViewActivity;
 
 import butterknife.BindView;
@@ -27,6 +31,7 @@ public class ChosePayModeActivity extends BaseActivity {
     @BindView(R.id.pay_cash)
     RelativeLayout payCash;
     private double money;
+    private MoreFunctionDialog dialog;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,10 +64,25 @@ public class ChosePayModeActivity extends BaseActivity {
      * @param type 0-微信，1-支付宝
      */
     private void startERCodePay(int type){
-        Intent intent=new Intent(ChosePayModeActivity.this, WebViewActivity.class);
-        intent.putExtra("webType",WebViewActivity.WEB_TYPE_PAY);
-        intent.putExtra("money",money);
-        intent.putExtra("payMode",type);
-        startActivity(intent);
+        if (NetworkUtils.isConnected()) {
+            Intent intent = new Intent(ChosePayModeActivity.this, WebViewActivity.class);
+            intent.putExtra("webType", WebViewActivity.WEB_TYPE_PAY);
+            intent.putExtra("money", money);
+            intent.putExtra("payMode", type);
+            startActivity(intent);
+        }else {
+            if (dialog==null){
+                dialog=new MoreFunctionDialog(ChosePayModeActivity.this,"没有网络，请连接后重试",R.style.HttpRequestDialogStyle);
+                dialog.getConfirmButton().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                        Intent intent=new Intent(ChosePayModeActivity.this,WifiConnectionActivity.class);
+                        startActivity(intent);
+                    }
+                });
+            }
+            dialog.show();
+        }
     }
 }

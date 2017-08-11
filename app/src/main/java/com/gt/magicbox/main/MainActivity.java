@@ -18,8 +18,11 @@ import com.gt.magicbox.http.BaseObserver;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpCall;
 import com.gt.magicbox.http.RxObservableUtils;
+import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
+import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
+import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.SimpleObserver;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -43,6 +46,9 @@ public class MainActivity extends BaseActivity {
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
     private MoreFunctionDialog mMoreFunctionDialog;
+    private MoreFunctionDialog networkDialog;
+    private Intent intent;
+
     private final int MSG_UPDATE_UI=0;
 
     //打印机连接
@@ -86,7 +92,6 @@ public class MainActivity extends BaseActivity {
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent;
                 switch (i) {
                     case 2:
                     case 3:
@@ -99,10 +104,25 @@ public class MainActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 1:
-                         intent=new Intent(MainActivity.this, WebViewActivity.class);
-                        intent.putExtra("webType",WebViewActivity.WEB_TYPE_ORDER);
-                        intent.putExtra("status",0);
-                        startActivity(intent);
+                        if (NetworkUtils.isConnected()) {
+                            intent=new Intent(MainActivity.this, WebViewActivity.class);
+                            intent.putExtra("webType",WebViewActivity.WEB_TYPE_ORDER);
+                            intent.putExtra("status",0);
+                            startActivity(intent);
+                        }else {
+                            if (networkDialog==null){
+                                networkDialog=new MoreFunctionDialog(MainActivity.this,"没有网络，请连接后重试",R.style.HttpRequestDialogStyle);
+                                networkDialog.getConfirmButton().setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        networkDialog.dismiss();
+                                        intent=new Intent(MainActivity.this,WifiConnectionActivity.class);
+                                        startActivity(intent);
+                                    }
+                                });
+                            }
+                            networkDialog.show();
+                        }
                         break;
                     case 5:
                         intent = new Intent(MainActivity.this, MoreActivity.class);
