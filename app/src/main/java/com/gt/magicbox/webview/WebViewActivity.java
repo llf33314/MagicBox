@@ -403,12 +403,31 @@ public class WebViewActivity extends BaseActivity{
 
 
         mCamera = mCameraManager.getCamera();
+        //openFlashLight(mCamera);
         mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
 
         scanPreview.addView(mPreview);
 
     }
-
+    private void openFlashLight(Camera m_Camera){
+        try{
+            Camera.Parameters mParameters;
+            mParameters = m_Camera.getParameters();
+            mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            m_Camera.setParameters(mParameters);
+        } catch(Exception ex){
+            ex.printStackTrace();
+        }
+    }
+    private void closeFlashLight(Camera m_Camera){
+        try{
+            Camera.Parameters mParameters;
+            mParameters = m_Camera.getParameters();
+            mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            m_Camera.setParameters(mParameters);
+            m_Camera.release();
+        } catch(Exception ex){}
+    }
     @Override
     protected void onPause() {
         super.onPause();
