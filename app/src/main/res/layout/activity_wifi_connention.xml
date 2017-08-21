@@ -8,15 +8,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingRight="10dp"
+        android:paddingRight="@dimen/dp_10"
         >
 <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="选取网络"
     android:textColor="@color/wifi_connection_tv_color"
-    android:layout_marginTop="25dp"
-    android:layout_marginLeft="15dp"
+    android:layout_marginTop="@dimen/dp_25"
+    android:layout_marginLeft="@dimen/dp_15"
     />
         <Switch
             android:id="@+id/sw_wifi"
@@ -33,7 +33,7 @@
             android:layout_toLeftOf="@id/sw_wifi"
             android:text="开启"
             android:textColor="@color/wifi_connection_tv_color"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/dp_10"
             />
     </RelativeLayout>
     <android.support.v7.widget.RecyclerView
@@ -47,16 +47,16 @@
     <Button
         android:id="@+id/btn_scan_wifi"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="@dimen/dp_40"
         android:text="刷新网络"
         android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:layout_marginRight="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_15"
         android:textSize="18sp"
         android:gravity="center"
         android:textColor="@color/theme_orange"
         android:background="@drawable/btn_orange_border_and_white"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="@dimen/dp_15"
         />
 </LinearLayout>

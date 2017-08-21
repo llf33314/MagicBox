@@ -7,16 +7,16 @@
     android:background="@color/white"
     >
     <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/dp_30"
+        android:layout_height="@dimen/dp_30"
         android:src="@drawable/keyboard_0"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="@dimen/dp_5"
         />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
+        android:paddingTop="@dimen/dp_5"
+        android:paddingBottom="@dimen/dp_5"
         android:orientation="vertical"
         >
         <TextView
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/wifi_connection_tv_color"
             android:textSize="14sp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="@dimen/dp_5"
             />
     </LinearLayout>
 

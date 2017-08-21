@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" 
     android:layout_width="match_parent"
-    android:layout_height="260dp"
+    android:layout_height="@dimen/dp_260"
     android:background="@color/wifi_connection_bg"
     >
     <LinearLayout
@@ -22,8 +22,8 @@
             android:gravity="center"
             >
             <com.gt.magicbox.utils.view.PressedImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/dp_60"
+            android:layout_height="@dimen/dp_60"
             android:src="@drawable/shortcut_wifi"
             />
             <TextView
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:text="网络设置"
                 android:textColor="@color/wifi_connection_tv_color"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/dp_10"
                 android:textSize="16sp"
                 />
         </LinearLayout>
@@ -46,8 +46,8 @@
             android:id="@+id/ll_shortcut_printer"
             >
             <com.gt.magicbox.utils.view.PressedImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="@dimen/dp_60"
                 android:src="@drawable/shortcut_printer"
                 />
             <TextView
@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:text="打印设置"
                 android:textColor="@color/wifi_connection_tv_color"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/dp_10"
                 android:textSize="16sp"
                 />
         </LinearLayout>
@@ -69,8 +69,8 @@
             android:id="@+id/ll_shortcut_volume"
             >
             <com.gt.magicbox.utils.view.PressedImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="@dimen/dp_60"
                 android:src="@drawable/shortcut_volume"
                 />
             <TextView
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:text="音量设置"
                 android:textColor="@color/wifi_connection_tv_color"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/dp_10"
                 android:textSize="16sp"
                 />
         </LinearLayout>
@@ -102,8 +102,8 @@
             
             >
             <com.gt.magicbox.utils.view.PressedImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="@dimen/dp_60"
                 android:src="@drawable/shortcut_device"
                 />
             <TextView
@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:text="设备状态"
                 android:textColor="@color/wifi_connection_tv_color"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/dp_10"
                 android:textSize="16sp"
                 />
         </LinearLayout>
