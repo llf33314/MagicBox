@@ -24,6 +24,7 @@ import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.webview.WebViewActivity;
+import com.orhanobut.hawk.Hawk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -114,7 +115,7 @@ public class OrderPushService extends Service {
     };
     private void getUnpaidOrderCount(){
         HttpCall.getApiService()
-                .getUnpaidOrderCount(PhoneUtils.getIMEI(), SPUtils.getInstance().getString("token"))
+                .getUnpaidOrderCount(PhoneUtils.getIMEI(), null)
                 .compose(RxObservableUtils.<BaseResponse<UnpaidOrderBean>>applySchedulers())
                 .subscribe(new BaseObserver<UnpaidOrderBean>(getApplicationContext(),false) {
                     @Override

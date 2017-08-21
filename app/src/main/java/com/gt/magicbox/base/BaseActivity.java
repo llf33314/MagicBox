@@ -53,7 +53,7 @@ public  class BaseActivity extends RxAppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.i("activity","activity="+ ActivityUtils.getTopActivity(this));
+        Log.d("activity","activity="+ ActivityUtils.getTopActivity(this));
         super.onResume();
     }
 

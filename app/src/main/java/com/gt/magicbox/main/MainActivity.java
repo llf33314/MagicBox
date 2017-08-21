@@ -29,6 +29,7 @@ import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.WebViewActivity;
+import com.orhanobut.hawk.Hawk;
 import com.service.OrderPushService;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class MainActivity extends BaseActivity {
             super.handleMessage(msg);
             switch (msg.what){
                 case MSG_UPDATE_UI:
-                    Log.i("grid","msg.arg1="+msg.arg1+"  msg.arg2="+msg.arg2);
+                    Log.d("grid","msg.arg1="+msg.arg1+"  msg.arg2="+msg.arg2);
 
                     homeData.get(msg.arg1).setMessageCount(msg.arg2);
                     gridViewAdapter.setGridData(homeData);
@@ -182,22 +183,26 @@ public class MainActivity extends BaseActivity {
     }
     private void getUnpaidOrderCount(){
         HttpCall.getApiService()
-                .getUnpaidOrderCount(PhoneUtils.getIMEI(), SPUtils.getInstance().getString("token"))
+                .getUnpaidOrderCount(PhoneUtils.getIMEI(), (String) Hawk.get("token"))
                 .compose(RxObservableUtils.<BaseResponse<UnpaidOrderBean>>applySchedulers())
                 .subscribe(new BaseObserver<UnpaidOrderBean>(getApplicationContext(),false) {
                     @Override
                     public void onSuccess(UnpaidOrderBean data) {
-                        Log.i(TAG,"UnpaidOrderBean onSuccess");
+                        Log.d(TAG,"UnpaidOrderBean onSuccess");
                         updateUnpaid(data);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.i(TAG,"onFailure code="+code+"  msg="+msg);
+                        Log.d(TAG,"onFailure code="+code+"  msg="+msg);
                         super.onFailure(code, msg);
                     }
                 });
     }
 
-
+    @Override
+    protected void onResume() {
+        getUnpaidOrderCount();
+        super.onResume();
+    }
 }

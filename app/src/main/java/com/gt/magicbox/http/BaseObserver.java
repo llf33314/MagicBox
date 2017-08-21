@@ -1,7 +1,6 @@
 package com.gt.magicbox.http;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.support.annotation.CallSuper;
 import android.util.Log;
 
