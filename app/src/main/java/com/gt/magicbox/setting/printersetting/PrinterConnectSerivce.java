@@ -122,7 +122,6 @@ public class PrinterConnectSerivce extends Service {
 
         registerUsbBroad();
 
-
     }
 
     @Override
@@ -139,7 +138,6 @@ public class PrinterConnectSerivce extends Service {
         }
     }
 
-
     public void closeProt(){
         try {
             int state=mGpService.getPrinterConnectStatus(mPrinterIndex);
@@ -151,7 +149,6 @@ public class PrinterConnectSerivce extends Service {
             e.printStackTrace();
         }
     }
-
 
     private void openBluetoothProtFromDevice(BluetoothDevice bluetoothDevice){
         try {
@@ -218,7 +215,8 @@ public class PrinterConnectSerivce extends Service {
         Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
 
         for(BluetoothDevice device : devices){
-            if (device.getType()==3){
+            //测试用  因为0D30显示的类型不是打印机？
+            if (/*device.getType()==3&&*/!"88:D1:31:71:2D:10".equals(device.getAddress())){
                 return device;
             }
         }
@@ -283,8 +281,6 @@ public class PrinterConnectSerivce extends Service {
             }
         }
     };
-
-
 
     class PrinterServiceConnection implements ServiceConnection {
         @Override

@@ -9,6 +9,7 @@ import com.gt.magicbox.utils.commonutil.BluetoothUtil;
 
 /**
  * Created by wzb on 2017/7/21 0021.
+ * 不弹出配对框  暂时没用
  */
 
 public class BluetoothConnectActivityReceiver extends BroadcastReceiver {
