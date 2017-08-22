@@ -116,7 +116,7 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
             Log.e(TAG,e.getMessage());
         } else if (e instanceof UnknownHostException) {
             errorCode = RESPONSE_CODE_FAILED;
-            errorMsg = "无网络连接，请检查网络是否开启";
+            errorMsg = "无法解析主机域名";
         } else if (e instanceof UnknownServiceException) {
             errorCode = RESPONSE_CODE_FAILED;
             errorMsg = "未知的服务器错误";

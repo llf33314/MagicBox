@@ -12,6 +12,7 @@
     <color name="theme_orange">#f04a4a</color>
     <color name="black">#000000</color>
 
+    <color name="pay_number">#000000</color>
 
     <color name="login_input_text_color">#000000</color>
     <color name="custom_red">#f04a4a</color>
