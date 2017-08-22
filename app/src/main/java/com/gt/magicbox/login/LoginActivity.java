@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.LoginBean;
+import com.gt.magicbox.http.BaseObserver;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
@@ -82,15 +83,13 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                 .subscribe(new BaseObserver<LoginBean>() {
                     @Override
                     public void onSuccess(LoginBean data) {
-                        Log.i(TAG, "onSuccess data=" + data.token);
                         token=data.token;
                         showLoginView();
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.i(TAG, "onFailure code=" + code + "  msg=" + msg);
-
+                        super.onFailure(code, msg);
                     }
                 });
     }

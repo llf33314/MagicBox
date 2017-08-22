@@ -8,6 +8,7 @@ import android.os.Process;
 import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
 import com.gt.magicbox.utils.commonutil.Utils;
+import com.orhanobut.hawk.Hawk;
 
 /**
  * Created by wzb on 2017/7/11 0011.
@@ -21,6 +22,7 @@ public class MyApplication extends Application {
         super.onCreate();
         applicationContext=getApplicationContext();
         Utils.init(applicationContext);
+        Hawk.init(applicationContext).build();
 
     }
     public static Context getAppContext(){

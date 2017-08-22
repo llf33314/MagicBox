@@ -10,6 +10,9 @@ android {
         versionCode 1
         versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "x86"
+        }
     }
     buildTypes {
         release {
@@ -38,9 +41,12 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     //wifi Manager
+    compile 'com.orhanobut:hawk:2.0.1'
     compile 'com.isupatches:wisefy:1.0.10'
     compile 'com.android.support:recyclerview-v7:23.2.1'
     compile 'com.android.support:design:22.2.0'
+    compile 'com.android.support:percent:22.2.0'
+
     compile files('libs/json.jar')
     compile('io.socket:socket.io-client:0.8.3') {
         exclude group: 'org.json', module: 'json'

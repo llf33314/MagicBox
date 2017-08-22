@@ -28,6 +28,7 @@ import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.WebViewActivity;
+import com.orhanobut.hawk.Hawk;
 import com.service.OrderPushService;
 
 import java.util.ArrayList;
@@ -182,8 +183,8 @@ public class MainActivity extends BaseActivity {
     private void getUnpaidOrderCount(){
         HttpCall.getApiService()
                 .getUnpaidOrderCount(PhoneUtils.getIMEI(), SPUtils.getInstance().getString("token"))
-                .compose(ResultTransformer.<UnpaidOrderBean>transformer())//线程处理 预处理
-                .subscribe(new BaseObserver<UnpaidOrderBean>() {
+                .compose(RxObservableUtils.<BaseResponse<UnpaidOrderBean>>applySchedulers())
+                .subscribe(new BaseObserver<UnpaidOrderBean>(getApplicationContext(),false) {
                     @Override
                     public void onSuccess(UnpaidOrderBean data) {
                         Log.i(TAG,"UnpaidOrderBean onSuccess");
