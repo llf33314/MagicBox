@@ -14,8 +14,6 @@ import android.widget.Toast;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.LoginBean;
-import com.gt.magicbox.http.BaseObserver;
-import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
@@ -27,6 +25,7 @@ import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.RegexUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,7 +67,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
 
     @Override
     public void showLoginView() {
-        SPUtils.getInstance().put("token", token);
+        Hawk.put("token",token);
         Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);

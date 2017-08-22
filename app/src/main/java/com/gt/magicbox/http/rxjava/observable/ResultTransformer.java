@@ -18,6 +18,7 @@ public class ResultTransformer {
 
     /**
      * 正常格式流程
+     * 已经切换线程
      */
     public static <T> ObservableTransformer<BaseResponse<T>, T> transformer() {
         return new ObservableTransformer<BaseResponse<T>, T>() {

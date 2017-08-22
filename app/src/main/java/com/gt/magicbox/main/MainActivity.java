@@ -14,8 +14,10 @@ import android.widget.GridView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.UnpaidOrderBean;
+import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observable.SchedulerTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
@@ -182,22 +184,26 @@ public class MainActivity extends BaseActivity {
     }
     private void getUnpaidOrderCount(){
         HttpCall.getApiService()
-                .getUnpaidOrderCount(PhoneUtils.getIMEI(), SPUtils.getInstance().getString("token"))
-                .compose(RxObservableUtils.<BaseResponse<UnpaidOrderBean>>applySchedulers())
-                .subscribe(new BaseObserver<UnpaidOrderBean>(getApplicationContext(),false) {
+                .getUnpaidOrderCount(PhoneUtils.getIMEI(), (String) Hawk.get("token"))
+                .compose(ResultTransformer.<UnpaidOrderBean>transformer())
+                .subscribe(new BaseObserver<UnpaidOrderBean>() {
                     @Override
                     public void onSuccess(UnpaidOrderBean data) {
-                        Log.i(TAG,"UnpaidOrderBean onSuccess");
+                        Log.d(TAG,"UnpaidOrderBean onSuccess");
                         updateUnpaid(data);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.i(TAG,"onFailure code="+code+"  msg="+msg);
+                        Log.d(TAG,"onFailure code="+code+"  msg="+msg);
                         super.onFailure(code, msg);
                     }
                 });
     }
 
-
+    @Override
+    protected void onResume() {
+        getUnpaidOrderCount();
+        super.onResume();
+    }
 }
