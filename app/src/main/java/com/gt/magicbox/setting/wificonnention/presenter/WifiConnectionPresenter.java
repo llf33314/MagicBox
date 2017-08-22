@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.gt.magicbox.base.BaseActivity;
-import com.gt.magicbox.http.RxObservableUtils;
+import com.gt.magicbox.http.rxjava.observable.SchedulerTransformer;
 import com.gt.magicbox.setting.wificonnention.model.IWifiConnectiontModel;
 import com.gt.magicbox.setting.wificonnention.model.WifiBean;
 import com.gt.magicbox.setting.wificonnention.model.WifiConnectionModel;
@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -73,7 +72,7 @@ public class WifiConnectionPresenter {
 
     public void  scanWifi(){
         wifiConnectiontModel.scanWifi()
-                .compose(RxObservableUtils.<List<ScanResult>>applySchedulers())
+                .compose(SchedulerTransformer.<List<ScanResult>>transformer())
                 .compose(((BaseActivity)wifiConectionView).<List<ScanResult>>bindToLifecycle())
                 .map(new Function<List<ScanResult>, List<WifiBean>>() {
 

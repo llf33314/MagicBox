@@ -14,25 +14,18 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.LoginBean;
-import com.gt.magicbox.bean.VoidBean;
-import com.gt.magicbox.http.BaseObserver;
 import com.gt.magicbox.http.BaseResponse;
-import com.gt.magicbox.http.HttpCall;
-import com.gt.magicbox.http.RxObservableUtils;
-import com.gt.magicbox.login.LoginActivity;
-import com.gt.magicbox.setting.printersetting.PrintBean;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
-import com.gt.magicbox.utils.RxBus;
-import com.gt.magicbox.utils.SimpleObserver;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
+
 
 /**
  * Description:
@@ -99,19 +92,17 @@ public class PayResultActivity extends BaseActivity {
     private void createCashOrder(String money) {
         HttpCall.getApiService()
                 .createCashOrder(PhoneUtils.getIMEI(), money, "2")
-                .compose(RxObservableUtils.<BaseResponse<VoidBean>>applySchedulers())//线程处理
-                .compose(PayResultActivity.this.<BaseResponse<VoidBean>>bindToLifecycle())//内存泄漏处理
-                .subscribe(new BaseObserver<VoidBean>(PayResultActivity.this, true) {
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .compose(new DialogTransformer().<BaseResponse>transformer()) //显示对话框
+                .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
-                    public void onSuccess(VoidBean data) {
+                    protected void onSuccess(BaseResponse baseResponse) {
                         Log.i(TAG, "createCashOrder Success");
                     }
 
                     @Override
-                    public void onFailure(int code, String msg) {
-                        super.onFailure(code, msg);
+                    protected void onFailure(int code, String msg) {
                         Log.i(TAG, "onFailure code=" + code + "  msg=" + msg);
-
                     }
                 });
     }

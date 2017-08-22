@@ -14,12 +14,12 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.gt.magicbox.bean.OrderBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
-import com.gt.magicbox.http.BaseObserver;
 import com.gt.magicbox.http.BaseResponse;
-import com.gt.magicbox.http.HttpCall;
 import com.gt.magicbox.http.HttpConfig;
-import com.gt.magicbox.http.RxObservableUtils;
-import com.gt.magicbox.pay.ChosePayModeActivity;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
@@ -115,14 +115,12 @@ public class OrderPushService extends Service {
     private void getUnpaidOrderCount(){
         HttpCall.getApiService()
                 .getUnpaidOrderCount(PhoneUtils.getIMEI(), SPUtils.getInstance().getString("token"))
-                .compose(RxObservableUtils.<BaseResponse<UnpaidOrderBean>>applySchedulers())
-                .subscribe(new BaseObserver<UnpaidOrderBean>(getApplicationContext(),false) {
+                .compose(ResultTransformer.<UnpaidOrderBean>transformer())//线程处理 预处理
+                .subscribe(new BaseObserver<UnpaidOrderBean>() {
                     @Override
                     public void onSuccess(UnpaidOrderBean data) {
                         Log.i(TAG,"UnpaidOrderBean onSuccess");
                         RxBus.get().post(data);
-
-
                     }
 
                     @Override

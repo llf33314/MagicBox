@@ -65,7 +65,7 @@ public  class BaseActivity extends RxAppCompatActivity {
         viewGroup.addView(activityView);
         //空出边距给toolbar
         FrameLayout.LayoutParams lp= (FrameLayout.LayoutParams) activityView.getLayoutParams();
-        lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.dp_50),0,0);
+        lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.toolbar_height),0,0);
         ButterKnife.bind(this);
     }
 
@@ -75,7 +75,7 @@ public  class BaseActivity extends RxAppCompatActivity {
         ViewGroup viewGroup= (ViewGroup) mToolbar.getParent();
         viewGroup.addView(view);
         FrameLayout.LayoutParams lp= (FrameLayout.LayoutParams) view.getLayoutParams();
-        lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.dp_50),0,0);
+        lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.toolbar_height),0,0);
         ButterKnife.bind(this);
     }
     public void setToolBarTitle(String title){

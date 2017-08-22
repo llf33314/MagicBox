@@ -14,10 +14,11 @@ import android.widget.Toast;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.LoginBean;
-import com.gt.magicbox.http.BaseObserver;
 import com.gt.magicbox.http.BaseResponse;
-import com.gt.magicbox.http.HttpCall;
-import com.gt.magicbox.http.RxObservableUtils;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
@@ -76,9 +77,9 @@ public class LoginActivity extends BaseActivity implements ILoginView {
     private void login(String userName, String password) {
         HttpCall.getApiService()
                 .userLogin(PhoneUtils.getIMEI(), userName, password)
-                .compose(RxObservableUtils.<BaseResponse<LoginBean>>applySchedulers())//线程处理
-                .compose(LoginActivity.this.<BaseResponse<LoginBean>>bindToLifecycle())//内存泄漏处理
-                .subscribe(new BaseObserver<LoginBean>(LoginActivity.this, true) {
+                .compose(ResultTransformer.<LoginBean>transformer())//线程处理 预处理
+                .compose(new DialogTransformer().<LoginBean>transformer()) //显示对话框
+                .subscribe(new BaseObserver<LoginBean>() {
                     @Override
                     public void onSuccess(LoginBean data) {
                         Log.i(TAG, "onSuccess data=" + data.token);
@@ -88,7 +89,6 @@ public class LoginActivity extends BaseActivity implements ILoginView {
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        super.onFailure(code, msg);
                         Log.i(TAG, "onFailure code=" + code + "  msg=" + msg);
 
                     }

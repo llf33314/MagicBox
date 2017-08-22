@@ -92,7 +92,7 @@ public class PrinterConnectSerivce extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mBluetoothAdapter =BluetoothAdapter.getDefaultAdapter();
+
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
         //打开、关闭端口
@@ -118,7 +118,12 @@ public class PrinterConnectSerivce extends Service {
 
         connection();
 
-        registerBoothCloseBroadcast();
+        mBluetoothAdapter =BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter==null){
+            ToastUtil.getInstance().showToast("设备不支持蓝牙功能");
+        }else{
+            registerBoothCloseBroadcast();
+        }
 
         registerUsbBroad();
 
@@ -187,7 +192,7 @@ public class PrinterConnectSerivce extends Service {
 
     private boolean isHasBluetoothDevice(){
 
-        if (!mBluetoothAdapter.isEnabled()){
+        if (mBluetoothAdapter==null||!mBluetoothAdapter.isEnabled()){
             return false;
         }
 
@@ -208,8 +213,7 @@ public class PrinterConnectSerivce extends Service {
      * @return
      */
     private BluetoothDevice getConnectingBluetooth(){
-
-        if (!mBluetoothAdapter.isEnabled()){
+        if (mBluetoothAdapter==null||!mBluetoothAdapter.isEnabled()){
             return null;
         }
         Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();

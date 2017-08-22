@@ -14,6 +14,10 @@ public class BaseResponse<T> {
         return code;
     }
 
+    public boolean isSuccess(){
+        return code==HttpConfig.SUCCESS_CODE;
+    }
+
     public void setCode(int code) {
         this.code = code;
     }

@@ -24,7 +24,7 @@
             android:layout_height="@dimen/dp_25"
             android:textColor="@color/login_input_color"
             android:textSize="16sp"
-            android:text="精彩功能即将开启，敬请期待。"
+            android:text="精彩功能即将开启，敬请期待"
             android:gravity="center"
             android:maxLines="1"
             />

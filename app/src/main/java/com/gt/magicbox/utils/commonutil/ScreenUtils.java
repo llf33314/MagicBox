@@ -43,10 +43,21 @@ public final class ScreenUtils {
      *
      * @return 屏幕高px
      */
-    public static int getScreenHeight() {
-        return Utils.getContext().getResources().getDisplayMetrics().heightPixels;
+    public static int getScreenHeight(Activity activity) {
+        DisplayMetrics d=new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(d);
+        return d.heightPixels;
+        //return Utils.getContext().getResources().getDisplayMetrics().heightPixels;
     }
 
+    /**
+     * 获取屏幕的高度（单位：px）
+     *
+     * @return 屏幕高px
+     */
+    public static int getScreenHeight() {
+      return Utils.getContext().getResources().getDisplayMetrics().heightPixels;
+    }
     /**
      * 设置屏幕为横屏
      * <p>还有一种就是在Activity中加属性android:screenOrientation="landscape"</p>

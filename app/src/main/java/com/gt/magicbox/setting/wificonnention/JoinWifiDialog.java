@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
-import com.gt.magicbox.http.RxObservableUtils;
+import com.gt.magicbox.http.rxjava.observable.SchedulerTransformer;
 import com.gt.magicbox.setting.wificonnention.model.WifiBean;
 import com.gt.magicbox.setting.wificonnention.presenter.WifiConnectionPresenter;
 import com.gt.magicbox.utils.SimpleObserver;
@@ -191,7 +191,7 @@ public class JoinWifiDialog extends Dialog {
                 e.onNext(presenter.connectToNetwork(wifiBean.getName(),30*1000));
             }
         })
-                .compose(RxObservableUtils.<Boolean>applySchedulers())
+                .compose(SchedulerTransformer.<Boolean>transformer())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Boolean aBoolean) throws Exception {

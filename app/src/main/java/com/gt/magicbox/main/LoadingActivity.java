@@ -32,8 +32,10 @@ public class LoadingActivity extends Activity{
                     isCreate=true;
                     String token = SPUtils.getInstance().getString("token", "");
                     Intent intent;
-                    intent = !TextUtils.isEmpty(token) ? new Intent(LoadingActivity.this, MainActivity.class)
-                            : new Intent(LoadingActivity.this, LoginActivity.class);
+                  /*  intent = !TextUtils.isEmpty(token) ? new Intent(LoadingActivity.this, MainActivity.class)
+                            : new Intent(LoadingActivity.this, LoginActivity.class);*/
+                    intent = new Intent(LoadingActivity.this, MainActivity.class);
+
                     startActivity(intent);
                     finish();
                 } catch (InterruptedException e) {
