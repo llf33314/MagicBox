@@ -13,12 +13,7 @@ import retrofit2.http.Query;
  */
 
 public interface ApiService {
-   /* @POST
-    Observable<BaseResponse<TestBean>> getTextData(@Query("test") String s);
-
-    @GET("https://news-at.zhihu.com/api/4/themes")
-    Observable<BaseResponse<TestBean>> getZhihu();
-    */
+  
    @POST(HttpConfig.LOGIN_URL)
    Observable<BaseResponse<LoginBean>> userLogin(@Query("eqCode")String eqCode,
                                                  @Query("userName")String user,
