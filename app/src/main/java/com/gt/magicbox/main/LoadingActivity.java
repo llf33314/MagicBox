@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import com.gt.magicbox.R;
 import com.gt.magicbox.login.LoginActivity;
 import com.gt.magicbox.utils.commonutil.SPUtils;
-import com.orhanobut.hawk.Hawk;
 
 import static java.lang.Thread.sleep;
 
@@ -19,6 +18,7 @@ import static java.lang.Thread.sleep;
  */
 
 public class LoadingActivity extends Activity{
+    private boolean isCreate;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,13 +27,13 @@ public class LoadingActivity extends Activity{
             @Override
             public void run() {
                 try {
+                    if (!isCreate)
                     sleep(2000);
+                    isCreate=true;
                     String token =Hawk.get("token");
                     Intent intent;
-                  /*  intent = !TextUtils.isEmpty(token) ? new Intent(LoadingActivity.this, MainActivity.class)
-                            : new Intent(LoadingActivity.this, LoginActivity.class);*/
-                    intent = new Intent(LoadingActivity.this, MainActivity.class);
-
+                    intent = !TextUtils.isEmpty(token) ? new Intent(LoadingActivity.this, MainActivity.class)
+                            : new Intent(LoadingActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
                 } catch (InterruptedException e) {
