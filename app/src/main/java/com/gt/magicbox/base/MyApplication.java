@@ -2,11 +2,9 @@ package com.gt.magicbox.base;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Process;
 
 import com.gt.magicbox.main.MainActivity;
-import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
 import com.gt.magicbox.utils.commonutil.Utils;
 import com.orhanobut.hawk.Hawk;
 

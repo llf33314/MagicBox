@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -36,25 +38,39 @@ import butterknife.ButterKnife;
  */
 
 public  class BaseActivity extends RxAppCompatActivity {
-    private Toolbar mToolbar;
+    private RelativeLayout mToolbar;
     private TextView toolBarTitle;
+    private ImageView toolBarBack;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // BarUtils.setStatusBarColor(this,getResources().getColor(R.color.toolbarBg));
         super.setContentView(R.layout.toolbar);
-        mToolbar= (Toolbar) findViewById(R.id.toolbar);
-        toolBarTitle= (TextView) findViewById(R.id.toolbar_title);
-        setSupportActionBar(mToolbar);
-        AppManager.getInstance().addActivity(this);
+        init();
+    }
 
+    private void init(){
+        mToolbar= (RelativeLayout) findViewById(R.id.base_toolbar);
+        toolBarTitle= (TextView) findViewById(R.id.toolbar_title);
+        toolBarBack= (ImageView) findViewById(R.id.toolbar_back);
+        AppManager.getInstance().addActivity(this);
+        toolBarBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         Log.d("activity","activity="+ ActivityUtils.getTopActivity(this));
         super.onResume();
+    }
+
+    public void goneBack(){
+        toolBarBack.setVisibility(View.GONE);
     }
 
     @CallSuper
@@ -78,12 +94,15 @@ public  class BaseActivity extends RxAppCompatActivity {
         lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.toolbar_height),0,0);
         ButterKnife.bind(this);
     }
+
     public void setToolBarTitle(String title){
         toolBarTitle.setText(title);
     }
+
     public void goneToolBar(){
         mToolbar.setVisibility(View.GONE);
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //ToastUtil.getInstance().showToast(""+keyCode);

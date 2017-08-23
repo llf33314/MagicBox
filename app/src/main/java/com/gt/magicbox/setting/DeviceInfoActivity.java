@@ -2,12 +2,11 @@ package com.gt.magicbox.setting;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
-import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
+import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.CameraUtils;
 import com.gt.magicbox.utils.commonutil.DeviceUtils;
@@ -15,7 +14,6 @@ import com.gt.magicbox.utils.commonutil.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by wzb on 2017/7/19 0019.
@@ -49,7 +47,7 @@ public class DeviceInfoActivity extends BaseActivity {
         tvDeviceType.setText(DeviceUtils.getModel());
         tvDeviceVersion.setText(AppUtils.getAppVersionName());
 
-        tvDevicePrinter.setText(PrinterConnectSerivce.getPrinterStatus());
+        tvDevicePrinter.setText(PrinterConnectService.getPrinterStatus());
 
         tvDeviceCamera.setText(CameraUtils.hasBackFacingCamera()|CameraUtils.hasFrontFacingCamera()?"正常":"不能使用");
         tvDeviceNetwork.setText(NetworkUtils.isConnected()?"正常":"断开");

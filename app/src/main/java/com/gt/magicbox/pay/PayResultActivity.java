@@ -13,13 +13,12 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
-import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
-import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
+import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 
@@ -74,7 +73,7 @@ public class PayResultActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.printButton:
-                PrinterConnectSerivce.printReceiptClicked(message);
+                PrinterConnectService.printReceiptClicked(message);
                // RxBus.get().post(new PrintBean(message));
                 break;
         }

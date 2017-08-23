@@ -4,9 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -14,21 +12,15 @@ import android.widget.GridView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.UnpaidOrderBean;
-import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
-import com.gt.magicbox.http.rxjava.observable.SchedulerTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
-import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
-import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
+import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
-import com.gt.magicbox.utils.SimpleObserver;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
-import com.gt.magicbox.utils.commonutil.SPUtils;
-import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.WebViewActivity;
 import com.orhanobut.hawk.Hawk;
 import com.service.OrderPushService;
@@ -75,6 +67,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setToolBarTitle("主页");
+        goneBack();
         initView();
         bindOrderService();
     }
@@ -155,7 +148,7 @@ public class MainActivity extends BaseActivity {
         });
 
 
-        portIntent=new Intent(this, PrinterConnectSerivce.class);
+        portIntent=new Intent(this, PrinterConnectService.class);
         startService(portIntent);
     }
 

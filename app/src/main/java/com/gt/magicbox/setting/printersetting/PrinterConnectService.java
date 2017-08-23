@@ -9,18 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Base64;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.gprinter.aidl.GpService;
 import com.gprinter.command.EscCommand;
@@ -32,16 +27,15 @@ import com.gprinter.service.GpPrintService;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.MyApplication;
 import com.gt.magicbox.main.MoreFunctionDialog;
+import com.gt.magicbox.setting.printersetting.bluetooth.BluetoothUtil;
 import com.gt.magicbox.setting.printersetting.bluetooth.OpenPrinterPortMsg;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import org.apache.commons.lang.ArrayUtils;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import io.reactivex.annotations.NonNull;
@@ -52,7 +46,7 @@ import io.reactivex.functions.Consumer;
  * 蓝牙与USB能互相切换 主要通过广播操作
  */
 
-public class PrinterConnectSerivce extends Service {
+public class PrinterConnectService extends Service {
 
     private static final String ACTION_USB_PERMISSION =
             "com.android.example.USB_PERMISSION";
@@ -172,7 +166,7 @@ public class PrinterConnectSerivce extends Service {
      */
     public void openBluetoothOrUsbProt() {
 
-        BluetoothDevice printDevice=getConnectingBluetooth();
+        BluetoothDevice printDevice= BluetoothUtil.getConnectingBluetooth(mBluetoothAdapter);
         if (printDevice!=null){
             openBluetoothProtFromDevice(printDevice);
         }else if(isHasUsbDevice()){
@@ -190,72 +184,8 @@ public class PrinterConnectSerivce extends Service {
         return  mUsbDevice!=null;
     }
 
-    private boolean isHasBluetoothDevice(){
 
-        if (mBluetoothAdapter==null||!mBluetoothAdapter.isEnabled()){
-            return false;
-        }
 
-        Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
-        List<BluetoothDevice> devices=new ArrayList<BluetoothDevice>(bondedDevices);
-        BluetoothDevice printDevice=null;
-        for (BluetoothDevice b:devices){
-            if (b.getType()==3){
-                printDevice=b;
-                break;
-            }
-        }
-        return  printDevice!=null;
-    }
-
-    /**
-     * 没有更好的方法获取当前蓝牙的连接状态了
-     * @return
-     */
-    private BluetoothDevice getConnectingBluetooth(){
-        if (mBluetoothAdapter==null||!mBluetoothAdapter.isEnabled()){
-            return null;
-        }
-        Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
-
-        for(BluetoothDevice device : devices){
-            //测试用  因为0D30显示的类型不是打印机？
-            if (/*device.getType()==3&&*/!"88:D1:31:71:2D:10".equals(device.getAddress())){
-                return device;
-            }
-        }
-        return null;
-
-       /* Class<BluetoothAdapter> bluetoothAdapterClass = BluetoothAdapter.class;//得到BluetoothAdapter的Class对象
-        try {//得到蓝牙状态的方法
-            Method method = bluetoothAdapterClass.getDeclaredMethod("getConnectionState", (Class[]) null);
-            //打开权限
-            method.setAccessible(true);
-            int state = (int) method.invoke(mBluetoothAdapter, (Object[]) null);
-
-      //      if(state == BluetoothAdapter.STATE_CONNECTED){
-
-                Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
-
-                for(BluetoothDevice device : devices){
-
-                    Method isConnectedMethod = BluetoothDevice.class.getDeclaredMethod("isConnected", (Class[]) null);
-                    method.setAccessible(true);
-                    boolean isConnected = (boolean) isConnectedMethod.invoke(device, (Object[]) null);
-
-                    if(isConnected){
-                        return device;
-                    }
-
-             //   }
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;*/
-    }
 
     private void registerBoothCloseBroadcast() {
         IntentFilter filter = new IntentFilter();
@@ -298,7 +228,7 @@ public class PrinterConnectSerivce extends Service {
             if (mPortConnectionStateBroad==null){
                 mPortConnectionStateBroad=new PortConnectionStateBroad();
                 IntentFilter intentFilter=new IntentFilter(CONNECTION_ACTION);
-                PrinterConnectSerivce.this.registerReceiver(mPortConnectionStateBroad,intentFilter);
+                PrinterConnectService.this.registerReceiver(mPortConnectionStateBroad,intentFilter);
             }
             //打开端口
             openBluetoothOrUsbProt();
@@ -459,7 +389,7 @@ public class PrinterConnectSerivce extends Service {
                     showHintNotConnectDialog();
                 }
             }
-            //这里很关键   打印机类型是ESC 还是TSC
+            //这里很关键   打印机类型是ESC 还是TSC 暂时测试这么用
             int type = mGpService.getPrinterCommandType(mPrinterIndex);
             if (type == GpCom.ESC_COMMAND) {
               return sendESCReceipt(money);
@@ -473,37 +403,7 @@ public class PrinterConnectSerivce extends Service {
     }
 
     private static int sendESCReceipt(String money) {
-        EscCommand esc = new EscCommand();
-        esc.addPrintAndFeedLines((byte) 1);
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
-        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
-        esc.addText("多粉餐厅（赛格）\n"); // 打印文字
-        esc.addPrintAndLineFeed();
-
-		// 打印文字 *//*
-        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
-        esc.addText("--------------------------------\n");// 打印文字
-        esc.addText("单号：12345678987445775\n"); // 打印文字
-        esc.addText("--------------------------------\n");
-        esc.addText("消费总额："+money+"\n");
-        esc.addText("--------------------------------\n");
-        esc.addText("抵扣方式：100粉币（-10.00）\n");
-        esc.addText("实付金额：46.10\n");
-        esc.addText("支付方式：微信支付\n");
-        esc.addText("会员折扣：8.5\n");
-        esc.addText("--------------------------------\n");
-        esc.addText("开单时间：2017-07-21 14:23\n");
-        esc.addText("收银员：多粉\n");
-        esc.addText("--------------------------------\n");
-        esc.addText("联系电话：0752-3851585\n");
-        esc.addText("地址：惠州市惠城区赛格假日广场1007室\n");
-        esc.addText("--------------------------------\n");
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
-        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
-        esc.addText("欢迎再次光临！\n"); // 打印文字
-        esc.addPrintAndFeedLines((byte)5);
-
+        EscCommand esc = PrintESCOrTSCUtil.getPrintEscCommand(money);
 
         Vector<Byte> datas = esc.getCommand(); // 发送数据
         Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
@@ -528,46 +428,8 @@ public class PrinterConnectSerivce extends Service {
         String name="超级英式奶茶";
 
         //总共320*240
-        LabelCommand tsc = new LabelCommand();
-        tsc.addSize(40, 30); // 设置标签尺寸，按照实际尺寸设置
-        tsc.addGap(3); // 设置标签间隙，按照实际尺寸设置，如果为无间隙纸则设置为0
-        tsc.addDirection(LabelCommand.DIRECTION.FORWARD , LabelCommand.MIRROR.NORMAL);// 设置打印方向
-        tsc.addReference(0, 0);// 设置原点坐标
-        tsc.addTear(EscCommand.ENABLE.ON); // 撕纸模式开启
-        tsc.addCls();// 清除打印缓冲区
-        // 绘制简体中文
+        LabelCommand tsc = PrintESCOrTSCUtil.getTscCommand();
 
-        if (name.length()<=6){//中文的小于等于6 则字体变大打印一行
-            tsc.addText(LEFT,LEFT , LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
-                    "0279");
-            tsc.addText(LEFT,75, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
-                    name);
-            tsc.addText(LEFT, 140, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                    "大杯，热 x1");
-            tsc.addText(LEFT, 170, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                    "备注：少冰，加糖，果粒");
-        }else{
-
-            String oneLine=name.substring(0,6);
-            String twoLine=name.substring(6,12);//最多只能打12个字
-            tsc.addText(LEFT,LEFT , LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
-                    "0279");
-            tsc.addText(LEFT,70, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
-                    oneLine);
-            tsc.addText(LEFT,125, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_2, LabelCommand.FONTMUL.MUL_2,
-                    twoLine);
-            tsc.addText(LEFT,180, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                    "大杯，热 x1");
-            tsc.addText(LEFT, 210, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                    "备注：123456");
-        }
-
-
-        tsc.addPrint(1, 1); // 打印标签
-        // tsc.addSound(2, 100); // 打印标签后 蜂鸣器响
-        //打印机打印密度
-        tsc.addDensity(LabelCommand.DENSITY.DNESITY10);
-        tsc.addCashdrwer(LabelCommand.FOOT.F5, 255, 255);
         Vector<Byte> datas = tsc.getCommand(); // 发送数据
         Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
         byte[] bytes = ArrayUtils.toPrimitive(Bytes);
@@ -716,7 +578,7 @@ public class PrinterConnectSerivce extends Service {
                 mUsbDevice=null;
                 //如果蓝牙已经连接则打开蓝牙端口
                 closeProt();
-                BluetoothDevice device=getConnectingBluetooth();
+                BluetoothDevice device=BluetoothUtil.getConnectingBluetooth(mBluetoothAdapter);
                 if (device!=null){
                     openBluetoothProtFromDevice(device);
                 }

@@ -11,7 +11,7 @@ import com.gt.magicbox.bean.UnpaidOrderBean;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PayResultActivity;
 import com.gt.magicbox.pay.PaymentActivity;
-import com.gt.magicbox.setting.printersetting.PrinterConnectSerivce;
+import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -191,7 +191,7 @@ public class DuofenJSBridge {
      */
     @JavascriptInterface
     public int printPaper(String message) {
-        return PrinterConnectSerivce.printReceiptClicked(message);
+        return PrinterConnectService.printReceiptClicked(message);
     }
 
 
