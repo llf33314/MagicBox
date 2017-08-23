@@ -99,6 +99,8 @@ public class WebViewActivity extends BaseActivity{
         combineURL();
         if (webType == WEB_TYPE_PAY||webType ==WEB_TYPE_SERVER_PUSH) {
             setToolBarTitle("");
+        }else if (webType==WEB_TYPE_ORDER){
+            setToolBarTitle("订单记录");
         }
         // 获取组件
         web = (WebView) findViewById(R.id.web);

@@ -42,6 +42,12 @@ public class PaymentActivity extends BaseActivity {
             orderMoney=getIntent().getDoubleExtra("orderMoney",0);
             code=getIntent().getIntExtra("keyCode",0);
         }
+        if (type == TYPE_CALC) {
+            setToolBarTitle("现金支付");
+        } else if (type == TYPE_INPUT) {
+            setToolBarTitle("收银");
+
+        }
         keyboardView = (KeyboardView) findViewById(R.id.keyboard);
         keyboardView.setOrderMoney(orderMoney);
         keyboardView.setKeyboardType(type);
