@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_260"
     android:background="@color/wifi_connection_bg"
+    android:layout_gravity="bottom"
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -115,10 +116,13 @@
                 android:textSize="16sp"
                 />
         </LinearLayout>
+
         <android.support.v4.widget.Space
+            android:id="@+id/space"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
+
         <android.support.v4.widget.Space
             android:layout_width="0dp"
             android:layout_height="match_parent"

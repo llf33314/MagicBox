@@ -2,7 +2,9 @@ package com.gt.magicbox.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -32,7 +34,7 @@ public class MoreActivity extends BaseActivity {
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
-
+    private long clickTime;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +74,8 @@ public class MoreActivity extends BaseActivity {
         });
     }
     private void checkUpdate(){
+        if (SystemClock.uptimeMillis()-clickTime<1500)return;
+            clickTime= SystemClock.uptimeMillis();
         UpdateManager updateManager=new UpdateManager(this, HttpConfig.APP_ID);
         updateManager.requestUpdate();
         updateManager.setOnTaskFinishListener(new OnTaskFinishListener() {

@@ -208,12 +208,14 @@ public class UpdateManager {
          switch (v.getId()){
              case R.id.start:
                  Log.d(TAG,"onClickListener start");
-
+                 Log.i(TAG,"downloadAPK appUpdateBean.apkUrl="+appUpdateBean.apkUrl);
                  downloadAPK(appUpdateBean.apkUrl,APK_FILE_NAME);
                  break;
              case R.id.pause:
-                 downloader.pause();
-                 breakPoints = mTotalBytes;
+                 if (downloader!=null) {
+                     downloader.pause();
+                     breakPoints = mTotalBytes;
+                 }
                  break;
              case R.id.cancel:
                  mHandler.sendEmptyMessage(CANCEL_DOWNLOAD);
@@ -236,9 +238,10 @@ public class UpdateManager {
     private void installAPK(){
         if (mDownloadDialog!=null)mDownloadDialog.dismiss();
         //安装应用
+        Log.i(TAG,"installAPK APK_FILE_NAME="+APK_FILE_NAME);
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(new File(Environment
-                        .getExternalStorageDirectory(),APK_FILE_NAME)),
+        intent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                        ,APK_FILE_NAME)),
                 "application/vnd.android.package-archive");
         context.startActivity(intent);
     }

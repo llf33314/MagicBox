@@ -58,7 +58,7 @@ public class ShortcutMenuDialog extends Dialog {
         WindowManager.LayoutParams lp = window.getAttributes();
         lp.height = ScreenUtils.getScreenHeight() / 2;
         lp.width = ScreenUtils.getScreenWidth();
-        lp.gravity = Gravity.BOTTOM;
+        lp.y=(int)getContext().getResources().getDimension(R.dimen.dp_200);
         window.setAttributes(lp);
 
 

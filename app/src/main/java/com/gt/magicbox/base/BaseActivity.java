@@ -20,7 +20,9 @@ import android.widget.TextView;
 
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreFunctionDialog;
+import com.gt.magicbox.main.menu.ShortcutMenuDialog;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.utils.NetworkUtils;
@@ -41,6 +43,7 @@ public  class BaseActivity extends RxAppCompatActivity {
     private RelativeLayout mToolbar;
     private TextView toolBarTitle;
     private ImageView toolBarBack;
+    private ShortcutMenuDialog shortcutMenuDialog;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +118,15 @@ public  class BaseActivity extends RxAppCompatActivity {
             intent.putExtra("type",PaymentActivity.TYPE_INPUT);
             intent.putExtra("keyCode",keyCode);
             startActivity(intent);
+        }else if (keyCode==250){
+            Intent intent=new Intent(BaseActivity.this,MainActivity.class);
+            startActivity(intent);
+            return false;
+        }else if (keyCode==251){
+            if (shortcutMenuDialog==null)
+                shortcutMenuDialog=new ShortcutMenuDialog(this,R.style.ShortcutMenuDialog);
+            shortcutMenuDialog.show();
+            return false;
         }
         return super.onKeyDown(keyCode, event);
     }
