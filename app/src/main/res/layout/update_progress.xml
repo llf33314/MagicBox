@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <TextView
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:id="@+id/update_content"
+        android:textSize="18sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <ProgressBar
+        android:layout_margin="40dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/update_progress"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        />
+    <LinearLayout
+        android:layout_below="@id/update_progress"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+        <Button
+            android:text="开始/继续"
+            android:id="@+id/start"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+        <Button
+            android:text="暂停"
+            android:id="@+id/pause"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+        <Button
+            android:text="取消"
+            android:id="@+id/cancel"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+    </LinearLayout>
+</RelativeLayout>

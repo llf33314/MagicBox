@@ -18,6 +18,7 @@ import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
+import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -25,6 +26,7 @@ import com.gt.magicbox.webview.WebViewActivity;
 import com.orhanobut.hawk.Hawk;
 import com.service.OrderPushService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import io.reactivex.functions.Consumer;
@@ -70,6 +72,7 @@ public class MainActivity extends BaseActivity {
         goneBack();
         initView();
         bindOrderService();
+        requestUpdate();
     }
 
     /**
@@ -198,5 +201,16 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         getUnpaidOrderCount();
         super.onResume();
+    }
+    private void requestUpdate() {
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String date = sDateFormat.format(new java.util.Date());
+        String keyName="update-"+date;
+        boolean onceDayRequestUpdate = Hawk.get(keyName, false);
+        if (!onceDayRequestUpdate) {
+            UpdateManager updateManager = new UpdateManager(this, "MagicBox");
+            updateManager.requestUpdate();
+            Hawk.put(keyName, true);
+        }
     }
 }

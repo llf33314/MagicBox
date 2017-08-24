@@ -11,6 +11,8 @@ public class HttpConfig {
 
     //正式
     public static final String BASE_URL="http://duofriend.com/magicBoxMobile/";
+    public static final String APP_ID="MagicBox";
+
     //堡垒地址
     //public static final String BASE_URL="http://nb.deeptel.com.cn/magicBoxMobile/";
    // public static final String BASE_URL="http:/192.168.3.44:8080/magicBoxMobile/";
