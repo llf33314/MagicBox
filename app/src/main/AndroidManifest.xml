@@ -45,7 +45,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                <category android:name="android.intent.category.MONKEY"/>
                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
+               <category android:name="android.intent.category.HOME" />
+           </intent-filter>
         </activity>
         <activity android:name=".setting.wificonnention.WifiConnectionActivity">
         </activity>
