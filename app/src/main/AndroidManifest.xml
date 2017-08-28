@@ -108,7 +108,10 @@
         </activity>
         <activity android:name=".exchange.ShiftExchangeActivity">
         </activity>
+        <activity android:name=".coupon.DistributeCouponActivity">
+        </activity>
         <activity android:name=".exchange.ExchangeChooseActivity"></activity>
+        <activity android:name=".coupon.CouponQRActivity"></activity>
         <!--<receiver android:name=".setting.printersetting.bluetooth.BluetoothConnectActivityReceiver" >
             <intent-filter android:priority="1000">
                 <action android:name="android.bluetooth.device.action.PAIRING_REQUEST" />
