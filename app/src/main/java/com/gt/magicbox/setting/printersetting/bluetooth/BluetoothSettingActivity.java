@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.OnRecyclerViewItemClickListener;
+import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.BluetoothUtil;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
@@ -368,6 +369,7 @@ public class BluetoothSettingActivity extends BaseActivity {
     }
     @OnClick(R.id.btn_scan_bluetooth)
     public void onViewClicked(View v) {
+
         if (!mBluetoothAdapter.isEnabled()){
             ToastUtil.getInstance().showToast("请开启蓝牙后再扫描");
             return;

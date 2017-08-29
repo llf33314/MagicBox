@@ -73,7 +73,7 @@ public class PayResultActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.printButton:
-                PrinterConnectService.printReceiptClicked(message);
+                PrinterConnectService.printEsc0829(message,payType);
                // RxBus.get().post(new PrintBean(message));
                 break;
         }

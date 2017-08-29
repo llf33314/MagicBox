@@ -2,12 +2,16 @@ package com.gt.magicbox.setting.printersetting;
 
 import com.gprinter.command.EscCommand;
 import com.gprinter.command.LabelCommand;
+import com.gt.magicbox.utils.commonutil.TimeUtils;
 
 /**
  * Created by wzb on 2017/8/16 0016.
  */
 
 public class PrintESCOrTSCUtil {
+    private static long num_no=223578914;
+
+    public static final String [] PAY_TYPE={"现金支付","微信支付","支付宝"};
 
     public static EscCommand getPrintEscCommand(String money){
         EscCommand esc = new EscCommand();
@@ -91,6 +95,44 @@ public class PrintESCOrTSCUtil {
         tsc.addPrint(1, 1); // 打印标签
         tsc.addCashdrwer(LabelCommand.FOOT.F5, 255, 255);
         return tsc;
+    }
+
+    public static EscCommand getPrintEscTest(String money,int type){
+        EscCommand esc = new EscCommand();
+        esc.addPrintAndFeedLines((byte) 1);
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
+        esc.addText("多粉便利店\n"); // 打印文字
+        esc.addPrintAndLineFeed();
+
+        // 打印文字 *//*
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
+        esc.addText("--------------------------------\n");// 打印文字
+        esc.addText("订单号：144"+num_no+"\n"); // 打印文字
+        esc.addText("开单时间："+ TimeUtils.getNowString()+"\n");
+        esc.addText("收银员：张震\n");
+        if (type>=0&&type<=2){
+            esc.addText("支付方式："+PAY_TYPE[type]+"\n");
+        }else{
+            esc.addText("支付方式：未知\n");
+        }
+
+        esc.addText("--------------------------------\n");
+        esc.addText("订单金额："+money+"\n");
+        esc.addText("--------------------------------\n");
+        esc.addText("联系电话：0752-5478693\n");
+        esc.addText("地址：惠州市惠城区赛格假日广场1007室\n");
+        esc.addText("--------------------------------\n");
+
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
+        esc.addText("欢迎再次光临\n"); // 打印文字
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);
+        esc.addPrintAndFeedLines((byte) 1);
+        esc.addText("技术支持·多粉 400-889-4522");
+        esc.addPrintAndFeedLines((byte)5);
+        return esc;
     }
 
   /*private static int sendLabelReceipt() {

@@ -402,8 +402,50 @@ public class PrinterConnectService extends Service {
         return -1;
     }
 
-    private static int sendESCReceipt(String money) {
-        EscCommand esc = PrintESCOrTSCUtil.getPrintEscCommand(money);
+    public static int printEsc0829(String money,int type){
+        if (mGpService==null){
+            showHintNotConnectDialog();
+            return PRINTER_NOT_INTI;
+        }
+
+        try {//拔插的时候这个sdk有毒  要这么处理
+            int state=mGpService.getPrinterConnectStatus(mPrinterIndex);
+            // ToastUtil.getInstance().showToast("state："+state);
+            if (state==GpDevice.STATE_CONNECTING){
+                ToastUtil.getInstance().showToast("打印机正在连接请稍后再试");
+                return PRINTER_CONNECTING;
+            }
+            if (state==GpDevice.STATE_NONE){
+                //mGpService.closePort(mPrinterIndex);
+                if (mUsbDevice!=null){
+                    openUsbProt();
+                }else{//蓝牙跟USB都没连接
+                    showHintNotConnectDialog();
+                }
+            }
+            //这里很关键   打印机类型是ESC 还是TSC 暂时测试这么用
+            int printType = mGpService.getPrinterCommandType(mPrinterIndex);
+            if (printType == GpCom.ESC_COMMAND) {
+                return printEsc(money,type);
+            }else{
+                ToastUtil.getInstance().showToast("请连接正确类型打印机");
+            }
+        } catch (RemoteException e1) {
+            e1.printStackTrace();
+        }
+        return -1;
+    }
+
+
+
+    private static int printEsc(String money,int type){
+        EscCommand esc=PrintESCOrTSCUtil.getPrintEscTest(money,type);
+        return  sendEscDataToPrinter(esc);
+
+    }
+
+    //发送Esc命令到打印机
+    private static int sendEscDataToPrinter(EscCommand esc){
 
         Vector<Byte> datas = esc.getCommand(); // 发送数据
         Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
@@ -414,13 +456,21 @@ public class PrinterConnectService extends Service {
             rs = mGpService.sendEscCommand(mPrinterIndex, sss);
             GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rs];
             if (r != GpCom.ERROR_CODE.SUCCESS) {
-               // ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
+                // ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
             }
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return rs;
+    }
+
+    /**
+     * 最开始模板
+     */
+    private static int sendESCReceipt(String money) {
+        EscCommand esc = PrintESCOrTSCUtil.getPrintEscCommand(money);
+        return sendEscDataToPrinter(esc);
     }
 
     private static int sendLabelReceipt() {
