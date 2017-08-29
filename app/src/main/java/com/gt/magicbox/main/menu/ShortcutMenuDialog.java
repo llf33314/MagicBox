@@ -6,17 +6,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.setting.DeviceInfoActivity;
 import com.gt.magicbox.setting.VolumeSettingActivity;
 import com.gt.magicbox.setting.printersetting.PrinterSettingActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
+import com.gt.magicbox.utils.commonutil.ActivityUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
 
 import butterknife.BindView;
@@ -82,5 +87,23 @@ public class ShortcutMenuDialog extends Dialog {
                 break;
         }
         ShortcutMenuDialog.this.getContext().startActivity(intent);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
+         if (keyCode == 251) {
+            if (this.isShowing()) {
+                this.dismiss();
+            }
+            return false;
+        } else if (keyCode == 250 ) {
+             if (this.isShowing()) {
+                 this.dismiss();
+             }
+             Intent intent = new Intent(getContext(), MainActivity.class);
+             getContext().startActivity(intent);
+             return false;
+         }
+        return super.onKeyDown(keyCode, event);
     }
 }

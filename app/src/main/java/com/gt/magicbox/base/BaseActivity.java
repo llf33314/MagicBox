@@ -39,11 +39,12 @@ import butterknife.ButterKnife;
  * Created by wzb on 2017/7/14 0014.
  */
 
-public  class BaseActivity extends RxAppCompatActivity {
+public class BaseActivity extends RxAppCompatActivity {
     private RelativeLayout mToolbar;
     private TextView toolBarTitle;
     private ImageView toolBarBack;
     private ShortcutMenuDialog shortcutMenuDialog;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,10 +54,10 @@ public  class BaseActivity extends RxAppCompatActivity {
         init();
     }
 
-    private void init(){
-        mToolbar= (RelativeLayout) findViewById(R.id.base_toolbar);
-        toolBarTitle= (TextView) findViewById(R.id.toolbar_title);
-        toolBarBack= (ImageView) findViewById(R.id.toolbar_back);
+    private void init() {
+        mToolbar = (RelativeLayout) findViewById(R.id.base_toolbar);
+        toolBarTitle = (TextView) findViewById(R.id.toolbar_title);
+        toolBarBack = (ImageView) findViewById(R.id.toolbar_back);
         AppManager.getInstance().addActivity(this);
         toolBarBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,64 +69,71 @@ public  class BaseActivity extends RxAppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.d("activity","activity="+ ActivityUtils.getTopActivity(this));
+        Log.d("activity", "activity=" + ActivityUtils.getTopActivity(this));
         super.onResume();
     }
 
-    public void goneBack(){
+    public void goneBack() {
         toolBarBack.setVisibility(View.GONE);
     }
 
     @CallSuper
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
-        View activityView= LayoutInflater.from(this).inflate(layoutResID,null,false);
-        ViewGroup viewGroup= (ViewGroup) mToolbar.getParent();
+        View activityView = LayoutInflater.from(this).inflate(layoutResID, null, false);
+        ViewGroup viewGroup = (ViewGroup) mToolbar.getParent();
         viewGroup.addView(activityView);
         //空出边距给toolbar
-        FrameLayout.LayoutParams lp= (FrameLayout.LayoutParams) activityView.getLayoutParams();
-        lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.toolbar_height),0,0);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) activityView.getLayoutParams();
+        lp.setMargins(0, (int) this.getResources().getDimension(R.dimen.toolbar_height), 0, 0);
         ButterKnife.bind(this);
     }
 
     @CallSuper
     @Override
     public void setContentView(View view) {
-        ViewGroup viewGroup= (ViewGroup) mToolbar.getParent();
+        ViewGroup viewGroup = (ViewGroup) mToolbar.getParent();
         viewGroup.addView(view);
-        FrameLayout.LayoutParams lp= (FrameLayout.LayoutParams) view.getLayoutParams();
-        lp.setMargins(0,(int)this.getResources().getDimension(R.dimen.toolbar_height),0,0);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
+        lp.setMargins(0, (int) this.getResources().getDimension(R.dimen.toolbar_height), 0, 0);
         ButterKnife.bind(this);
     }
 
-    public void setToolBarTitle(String title){
+    public void setToolBarTitle(String title) {
         toolBarTitle.setText(title);
     }
 
-    public void goneToolBar(){
+    public void goneToolBar() {
         mToolbar.setVisibility(View.GONE);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //ToastUtil.getInstance().showToast(""+keyCode);
-        if (((keyCode>=KeyEvent.KEYCODE_NUMPAD_0&&keyCode<=KeyEvent.KEYCODE_NUMPAD_RIGHT_PAREN)
-                ||keyCode==KeyEvent.KEYCODE_DEL)
-                &&!(ActivityUtils.getTopActivity(BaseActivity.this).contains("PaymentActivity"))
-                &&!(ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity"))
-                &&!(ActivityUtils.getTopActivity(BaseActivity.this).contains("ChosePayModeActivity"))){
-            Intent intent=new Intent(BaseActivity.this,PaymentActivity.class);
-            intent.putExtra("type",PaymentActivity.TYPE_INPUT);
-            intent.putExtra("keyCode",keyCode);
+        Log.i("keyCode", "BaseActivity keyCode --> " + keyCode);
+
+        if (((keyCode >= KeyEvent.KEYCODE_NUMPAD_0 && keyCode <= KeyEvent.KEYCODE_NUMPAD_RIGHT_PAREN)
+                || keyCode == KeyEvent.KEYCODE_DEL)
+                && !(ActivityUtils.getTopActivity(BaseActivity.this).contains("PaymentActivity"))
+                && !(ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity"))
+                && !(ActivityUtils.getTopActivity(BaseActivity.this).contains("ChosePayModeActivity"))) {
+            Intent intent = new Intent(BaseActivity.this, PaymentActivity.class);
+            intent.putExtra("type", PaymentActivity.TYPE_INPUT);
+            intent.putExtra("keyCode", keyCode);
             startActivity(intent);
-        }else if (keyCode==250){
-            Intent intent=new Intent(BaseActivity.this,MainActivity.class);
+        } else if (keyCode == 250 &&
+                !(ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity"))) {
+            Intent intent = new Intent(BaseActivity.this, MainActivity.class);
             startActivity(intent);
             return false;
-        }else if (keyCode==251){
-            if (shortcutMenuDialog==null)
-                shortcutMenuDialog=new ShortcutMenuDialog(this,R.style.ShortcutMenuDialog);
+        } else if (keyCode == 251) {
+            if (shortcutMenuDialog == null)
+                shortcutMenuDialog = new ShortcutMenuDialog(this, R.style.ShortcutMenuDialog);
+
             shortcutMenuDialog.show();
+
+            return false;
+        } else if (keyCode == KeyEvent.KEYCODE_BACK &&
+                (ActivityUtils.getTopActivity(BaseActivity.this).contains("MainActivity"))) {
             return false;
         }
         return super.onKeyDown(keyCode, event);
