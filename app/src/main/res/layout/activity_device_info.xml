@@ -123,6 +123,7 @@
             />
     </FrameLayout>
     <FrameLayout
+        android:id="@+id/camera_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_45"
         android:background="@color/white"

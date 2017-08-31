@@ -93,6 +93,10 @@
         <activity
         android:name=".setting.DeviceInfoActivity" />
         <activity
+            android:name=".setting.ScanCodeTest"
+            android:launchMode="singleTask"
+            />
+        <activity
             android:name=".setting.VolumeSettingActivity" />
         <activity
             android:name=".setting.printersetting.PrinterSettingActivity" />

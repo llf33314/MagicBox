@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -55,6 +56,7 @@ public class BaseActivity extends RxAppCompatActivity {
     }
 
     private void init() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mToolbar = (RelativeLayout) findViewById(R.id.base_toolbar);
         toolBarTitle = (TextView) findViewById(R.id.toolbar_title);
         toolBarBack = (ImageView) findViewById(R.id.toolbar_back);

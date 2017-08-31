@@ -11,7 +11,7 @@ import com.gt.magicbox.utils.commonutil.TimeUtils;
 public class PrintESCOrTSCUtil {
     private static long num_no=223578914;
 
-    public static final String [] PAY_TYPE={"现金支付","微信支付","支付宝"};
+    public static final String [] PAY_TYPE={"微信支付","支付宝","现金支付"};
 
     public static EscCommand getPrintEscCommand(String money){
         EscCommand esc = new EscCommand();

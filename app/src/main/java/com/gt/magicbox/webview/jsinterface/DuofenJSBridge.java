@@ -18,6 +18,7 @@ import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.webview.WebViewActivity;
 import com.gt.magicbox.webview.service.UUIDService;
 import com.gt.magicbox.webview.util.PromptUtils;
+import com.orhanobut.hawk.Hawk;
 
 
 /**
@@ -133,6 +134,7 @@ public class DuofenJSBridge {
             Intent intent=new Intent(context, PayResultActivity.class);
             intent.putExtra("success",success);
             intent.putExtra("message",message);
+            intent.putExtra("payType", (int)Hawk.get("payType"));
             context.startActivity(intent);
 
             AppManager.getInstance().finishActivity(WebViewActivity.class);

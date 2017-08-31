@@ -7,7 +7,7 @@ package com.gt.magicbox.http;
 public class HttpConfig {
     public static final int SUCCESS_CODE=200;
     public static final int NOT_TOKEN=-1;
-     // public static final String BASE_URL="http://deeptel.com.cn/magicBoxMobile/";
+    //public static final String BASE_URL="http://deeptel.com.cn/magicBoxMobile/";
 
     //正式
     public static final String BASE_URL="http://duofriend.com/magicBoxMobile/";

@@ -13,6 +13,7 @@ import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.webview.WebViewActivity;
+import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +66,7 @@ public class ChosePayModeActivity extends BaseActivity {
      */
     private void startERCodePay(int type){
         if (NetworkUtils.isConnected()) {
+            Hawk.put("payType",type);
             Intent intent = new Intent(ChosePayModeActivity.this, WebViewActivity.class);
             intent.putExtra("webType", WebViewActivity.WEB_TYPE_PAY);
             intent.putExtra("money", money);

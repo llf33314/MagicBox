@@ -77,6 +77,8 @@ public class WebViewActivity extends BaseActivity{
     //private ImageView scanLine;
 
     private Rect mCropRect = null;
+    private Rect fillRect = null;
+
     private boolean barcodeScanned = false;
     private boolean previewing = true;
 
@@ -116,6 +118,7 @@ public class WebViewActivity extends BaseActivity{
         web.addJavascriptInterface(new DuofenJSBridge(WebViewActivity.this), "dfmb");
         web.removeJavascriptInterface("searchBoxJavaBridge_");
         if (webType == WEB_TYPE_PAY||webType ==WEB_TYPE_SERVER_PUSH) {
+           // scanCode();
             initCameraViews();
         }else if (webType == WEB_TYPE_ORDER){
         }
@@ -160,7 +163,8 @@ public class WebViewActivity extends BaseActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-      //  disSocket();
+        closeFlashLight(mCamera);
+        //  disSocket();
     }
 
     /**
@@ -193,20 +197,20 @@ public class WebViewActivity extends BaseActivity{
      * 调用zbar
      */
     public void scanCode() {
-        Log.d(TAG, "scanCode: " + nowUrl);
+        Log.i(TAG, "scanCode: " + nowUrl);
         Intent intent = new Intent(WebViewActivity.this,ScanCaptureAct.class);
         startActivity(intent);
     }
 
     // 扫码返回
     private void getCode(Intent intent){
-        Log.d(TAG, "getCode: in");
+        Log.i(TAG, "getCode: in");
         if (intent != null){
             Log.d(TAG, "getCode: intent not null");
             String result = intent.getStringExtra("RQ_CODE");
             if (result != null){
                 viewPage--;
-                Log.d(TAG, "getCode: " + result);
+                Log.i(TAG, "getCode: " + result);
                 webLoadJS("scanCallBack", result);
             }
         }
@@ -405,7 +409,7 @@ public class WebViewActivity extends BaseActivity{
 
 
         mCamera = mCameraManager.getCamera();
-        //openFlashLight(mCamera);
+        openFlashLight(mCamera);
         mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
 
         scanPreview.addView(mPreview);
@@ -439,7 +443,13 @@ public class WebViewActivity extends BaseActivity{
     }
 
     private void releaseCamera() {
+        Log.i("camera","releaseCamera");
         if (mCamera != null) {
+            previewing = false;
+            mCamera.setPreviewCallback(null);
+            mCamera.stopPreview();
+            //releaseCamera();
+            barcodeScanned = true;
             previewing = false;
             mCamera.setPreviewCallback(null);
             mCamera.release();
@@ -470,14 +480,9 @@ public class WebViewActivity extends BaseActivity{
 
             initCrop();
             ZBarDecoder zBarDecoder = new ZBarDecoder();
-            String result = zBarDecoder.decodeCrop(rotatedData, size.width, size.height, mCropRect.left, mCropRect.top, mCropRect.width(), mCropRect.height());
+            String result = zBarDecoder.decodeCrop(rotatedData, size.width, size.height, fillRect.left, fillRect.top, fillRect.width(), fillRect.height());
 
             if (!TextUtils.isEmpty(result)) {
-                previewing = false;
-                mCamera.setPreviewCallback(null);
-                mCamera.stopPreview();
-                releaseCamera();
-                barcodeScanned = true;
                 Log.d(TAG, "getCode: " + result);
                 webLoadJS("scanCallBack", result);
 
@@ -508,6 +513,8 @@ public class WebViewActivity extends BaseActivity{
         int height = cropHeight * cameraHeight / containerHeight;
 
         mCropRect = new Rect(x, y, width + x, height + y);
+        fillRect=new Rect(0,0,cameraWidth,cameraHeight);
+
     }
     // Mimic continuous auto-focusing
     Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {

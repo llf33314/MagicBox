@@ -42,8 +42,9 @@ public class PayResultActivity extends BaseActivity {
     @BindView(R.id.printButton)
     Button printButton;
     String message;
-    public static final int TYPE_QRCODE=0;
-    public static final int TYPE_CASH=1;
+    public static final int TYPE_QRCODE_WECHAT=0;
+    public static final int TYPE_QRCODE_ALIPAY=1;
+    public static final int TYPE_CASH=2;
     private int payType;
 
     @Override
