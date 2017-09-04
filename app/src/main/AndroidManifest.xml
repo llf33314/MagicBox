@@ -75,6 +75,9 @@
             android:name=".webview.WebViewActivity"
             android:launchMode="singleTask" />
         <activity
+            android:name=".coupon.VerificationActivity"
+            android:launchMode="singleTask" />
+        <activity
             android:name="com.zbar.scan.ScanCaptureAct"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"

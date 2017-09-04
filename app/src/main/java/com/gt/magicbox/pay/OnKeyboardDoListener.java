@@ -7,4 +7,5 @@ package com.gt.magicbox.pay;
 
 public interface OnKeyboardDoListener {
     void onPay(double money);
+    void onMemberPay(double money);
 }

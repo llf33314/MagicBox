@@ -19,5 +19,12 @@
     <string name="clear">清空</string>
     <string name="delete">删除</string>
     <string name="collect">收银</string>
+    <string name="fit_collect">散客收银</string>
+    <string name="member_collect">会员收银</string>
+    <string name="open_camera_tip">摄像头已开启</string>
+    <string name="please_aim_tip">请将会员卡二维码对准摄像头</string>
+    <string name="please_input_member_or_phone">请输入会员卡号或手机号</string>
+
+
 
 </resources>

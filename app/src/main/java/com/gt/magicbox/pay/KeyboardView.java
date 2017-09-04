@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -36,10 +37,15 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private Button clear;
     private Button delete;
     private Button pay;
+    private Button member_pay;
+    private Button fit_pay;
+
     private TextView showNumber;
     private StringBuffer numberString = new StringBuffer();
     private OnKeyboardDoListener onKeyboardDoListener;
     private RelativeLayout chargeLayout;
+    private RelativeLayout tipLayout;
+
     private TextView should_pay;
     private TextView charge;
     private TextView text_paid_in_amount;
@@ -51,6 +57,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private double orderMoney;
     public static final int TYPE_INPUT_MONEY = 0;
     public static final int TYPE_CHARGE = 1;
+    public static final int TYPE_MEMBER = 2;
 
     public KeyboardView(Context context) {
         this(context, null);
@@ -64,15 +71,21 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         clear = (Button) view.findViewById(R.id.keyboard_clear);
         delete = (Button) view.findViewById(R.id.keyboard_delete);
         pay = (Button) view.findViewById(R.id.keyboard_pay);
+        member_pay = (Button) view.findViewById(R.id.keyboard_member_pay);
+        fit_pay = (Button) view.findViewById(R.id.keyboard_fit_pay);
+
         showNumber = (TextView) view.findViewById(R.id.showNumber);
         should_pay = (TextView) view.findViewById(R.id.should_pay);
         charge = (TextView) view.findViewById(R.id.charge);
         text_paid_in_amount = (TextView) view.findViewById(R.id.text_paid_in_amount);
         chargeLayout = (RelativeLayout) view.findViewById(R.id.chargeLayout);
-
+        tipLayout = (RelativeLayout) view.findViewById(R.id.tip_layout);
         clear.setOnClickListener(this);
         delete.setOnClickListener(this);
         pay.setOnClickListener(this);
+        fit_pay.setOnClickListener(this);
+        member_pay.setOnClickListener(this);
+
         KeyboardAdapter keyboardAdapter = new KeyboardAdapter(context);
         gridView.setOnItemClickListener(this);
         gridView.setAdapter(keyboardAdapter);
@@ -105,8 +118,14 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             case R.id.keyboard_delete:
                 backspace();
                 break;
+            case R.id.keyboard_fit_pay:
+                enter();
+              break;
             case R.id.keyboard_pay:
                 enter();
+                break;
+            case R.id.keyboard_member_pay:
+                memberPay();
                 break;
         }
     }
@@ -129,11 +148,11 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             } else if (position == 10) {
                 if (!numberString.toString().equals("0"))
                     numberString.append("0");
-            } else if (position == 11) {
+            } else if (position == 11&&keyboardType!=TYPE_MEMBER) {
                 if (!numberString.toString().contains(".") && numberString.length() > 0)
                     numberString.append(".");
             }
-            showMoney();
+             showMoney();
         }
     }
 
@@ -148,7 +167,9 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                 } else charge.setText("");
             }
         }
-        showNumber.setText(SpannableStringUtils.diffTextSize("¥ " + numberString, 20, 0, 1));
+        if (keyboardType==TYPE_MEMBER){
+            showNumber.setText(numberString);
+        }else  showNumber.setText(SpannableStringUtils.diffTextSize("¥ " + numberString, 20, 0, 1));
 
     }
 
@@ -169,27 +190,44 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             text_paid_in_amount.setVisibility(VISIBLE);
             should_pay.setText(SpannableStringUtils.diffTextSize("¥ " + orderMoney, 14, 0, 1));
             pay.setText("确认");
+            pay.setVisibility(VISIBLE);
+            member_pay.setVisibility(GONE);
+            fit_pay.setVisibility(GONE);
+        }else if (keyboardType==TYPE_MEMBER){
+            tipLayout.setVisibility(VISIBLE);
+            pay.setText("确认");
+            pay.setVisibility(VISIBLE);
+            member_pay.setVisibility(GONE);
+            fit_pay.setVisibility(GONE);
+            showNumber.setText(getResources().getText(R.string.please_input_member_or_phone));
+            showNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP,25);
+            RelativeLayout.LayoutParams params= (LayoutParams) showNumber.getLayoutParams();
+            params.setMargins(0,0,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_8))
+                    ,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_5)));
+            showNumber.setLayoutParams(params);
+            maxLength=16;
         }
     }
 
     public void setOrderMoney(double orderMoney) {
         this.orderMoney = orderMoney;
     }
-    public void input(String str){
-        Log.i("keycode","input numberString="+numberString.toString());
-        if (numberString.length() <= maxLength){
-            if (numberString.toString().equals("0")&&!str.equals(".")) {
-                Log.i("keycode","input numberString.deleteCharAt(0)="+numberString.toString());
-                numberString.deleteCharAt(0);
+    public void input(String str) {
+        Log.i("keycode", "input numberString=" + numberString.toString());
+
+            if (numberString.length() <= maxLength) {
+                if (numberString.toString().equals("0") && !str.equals(".")) {
+                    Log.i("keycode", "input numberString.deleteCharAt(0)=" + numberString.toString());
+                    numberString.deleteCharAt(0);
+                }
+                if (str.equals(".") && (numberString.toString().contains(".") && numberString.length() == 0))//已经有小数点了或者小数点不能作为开头
+                    return;
+                if (numberString.toString().contains(".")
+                        && numberString.toString().substring(numberString.toString().indexOf("."), numberString.toString().length()).length() > 2)
+                    return;
+                numberString.append(str);
+                showMoney();
             }
-            if (str.equals(".")&&(numberString.toString().contains(".") &&numberString.length()==0))//已经有小数点了或者小数点不能作为开头
-                return;
-            if (numberString.toString().contains(".")
-                    &&numberString.toString().substring(numberString.toString().indexOf("."),numberString.toString().length()).length()>2)
-                return;
-            numberString.append(str);
-            showMoney();
-        }
     }
     public void clearAll(){
         numberString.setLength(0);
@@ -215,6 +253,32 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             } else if (keyboardType == TYPE_CHARGE) {
                 if (chargeMoney >= 0 && realPay > 0) {
                     onKeyboardDoListener.onPay(orderMoney);
+                }
+            }
+            else if (keyboardType == TYPE_CHARGE) {
+                if (chargeMoney >= 0 && realPay > 0) {
+                    onKeyboardDoListener.onPay(orderMoney);
+                }
+            }else if (keyboardType == TYPE_MEMBER) {
+                if (!TextUtils.isEmpty(numberString)) {
+                    double money = Double.parseDouble(numberString.toString());
+                    if (money != 0) {
+                        onKeyboardDoListener.onPay(money);
+                    }
+                }
+            }
+
+        }
+    }
+
+    public void memberPay() {
+        if (onKeyboardDoListener != null) {
+            if (keyboardType == TYPE_INPUT_MONEY) {
+                if (!TextUtils.isEmpty(numberString)) {
+                    double money = Double.parseDouble(numberString.toString());
+                    if (money != 0) {
+                        onKeyboardDoListener.onMemberPay(money);
+                    }
                 }
             }
         }

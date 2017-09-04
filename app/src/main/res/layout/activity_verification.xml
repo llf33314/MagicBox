@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4">
+        <RelativeLayout
+            android:id="@+id/member_info_layout"
+            android:background="@drawable/member_info_bg"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_105"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
+            <ImageView
+                android:layout_marginLeft="@dimen/dp_57"
+                android:layout_centerVertical="true"
+                android:background="@drawable/member_head_bg"
+                android:layout_width="@dimen/dp_62"
+                android:layout_height="@dimen/dp_62" />
+            <ImageView
+                android:id="@+id/image_head"
+                android:layout_marginLeft="@dimen/dp_68"
+                android:layout_centerVertical="true"
+                android:background="@drawable/member_head_icon"
+                android:layout_width="@dimen/dp_42"
+                android:layout_height="@dimen/dp_36" />
+            <LinearLayout
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp_149"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_68">
+            <TextView
+                android:gravity="center_vertical|left"
+                android:singleLine="true"
+                android:textColor="#fff"
+                android:textSize="14sp"
+                android:text="徐小明"
+                android:id="@+id/name"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+                <TextView
+                    android:gravity="center_vertical|left"
+                    android:singleLine="true"
+                    android:textColor="#fff"
+                    android:textSize="14sp"
+                    android:text="会员卡 : 折扣卡（四级）"
+                    android:id="@+id/card_type"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp" />
+                <TextView
+                    android:gravity="center_vertical|left"
+                    android:singleLine="true"
+                    android:textColor="#fff"
+                    android:textSize="14sp"
+                    android:text="手机号 : 18945692233"
+                    android:id="@+id/phone"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp" />
+                <TextView
+                    android:gravity="center_vertical|left"
+                    android:singleLine="true"
+                    android:textColor="#fff"
+                    android:textSize="14sp"
+                    android:text="权益 : 享8.5折"
+                    android:id="@+id/right"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp" />
+            </LinearLayout>
+        </RelativeLayout>
+        <TextView
+            android:layout_below="@id/member_info_layout"
+            android:text="订单金额 : ¥436.32元"
+            android:textSize="14sp"
+            android:textColor="#333333"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:id="@+id/order_money"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5.6">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5.6"></RelativeLayout>
+
+</LinearLayout>

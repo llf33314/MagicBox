@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.webview.WebViewActivity;
@@ -28,6 +29,8 @@ public class PaymentActivity extends BaseActivity {
     private double orderMoney=0;
     public static final int TYPE_INPUT=0;
     public static final int TYPE_CALC=1;
+    public static final int TYPE_MEMBER_PAY=2;
+
     private int code;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +49,8 @@ public class PaymentActivity extends BaseActivity {
             setToolBarTitle("现金支付");
         } else if (type == TYPE_INPUT) {
             setToolBarTitle("收银");
-
+        } else if (type == TYPE_MEMBER_PAY) {
+            setToolBarTitle("会员收银");
         }
         keyboardView = (KeyboardView) findViewById(R.id.keyboard);
         keyboardView.setOrderMoney(orderMoney);
@@ -67,7 +71,18 @@ public class PaymentActivity extends BaseActivity {
                         startActivity(intent);
                         AppManager.getInstance().finishActivity(PaymentActivity.class);
                         AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
+                }else if (type==TYPE_MEMBER_PAY){
+                    intent=new Intent(PaymentActivity.this, VerificationActivity.class);
+                    startActivity(intent);
                 }
+            }
+
+            @Override
+            public void onMemberPay(double money) {
+                Intent intent=new Intent(PaymentActivity.this,PaymentActivity.class);
+                intent.putExtra("type",2);
+                intent.putExtra("money",money);
+                startActivity(intent);
             }
         });
         if (code>0)onKeyDown(code,null);

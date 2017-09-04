@@ -167,10 +167,10 @@ public class UpdateManager {
             Log.d(TAG, "response==" + response);
             String str = ConvertUtils.unicode2String(response);
             AppUpdateBean updateBean = new Gson().fromJson(str, AppUpdateBean.class);
-            if (updateBean == null) return null;
-            appUpdateBean = updateBean;
-            if (!TextUtils.isEmpty(updateBean.appVersionCode))
-                isNeedUpdate = compareVersion(Integer.parseInt(updateBean.appVersionCode));
+            if (updateBean == null)return null ;
+                appUpdateBean = updateBean;
+                if (!TextUtils.isEmpty(updateBean.appVersionCode))
+            isNeedUpdate = compareVersion(Integer.parseInt(updateBean.appVersionCode));
             return null;
         }
     }

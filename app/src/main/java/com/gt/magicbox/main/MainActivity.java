@@ -13,6 +13,8 @@ import android.widget.GridView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.UnpaidOrderBean;
+import com.gt.magicbox.coupon.DistributeCouponActivity;
+import com.gt.magicbox.exchange.ShiftExchangeActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
@@ -74,6 +76,7 @@ public class MainActivity extends BaseActivity {
         initView();
         bindOrderService();
         requestUpdate();
+        saveScreenBrightness(255);
     }
 
     /**
@@ -93,9 +96,13 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
                     case 2:
+                        break;
                     case 3:
+                        break;
                     case 4:
-                        showMoreDialog();
+                        intent = new Intent(MainActivity.this, DistributeCouponActivity.class);
+                        intent.putExtra("type",0);
+                        startActivity(intent);
                         break;
                     case 0:
                         intent = new Intent(MainActivity.this, PaymentActivity.class);
@@ -212,6 +219,17 @@ public class MainActivity extends BaseActivity {
             UpdateManager updateManager = new UpdateManager(this, "MagicBox");
             updateManager.requestUpdate();
             Hawk.put(keyName, true);
+        }
+    }
+    /**
+     * 设置当前屏幕亮度值 0--255
+     */
+    private void saveScreenBrightness(int paramInt){
+        try{
+            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, paramInt);
+        }
+        catch (Exception localException){
+            localException.printStackTrace();
         }
     }
 }

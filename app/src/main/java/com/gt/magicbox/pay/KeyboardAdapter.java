@@ -34,7 +34,7 @@ public class KeyboardAdapter extends BaseAdapter {
         this.mContext = context;
         int screenHeight = ScreenUtils.getScreenHeight();
         int toolbarHeight = ConvertUtils.px2dp(context.getResources().getDimension(R.dimen.toolbar_height));
-        displayAreaHeight = screenHeight - toolbarHeight - ScreenUtils.getBottomStatusHeight();
+        displayAreaHeight = screenHeight - toolbarHeight -ScreenUtils.getStatusHeight();
         itemHeight = displayAreaHeight / 6;
 
     }
