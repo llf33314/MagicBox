@@ -19,6 +19,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by wzb on 2017/8/24 0024.
@@ -40,9 +43,22 @@ public class DistributeCouponActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.addItemDecoration(new SpaceItemDecoration(ConvertUtils.dp2px(10)));
+        /*mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setHasFixedSize(true);*/
+
         //访问网络返回来的ArrayList
-        DistributeCouponAdapter adapter=new DistributeCouponAdapter(this,new ArrayList<DistributeCouponBean>());
+        final List<DistributeCouponBean> lists= new ArrayList<DistributeCouponBean>();
+        Observable.range(0,9).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(@NonNull Integer integer) throws Exception {
+                lists.add(new DistributeCouponBean("name:"+integer));
+            }
+        });
+
+        DistributeCouponAdapter adapter=new DistributeCouponAdapter(this,lists);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(ConvertUtils.dp2px(5),SpaceItemDecoration.SPACE_BOTTOM));
+
         adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, Object item, int position) {

@@ -5,4 +5,17 @@ package com.gt.magicbox.bean;
  */
 
 public class DistributeCouponBean {
+    private String name;
+
+    public DistributeCouponBean(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

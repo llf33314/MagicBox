@@ -27,5 +27,6 @@ public class DistributeCouponAdapter extends BaseRecyclerAdapter<DistributeCoupo
     @Override
     public void onBindViewHolder(BaseViewHolder holder, DistributeCouponBean bean, int position) {
         //根据接口返回数据 bean绑定holder
+        holder.setText(R.id.distribute_coupon_name,bean.getName());
     }
 }
