@@ -14,19 +14,40 @@ import java.util.List;
  */
 
 public class HorizontalCouponAdapter extends BaseRecyclerAdapter<DistributeCouponBean> {
+    private int type;
+    public static final int TYPE_COUPON=0;
+    public static final int TYPE_FEN_COIN=1;
 
-    public HorizontalCouponAdapter(Context context, List<DistributeCouponBean> listBean) {
+    public HorizontalCouponAdapter(Context context, List<DistributeCouponBean> listBean,int type) {
         super(context, listBean);
+        this.type=type;
     }
 
     @Override
     public int getLayoutId() {
-        return R.layout.item_small_coupon;
+        switch (type) {
+            case TYPE_COUPON:
+                return R.layout.item_small_coupon;
+            case TYPE_FEN_COIN:
+                return R.layout.item_fen_coin;
+            default:
+                return R.layout.item_small_coupon;
+
+        }
     }
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, DistributeCouponBean bean, int position) {
-        holder.setText(R.id.item_name,"满¥100减¥20");
-        //根据接口返回数据 bean绑定holder
+        if (type==TYPE_COUPON) {
+            holder.setText(R.id.item_name, "满¥100减¥20");
+        }
+        else if (type==TYPE_FEN_COIN){
+            holder.setText(R.id.item_name,"100 粉币");
+        }
+        holder.findView(R.id.item_name).setPressed(bean.isSelected());
+
+    }
+    public void setType(int type) {
+        this.type = type;
     }
 }

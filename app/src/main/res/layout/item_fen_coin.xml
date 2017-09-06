@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="@dimen/dp_6"
     android:id="@+id/item_name"
-    android:background="@drawable/selector_small_coupon"
-    android:layout_width="@dimen/dp_135"
+    android:paddingLeft="@dimen/dp_10"
+    android:paddingRight="@dimen/dp_10"
+    android:background="@drawable/selector_fen_coin"
+    android:layout_width="@dimen/dp_60"
     android:layout_height="@dimen/dp_50"
     android:gravity="center"
-    android:text="满¥100减¥20"
     android:textColor="@drawable/selector_text_color"
+    android:text="155粉币"
     />
