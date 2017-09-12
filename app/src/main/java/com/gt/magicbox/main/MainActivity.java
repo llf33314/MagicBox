@@ -7,6 +7,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
@@ -19,12 +20,14 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.utils.commonutil.ScreenUtils;
 import com.gt.magicbox.webview.WebViewActivity;
 import com.orhanobut.hawk.Hawk;
 import com.service.OrderPushService;
@@ -76,7 +79,7 @@ public class MainActivity extends BaseActivity {
         initView();
         bindOrderService();
         requestUpdate();
-        saveScreenBrightness(255);
+        ScreenUtils.setScreenBrightness(MainActivity.this,255);
     }
 
     /**
@@ -96,6 +99,8 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
                     case 2:
+                        intent = new Intent(MainActivity.this, QRCodePayActivity.class);
+                        startActivity(intent);
                         break;
                     case 3:
                         break;
@@ -138,25 +143,25 @@ public class MainActivity extends BaseActivity {
             }
         });
        // new ShortcutMenuDialog(this,R.style.ShortcutMenuDialog).show();
-        RxBus.get().toObservable(UnpaidOrderBean.class).subscribe(new Consumer<UnpaidOrderBean>() {
-            @Override
-            public void accept(@io.reactivex.annotations.NonNull UnpaidOrderBean unpaidOrderBean) throws Exception {
-                if (unpaidOrderBean.count==-1){//没有获取网络数据 用于多出发送UnpaidOrderBean消息
-                    getUnpaidOrderCount();
-                }else{
-                    updateUnpaid(unpaidOrderBean);
-                }
-
-            }
-        });
-
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                getUnpaidOrderCount();
-            }
-        });
+//        RxBus.get().toObservable(UnpaidOrderBean.class).subscribe(new Consumer<UnpaidOrderBean>() {
+//            @Override
+//            public void accept(@io.reactivex.annotations.NonNull UnpaidOrderBean unpaidOrderBean) throws Exception {
+//                if (unpaidOrderBean.count==-1){//没有获取网络数据 用于多出发送UnpaidOrderBean消息
+//                    getUnpaidOrderCount();
+//                }else{
+//                    updateUnpaid(unpaidOrderBean);
+//                }
+//
+//            }
+//        });
+//
+//
+//        handler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                getUnpaidOrderCount();
+//            }
+//        });
 
 
         portIntent=new Intent(this, PrinterConnectService.class);
@@ -207,7 +212,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
-        getUnpaidOrderCount();
+      //  getUnpaidOrderCount();
         super.onResume();
     }
     private void requestUpdate() {
@@ -219,17 +224,6 @@ public class MainActivity extends BaseActivity {
             UpdateManager updateManager = new UpdateManager(this, "MagicBox");
             updateManager.requestUpdate();
             Hawk.put(keyName, true);
-        }
-    }
-    /**
-     * 设置当前屏幕亮度值 0--255
-     */
-    private void saveScreenBrightness(int paramInt){
-        try{
-            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, paramInt);
-        }
-        catch (Exception localException){
-            localException.printStackTrace();
         }
     }
 }

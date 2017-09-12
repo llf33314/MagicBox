@@ -67,8 +67,7 @@ public class ChosePayModeActivity extends BaseActivity {
     private void startERCodePay(int type){
         if (NetworkUtils.isConnected()) {
             Hawk.put("payType",type);
-            Intent intent = new Intent(ChosePayModeActivity.this, WebViewActivity.class);
-            intent.putExtra("webType", WebViewActivity.WEB_TYPE_PAY);
+            Intent intent = new Intent(ChosePayModeActivity.this, QRCodePayActivity.class);
             intent.putExtra("money", money);
             intent.putExtra("payMode", type);
             startActivity(intent);

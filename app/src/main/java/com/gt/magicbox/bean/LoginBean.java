@@ -7,5 +7,6 @@ package com.gt.magicbox.bean;
  */
 
 public class LoginBean {
-    public String token;
+    public int checkType;
+    public int eqId;
 }

@@ -14,12 +14,15 @@ import android.widget.Toast;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.LoginBean;
+import com.gt.magicbox.bean.MemberBean;
+import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreActivity;
+import com.gt.magicbox.main.NormalDialog;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.RegexUtils;
@@ -74,7 +77,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
         finish();
     }
 
-    private void login(String userName, String password) {
+    private void login(final String userName, final String password) {
         HttpCall.getApiService()
                 .userLogin(PhoneUtils.getIMEI(), userName, password)
                 .compose(ResultTransformer.<LoginBean>transformer())//线程处理 预处理
@@ -82,8 +85,67 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                 .subscribe(new BaseObserver<LoginBean>() {
                     @Override
                     public void onSuccess(LoginBean data) {
-                        token=data.token;
-                        showLoginView();
+                        Log.i(TAG,"data check="+data.checkType);
+                        if (data!=null){
+                            if (data.checkType==0) {
+                                Hawk.put("userName", userName);
+                                Hawk.put("eqId", data.eqId);
+                                memberQuery(userName, password);
+                                showLoginView();
+                            }else if (data.checkType==1){
+                                final NormalDialog dialog=new NormalDialog(LoginActivity.this,
+                                        "该设备已绑定其他账号   \n是否进行改绑并登陆",R.style.HttpRequestDialogStyle);
+                                dialog.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        changeDevicesBind(userName,password);
+                                        dialog.dismiss();
+                                    }
+                                });
+                                dialog.show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
+    private void changeDevicesBind(final String userName, final String password){
+        HttpCall.getApiService()
+                .changeBind(PhoneUtils.getIMEI(),userName ,password)
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .compose(new DialogTransformer().<BaseResponse>transformer()) //显示对话框
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    protected void onSuccess(BaseResponse baseResponse) {
+                        Log.i(TAG, "changeDevicesBind Success");
+                        login(userName,password);
+
+                    }
+
+                    @Override
+                    protected void onFailure(int code, String msg) {
+                        Log.i(TAG, "onFailure code=" + code + "  msg=" + msg);
+                    }
+                });
+    }
+    private void memberQuery(String userName, String password) {
+        HttpCall.getApiService()
+                .memberQuery( userName, password)
+                .compose(ResultTransformer.<MemberBean>transformer())//线程处理 预处理
+                .compose(new DialogTransformer().<MemberBean>transformer()) //显示对话框
+                .subscribe(new BaseObserver<MemberBean>() {
+                    @Override
+                    public void onSuccess(MemberBean data) {
+                        if (data!=null){
+                            Hawk.put("busId",data.busId);
+                            Hawk.put("shopName",data.shopName);
+                            Hawk.put("shopId",data.shopId);
+                            Log.i(TAG,"data name="+data.shopName);
+                        }
                     }
 
                     @Override

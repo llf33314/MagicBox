@@ -134,8 +134,10 @@ public class BaseActivity extends RxAppCompatActivity {
             shortcutMenuDialog.show();
 
             return false;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK &&
-                (ActivityUtils.getTopActivity(BaseActivity.this).contains("MainActivity"))) {
+        } else if (keyCode == KeyEvent.KEYCODE_BACK &&(
+                (ActivityUtils.getTopActivity(BaseActivity.this).contains("MainActivity"))
+                ||(ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity"))
+        )) {
             return false;
         }
         return super.onKeyDown(keyCode, event);

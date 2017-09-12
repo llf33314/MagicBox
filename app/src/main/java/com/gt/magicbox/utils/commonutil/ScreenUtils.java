@@ -2,10 +2,12 @@ package com.gt.magicbox.utils.commonutil;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -239,5 +241,30 @@ public final class ScreenUtils {
             e.printStackTrace();
             return -123;
         }
+    }
+    /**
+     * 设置屏幕的亮度
+     */
+    public static void setScreenBrightness(Activity activity,int process) {
+         Context context=Utils.getContext();
+        //设置当前窗口的亮度值.这种方法需要权限android.permission.WRITE_EXTERNAL_STORAGE
+        WindowManager.LayoutParams localLayoutParams = activity.getWindow().getAttributes();
+        float f = process / 255.0F;
+        localLayoutParams.screenBrightness = f;
+        activity.getWindow().setAttributes(localLayoutParams);
+        //修改系统的亮度值,以至于退出应用程序亮度保持
+        saveBrightness(activity.getContentResolver(),process);
+
+    }
+    public static void saveBrightness(ContentResolver resolver, int brightness) {
+        //改变系统的亮度值
+        //这里需要权限android.permission.WRITE_SETTINGS
+        //设置为手动调节模式
+        Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS_MODE,
+                Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+        //保存到系统中
+        Uri uri = android.provider.Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS);
+        android.provider.Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
+        resolver.notifyChange(uri, null);
     }
 }

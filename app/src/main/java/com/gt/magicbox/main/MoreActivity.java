@@ -3,6 +3,7 @@ package com.gt.magicbox.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +17,9 @@ import com.gt.magicbox.setting.printersetting.PrinterSettingActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.OnTaskFinishListener;
 import com.gt.magicbox.update.UpdateManager;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
 
@@ -26,11 +29,12 @@ import java.util.ArrayList;
  */
 
 public class MoreActivity extends BaseActivity {
-    private String[] itemNameArray = {"打印设置", "网络设置", "设备管理","版本更新"};
+    private String[] itemNameArray = {"打印设置", "网络设置", "设备管理","版本更新","系统设置","退出"};
     private Integer[] imageResArray = {R.drawable.more_printer_setting, R.drawable.more_network_setting,
-            R.drawable.more_devices_setting,R.drawable.icon_update};
-    private int[] colorNormalArray = {0xff4db3ff, 0xff47d09c, 0xffff9a54,0xfffdd451};
-    private int[] colorFocusedArray = {0x994db3ff, 0x9947d09c, 0x99ff9a54,0x99fdd451};
+            R.drawable.more_devices_setting,R.drawable.icon_update, R.drawable.more_network_setting,
+            R.drawable.more_devices_setting};
+    private int[] colorNormalArray = {0xff4db3ff, 0xff47d09c, 0xffff9a54,0xfffdd451,0xff47d09c,0xff4db3ff};
+    private int[] colorFocusedArray = {0x994db3ff, 0x9947d09c, 0x99ff9a54,0x99fdd451,0x9947d09c,0x994db3ff};
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
@@ -68,6 +72,34 @@ public class MoreActivity extends BaseActivity {
                         break;
                     case 3:
                         checkUpdate();
+                        break;
+                    case 4:
+                        intent=new Intent(Settings.ACTION_SETTINGS);
+                        startActivity(intent);
+
+                        break;
+                    case 5:
+                        Hawk.delete("busId");
+                        AppManager.getInstance().exitApp();
+                        intent=new Intent(MoreActivity.this,LoadingActivity.class);
+                        startActivity(intent);
+//                        if (logoutDialog==null){
+//                            logoutDialog=new LogoutDialog(MoreActivity.this);
+//                        }
+//                        logoutDialog.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                switch (v.getId()){
+//                                    case R.id.confirm:
+//                                        Hawk.delete("token");
+//                                        AppManager.getInstance().exitApp();
+//                                        Intent intent=new Intent(MoreActivity.this,LoadingActivity.class);
+//                                        startActivity(intent);
+//                                        break;
+//                                }
+//                            }
+//                        });
+//                        logoutDialog.show();
                         break;
                 }
             }

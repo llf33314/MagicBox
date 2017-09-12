@@ -28,9 +28,9 @@ public class LoadingActivity extends Activity{
             public void run() {
                 try {
                     sleep(2000);
-                    String token = Hawk.get("token");
+                    Integer busId = Hawk.get("busId");
                     Intent intent;
-                    intent = !TextUtils.isEmpty(token) ? new Intent(LoadingActivity.this, MainActivity.class)
+                    intent =(busId!=null&&busId>0)? new Intent(LoadingActivity.this, MainActivity.class)
                             : new Intent(LoadingActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
