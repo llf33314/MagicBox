@@ -40,7 +40,7 @@ dependencies {
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-    //wifi Manager
+
     compile 'com.orhanobut:hawk:2.0.1'
     compile 'com.isupatches:wisefy:1.0.10'
     compile 'com.android.support:recyclerview-v7:23.2.1'
@@ -51,7 +51,7 @@ dependencies {
     compile('io.socket:socket.io-client:0.8.3') {
         exclude group: 'org.json', module: 'json'
     }
-    compile files('libs/zbardecoder.jar')
+    compile files('libs/ZBarDecoder.jar')
     compile files('libs/gprintersdkv22.jar')
     compile files('libs/commons-lang-2.6.jar')
     compile files('libs/jcc-bate-0.7.3.jar')

@@ -19,6 +19,7 @@ import com.gt.magicbox.exchange.ShiftExchangeActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.order.OrderListActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
@@ -77,7 +78,7 @@ public class MainActivity extends BaseActivity {
         setToolBarTitle("主页");
         goneBack();
         initView();
-        bindOrderService();
+        //bindOrderService();
         requestUpdate();
         ScreenUtils.setScreenBrightness(MainActivity.this,255);
     }
@@ -99,8 +100,6 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
                     case 2:
-                        intent = new Intent(MainActivity.this, QRCodePayActivity.class);
-                        startActivity(intent);
                         break;
                     case 3:
                         break;
@@ -116,9 +115,7 @@ public class MainActivity extends BaseActivity {
                         break;
                     case 1:
                         if (NetworkUtils.isConnected()) {
-                            intent=new Intent(MainActivity.this, WebViewActivity.class);
-                            intent.putExtra("webType",WebViewActivity.WEB_TYPE_ORDER);
-                            intent.putExtra("status",0);
+                            intent=new Intent(MainActivity.this, OrderListActivity.class);
                             startActivity(intent);
                         }else {
                             if (networkDialog==null){

@@ -1,9 +1,16 @@
 package com.gt.magicbox.pay;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.hardware.Camera;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -11,12 +18,16 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
-import com.gt.magicbox.bean.QRCodeBean;
+import com.gt.magicbox.bean.PayCodeResultBean;
+import com.gt.magicbox.bean.QRCodeBitmapBean;
+import com.gt.magicbox.bean.ScanCodePayResultBean;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -26,14 +37,26 @@ import com.gt.magicbox.http.socket.SocketIOManager;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.webview.WebViewActivity;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
+import com.obsessive.zbar.CameraManager;
+import com.obsessive.zbar.CameraPreview;
 import com.orhanobut.hawk.Hawk;
+
+import net.sourceforge.zbar.Config;
+import net.sourceforge.zbar.Image;
+import net.sourceforge.zbar.ImageScanner;
+import net.sourceforge.zbar.Symbol;
+import net.sourceforge.zbar.SymbolSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +77,8 @@ public class QRCodePayActivity extends BaseActivity {
     TextView customerMoney;
     @BindView(R.id.cashier_money)
     TextView cashierMoney;
+    @BindView(R.id.capture_preview)
+    FrameLayout scanPreview;
     private String url;
     private double money;
     private int type;
@@ -61,6 +86,21 @@ public class QRCodePayActivity extends BaseActivity {
     public final static int TYPE_SERVER_PUSH = 1;
     private HttpRequestDialog dialog;
     private SocketIOManager socketIOManager;
+
+    private Camera mCamera;
+    private CameraPreview mPreview;
+    private Handler autoFocusHandler;
+    private CameraManager mCameraManager;
+    private boolean barcodeScanned = false;
+    private boolean previewing = true;
+    private ImageScanner mImageScanner = null;
+    private Rect fillRect = null;
+    private String orderNo="";
+    private Integer shiftId;
+    private boolean isCodePayRequesting=false;
+    static {
+        System.loadLibrary("iconv");
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,7 +132,7 @@ public class QRCodePayActivity extends BaseActivity {
                 case TYPE_PAY:
                     money = this.getIntent().getDoubleExtra("money", 0);
                     int type = this.getIntent().getIntExtra("payMode", 0);
-                    Integer shiftId = Hawk.get("shiftId");
+                    shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
                     showMoney(cashierMoney, "" + money);
                     showMoney(customerMoney, "" + money);
@@ -112,15 +152,16 @@ public class QRCodePayActivity extends BaseActivity {
     private void getQRCodeURL(double money, int type, int shiftId) {
         HttpCall.getApiService()
                 .getQRCodeUrl(PhoneUtils.getIMEI(), money, type, shiftId)
-                .compose(ResultTransformer.<QRCodeBean>transformer())//线程处理 预处理
-                .subscribe(new BaseObserver<QRCodeBean>() {
+                .compose(ResultTransformer.<QRCodeBitmapBean>transformer())//线程处理 预处理
+                .subscribe(new BaseObserver<QRCodeBitmapBean>() {
                     @Override
-                    public void onSuccess(QRCodeBean data) {
+                    public void onSuccess(QRCodeBitmapBean data) {
                         Log.i(TAG, "onSuccess");
 
                         if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
                             Log.i(TAG, "data qrUrl=" + data.qrUrl);
                             showQRCodeView(data.qrUrl);
+                            orderNo=data.orderNo;
                         }
                     }
 
@@ -139,7 +180,39 @@ public class QRCodePayActivity extends BaseActivity {
                     }
                 });
     }
+    private void getCodePayResult(String qrCode,String orderNo){
+        if (!TextUtils.isEmpty(orderNo)) {
+            isCodePayRequesting = true;
+            HttpCall.getApiService()
+                    .scanCodePay(qrCode, (Integer) Hawk.get("busId"), orderNo,shiftId, money)
+                    .compose(ResultTransformer.<PayCodeResultBean>transformer())//线程处理 预处理
+                    .subscribe(new BaseObserver<PayCodeResultBean>() {
+                        @Override
+                        public void onSuccess(PayCodeResultBean data) {
+                            Log.i(TAG, "onSuccess");
+                           if (data!=null&&data.code==1){
+                              // payResult(true,""+money);
+                           }
+//                        if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
+//                            Log.i(TAG, "data qrUrl=" + data.qrUrl);
+//                            showQRCodeView(data.qrUrl);
+//                        }
+                        }
 
+                        @Override
+                        public void onError(Throwable e) {
+                            isCodePayRequesting=false;
+                            super.onError(e);
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            isCodePayRequesting=false;
+                            super.onFailure(code, msg);
+                        }
+                    });
+        }
+    }
     private void showQRCodeView(String url) {
         // TODO Auto-generated method stub
         BitmapUtils bitmapUtils = new BitmapUtils(this);
@@ -149,6 +222,8 @@ public class QRCodePayActivity extends BaseActivity {
                     @Override
                     public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
                         imageView.setImageBitmap(bitmap);
+                        initCameraViews();
+                        addEvents();
                         dialog.dismiss();
                     }
 
@@ -192,18 +267,45 @@ public class QRCodePayActivity extends BaseActivity {
                     e.printStackTrace();
                     retData = "";
                 }
+                String json=retData.replace("\\","");
+                if (!TextUtils.isEmpty(json)&&json.startsWith("\"")&&json.endsWith("\"")){
+                    Log.d(SocketIOManager.TAG, "startsWith---------");
+
+                    json=json.substring(1,json.length()-1);
+                }
                 Log.d(SocketIOManager.TAG, "retData=" + retData);
-                // OrderBean orderBean= new Gson().fromJson(retData,OrderBean.class);
+                Log.d(SocketIOManager.TAG, "json=" + json);
+                 ScanCodePayResultBean scanCodePayResultBean= new Gson().fromJson(json,ScanCodePayResultBean.class);
+                if (scanCodePayResultBean!=null){
+                    boolean success=(!TextUtils.isEmpty(scanCodePayResultBean.status)
+                            &&scanCodePayResultBean.status.equals("success"))?true:false;
+                    payResult(success,""+money);
+                }
             }
         });
         socketIOManager.connectSocket();
+    }
+    public void payResult(boolean success,String message){
+
+        if (success) {
+            Intent intent=new Intent(getApplicationContext(), PayResultActivity.class);
+            intent.putExtra("success",success);
+            intent.putExtra("message",message);
+            intent.putExtra("payType", (int)Hawk.get("payType"));
+            startActivity(intent);
+
+            AppManager.getInstance().finishActivity(QRCodePayActivity.class);
+            AppManager.getInstance().finishActivity(PaymentActivity.class);
+            AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
+        }
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(SocketIOManager.TAG, "disSocket" );
-
+        Log.d(SocketIOManager.TAG, "disSocket");
+        releaseCamera();
         socketIOManager.disSocket();
     }
 
@@ -211,4 +313,87 @@ public class QRCodePayActivity extends BaseActivity {
     public void onViewClicked() {
         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
     }
+    private void addEvents() {
+                if (barcodeScanned) {
+                    barcodeScanned = false;
+                    mCamera.setPreviewCallback(previewCb);
+                    mCamera.startPreview();
+                    previewing = true;
+                    mCamera.autoFocus(autoFocusCB);
+                }
+    }
+
+    private void initCameraViews() {
+        mImageScanner = new ImageScanner();
+        mImageScanner.setConfig(0, Config.X_DENSITY, 3);
+        mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
+
+        autoFocusHandler = new Handler();
+        mCameraManager = new CameraManager(this);
+        try {
+            mCameraManager.openDriver();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mCamera = mCameraManager.getCamera();
+        mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
+        scanPreview.addView(mPreview);
+
+    }
+    private void releaseCamera() {
+        if (mCamera != null) {
+            previewing = false;
+            mCamera.setPreviewCallback(null);
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
+    private Runnable doAutoFocus = new Runnable() {
+        public void run() {
+            if (previewing)
+                mCamera.autoFocus(autoFocusCB);
+        }
+    };
+    Camera.PreviewCallback previewCb = new Camera.PreviewCallback() {
+        public void onPreviewFrame(byte[] data, Camera camera) {
+            Camera.Size size = camera.getParameters().getPreviewSize();
+
+            fillRect=new Rect(0,0,size.width,size.height);
+            Image barcode = new Image(size.width, size.height, "Y800");
+            barcode.setData(data);
+            barcode.setCrop(fillRect.left, fillRect.top, fillRect.width(),
+                    fillRect.height());
+
+            int result = mImageScanner.scanImage(barcode);
+            String resultStr = null;
+
+            if (result != 0) {
+                SymbolSet syms = mImageScanner.getResults();
+                for (Symbol sym : syms) {
+                    resultStr = sym.getData();
+                }
+            }
+
+            if (!TextUtils.isEmpty(resultStr)) {
+//                previewing = false;
+//                mCamera.setPreviewCallback(null);
+//                mCamera.stopPreview();
+                if (!isCodePayRequesting) {
+                    getCodePayResult(resultStr, orderNo);
+                }
+                ToastUtil.getInstance().showToast("resultStr="+resultStr);
+ //               barcodeScanned = true;
+            }
+        }
+    };
+
+    // Mimic continuous auto-focusing
+    Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {
+        public void onAutoFocus(boolean success, Camera camera) {
+            autoFocusHandler.postDelayed(doAutoFocus, 1000);
+        }
+    };
+
 }

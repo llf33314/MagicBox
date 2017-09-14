@@ -3,16 +3,16 @@ package com.gt.magicbox.http;
 
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberBean;
-import com.gt.magicbox.bean.QRCodeBean;
+import com.gt.magicbox.bean.OrderListResultBean;
+import com.gt.magicbox.bean.PayCodeResultBean;
+import com.gt.magicbox.bean.QRCodeBitmapBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 
 import io.reactivex.Observable;
-import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import retrofit2.http.Url;
 
 /**
  * Created by wzb on 2017/7/11 0011.
@@ -41,6 +41,13 @@ public interface ApiService {
                                                         @Query("login_name")String user,
                                                         @Query("password")String pwd);
    @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/79B4DE7C/payQR")
-   Observable<BaseResponse<QRCodeBean>> getQRCodeUrl(@Path("eqCode")String eqCode,@Path("money")double money,
-                                                     @Path("type")int type,@Path("shiftId")int shiftId);
+   Observable<BaseResponse<QRCodeBitmapBean>> getQRCodeUrl(@Path("eqCode")String eqCode, @Path("money")double money,
+                                                           @Path("type")int type, @Path("shiftId")int shiftId);
+   @POST(HttpConfig.SCAN_CODE_PAY)
+   Observable<BaseResponse<PayCodeResultBean>> scanCodePay(@Query("auth_code")String auth_code, @Query("busId")int busId,
+                                                           @Query("out_trade_no")String out_trade_no, @Query("shiftId")int shiftId
+                                                    , @Query("total_fee")double total_fee);
+   @GET("magicBoxMobile/{eqCode}/{status}/79B4DE7C/getOrderList")
+   Observable<BaseResponse<OrderListResultBean>> getOrderList(@Path("eqCode")String eqCode, @Path("status")int status
+           , @Query("current") int current, @Query("size")int size);
 }

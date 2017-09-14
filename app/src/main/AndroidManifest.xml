@@ -57,6 +57,9 @@
             android:name=".login.LoginActivity"
             android:launchMode="singleTask" />
         <activity
+            android:name=".order.OrderListActivity"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".main.MoreActivity"
             android:launchMode="singleTask" />
         <activity

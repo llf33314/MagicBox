@@ -39,5 +39,7 @@ public class HttpConfig {
     public static final String GET_UNPAID_ORDER_URL= "magicBoxMobile/79B4DE7C/getNotPayOrderNum.do";
     public static final String MAGIC_BOX_MEMBER="magicBoxMember/queryWxShopByBusId";
     public static final String CHANGE_BIND="magicBoxMobile/79B4DE7C/changeBinding";
+    public static final String SCAN_CODE_PAY="magicBoxMobile/79B4DE7C/scanQR";
+
 
 }

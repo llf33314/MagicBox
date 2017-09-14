@@ -32,6 +32,7 @@
     <color name="yellow_cash">#FFD05A</color>
     <color name="yellow_cash_select">#99FFD05A</color>
     <color name="toolbar_back_p">#484848</color>
+    <color name="order_item_bg">#f8f8f8</color>
 
 
 </resources>

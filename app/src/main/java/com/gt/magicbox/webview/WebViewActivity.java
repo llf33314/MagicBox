@@ -26,7 +26,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.dtr.zbar.build.ZBarDecoder;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.http.HttpConfig;
@@ -37,9 +36,6 @@ import com.gt.magicbox.webview.service.UUIDService;
 import com.gt.magicbox.webview.util.ObjectUtils;
 import com.gt.magicbox.webview.util.PromptUtils;
 import com.gt.magicbox.webview.util.RootUtils;
-import com.zbar.scan.CameraManager;
-import com.zbar.scan.CameraPreview;
-import com.zbar.scan.ScanCaptureAct;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,9 +63,9 @@ public class WebViewActivity extends BaseActivity{
     public final static int WEB_TYPE_SERVER_PUSH=2;
     private int webType;
     private Camera mCamera;
-    private CameraPreview mPreview;
+  //  private CameraPreview mPreview;
     private Handler autoFocusHandler;
-    private CameraManager mCameraManager;
+ //   private CameraManager mCameraManager;
     private FrameLayout scanPreview;
     private Button scanRestart;
     private RelativeLayout scanContainer;
@@ -119,7 +115,7 @@ public class WebViewActivity extends BaseActivity{
         web.removeJavascriptInterface("searchBoxJavaBridge_");
         if (webType == WEB_TYPE_PAY||webType ==WEB_TYPE_SERVER_PUSH) {
            // scanCode();
-            initCameraViews();
+      //      initCameraViews();
         }else if (webType == WEB_TYPE_ORDER){
         }
     }
@@ -198,8 +194,8 @@ public class WebViewActivity extends BaseActivity{
      */
     public void scanCode() {
         Log.i(TAG, "scanCode: " + nowUrl);
-        Intent intent = new Intent(WebViewActivity.this,ScanCaptureAct.class);
-        startActivity(intent);
+//        Intent intent = new Intent(WebViewActivity.this,ScanCaptureAct.class);
+//        startActivity(intent);
     }
 
     // 扫码返回
@@ -386,35 +382,35 @@ public class WebViewActivity extends BaseActivity{
         });
     }
 
-    private void initCameraViews() {
-        scanContainer=(RelativeLayout)findViewById(R.id.container);
-        scanPreview = (FrameLayout) findViewById(R.id.capture_preview);
-        scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
-
-        autoFocusHandler = new Handler();
-        mCameraManager = new CameraManager(this);
-        try {
-            mCameraManager.openDriver();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Display display = this.getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
-        int height = display.getHeight();
-        RelativeLayout.LayoutParams linearParams =  (RelativeLayout.LayoutParams)scanCropView.getLayoutParams();
-        linearParams.height = (int) (width*0.8);
-        linearParams.width = (int) (width*0.8);
-        scanCropView.setLayoutParams(linearParams);
-
-
-        mCamera = mCameraManager.getCamera();
-        openFlashLight(mCamera);
-        mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
-
-        scanPreview.addView(mPreview);
-
-    }
+//    private void initCameraViews() {
+//        scanContainer=(RelativeLayout)findViewById(R.id.container);
+//        scanPreview = (FrameLayout) findViewById(R.id.capture_preview);
+//        scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
+//
+//        autoFocusHandler = new Handler();
+//        mCameraManager = new CameraManager(this);
+//        try {
+//            mCameraManager.openDriver();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Display display = this.getWindowManager().getDefaultDisplay();
+//        int width = display.getWidth();
+//        int height = display.getHeight();
+//        RelativeLayout.LayoutParams linearParams =  (RelativeLayout.LayoutParams)scanCropView.getLayoutParams();
+//        linearParams.height = (int) (width*0.8);
+//        linearParams.width = (int) (width*0.8);
+//        scanCropView.setLayoutParams(linearParams);
+//
+//
+//        mCamera = mCameraManager.getCamera();
+//        openFlashLight(mCamera);
+//        mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
+//
+//        scanPreview.addView(mPreview);
+//
+//    }
     private void openFlashLight(Camera m_Camera){
         try{
             Camera.Parameters mParameters;
@@ -464,58 +460,58 @@ public class WebViewActivity extends BaseActivity{
         }
     };
 
-    Camera.PreviewCallback previewCb = new Camera.PreviewCallback() {
-        public void onPreviewFrame(byte[] data, Camera camera) {
-            Camera.Size size = camera.getParameters().getPreviewSize();
+//    Camera.PreviewCallback previewCb = new Camera.PreviewCallback() {
+//        public void onPreviewFrame(byte[] data, Camera camera) {
+//            Camera.Size size = camera.getParameters().getPreviewSize();
+//
+//            byte[] rotatedData = new byte[data.length];
+//            for (int y = 0; y < size.height; y++) {
+//                for (int x = 0; x < size.width; x++)
+//                    rotatedData[x * size.height + size.height - y - 1] = data[x + y * size.width];
+//            }
+//
+//            int tmp = size.width;
+//            size.width = size.height;
+//            size.height = tmp;
+//
+//            //initCrop();
+//            ZBarDecoder zBarDecoder = new ZBarDecoder();
+//            String result = zBarDecoder.decodeCrop(rotatedData, size.width, size.height, fillRect.left, fillRect.top, fillRect.width(), fillRect.height());
+//
+//            if (!TextUtils.isEmpty(result)) {
+//                Log.d(TAG, "getCode: " + result);
+//                webLoadJS("scanCallBack", result);
+//
+//            }
+//        }
+//    };
 
-            byte[] rotatedData = new byte[data.length];
-            for (int y = 0; y < size.height; y++) {
-                for (int x = 0; x < size.width; x++)
-                    rotatedData[x * size.height + size.height - y - 1] = data[x + y * size.width];
-            }
-
-            int tmp = size.width;
-            size.width = size.height;
-            size.height = tmp;
-
-            initCrop();
-            ZBarDecoder zBarDecoder = new ZBarDecoder();
-            String result = zBarDecoder.decodeCrop(rotatedData, size.width, size.height, fillRect.left, fillRect.top, fillRect.width(), fillRect.height());
-
-            if (!TextUtils.isEmpty(result)) {
-                Log.d(TAG, "getCode: " + result);
-                webLoadJS("scanCallBack", result);
-
-            }
-        }
-    };
-
-    private void initCrop() {
-        int cameraWidth = mCameraManager.getCameraResolution().y;
-        int cameraHeight = mCameraManager.getCameraResolution().x;
-
-        int[] location = new int[2];
-        scanCropView.getLocationInWindow(location);
-
-        int cropLeft = location[0];
-        int cropTop = location[1] - getStatusBarHeight();
-
-        int cropWidth = scanCropView.getWidth();
-        int cropHeight = scanCropView.getHeight();
-
-        int containerWidth = scanContainer.getWidth();
-        int containerHeight = scanContainer.getHeight();
-
-        int x = cropLeft * cameraWidth / containerWidth;
-        int y = cropTop * cameraHeight / containerHeight;
-
-        int width = cropWidth * cameraWidth / containerWidth;
-        int height = cropHeight * cameraHeight / containerHeight;
-
-        mCropRect = new Rect(x, y, width + x, height + y);
-        fillRect=new Rect(0,0,cameraWidth,cameraHeight);
-
-    }
+//    private void initCrop() {
+//        int cameraWidth = mCameraManager.getCameraResolution().y;
+//        int cameraHeight = mCameraManager.getCameraResolution().x;
+//
+//        int[] location = new int[2];
+//        scanCropView.getLocationInWindow(location);
+//
+//        int cropLeft = location[0];
+//        int cropTop = location[1] - getStatusBarHeight();
+//
+//        int cropWidth = scanCropView.getWidth();
+//        int cropHeight = scanCropView.getHeight();
+//
+//        int containerWidth = scanContainer.getWidth();
+//        int containerHeight = scanContainer.getHeight();
+//
+//        int x = cropLeft * cameraWidth / containerWidth;
+//        int y = cropTop * cameraHeight / containerHeight;
+//
+//        int width = cropWidth * cameraWidth / containerWidth;
+//        int height = cropHeight * cameraHeight / containerHeight;
+//
+//        mCropRect = new Rect(x, y, width + x, height + y);
+//        fillRect=new Rect(0,0,cameraWidth,cameraHeight);
+//
+//    }
     // Mimic continuous auto-focusing
     Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {
         public void onAutoFocus(boolean success, Camera camera) {

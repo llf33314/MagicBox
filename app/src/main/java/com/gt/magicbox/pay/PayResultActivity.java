@@ -1,6 +1,7 @@
 package com.gt.magicbox.pay;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Spannable;
@@ -22,6 +23,8 @@ import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -32,7 +35,7 @@ import butterknife.OnClick;
  */
 
 public class PayResultActivity extends BaseActivity {
-    private String TAG="PayResultActivity";
+    private String TAG = "PayResultActivity";
     @BindView(R.id.text_pay_success)
     TextView textPaySuccess;
     @BindView(R.id.payNumber)
@@ -42,46 +45,51 @@ public class PayResultActivity extends BaseActivity {
     @BindView(R.id.printButton)
     Button printButton;
     String message;
-    public static final int TYPE_QRCODE_WECHAT=0;
-    public static final int TYPE_QRCODE_ALIPAY=1;
-    public static final int TYPE_CASH=2;
+    public static final int TYPE_QRCODE_WECHAT = 0;
+    public static final int TYPE_QRCODE_ALIPAY = 1;
+    public static final int TYPE_CASH = 2;
     private int payType;
+    private MediaPlayer mp = new MediaPlayer();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay_result);
+        playSound();
         setToolBarTitle("");
         initView();
-        if (payType==TYPE_CASH){
+        if (payType == TYPE_CASH) {
             createCashOrder(message);
         }
     }
-    private void initView(){
-        if (this.getIntent()!=null){
-            boolean success=getIntent().getBooleanExtra("success",true);
-            payType=getIntent().getIntExtra("payType",0);
-            message=getIntent().getStringExtra("message");
+
+    private void initView() {
+        if (this.getIntent() != null) {
+            boolean success = getIntent().getBooleanExtra("success", true);
+            payType = getIntent().getIntExtra("payType", 0);
+            message = getIntent().getStringExtra("message");
             showMoney(message);
         }
     }
+
     @OnClick({R.id.confirmButton, R.id.printButton})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.confirmButton:
-                Intent intent=new Intent(PayResultActivity.this,PaymentActivity.class);
+                Intent intent = new Intent(PayResultActivity.this, PaymentActivity.class);
                 startActivity(intent);
                 finish();
                 break;
             case R.id.printButton:
-                PrinterConnectService.printEsc0829(message,payType);
-               // RxBus.get().post(new PrintBean(message));
+                PrinterConnectService.printEsc0829(message, payType);
+                // RxBus.get().post(new PrintBean(message));
                 break;
         }
     }
-    private void showMoney(String numberString){
+
+    private void showMoney(String numberString) {
         SpannableStringBuilder spannableString = new SpannableStringBuilder();
-        if (numberString.length()!=0) {
+        if (numberString.length() != 0) {
             spannableString.append("¥ " + numberString);
             AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(ConvertUtils.dp2px(35));
             spannableString.setSpan(absoluteSizeSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -89,6 +97,7 @@ public class PayResultActivity extends BaseActivity {
         payNumber.setText(spannableString);
 
     }
+
     private void createCashOrder(String money) {
         HttpCall.getApiService()
                 .createCashOrder(PhoneUtils.getIMEI(), money, "2")
@@ -105,5 +114,22 @@ public class PayResultActivity extends BaseActivity {
                         Log.i(TAG, "onFailure code=" + code + "  msg=" + msg);
                     }
                 });
+    }
+
+    private void playSound() {
+        try {
+            mp = MediaPlayer.create(getApplicationContext(), R.raw.success);
+            mp.start();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+            }
+        });
     }
 }
