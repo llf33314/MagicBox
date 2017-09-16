@@ -2,10 +2,12 @@ package com.gt.magicbox.order;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
@@ -25,6 +27,9 @@ import java.util.Locale;
  */
 
 public class OrderListAdapter extends BaseAdapter {
+    private static final int TYPE_HEAD_BUTTON = 0;
+    private static final int TYPE_ORDER_ITEM = 1;
+
     private List<OrderListResultBean.OrderItemBean> data = new ArrayList<>();
     private LayoutInflater mInflater;
     private Context context;
@@ -34,6 +39,14 @@ public class OrderListAdapter extends BaseAdapter {
         this.context = context;
         this.data = data;
         mInflater = LayoutInflater.from(context);
+    }
+    @Override
+    public int getItemViewType(int position) {
+        if(TextUtils.isEmpty(data.get(position).orderNo)){
+            return TYPE_HEAD_BUTTON;
+        }else{
+            return TYPE_ORDER_ITEM;
+        }
     }
 
     @Override
@@ -53,21 +66,31 @@ public class OrderListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+        OrderItemViewHolder viewHolder;
+        HeadButtonViewHolder headButtonViewHolder;
         OrderListResultBean.OrderItemBean orderItemBean = data.get(position);
-        if (convertView == null) {
-            viewHolder = new ViewHolder();
-            convertView = mInflater.inflate(R.layout.item_order,null);
-            viewHolder.money= (TextView) convertView.findViewById(R.id.money);
-            viewHolder.orderNo=(TextView)convertView.findViewById(R.id.valueOrderNo);
-            viewHolder.time=(TextView)convertView.findViewById(R.id.valueTime);
-            convertView.setTag(viewHolder);
-        }else {
-            viewHolder= (ViewHolder) convertView.getTag();
+
+        switch (getItemViewType(position)){
+            case TYPE_HEAD_BUTTON:
+                    convertView = mInflater.inflate(R.layout.order_head_view,null);
+                break;
+            case TYPE_ORDER_ITEM:
+                if (convertView == null) {
+                    viewHolder = new OrderItemViewHolder();
+                    convertView = mInflater.inflate(R.layout.item_order,null);
+                    viewHolder.money= (TextView) convertView.findViewById(R.id.money);
+                    viewHolder.orderNo=(TextView)convertView.findViewById(R.id.valueOrderNo);
+                    viewHolder.time=(TextView)convertView.findViewById(R.id.valueTime);
+                    convertView.setTag(viewHolder);
+                }else {
+                    viewHolder= (OrderItemViewHolder) convertView.getTag();
+                }
+                viewHolder.time.setText(TimeUtils.millis2String(orderItemBean.time,DEFAULT_FORMAT));
+                viewHolder.orderNo.setText(orderItemBean.orderNo);
+                viewHolder.money.setText(""+orderItemBean.money);
+                break;
         }
-        viewHolder.time.setText(TimeUtils.millis2String(orderItemBean.time,DEFAULT_FORMAT));
-        viewHolder.orderNo.setText(""+orderItemBean.id);
-        viewHolder.money.setText(""+orderItemBean.money);
+
         return convertView;
     }
 
@@ -76,9 +99,18 @@ public class OrderListAdapter extends BaseAdapter {
         this.notifyDataSetChanged();
     }
 
-    class ViewHolder {
+    class OrderItemViewHolder {
         TextView orderNo;
         TextView time;
         TextView money;
     }
+    class HeadButtonViewHolder {
+        Button payOrder;
+        Button noPayOrder;
+    }
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
 }

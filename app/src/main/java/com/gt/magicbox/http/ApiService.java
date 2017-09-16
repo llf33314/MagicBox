@@ -19,35 +19,44 @@ import retrofit2.http.Query;
  */
 
 public interface ApiService {
-  
-   @POST(HttpConfig.LOGIN_URL)
-   Observable<BaseResponse<LoginBean>> userLogin(@Query("eqCode")String eqCode,
-                                                 @Query("login_name")String user,
-                                                 @Query("password")String pwd);
-   @POST(HttpConfig.MAGIC_BOX_MEMBER)
-   Observable<BaseResponse<MemberBean>> memberQuery(
-                                                 @Query("login_name")String user,
-                                                 @Query("password")String pwd);
 
-   @POST(HttpConfig.CASH_ORDER_URL)
-   Observable<BaseResponse> createCashOrder(@Query("eqCode") String eqCode,
-                                                      @Query("money") String money,
-                                                      @Query("type") String type);
-   @POST(HttpConfig.GET_UNPAID_ORDER_URL)
-   Observable<BaseResponse<UnpaidOrderBean>> getUnpaidOrderCount(@Query("eqCode") String eqCode,
-                                                             @Query("token") String token);
-   @POST(HttpConfig.CHANGE_BIND)
-   Observable<BaseResponse> changeBind(@Query("eqCode")String eqCode,
-                                                        @Query("login_name")String user,
-                                                        @Query("password")String pwd);
-   @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/79B4DE7C/payQR")
-   Observable<BaseResponse<QRCodeBitmapBean>> getQRCodeUrl(@Path("eqCode")String eqCode, @Path("money")double money,
-                                                           @Path("type")int type, @Path("shiftId")int shiftId);
-   @POST(HttpConfig.SCAN_CODE_PAY)
-   Observable<BaseResponse<PayCodeResultBean>> scanCodePay(@Query("auth_code")String auth_code, @Query("busId")int busId,
-                                                           @Query("out_trade_no")String out_trade_no, @Query("shiftId")int shiftId
-                                                    , @Query("total_fee")double total_fee);
-   @GET("magicBoxMobile/{eqCode}/{status}/79B4DE7C/getOrderList")
-   Observable<BaseResponse<OrderListResultBean>> getOrderList(@Path("eqCode")String eqCode, @Path("status")int status
-           , @Query("current") int current, @Query("size")int size);
+    @POST(HttpConfig.LOGIN_URL)
+    Observable<BaseResponse<LoginBean>> userLogin(@Query("eqCode") String eqCode,
+                                                  @Query("login_name") String user,
+                                                  @Query("password") String pwd);
+
+    @POST(HttpConfig.MAGIC_BOX_MEMBER)
+    Observable<BaseResponse<MemberBean>> memberQuery(
+            @Query("login_name") String user,
+            @Query("password") String pwd);
+
+    @POST(HttpConfig.CASH_ORDER_URL)
+    Observable<BaseResponse> createCashOrder(@Query("eqCode") String eqCode,
+                                             @Query("money") String money,
+                                             @Query("type") String type);
+
+    @POST(HttpConfig.GET_UNPAID_ORDER_URL)
+    Observable<BaseResponse<UnpaidOrderBean>> getUnpaidOrderCount(@Query("eqCode") String eqCode,
+                                                                  @Query("token") String token);
+
+    @POST(HttpConfig.CHANGE_BIND)
+    Observable<BaseResponse> changeBind(@Query("eqCode") String eqCode,
+                                        @Query("login_name") String user,
+                                        @Query("password") String pwd);
+
+    @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/79B4DE7C/payQR")
+    Observable<BaseResponse<QRCodeBitmapBean>> getQRCodeUrl(@Path("eqCode") String eqCode, @Path("money") double money,
+                                                            @Path("type") int type, @Path("shiftId") int shiftId);
+
+    @POST(HttpConfig.SCAN_CODE_PAY)
+    Observable<BaseResponse<PayCodeResultBean>> scanCodePay(@Query("auth_code") String auth_code, @Query("busId") int busId,
+                                                            @Query("out_trade_no") String out_trade_no, @Query("shiftId") int shiftId
+            , @Query("total_fee") double total_fee);
+
+    @GET("magicBoxMobile/{eqCode}/{status}/79B4DE7C/getOrderList")
+    Observable<BaseResponse<OrderListResultBean>> getOrderList(@Path("eqCode") String eqCode, @Path("status") int status
+            , @Query("current") int current, @Query("size") int size);
+
+    @POST(HttpConfig.DELETE_NOT_PAY_ORDER)
+    Observable<BaseResponse> deleteNotPayOrder(@Query("eqId") int eqId, @Query("orderId") int orderId);
 }

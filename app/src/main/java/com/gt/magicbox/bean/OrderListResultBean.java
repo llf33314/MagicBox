@@ -13,11 +13,12 @@ public class OrderListResultBean {
     public int pageCount;
     public int status;
     public List<OrderItemBean> orders;
-    public class OrderItemBean{
+    public static class OrderItemBean{
         public int id;
         public int status;
         public double money;
         public long time;
         public int type;
+        public String orderNo="";
     }
 }

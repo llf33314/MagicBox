@@ -80,6 +80,7 @@ public class MainActivity extends BaseActivity {
         initView();
         //bindOrderService();
         requestUpdate();
+        Log.d("lgx","eqId="+Hawk.get("eqId"));
         ScreenUtils.setScreenBrightness(MainActivity.this,255);
     }
 

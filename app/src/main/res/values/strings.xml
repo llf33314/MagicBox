@@ -34,6 +34,8 @@
 
     <string name="cancel">取消</string>
     <string name="logout_query">是否退出登录</string>
+    <string name="not_pay_order">待支付的订单</string>
+    <string name="pay_order">已支付的订单</string>
 
 
 </resources>
