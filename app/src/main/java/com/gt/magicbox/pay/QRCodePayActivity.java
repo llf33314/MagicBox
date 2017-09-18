@@ -6,9 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -18,6 +15,8 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +24,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
 import com.gt.magicbox.bean.ScanCodePayResultBean;
@@ -38,7 +38,6 @@ import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
-import com.gt.magicbox.webview.WebViewActivity;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
@@ -79,11 +78,15 @@ public class QRCodePayActivity extends BaseActivity {
     TextView cashierMoney;
     @BindView(R.id.capture_preview)
     FrameLayout scanPreview;
+    @BindView(R.id.reChosePay)
+    Button reChosePay;
     private String url;
     private double money;
     private int type;
     public final static int TYPE_PAY = 0;
     public final static int TYPE_SERVER_PUSH = 1;
+    public final static int TYPE_CREATED_PAY = 2;//已生成的订单并且未支付
+
     private HttpRequestDialog dialog;
     private SocketIOManager socketIOManager;
 
@@ -95,9 +98,10 @@ public class QRCodePayActivity extends BaseActivity {
     private boolean previewing = true;
     private ImageScanner mImageScanner = null;
     private Rect fillRect = null;
-    private String orderNo="";
+    private String orderNo = "";
     private Integer shiftId;
-    private boolean isCodePayRequesting=false;
+    private boolean isCodePayRequesting = false;
+
     static {
         System.loadLibrary("iconv");
     }
@@ -120,12 +124,12 @@ public class QRCodePayActivity extends BaseActivity {
             }
         });
         dialog.show();
-        combineURL();
+        init();
         payResultSocket();
     }
 
 
-    private void combineURL() {
+    private void init() {
         if (this.getIntent() != null) {
             type = this.getIntent().getIntExtra("type", 0);
             switch (type) {
@@ -142,6 +146,16 @@ public class QRCodePayActivity extends BaseActivity {
                     int orderId = this.getIntent().getIntExtra("orderId", 0);
                     if (orderId != 0)
                         url = HttpConfig.BASE_URL + PhoneUtils.getIMEI() + "/" + orderId + "/" + HttpConfig.PAYMENT_URL;
+                    break;
+                case TYPE_CREATED_PAY:
+                    orderId = this.getIntent().getIntExtra("orderId", 0);
+                    money = this.getIntent().getDoubleExtra("money", 0);
+                    shiftId = Hawk.get("shiftId");
+                    if (shiftId == null || shiftId < 0) shiftId = 0;
+                    showMoney(cashierMoney, "" + money);
+                    showMoney(customerMoney, "" + money);
+                    reChosePay.setVisibility(View.GONE);
+                    getCreatedQRCodeURL(orderId,shiftId);
                     break;
             }
             Log.i(TAG, "Url=" + url);
@@ -161,7 +175,7 @@ public class QRCodePayActivity extends BaseActivity {
                         if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
                             Log.i(TAG, "data qrUrl=" + data.qrUrl);
                             showQRCodeView(data.qrUrl);
-                            orderNo=data.orderNo;
+                            orderNo = data.orderNo;
                         }
                     }
 
@@ -180,19 +194,52 @@ public class QRCodePayActivity extends BaseActivity {
                     }
                 });
     }
-    private void getCodePayResult(String qrCode,String orderNo){
+
+    private void getCreatedQRCodeURL(int orderId, int shiftId) {
+        HttpCall.getApiService()
+                .getCreatedQRCodeUrl(orderId, shiftId)
+                .compose(ResultTransformer.<CreatedOrderBean>transformer())//线程处理 预处理
+                .subscribe(new BaseObserver<CreatedOrderBean>() {
+                    @Override
+                    public void onSuccess(CreatedOrderBean data) {
+                        Log.i(TAG, "onSuccess");
+
+                        if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
+                            Log.i(TAG, "data qrUrl=" + data.qrUrl);
+                            showQRCodeView(data.qrUrl);
+                            orderNo = data.orderNo;
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        dialog.dismiss();
+                        AppManager.getInstance().finishActivity(QRCodePayActivity.class);
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        dialog.dismiss();
+                        AppManager.getInstance().finishActivity(QRCodePayActivity.class);
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
+
+    private void getCodePayResult(String qrCode, String orderNo) {
         if (!TextUtils.isEmpty(orderNo)) {
             isCodePayRequesting = true;
             HttpCall.getApiService()
-                    .scanCodePay(qrCode, (Integer) Hawk.get("busId"), orderNo,shiftId, money)
+                    .scanCodePay(qrCode, (Integer) Hawk.get("busId"), orderNo, shiftId, money)
                     .compose(ResultTransformer.<PayCodeResultBean>transformer())//线程处理 预处理
                     .subscribe(new BaseObserver<PayCodeResultBean>() {
                         @Override
                         public void onSuccess(PayCodeResultBean data) {
                             Log.i(TAG, "onSuccess");
-                           if (data!=null&&data.code==1){
-                              // payResult(true,""+money);
-                           }
+                            if (data != null && data.code == 1) {
+                                // payResult(true,""+money);
+                            }
 //                        if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
 //                            Log.i(TAG, "data qrUrl=" + data.qrUrl);
 //                            showQRCodeView(data.qrUrl);
@@ -201,18 +248,19 @@ public class QRCodePayActivity extends BaseActivity {
 
                         @Override
                         public void onError(Throwable e) {
-                            isCodePayRequesting=false;
+                            isCodePayRequesting = false;
                             super.onError(e);
                         }
 
                         @Override
                         public void onFailure(int code, String msg) {
-                            isCodePayRequesting=false;
+                            isCodePayRequesting = false;
                             super.onFailure(code, msg);
                         }
                     });
         }
     }
+
     private void showQRCodeView(String url) {
         // TODO Auto-generated method stub
         BitmapUtils bitmapUtils = new BitmapUtils(this);
@@ -267,31 +315,32 @@ public class QRCodePayActivity extends BaseActivity {
                     e.printStackTrace();
                     retData = "";
                 }
-                String json=retData.replace("\\","");
-                if (!TextUtils.isEmpty(json)&&json.startsWith("\"")&&json.endsWith("\"")){
+                String json = retData.replace("\\", "");
+                if (!TextUtils.isEmpty(json) && json.startsWith("\"") && json.endsWith("\"")) {
                     Log.d(SocketIOManager.TAG, "startsWith---------");
 
-                    json=json.substring(1,json.length()-1);
+                    json = json.substring(1, json.length() - 1);
                 }
                 Log.d(SocketIOManager.TAG, "retData=" + retData);
                 Log.d(SocketIOManager.TAG, "json=" + json);
-                 ScanCodePayResultBean scanCodePayResultBean= new Gson().fromJson(json,ScanCodePayResultBean.class);
-                if (scanCodePayResultBean!=null){
-                    boolean success=(!TextUtils.isEmpty(scanCodePayResultBean.status)
-                            &&scanCodePayResultBean.status.equals("success"))?true:false;
-                    payResult(success,""+money);
+                ScanCodePayResultBean scanCodePayResultBean = new Gson().fromJson(json, ScanCodePayResultBean.class);
+                if (scanCodePayResultBean != null) {
+                    boolean success = (!TextUtils.isEmpty(scanCodePayResultBean.status)
+                            && scanCodePayResultBean.status.equals("success")) ? true : false;
+                    payResult(success, "" + money);
                 }
             }
         });
         socketIOManager.connectSocket();
     }
-    public void payResult(boolean success,String message){
+
+    public void payResult(boolean success, String message) {
 
         if (success) {
-            Intent intent=new Intent(getApplicationContext(), PayResultActivity.class);
-            intent.putExtra("success",success);
-            intent.putExtra("message",message);
-            intent.putExtra("payType", (int)Hawk.get("payType"));
+            Intent intent = new Intent(getApplicationContext(), PayResultActivity.class);
+            intent.putExtra("success", success);
+            intent.putExtra("message", message);
+            intent.putExtra("payType", (int) Hawk.get("payType"));
             startActivity(intent);
 
             AppManager.getInstance().finishActivity(QRCodePayActivity.class);
@@ -313,14 +362,15 @@ public class QRCodePayActivity extends BaseActivity {
     public void onViewClicked() {
         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
     }
+
     private void addEvents() {
-                if (barcodeScanned) {
-                    barcodeScanned = false;
-                    mCamera.setPreviewCallback(previewCb);
-                    mCamera.startPreview();
-                    previewing = true;
-                    mCamera.autoFocus(autoFocusCB);
-                }
+        if (barcodeScanned) {
+            barcodeScanned = false;
+            mCamera.setPreviewCallback(previewCb);
+            mCamera.startPreview();
+            previewing = true;
+            mCamera.autoFocus(autoFocusCB);
+        }
     }
 
     private void initCameraViews() {
@@ -341,6 +391,7 @@ public class QRCodePayActivity extends BaseActivity {
         scanPreview.addView(mPreview);
 
     }
+
     private void releaseCamera() {
         if (mCamera != null) {
             previewing = false;
@@ -360,7 +411,7 @@ public class QRCodePayActivity extends BaseActivity {
         public void onPreviewFrame(byte[] data, Camera camera) {
             Camera.Size size = camera.getParameters().getPreviewSize();
 
-            fillRect=new Rect(0,0,size.width,size.height);
+            fillRect = new Rect(0, 0, size.width, size.height);
             Image barcode = new Image(size.width, size.height, "Y800");
             barcode.setData(data);
             barcode.setCrop(fillRect.left, fillRect.top, fillRect.width(),
@@ -383,8 +434,8 @@ public class QRCodePayActivity extends BaseActivity {
                 if (!isCodePayRequesting) {
                     getCodePayResult(resultStr, orderNo);
                 }
-                ToastUtil.getInstance().showToast("resultStr="+resultStr);
- //               barcodeScanned = true;
+                ToastUtil.getInstance().showToast("resultStr=" + resultStr);
+                //               barcodeScanned = true;
             }
         }
     };

@@ -3,6 +3,7 @@ package com.gt.magicbox.order;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,7 @@ import java.util.Locale;
 public class OrderListAdapter extends BaseAdapter {
     private static final int TYPE_HEAD_BUTTON = 0;
     private static final int TYPE_ORDER_ITEM = 1;
-
+    private HeadButtonViewHolder headButtonViewHolder;
     private List<OrderListResultBean.OrderItemBean> data = new ArrayList<>();
     private LayoutInflater mInflater;
     private Context context;
@@ -42,7 +43,7 @@ public class OrderListAdapter extends BaseAdapter {
     }
     @Override
     public int getItemViewType(int position) {
-        if(TextUtils.isEmpty(data.get(position).orderNo)){
+        if(TextUtils.isEmpty(data.get(position).orderNo)&&data.get(position).id<=0){
             return TYPE_HEAD_BUTTON;
         }else{
             return TYPE_ORDER_ITEM;
@@ -67,12 +68,20 @@ public class OrderListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         OrderItemViewHolder viewHolder;
-        HeadButtonViewHolder headButtonViewHolder;
         OrderListResultBean.OrderItemBean orderItemBean = data.get(position);
 
         switch (getItemViewType(position)){
             case TYPE_HEAD_BUTTON:
-                    convertView = mInflater.inflate(R.layout.order_head_view,null);
+                if (convertView==null) {
+                    Log.e("lgx"," headButtonViewHolder=new HeadButtonViewHolder();");
+                    headButtonViewHolder=new HeadButtonViewHolder();
+                    convertView = mInflater.inflate(R.layout.order_head_view, null);
+                    headButtonViewHolder.noPayOrder= (Button) convertView.findViewById(R.id.notPayButton);
+                    headButtonViewHolder.payOrder=(Button)convertView.findViewById(R.id.payButton);
+                    convertView.setTag(headButtonViewHolder);
+                }else {
+                    headButtonViewHolder= (HeadButtonViewHolder) convertView.getTag();
+                }
                 break;
             case TYPE_ORDER_ITEM:
                 if (convertView == null) {
@@ -113,4 +122,7 @@ public class OrderListAdapter extends BaseAdapter {
         return 2;
     }
 
+    public HeadButtonViewHolder getHeadButtonViewHolder() {
+        return headButtonViewHolder;
+    }
 }

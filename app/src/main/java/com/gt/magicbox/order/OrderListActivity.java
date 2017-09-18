@@ -1,5 +1,6 @@
 package com.gt.magicbox.order;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -7,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
@@ -22,6 +25,7 @@ import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenu;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuCreator;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuItem;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuListView;
+import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.orhanobut.hawk.Hawk;
@@ -36,7 +40,7 @@ import butterknife.BindView;
  * Created by jack-lin on 2017/9/13 0013.
  */
 
-public class OrderListActivity extends BaseActivity {
+public class OrderListActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = OrderListActivity.class.getSimpleName();
     private SwipeMenuListView swipeMenuListView;
     private OrderListAdapter orderListAdapter;
@@ -75,6 +79,21 @@ public class OrderListActivity extends BaseActivity {
             }
         });
         swipeMenuListView = pullToRefreshSwipeListView.getRefreshableView();
+        swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
+                if (orderItemBean != null && orderItemBean.id > 0) {
+                    Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
+                    intent.putExtra("type",QRCodePayActivity.TYPE_CREATED_PAY);
+                    intent.putExtra("orderId", orderItemBean.id);
+                    intent.putExtra("money", orderItemBean.money);
+                    startActivity(intent);
+                }
+
+
+            }
+        });
         swipeMenuListView.setDivider(null);
         orderListAdapter = new OrderListAdapter(getApplicationContext(), orderItemBeanList);
         swipeMenuListView.setAdapter(orderListAdapter);
@@ -96,17 +115,18 @@ public class OrderListActivity extends BaseActivity {
             public void onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index) {
                     case 0:
-                        OrderListResultBean.OrderItemBean orderItemBean=orderItemBeanList.get(position);
-                        if (orderItemBean!=null) {
+                        OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
+                        if (orderItemBean != null) {
                             deleteNotPayOrder(orderItemBean.id, position);
                         }
                         break;
                 }
             }
         });
+
     }
 
-    private void getOrderList(int status, int size) {
+    private void getOrderList(final int status, int size) {
         HttpCall.getApiService()
                 .getOrderList(PhoneUtils.getIMEI(), status, page, size)
                 .compose(ResultTransformer.<OrderListResultBean>transformer())//线程处理 预处理
@@ -120,12 +140,16 @@ public class OrderListActivity extends BaseActivity {
                                 Log.i(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
                                 orderItemBeanList.addAll(data.orders);
                                 orderListAdapter.setData(orderItemBeanList);
-                                if (page == 1) {
+                                orderListAdapter.getHeadButtonViewHolder().noPayOrder.setOnClickListener(OrderListActivity.this);
+                                orderListAdapter.getHeadButtonViewHolder().payOrder.setOnClickListener(OrderListActivity.this);
+                                if (page == 1 && status == 0) {
+                                    setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
                                     dialog.dismiss();
                                 } else if (page > 1)
                                     pullToRefreshSwipeListView.onPullUpRefreshComplete();
                             } else {
-                                if (page > 1) {
+                                if (page == 1) dialog.dismiss();
+                                else if (page > 1) {
                                     pullToRefreshSwipeListView.onPullUpRefreshComplete();
                                     //pullToRefreshSwipeListView.setHasMoreData(false);
                                 }
@@ -147,6 +171,7 @@ public class OrderListActivity extends BaseActivity {
                     }
                 });
     }
+
     private void deleteNotPayOrder(int orderId, final int position) {
         HttpCall.getApiService()
                 .deleteNotPayOrder((Integer) Hawk.get("eqId"), orderId)
@@ -157,8 +182,8 @@ public class OrderListActivity extends BaseActivity {
                         Log.d(TAG, "deleteNotPayOrder onSuccess");
 
                         if (data != null) {
-                                orderItemBeanList.remove(position);
-                                orderListAdapter.notifyDataSetChanged();
+                            orderItemBeanList.remove(position);
+                            orderListAdapter.notifyDataSetChanged();
                         }
                     }
 
@@ -175,5 +200,46 @@ public class OrderListActivity extends BaseActivity {
                         super.onFailure(code, msg);
                     }
                 });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.payButton:
+                setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, false);
+                setButtonSelected(orderListAdapter.getHeadButtonViewHolder().payOrder, true);
+                page = 1;
+                orderItemBeanList.clear();
+                orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
+                dialog = new HttpRequestDialog();
+                dialog.show();
+                orderListAdapter.setData(orderItemBeanList);
+
+                getOrderList(1, 10);
+                Log.d(TAG, "payButton onClick");
+                break;
+            case R.id.notPayButton:
+                setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
+                setButtonSelected(orderListAdapter.getHeadButtonViewHolder().payOrder, false);
+                page = 1;
+                orderItemBeanList.clear();
+                dialog = new HttpRequestDialog();
+                dialog.show();
+                orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
+                orderListAdapter.setData(orderItemBeanList);
+                getOrderList(0, 10);
+                Log.d(TAG, "notPayButton onClick");
+
+                break;
+        }
+
+    }
+
+    private void setButtonSelected(Button button, boolean selected) {
+        if (button != null) {
+            button.setEnabled(!selected);
+            int textColor = selected ? 0xffffffff : 0xfff04a4a;
+            button.setTextColor(textColor);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.gt.magicbox.http;
 
 
+import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberBean;
 import com.gt.magicbox.bean.OrderListResultBean;
@@ -59,4 +60,7 @@ public interface ApiService {
 
     @POST(HttpConfig.DELETE_NOT_PAY_ORDER)
     Observable<BaseResponse> deleteNotPayOrder(@Query("eqId") int eqId, @Query("orderId") int orderId);
+
+    @GET("magicBoxMobile/{orderId}/{shiftId}/79B4DE7C/payQR")
+    Observable<BaseResponse<CreatedOrderBean>> getCreatedQRCodeUrl(@Path("orderId") int orderId, @Path("shiftId") int shiftId);
 }
