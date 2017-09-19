@@ -63,4 +63,10 @@ public interface ApiService {
 
     @GET("magicBoxMobile/{orderId}/{shiftId}/79B4DE7C/payQR")
     Observable<BaseResponse<CreatedOrderBean>> getCreatedQRCodeUrl(@Path("orderId") int orderId, @Path("shiftId") int shiftId);
+
+    @POST(HttpConfig.SEND_SMS)
+    Observable<BaseResponse> sendSMS(@Query("busId") int  busId,
+                                        @Query("content") String content,
+                                        @Query("mobiles") String mobiles);
+
 }

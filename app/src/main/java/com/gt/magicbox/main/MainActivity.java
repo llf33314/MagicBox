@@ -19,6 +19,7 @@ import com.gt.magicbox.exchange.ShiftExchangeActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.order.OrderListActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
@@ -40,9 +41,9 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends BaseActivity {
     private String TAG = "MainActivity";
-    private String[] itemNameArray = {"收银", "订单", "会员", "卡券核销", "派券", "更多"};
+    private String[] itemNameArray = {"收银", "订单", "会员", "优惠券", "交班", "更多"};
     private Integer[] imageResArray = {R.drawable.home_payment, R.drawable.home_order,
-            R.drawable.home_member, R.drawable.home_card_verification, R.drawable.home_send_coupon, R.drawable.home_more};
+            R.drawable.home_member, R.drawable.home_card_verification, R.drawable.home_shift_exchange, R.drawable.home_more};
     private int[] colorNormalArray = {0xfffdd451, 0xffb177f2, 0xffff9a54, 0xff47d09c, 0xfffc7473, 0xff4db3ff};
     private int[] colorFocusedArray = {0x99fdd451, 0x99b177f2, 0x99ff9a54, 0x9947d09c, 0x99fc7473, 0x994db3ff};
     private ArrayList<GridItem> homeData = new ArrayList<>();
@@ -80,7 +81,6 @@ public class MainActivity extends BaseActivity {
         initView();
         //bindOrderService();
         requestUpdate();
-        Log.d("lgx","eqId="+Hawk.get("eqId"));
         ScreenUtils.setScreenBrightness(MainActivity.this,255);
     }
 
@@ -94,19 +94,20 @@ public class MainActivity extends BaseActivity {
     private void initView() {
         initViewData();
         home_grid = (GridView) findViewById(R.id.gird);
-        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData);
+        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData,3);
         home_grid.setAdapter(gridViewAdapter);
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
                     case 2:
+                        intent =new Intent(MainActivity.this,MemberChooseActivity.class);
+                        startActivity(intent);
                         break;
                     case 3:
                         break;
                     case 4:
-                        intent = new Intent(MainActivity.this, DistributeCouponActivity.class);
-                        intent.putExtra("type",0);
+                        intent = new Intent(MainActivity.this, ShiftExchangeActivity.class);
                         startActivity(intent);
                         break;
                     case 0:

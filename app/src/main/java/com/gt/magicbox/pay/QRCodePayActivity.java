@@ -434,7 +434,7 @@ public class QRCodePayActivity extends BaseActivity {
                 if (!isCodePayRequesting) {
                     getCodePayResult(resultStr, orderNo);
                 }
-                ToastUtil.getInstance().showToast("resultStr=" + resultStr);
+                ToastUtil.getInstance().showToast("resultStr=" + resultStr+"  orderNo="+orderNo);
                 //               barcodeScanned = true;
             }
         }

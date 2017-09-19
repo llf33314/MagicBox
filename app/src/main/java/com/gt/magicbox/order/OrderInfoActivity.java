@@ -67,7 +67,7 @@ public class OrderInfoActivity extends BaseActivity {
         if (intent!=null){
             String orderNo=intent.getStringExtra("orderNo");
             long time=intent.getLongExtra("time",0);
-            int payType=intent.getIntExtra("type",0);
+            int payType=intent.getIntExtra("payType",0);
             double money=intent.getDoubleExtra("money",0);
             if (!TextUtils.isEmpty(orderNo))
             lists.add(new KeyValueStringBean("订单号",orderNo));

@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.SystemClock;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Xml;
 
@@ -395,5 +396,26 @@ public final class PhoneUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * “13\\d{9}”指前两位为1和3，后面跟任意9位；
+     * <p>
+     * “14[57]\\d{8}”指前两位为1和4，第三位为5或7，后面跟任意8位；
+     * <p>
+     * \ 将下一个字符标记为一个特殊字符
+     * <p>
+     * \d 匹配一个数字字符。等价于[0-9]
+     * <p>
+     * {n} 匹配确定的n次。
+     * <p>
+     * [xyz] 字符集合。匹配所包含的任意一个字符
+     * <p>
+     * x|y 匹配x或y
+     */
+    public static boolean isMobileNO(String mobiles) {
+        String telRegex = "13\\d{9}|14[57]\\d{8}|15[012356789]\\d{8}|18[01256789]\\d{8}|17[0678]\\d{8}";
+        if (TextUtils.isEmpty(mobiles)) return false;
+        else return mobiles.matches(telRegex);
     }
 }

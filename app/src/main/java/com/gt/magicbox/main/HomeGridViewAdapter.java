@@ -36,7 +36,7 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
     private int itemHeight;
     private int displayAreaHeight;
 
-    public HomeGridViewAdapter(@NonNull Context context, int resource, ArrayList<GridItem> objects) {
+    public HomeGridViewAdapter(@NonNull Context context, int resource, ArrayList<GridItem> objects,int heightCount) {
         super(context, resource);
         this.mContext = context;
         this.layoutResourceId = resource;
@@ -44,7 +44,7 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
         int toolbarHeight =(int) mContext.getResources().getDimension(R.dimen.toolbar_height);
         displayAreaHeight = screenHeight - toolbarHeight -ScreenUtils.getStatusHeight();
-        itemHeight = displayAreaHeight / 3 ;
+        itemHeight = displayAreaHeight / heightCount ;
 
     }
 

@@ -51,7 +51,7 @@ public class MoreActivity extends BaseActivity {
     private void initView() {
         initViewData();
         home_grid = (GridView) findViewById(R.id.gird);
-        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData);
+        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData,3);
         home_grid.setAdapter(gridViewAdapter);
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
