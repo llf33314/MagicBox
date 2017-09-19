@@ -9,16 +9,21 @@ import java.util.List;
  */
 
 public class OrderListResultBean {
-    public String eqcode="";
+    public String eqcode = "";
     public int pageCount;
     public int status;
     public List<OrderItemBean> orders;
-    public static class OrderItemBean{
+
+    public static class OrderItemBean {
         public int id;
+        public int eqId;
+        public int busId;
+        private int modelId;
         public int status;
+        public String orderNo = "";
         public double money;
         public long time;
         public int type;
-        public String orderNo="";
+        public String businessUtilName = "";
     }
 }

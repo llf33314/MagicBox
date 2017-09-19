@@ -37,5 +37,8 @@
     <string name="not_pay_order">待支付的订单</string>
     <string name="pay_order">已支付的订单</string>
 
+    <string name="fill_the_small_ticket">补打小票</string>
+    <string name="refund">退款</string>
+
 
 </resources>

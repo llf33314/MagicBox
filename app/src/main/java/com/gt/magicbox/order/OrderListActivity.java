@@ -50,6 +50,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     private int page = 1;
     private int updatePage;
     HttpRequestDialog dialog;
+    private int status=0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,15 +84,24 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
-                if (orderItemBean != null && orderItemBean.id > 0) {
-                    Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
-                    intent.putExtra("type",QRCodePayActivity.TYPE_CREATED_PAY);
-                    intent.putExtra("orderId", orderItemBean.id);
-                    intent.putExtra("money", orderItemBean.money);
-                    startActivity(intent);
+                if (orderItemBean != null ) {
+                    if (orderItemBean.id > 0&&status==0) {
+                        Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
+                        intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
+                        intent.putExtra("orderId", orderItemBean.id);
+                        intent.putExtra("money", orderItemBean.money);
+                        startActivity(intent);
+                    }else if (status==1){
+                        Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
+                        intent.putExtra("orderNo", orderItemBean.orderNo);
+                        intent.putExtra("time", orderItemBean.time);
+                        intent.putExtra("payType", orderItemBean.type);
+                        intent.putExtra("money", orderItemBean.money);
+
+                        startActivity(intent);
+                    }
+
                 }
-
-
             }
         });
         swipeMenuListView.setDivider(null);
@@ -142,9 +152,11 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                                 orderListAdapter.setData(orderItemBeanList);
                                 orderListAdapter.getHeadButtonViewHolder().noPayOrder.setOnClickListener(OrderListActivity.this);
                                 orderListAdapter.getHeadButtonViewHolder().payOrder.setOnClickListener(OrderListActivity.this);
-                                if (page == 1 && status == 0) {
-                                    setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
+                                if (page == 1) {
+
                                     dialog.dismiss();
+                                    if (status == 0)
+                                        setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
                                 } else if (page > 1)
                                     pullToRefreshSwipeListView.onPullUpRefreshComplete();
                             } else {
@@ -209,6 +221,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, false);
                 setButtonSelected(orderListAdapter.getHeadButtonViewHolder().payOrder, true);
                 page = 1;
+                status=1;
                 orderItemBeanList.clear();
                 orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
                 dialog = new HttpRequestDialog();
@@ -222,6 +235,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
                 setButtonSelected(orderListAdapter.getHeadButtonViewHolder().payOrder, false);
                 page = 1;
+                status=0;
                 orderItemBeanList.clear();
                 dialog = new HttpRequestDialog();
                 dialog.show();

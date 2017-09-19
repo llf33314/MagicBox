@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ececec">
+
+    <android.support.v7.widget.RecyclerView
+        android:background="#fff"
+        android:id="@+id/keyValueView"
+        android:overScrollMode="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/printPaper"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_42"
+        android:layout_marginLeft="@dimen/dp_14"
+        android:layout_marginRight="@dimen/dp_14"
+        android:layout_marginTop="@dimen/dp_42"
+        android:background="@drawable/selector_red_button"
+        android:text="@string/fill_the_small_ticket"
+        android:textColor="#fff"
+        android:textSize="15sp" />
+    <Button
+        android:id="@+id/refund"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_42"
+        android:layout_marginLeft="@dimen/dp_14"
+        android:layout_marginRight="@dimen/dp_14"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@drawable/selector_white_button"
+        android:text="@string/refund"
+        android:textColor="@drawable/selector_text_color"
+        android:textSize="15sp" />
+</LinearLayout>
