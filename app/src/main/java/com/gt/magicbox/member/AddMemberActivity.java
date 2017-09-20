@@ -13,9 +13,17 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.CardTypeInfoBean;
+import com.gt.magicbox.bean.OrderListResultBean;
+import com.gt.magicbox.http.BaseResponse;
+import com.gt.magicbox.http.HttpRequestDialog;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.WheelDialog;
 import com.gt.magicbox.widget.WheelViewDialog;
+import com.orhanobut.hawk.Hawk;
 import com.suke.widget.SwitchButton;
 import com.wx.wheelview.widget.WheelView;
 
@@ -45,15 +53,50 @@ public class AddMemberActivity extends BaseActivity {
     RelativeLayout followLayout;
     @BindView(R.id.memberTypeLayout)
     RelativeLayout memberTypeLayout;
-
+    HttpRequestDialog dialog;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_member_add);
+        initData();
         initView();
     }
+    private void initData(){
+        getMemberCardType();
+    }
+    private void getMemberCardType(){
+        HttpCall.getApiService()
+                .findMemberCardType((Integer) Hawk.get("busId"))
+                .compose(ResultTransformer.<CardTypeInfoBean>transformer())//线程处理 预处理
+                .subscribe(new BaseObserver<CardTypeInfoBean>(){
 
+                    @Override
+                    protected void onSuccess(CardTypeInfoBean bean) {
+                        dialog.dismiss();
+                        Log.d(TAG,"onSuccess");
+                    }
+
+                    @Override
+                    protected void onFailure(int code, String msg) {
+                        super.onFailure(code, msg);
+                        dialog.dismiss();
+                        Log.d(TAG,"onFailure");
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        dialog.dismiss();
+                        Log.d(TAG,"onError");
+
+
+                    }
+                });
+    }
     private void initView() {
+        dialog=new HttpRequestDialog();
+        dialog.show();
         switchButton.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {

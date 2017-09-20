@@ -1,6 +1,7 @@
 package com.gt.magicbox.http;
 
 
+import com.gt.magicbox.bean.CardTypeInfoBean;
 import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberBean;
@@ -70,7 +71,6 @@ public interface ApiService {
                                         @Query("mobiles") String mobiles);
 
     @POST(HttpConfig.FIND_MEMBER_CARD_TYPE)
-    Observable<BaseResponse<MemberBean>> findMemberCardType(
-            @Query("login_name") String user,
-            @Query("password") String pwd);
+    Observable<BaseResponse<CardTypeInfoBean>> findMemberCardType(
+            @Query("busId")int  busId);
 }
