@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_300"
+    android:layout_gravity="bottom"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_width="@dimen/dp_60"
+        android:layout_height="@dimen/dp_50"
+        android:gravity="center"
+        android:text="@string/cancel"
+        android:textColor="#cccccc"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/confirm"
+        android:layout_width="@dimen/dp_60"
+        android:layout_height="@dimen/dp_50"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:text="@string/confirm"
+        android:textColor="@color/green_wechat"
+        android:textSize="16sp" />
+
+    <com.wx.wheelview.widget.WheelView
+        android:id="@+id/wheelView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_100"
+        android:layout_centerVertical="true"/>
+    <View
+        android:background="@color/green_wechat"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_130"
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="1dp"/>
+    <View
+        android:background="@color/green_wechat"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_170"
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="1dp"/>
+</RelativeLayout>

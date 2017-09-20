@@ -13,6 +13,7 @@ import android.widget.Button;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpRequestDialog;
@@ -50,7 +51,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     private int page = 1;
     private int updatePage;
     HttpRequestDialog dialog;
-    private int status=0;
+    private int status = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void initView() {
+        BaseConstant.isCanSwipe=true;
         dialog = new HttpRequestDialog();
         dialog.show();
         pullToRefreshSwipeListView.setPullLoadEnabled(true);
@@ -84,14 +86,14 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
-                if (orderItemBean != null ) {
-                    if (orderItemBean.id > 0&&status==0) {
+                if (orderItemBean != null) {
+                    if (orderItemBean.id > 0 && status == 0) {
                         Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
                         intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
                         intent.putExtra("orderId", orderItemBean.id);
                         intent.putExtra("money", orderItemBean.money);
                         startActivity(intent);
-                    }else if (status==1){
+                    } else if (status == 1) {
                         Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
                         intent.putExtra("orderNo", orderItemBean.orderNo);
                         intent.putExtra("time", orderItemBean.time);
@@ -110,35 +112,36 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
 
         setSwipeMenu();
     }
-   private void setSwipeMenu(){
-       SwipeMenuCreator creator = new SwipeMenuCreator() {
-           @Override
-           public void create(SwipeMenu menu) {//这里可以再添加按钮，可以自己添加
-               SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
-               openItem.setBackground(new ColorDrawable(Color.rgb(0xf0, 0x4a, 0x4a)));
-               openItem.setWidth(ConvertUtils.dp2px(61));
-               openItem.setTitle("删除");
-               openItem.setTitleSize(15);
-               openItem.setTitleColor(Color.WHITE);
-               menu.addMenuItem(openItem);
 
-           }
-       };
-       swipeMenuListView.setMenuCreator(creator);
-       swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-           @Override
-           public void onMenuItemClick(int position, SwipeMenu menu, int index) {
-               switch (index) {
-                   case 0:
-                       OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
-                       if (orderItemBean != null) {
-                           deleteNotPayOrder(orderItemBean.id, position);
-                       }
-                       break;
-               }
-           }
-       });
-   }
+    private void setSwipeMenu() {
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+            @Override
+            public void create(SwipeMenu menu) {//这里可以再添加按钮，可以自己添加
+                SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
+                openItem.setBackground(new ColorDrawable(Color.rgb(0xf0, 0x4a, 0x4a)));
+                openItem.setWidth(ConvertUtils.dp2px(61));
+                openItem.setTitle("删除");
+                openItem.setTitleSize(15);
+                openItem.setTitleColor(Color.WHITE);
+                menu.addMenuItem(openItem);
+
+            }
+        };
+        swipeMenuListView.setMenuCreator(creator);
+        swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public void onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index) {
+                    case 0:
+                        OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
+                        if (orderItemBean != null) {
+                            deleteNotPayOrder(orderItemBean.id, position);
+                        }
+                        break;
+                }
+            }
+        });
+    }
 
     private void getOrderList(final int status, int size) {
         HttpCall.getApiService()
@@ -225,31 +228,27 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, false);
                 setButtonSelected(orderListAdapter.getHeadButtonViewHolder().payOrder, true);
                 page = 1;
-                status=1;
+                status = 1;
                 orderItemBeanList.clear();
                 orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
                 dialog = new HttpRequestDialog();
                 dialog.show();
                 orderListAdapter.setData(orderItemBeanList);
-                if (swipeMenuListView.mTouchView!=null)
-                swipeMenuListView.mTouchView.isCanSwipe=false;
+                BaseConstant.isCanSwipe = false;
                 getOrderList(1, 10);
-                Log.d(TAG, "payButton onClick");
                 break;
             case R.id.notPayButton:
                 setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
                 setButtonSelected(orderListAdapter.getHeadButtonViewHolder().payOrder, false);
                 page = 1;
-                status=0;
+                status = 0;
                 orderItemBeanList.clear();
                 dialog = new HttpRequestDialog();
                 dialog.show();
                 orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
-                if (swipeMenuListView.mTouchView!=null)
-                    swipeMenuListView.mTouchView.isCanSwipe=true;
+                BaseConstant.isCanSwipe = true;
                 orderListAdapter.setData(orderItemBeanList);
                 getOrderList(0, 10);
-                Log.d(TAG, "notPayButton onClick");
 
                 break;
         }

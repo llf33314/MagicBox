@@ -8,4 +8,5 @@ package com.gt.magicbox.base;
 
 public class BaseConstant {
     public static final String [] PAY_TYPE={"微信","支付宝","现金"};
+    public static boolean isCanSwipe=true;
 }

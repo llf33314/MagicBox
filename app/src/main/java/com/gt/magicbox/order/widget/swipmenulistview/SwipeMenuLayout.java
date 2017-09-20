@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
+import com.gt.magicbox.base.BaseConstant;
+
 /**
  * @author baoyz
  * @date 2014-8-23
@@ -212,8 +214,7 @@ public class SwipeMenuLayout extends FrameLayout {
     }
 
     private void swipe(int dis) {
-
-        if (!isCanSwipe)return;
+        if (!BaseConstant.isCanSwipe)return;
         if (mMenuView.getVisibility() == View.GONE) {
             mMenuView.setVisibility(View.VISIBLE);
         }

@@ -69,4 +69,8 @@ public interface ApiService {
                                         @Query("content") String content,
                                         @Query("mobiles") String mobiles);
 
+    @POST(HttpConfig.FIND_MEMBER_CARD_TYPE)
+    Observable<BaseResponse<MemberBean>> findMemberCardType(
+            @Query("login_name") String user,
+            @Query("password") String pwd);
 }

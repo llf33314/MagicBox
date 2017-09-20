@@ -23,7 +23,7 @@ import java.util.ArrayList;
  */
 
 public class MemberChooseActivity extends BaseActivity {
-    private String[] itemNameArray = {"会员充值","新增会员"};
+    private String[] itemNameArray = {"会员充值", "新增会员"};
     private Integer[] imageResArray = {R.drawable.member_recharge, R.drawable.member_add};
     private int[] colorNormalArray = {0xfffdd451, 0xfffc7473};
     private int[] colorFocusedArray = {0x99fdd451, 0x99fc7473};
@@ -43,7 +43,7 @@ public class MemberChooseActivity extends BaseActivity {
     private void initView() {
         initViewData();
         home_grid = (ListView) findViewById(R.id.listView);
-        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData,2);
+        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData, 2);
         home_grid.setAdapter(gridViewAdapter);
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -51,8 +51,11 @@ public class MemberChooseActivity extends BaseActivity {
                 Intent intent;
                 switch (i) {
                     case 0:
-                            break;
+
+                        break;
                     case 1:
+                        intent =new Intent(MemberChooseActivity.this,AddMemberActivity.class);
+                        startActivity(intent);
                         break;
                 }
             }

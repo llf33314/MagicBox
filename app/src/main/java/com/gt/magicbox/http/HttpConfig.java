@@ -42,6 +42,7 @@ public class HttpConfig {
     public static final String CHANGE_BIND="magicBoxMobile/79B4DE7C/changeBinding";
     public static final String SCAN_CODE_PAY="magicBoxMobile/79B4DE7C/scanQR";
     public static final String SEND_SMS="magicBoxMember/sendSmsOld";
+    public static final String FIND_MEMBER_CARD_TYPE="magicBoxMember/findMemberCardType";
 
 
 }
