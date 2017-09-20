@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.ScrollerCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -23,7 +24,7 @@ public class SwipeMenuLayout extends FrameLayout {
 
     private static final int STATE_CLOSE = 0;
     private static final int STATE_OPEN = 1;
-
+    public boolean isCanSwipe=true;
     private View mContentView;
     private SwipeMenuView mMenuView;
     private int mDownX;
@@ -211,6 +212,8 @@ public class SwipeMenuLayout extends FrameLayout {
     }
 
     private void swipe(int dis) {
+
+        if (!isCanSwipe)return;
         if (mMenuView.getVisibility() == View.GONE) {
             mMenuView.setVisibility(View.VISIBLE);
         }

@@ -107,34 +107,38 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
         swipeMenuListView.setDivider(null);
         orderListAdapter = new OrderListAdapter(getApplicationContext(), orderItemBeanList);
         swipeMenuListView.setAdapter(orderListAdapter);
-        SwipeMenuCreator creator = new SwipeMenuCreator() {
-            @Override
-            public void create(SwipeMenu menu) {//这里可以再添加按钮，可以自己添加
-                SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
-                openItem.setBackground(new ColorDrawable(Color.rgb(0xf0, 0x4a, 0x4a)));
-                openItem.setWidth(ConvertUtils.dp2px(61));
-                openItem.setTitle("删除");
-                openItem.setTitleSize(15);
-                openItem.setTitleColor(Color.WHITE);
-                menu.addMenuItem(openItem);
-            }
-        };
-        swipeMenuListView.setMenuCreator(creator);
-        swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-            @Override
-            public void onMenuItemClick(int position, SwipeMenu menu, int index) {
-                switch (index) {
-                    case 0:
-                        OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
-                        if (orderItemBean != null) {
-                            deleteNotPayOrder(orderItemBean.id, position);
-                        }
-                        break;
-                }
-            }
-        });
 
+        setSwipeMenu();
     }
+   private void setSwipeMenu(){
+       SwipeMenuCreator creator = new SwipeMenuCreator() {
+           @Override
+           public void create(SwipeMenu menu) {//这里可以再添加按钮，可以自己添加
+               SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
+               openItem.setBackground(new ColorDrawable(Color.rgb(0xf0, 0x4a, 0x4a)));
+               openItem.setWidth(ConvertUtils.dp2px(61));
+               openItem.setTitle("删除");
+               openItem.setTitleSize(15);
+               openItem.setTitleColor(Color.WHITE);
+               menu.addMenuItem(openItem);
+
+           }
+       };
+       swipeMenuListView.setMenuCreator(creator);
+       swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+           @Override
+           public void onMenuItemClick(int position, SwipeMenu menu, int index) {
+               switch (index) {
+                   case 0:
+                       OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
+                       if (orderItemBean != null) {
+                           deleteNotPayOrder(orderItemBean.id, position);
+                       }
+                       break;
+               }
+           }
+       });
+   }
 
     private void getOrderList(final int status, int size) {
         HttpCall.getApiService()
@@ -227,7 +231,8 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 dialog = new HttpRequestDialog();
                 dialog.show();
                 orderListAdapter.setData(orderItemBeanList);
-
+                if (swipeMenuListView.mTouchView!=null)
+                swipeMenuListView.mTouchView.isCanSwipe=false;
                 getOrderList(1, 10);
                 Log.d(TAG, "payButton onClick");
                 break;
@@ -240,6 +245,8 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 dialog = new HttpRequestDialog();
                 dialog.show();
                 orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
+                if (swipeMenuListView.mTouchView!=null)
+                    swipeMenuListView.mTouchView.isCanSwipe=true;
                 orderListAdapter.setData(orderItemBeanList);
                 getOrderList(0, 10);
                 Log.d(TAG, "notPayButton onClick");

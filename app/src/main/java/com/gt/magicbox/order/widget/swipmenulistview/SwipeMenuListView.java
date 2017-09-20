@@ -26,7 +26,7 @@ public class SwipeMenuListView extends ListView {
     private float mDownY;
     private int mTouchState;
     private int mTouchPosition;
-    private SwipeMenuLayout mTouchView;
+    public SwipeMenuLayout mTouchView;
     private SwipeMenuCreator mMenuCreator;
     private OnMenuItemClickListener mOnMenuItemClickListener;
     private Interpolator mCloseInterpolator;
