@@ -1,11 +1,16 @@
 package com.gt.magicbox.coupon;
 
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.BaseViewHolder;
 import com.gt.magicbox.bean.DistributeCouponBean;
+import com.gt.magicbox.utils.SpannableStringUtils;
+import com.gt.magicbox.utils.commonutil.StringUtils;
 
 import java.util.List;
 
@@ -26,7 +31,8 @@ public class DistributeCouponAdapter extends BaseRecyclerAdapter<DistributeCoupo
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, DistributeCouponBean bean, int position) {
+
         //根据接口返回数据 bean绑定holder
-        holder.setText(R.id.distribute_coupon_name,bean.getName());
+        holder.setText(R.id.distribute_coupon_name,StringUtils.getIntegerFlagSpann(2.5f,bean.getName()));
     }
 }

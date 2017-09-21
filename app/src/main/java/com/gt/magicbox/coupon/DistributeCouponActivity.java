@@ -48,10 +48,10 @@ public class DistributeCouponActivity extends BaseActivity {
 
         //访问网络返回来的ArrayList
         final List<DistributeCouponBean> lists= new ArrayList<DistributeCouponBean>();
-        Observable.range(0,9).subscribe(new Consumer<Integer>() {
+        Observable.range(0,900).subscribe(new Consumer<Integer>() {
             @Override
             public void accept(@NonNull Integer integer) throws Exception {
-                lists.add(new DistributeCouponBean("name:"+integer));
+                lists.add(new DistributeCouponBean("¥100满减券（满500减100）:"+integer));
             }
         });
 

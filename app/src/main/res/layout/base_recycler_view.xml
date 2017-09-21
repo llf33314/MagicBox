@@ -6,6 +6,7 @@
     android:background="@color/white"
     android:paddingTop="10dp"
     android:paddingLeft="10dp"
+    android:scrollbars="vertical"
     android:paddingRight="10dp"
     >
 

@@ -1,5 +1,12 @@
 package com.gt.magicbox.utils.commonutil;
 
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.RelativeSizeSpan;
+
+import java.util.regex.Pattern;
+
 /**
  * <pre>
  *     author: Blankj
@@ -186,5 +193,61 @@ public final class StringUtils {
             }
         }
         return new String(chars);
+    }
+
+    /**
+     * 是否是数字
+     * @param str
+     * @return
+     */
+    public static boolean isInteger(String str) {
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        return pattern.matcher(str).matches();
+    }
+
+
+    /**
+     * 获取最后一个数字的下标用于放大显示
+     * @param str
+     * @return
+     */
+    public static SpannableString getIntegerFlagSpann(float multiple,String str){
+        if (TextUtils.isEmpty(str)){
+            return new SpannableString("");
+        }
+        SpannableString msp=new SpannableString(str);
+
+        if (isInteger(str)){//纯数字
+            msp.setSpan(new RelativeSizeSpan(multiple), 0, str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return  msp;
+        }
+
+        int start=0;
+        int end=0;
+        boolean startInt=false; //已经在读取int
+
+        int length=msp.length();
+
+        for (int i=0;i<length;i++){
+            char c=str.charAt(i);
+            if (Character.isDigit(c)){//是数字
+                if (!startInt){
+                    start=i;
+                }
+                startInt=true;
+            }else{//不是数字
+                if (startInt){
+                    end=i;
+                    break;
+                }
+            }
+        }
+        if (startInt){//有数字
+            if (end<start){//最后且第一个是数字
+                end=length;
+            }
+            msp.setSpan(new RelativeSizeSpan(multiple), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return msp;
     }
 }

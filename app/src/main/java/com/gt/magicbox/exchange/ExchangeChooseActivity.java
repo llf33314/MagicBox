@@ -9,6 +9,7 @@ import android.widget.Button;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,6 +20,9 @@ import butterknife.OnClick;
  */
 
 public class ExchangeChooseActivity extends BaseActivity {
+    /**
+     * 网络访问返回的 数据
+     */
     String [] persons={"wer","wer","wer","hhtrhtrhtr","","","","","","","","",""};
     @BindView(R.id.choose_person)
     Button choosePerson;
@@ -33,12 +37,17 @@ public class ExchangeChooseActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.choose_person:
-                new AlertDialog.Builder(ExchangeChooseActivity.this).setItems(persons, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        choosePerson.setText(persons[which]);
-                    }
-                });
+                if (persons.length<1){
+                    ToastUtil.getInstance().showToast("无交班人员选择");
+                }else{
+                    new AlertDialog.Builder(ExchangeChooseActivity.this).setItems(persons, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            choosePerson.setText(persons[which]);
+                        }
+                    });
+                }
+
                 break;
             case R.id.exchange_choose_ok:
                 break;
