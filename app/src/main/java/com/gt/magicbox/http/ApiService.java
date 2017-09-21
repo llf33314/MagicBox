@@ -79,4 +79,7 @@ public interface ApiService {
             @Query("busId")int  busId,@Query("ctId")int  ctId);
 
 
+    @POST(HttpConfig.GET_WECHAT_SUBSCRIPTION_QR_CODE)
+    Observable<BaseResponse> getWeChatSubscriptionQRCode(@Query("busId") int  busId,
+                                     @Query("eqId") int eqId);
 }

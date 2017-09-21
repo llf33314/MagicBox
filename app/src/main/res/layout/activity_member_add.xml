@@ -41,7 +41,7 @@
             android:layout_height="@dimen/dp_140"
             android:layout_below="@id/textFollow"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/test_qr" />
+             />
 
         <TextView
             android:id="@+id/textTip"

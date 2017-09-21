@@ -31,6 +31,7 @@ public class HttpConfig {
     public static final String SOCKET_ANDROID_AUTH = "androidAuth";
     // socket auth key 发送socket请求或接收socket请求的key值
     public static final String SOCKET_ANDROID_AUTH_KEY = "dfmagicboxsocket_";
+    public static final String SOCKET_FOLLOW_AUTH_KEY = "MagicBox_Key_";
 
     public static final String PAYMENT_URL="magicBoxMobile/79B4DE7C/payQR.do";
     public static final String ORDER_URL="magicBoxMobile/79B4DE7C/order.do";
@@ -44,6 +45,8 @@ public class HttpConfig {
     public static final String SEND_SMS="magicBoxMember/sendSmsOld";
     public static final String FIND_MEMBER_CARD_TYPE="magicBoxMember/findMemberCardType";
     public static final String FIND_MEMBER_GRADE_TYPE="magicBoxMember/findMemberGradeType";
+    public static final String RECEIVE_MEMBER_CARD="magicBoxMember/receiveMemberCard";
+    public static final String GET_WECHAT_SUBSCRIPTION_QR_CODE="magicBoxMember/newqrcodeCreateFinal";
 
 
 

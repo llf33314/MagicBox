@@ -57,6 +57,8 @@ public class CouponChoseActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 1:
+                        intent=new Intent(CouponChoseActivity.this,DistributeCouponActivity.class);
+                        startActivity(intent);
                         break;
                 }
             }
