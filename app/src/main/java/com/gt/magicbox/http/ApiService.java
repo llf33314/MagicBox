@@ -73,4 +73,10 @@ public interface ApiService {
     @POST(HttpConfig.FIND_MEMBER_CARD_TYPE)
     Observable<BaseResponse<CardTypeInfoBean>> findMemberCardType(
             @Query("busId")int  busId);
+
+    @POST(HttpConfig.FIND_MEMBER_GRADE_TYPE)
+    Observable<BaseResponse<CardTypeInfoBean.GradeType>> findMemberGradeType(
+            @Query("busId")int  busId,@Query("ctId")int  ctId);
+
+
 }

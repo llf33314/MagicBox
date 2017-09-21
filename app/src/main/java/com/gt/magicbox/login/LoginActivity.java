@@ -154,7 +154,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                     }
                 });
     }
-
+    
     @OnClick({R.id.loginButton, R.id.netSettingButton})
     public void onViewClicked(View view) {
         switch (view.getId()) {

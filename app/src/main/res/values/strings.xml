@@ -43,5 +43,11 @@
     <string name="customer_scan_code_to_join">顾客扫此码加入会员</string>
     <string name="member_type">会员卡类型</string>
 
+    <string name="input_phone">请输入手机号码</string>
+    <string name="phone">手机号码</string>
+
+    <string name="input_identifying_code">请输入验证码</string>
+    <string name="identifying_code">验证码</string>
+    <string name="get_identifying_code">获取验证码</string>
 
 </resources>

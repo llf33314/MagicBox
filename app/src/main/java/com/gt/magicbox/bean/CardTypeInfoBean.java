@@ -18,6 +18,7 @@ public class CardTypeInfoBean {
         public String gt_name = "";
         public int applyType;
         public int gr_discount;
+        public int gt_id;
     }
 
     public static class CardType {

@@ -42,7 +42,7 @@ public class WheelDialog extends Dialog {
     List<String> list;
     private WheelView.WheelViewStyle mStyle;
 
-
+    private View.OnClickListener onClickListener;
 
     private WheelView.OnWheelItemSelectedListener  onWheelItemSelectedListener;
 
@@ -77,32 +77,30 @@ public class WheelDialog extends Dialog {
         mStyle.selectedTextZoom = 1.2f;
         wheelView.setStyle(mStyle);
 
-        if (list!=null){
+        if (list!=null&&list.size()>0){
             wheelView.setWheelData(list);
         }
         if (onWheelItemSelectedListener!=null){
             wheelView.setOnWheelItemSelectedListener(onWheelItemSelectedListener);
         }
 
-
-    }
-
-
-    @OnClick({R.id.cancel, R.id.confirm})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.cancel:
-                break;
-            case R.id.confirm:
-                break;
+        if (onClickListener!=null){
+            cancel.setOnClickListener(onClickListener);
+            confirm.setOnClickListener(onClickListener);
         }
+
     }
+
+
     public void setOnWheelItemSelectedListener(WheelView.OnWheelItemSelectedListener onWheelItemSelectedListener) {
         this.onWheelItemSelectedListener = onWheelItemSelectedListener;
     }
 
     public void setList(List<String> list) {
         this.list = list;
+    }
+    public void setOnClickListener(View.OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
     }
 
 }
