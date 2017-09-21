@@ -23,9 +23,13 @@
     <string name="member_collect">会员收银</string>
     <string name="open_camera_tip">摄像头已开启</string>
     <string name="please_aim_tip">请将会员卡二维码对准摄像头</string>
+    <string name="please_aim_coupon_tip">请将优惠券二维码对准摄像头</string>
+
     <string name="pay_code_aim_tip">请将付款码对准摄像头</string>
 
     <string name="please_input_member_or_phone">请输入会员卡号或手机号</string>
+    <string name="please_input_coupon_number">请输入优惠券编号</string>
+
     <string name="please_select_discount">请选择会员卡折扣</string>
     <string name="discount_info">抵扣金额：优惠券-10元；粉币-10元；积分-10元</string>
 

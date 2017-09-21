@@ -45,7 +45,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private OnKeyboardDoListener onKeyboardDoListener;
     private RelativeLayout chargeLayout;
     private RelativeLayout tipLayout;
-
+    private TextView aimTip;
     private TextView should_pay;
     private TextView charge;
     private TextView text_paid_in_amount;
@@ -58,6 +58,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     public static final int TYPE_INPUT_MONEY = 0;
     public static final int TYPE_CHARGE = 1;
     public static final int TYPE_MEMBER = 2;
+    public static final int TYPE_COUPON_VERIFICATION=3;
 
     public KeyboardView(Context context) {
         this(context, null);
@@ -80,6 +81,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         text_paid_in_amount = (TextView) view.findViewById(R.id.text_paid_in_amount);
         chargeLayout = (RelativeLayout) view.findViewById(R.id.chargeLayout);
         tipLayout = (RelativeLayout) view.findViewById(R.id.tip_layout);
+        aimTip=(TextView)view.findViewById(R.id.tip_aim);
         clear.setOnClickListener(this);
         delete.setOnClickListener(this);
         pay.setOnClickListener(this);
@@ -148,7 +150,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             } else if (position == 10) {
                 if (!numberString.toString().equals("0"))
                     numberString.append("0");
-            } else if (position == 11&&keyboardType!=TYPE_MEMBER) {
+            } else if (position == 11&&keyboardType!=TYPE_MEMBER&&keyboardType!=TYPE_COUPON_VERIFICATION) {
                 if (!numberString.toString().contains(".") && numberString.length() > 0)
                     numberString.append(".");
             }
@@ -167,7 +169,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                 } else charge.setText("");
             }
         }
-        if (keyboardType==TYPE_MEMBER){
+        if (keyboardType==TYPE_MEMBER||keyboardType==TYPE_COUPON_VERIFICATION){
             showNumber.setText(numberString);
         }else  showNumber.setText(SpannableStringUtils.diffTextSize("¥ " + numberString, 20, 0, 1));
 
@@ -200,6 +202,20 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             member_pay.setVisibility(GONE);
             fit_pay.setVisibility(GONE);
             showNumber.setText(getResources().getText(R.string.please_input_member_or_phone));
+            showNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP,25);
+            RelativeLayout.LayoutParams params= (LayoutParams) showNumber.getLayoutParams();
+            params.setMargins(0,0,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_8))
+                    ,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_5)));
+            showNumber.setLayoutParams(params);
+            maxLength=16;
+        }else if (keyboardType==TYPE_COUPON_VERIFICATION){
+            tipLayout.setVisibility(VISIBLE);
+            pay.setText("确认");
+            pay.setVisibility(VISIBLE);
+            member_pay.setVisibility(GONE);
+            fit_pay.setVisibility(GONE);
+            showNumber.setText(getResources().getText(R.string.please_input_coupon_number));
+            aimTip.setText(getResources().getText(R.string.please_aim_coupon_tip));
             showNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP,25);
             RelativeLayout.LayoutParams params= (LayoutParams) showNumber.getLayoutParams();
             params.setMargins(0,0,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_8))

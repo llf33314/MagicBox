@@ -14,6 +14,7 @@ import android.widget.GridView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.UnpaidOrderBean;
+import com.gt.magicbox.coupon.CouponChoseActivity;
 import com.gt.magicbox.coupon.DistributeCouponActivity;
 import com.gt.magicbox.exchange.ShiftExchangeActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -105,6 +106,8 @@ public class MainActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 3:
+                        intent =new Intent(MainActivity.this,CouponChoseActivity.class);
+                        startActivity(intent);
                         break;
                     case 4:
                         intent = new Intent(MainActivity.this, ShiftExchangeActivity.class);
