@@ -54,4 +54,11 @@
     <string name="identifying_code">验证码</string>
     <string name="get_identifying_code">获取验证码</string>
 
+    <string name="fan_coin">粉币</string>
+    <string name="integral">积分</string>
+    <string name="current_balance">当前余额:</string>
+    <string name="yuan">元</string>
+    <string name="please_input_recharge_money">请输入充值金额</string>
+    <string name="back">返回</string>
+
 </resources>

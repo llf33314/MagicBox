@@ -19,6 +19,7 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MainActivity;
+import com.gt.magicbox.member.MemberRechargeActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.WebViewActivity;
@@ -143,6 +144,8 @@ public class PaymentActivity extends BaseActivity {
 
                         Log.d(TAG, "findMemberCardByPhone onSuccess");
                         ToastUtil.getInstance().showToast("该手机已领取过会员卡");
+                        Intent intent=new Intent(getApplicationContext(), MemberRechargeActivity.class);
+                        startActivity(intent);
                     }
 
                     @Override
