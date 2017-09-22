@@ -1,10 +1,12 @@
 package com.gt.magicbox.http;
 
 
+import com.gt.magicbox.bean.CardGradeInfoBean;
 import com.gt.magicbox.bean.CardTypeInfoBean;
 import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberBean;
+import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
@@ -66,20 +68,36 @@ public interface ApiService {
     Observable<BaseResponse<CreatedOrderBean>> getCreatedQRCodeUrl(@Path("orderId") int orderId, @Path("shiftId") int shiftId);
 
     @POST(HttpConfig.SEND_SMS)
-    Observable<BaseResponse> sendSMS(@Query("busId") int  busId,
-                                        @Query("content") String content,
-                                        @Query("mobiles") String mobiles);
+    Observable<BaseResponse> sendSMS(@Query("busId") int busId,
+                                     @Query("content") String content,
+                                     @Query("mobiles") String mobiles);
 
     @POST(HttpConfig.FIND_MEMBER_CARD_TYPE)
     Observable<BaseResponse<CardTypeInfoBean>> findMemberCardType(
-            @Query("busId")int  busId);
+            @Query("busId") int busId);
 
     @POST(HttpConfig.FIND_MEMBER_GRADE_TYPE)
-    Observable<BaseResponse<CardTypeInfoBean.GradeType>> findMemberGradeType(
-            @Query("busId")int  busId,@Query("ctId")int  ctId);
+    Observable<BaseResponse<CardGradeInfoBean>> findMemberGradeType(
+            @Query("busId") int busId, @Query("ctId") int ctId);
 
 
     @POST(HttpConfig.GET_WECHAT_SUBSCRIPTION_QR_CODE)
-    Observable<BaseResponse> getWeChatSubscriptionQRCode(@Query("busId") int  busId,
-                                     @Query("eqId") int eqId);
+    Observable<BaseResponse> getWeChatSubscriptionQRCode(@Query("busId") int busId,
+                                                         @Query("eqId") int eqId);
+
+    @POST(HttpConfig.FIND_MEMBER_CARD)
+    Observable<BaseResponse<MemberCardBean>> findMemberCardByPhone(
+            @Query("busId") int busId, @Query("phone") String phone);
+
+    @POST(HttpConfig.RECEIVE_MEMBER_CARD)
+    Observable<BaseResponse<MemberCardBean>> receiveMemberCard(
+            @Query("bit") int bit, @Query("busId") int busId,
+            @Query("ctId") int ctId, @Query("gtId") int gtId,
+            @Query("memberId") int memberId, @Query("phone") String phone,
+            @Query("shopId") int shopId);
+    @POST(HttpConfig.RECEIVE_MEMBER_CARD)
+    Observable<BaseResponse<MemberCardBean>> receiveMemberCardWithoutMemberId(
+            @Query("bit") int bit, @Query("busId") int busId,
+            @Query("ctId") int ctId, @Query("gtId") int gtId,
+            @Query("phone") String phone, @Query("shopId") int shopId);
 }

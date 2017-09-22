@@ -10,16 +10,7 @@ import java.util.List;
  */
 
 public class CardTypeInfoBean {
-    public List<GradeType> gradeTypes = new ArrayList<>();
     public List<CardType> cardType = new ArrayList<>();
-
-    public static class GradeType {
-        public int buyMoney;
-        public String gt_name = "";
-        public int applyType;
-        public int gr_discount;
-        public int gt_id;
-    }
 
     public static class CardType {
         public String ctName = "";

@@ -59,6 +59,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     public static final int TYPE_CHARGE = 1;
     public static final int TYPE_MEMBER = 2;
     public static final int TYPE_COUPON_VERIFICATION=3;
+    public static final int TYPE_MEMBER_RECHARGE=4;
 
     public KeyboardView(Context context) {
         this(context, null);
@@ -150,7 +151,8 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             } else if (position == 10) {
                 if (!numberString.toString().equals("0"))
                     numberString.append("0");
-            } else if (position == 11&&keyboardType!=TYPE_MEMBER&&keyboardType!=TYPE_COUPON_VERIFICATION) {
+            } else if (position == 11&&keyboardType!=TYPE_MEMBER&&keyboardType!=TYPE_COUPON_VERIFICATION
+                    &&keyboardType!=TYPE_MEMBER_RECHARGE) {
                 if (!numberString.toString().contains(".") && numberString.length() > 0)
                     numberString.append(".");
             }
@@ -169,7 +171,8 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                 } else charge.setText("");
             }
         }
-        if (keyboardType==TYPE_MEMBER||keyboardType==TYPE_COUPON_VERIFICATION){
+        if (keyboardType==TYPE_MEMBER||keyboardType==TYPE_COUPON_VERIFICATION
+                ||keyboardType==TYPE_MEMBER_RECHARGE){
             showNumber.setText(numberString);
         }else  showNumber.setText(SpannableStringUtils.diffTextSize("¥ " + numberString, 20, 0, 1));
 
@@ -195,7 +198,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             pay.setVisibility(VISIBLE);
             member_pay.setVisibility(GONE);
             fit_pay.setVisibility(GONE);
-        }else if (keyboardType==TYPE_MEMBER){
+        }else if (keyboardType==TYPE_MEMBER||keyboardType==TYPE_MEMBER_RECHARGE){
             tipLayout.setVisibility(VISIBLE);
             pay.setText("确认");
             pay.setVisibility(VISIBLE);
@@ -275,7 +278,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                 if (chargeMoney >= 0 && realPay > 0) {
                     onKeyboardDoListener.onPay(orderMoney);
                 }
-            }else if (keyboardType == TYPE_MEMBER) {
+            }else if (keyboardType == TYPE_MEMBER||keyboardType==TYPE_MEMBER_RECHARGE) {
                 if (!TextUtils.isEmpty(numberString)) {
                     double money = Double.parseDouble(numberString.toString());
                     if (money != 0) {

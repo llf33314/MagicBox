@@ -47,6 +47,8 @@ public class HttpConfig {
     public static final String FIND_MEMBER_GRADE_TYPE="magicBoxMember/findMemberGradeType";
     public static final String RECEIVE_MEMBER_CARD="magicBoxMember/receiveMemberCard";
     public static final String GET_WECHAT_SUBSCRIPTION_QR_CODE="magicBoxMember/newqrcodeCreateFinal";
+    public static final String FIND_MEMBER_CARD="magicBoxMember/findMemberCard";
+
 
 
 

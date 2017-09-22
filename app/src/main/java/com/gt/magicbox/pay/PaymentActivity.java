@@ -31,6 +31,7 @@ public class PaymentActivity extends BaseActivity {
     public static final int TYPE_CALC=1;
     public static final int TYPE_MEMBER_PAY=2;
     public static final int TYPE_COUPON_VERIFICATION=3;
+    public static final int TYPE_MEMBER_RECHARGE=4;
 
     private int code;
     @Override
@@ -54,7 +55,8 @@ public class PaymentActivity extends BaseActivity {
             setToolBarTitle("会员收银");
         }else if (type==TYPE_COUPON_VERIFICATION){
             setToolBarTitle("优惠券核销");
-
+        }else if (type==TYPE_MEMBER_RECHARGE){
+            setToolBarTitle("会员卡充值");
         }
         keyboardView = (KeyboardView) findViewById(R.id.keyboard);
         keyboardView.setOrderMoney(orderMoney);

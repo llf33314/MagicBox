@@ -1,9 +1,7 @@
 package com.gt.magicbox.member;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -20,8 +18,10 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.CardGradeInfoBean;
 import com.gt.magicbox.bean.CardTypeInfoBean;
-import com.gt.magicbox.bean.ScanCodePayResultBean;
+import com.gt.magicbox.bean.FollowSocketBean;
+import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.HttpRequestDialog;
@@ -29,6 +29,7 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.http.socket.SocketIOManager;
+import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.WheelDialog;
@@ -43,11 +44,6 @@ import com.wx.wheelview.widget.WheelView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -88,6 +84,7 @@ public class AddMemberActivity extends BaseActivity {
     TextView getIdentifyingCode;
     private int selectPosition;
     private int gt_id;
+    private int ct_id;
     private String phone = "";
     private CountDownTimer timer;
     private static final int MSG_UPDATE_COUNT_TIME = 0;
@@ -97,6 +94,11 @@ public class AddMemberActivity extends BaseActivity {
     private boolean isMemberCardInit = false;
     private boolean isQRCodeInit = false;
     private SocketIOManager socketIOManager;
+    private boolean isPhoneRegistered;
+    private MoreFunctionDialog mMoreFunctionDialog;
+    private int bit = 0;
+    private int memberId;
+    private CardTypeInfoBean cardTypeInfoBean;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -144,7 +146,10 @@ public class AddMemberActivity extends BaseActivity {
                         isMemberCardInit = true;
                         if (isMemberCardInit && isQRCodeInit)
                             dialog.dismiss();
-                        createArrays(bean);
+                        if (bean != null) {
+                            createArrays(bean);
+                            cardTypeInfoBean = bean;
+                        }
 
                         Log.d(TAG, "onSuccess");
                     }
@@ -224,6 +229,69 @@ public class AddMemberActivity extends BaseActivity {
                 });
     }
 
+    private void receiveMemberCard(int bit, int ctId, int gtId, int memberId, String phone) {
+        HttpCall.getApiService()
+                .receiveMemberCard(bit, (Integer) Hawk.get("busId"),
+                        ctId, gtId, memberId, phone,
+                        (Integer) Hawk.get("shopId"))
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse data) {
+                        Log.d(TAG, "receiveMemberCard onSuccess ");
+                        showResultDialog(true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "receiveMemberCard onError");
+                        showResultDialog(false);
+
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        Log.d(TAG, "receiveMemberCard onFailure");
+                        showResultDialog(false);
+
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
+
+    private void receiveMemberCardWithoutMemberId(int bit, int ctId, int gtId, String phone) {
+        HttpCall.getApiService()
+                .receiveMemberCardWithoutMemberId(bit, (Integer) Hawk.get("busId"),
+                        ctId, gtId, phone,
+                        (Integer) Hawk.get("shopId"))
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse data) {
+                        showResultDialog(true);
+
+                        Log.d(TAG, "receiveMemberCard onSuccess ");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "receiveMemberCard onError");
+                        showResultDialog(false);
+
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        Log.d(TAG, "receiveMemberCard onFailure");
+                        showResultDialog(false);
+
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
+
     @Override
     protected void onStop() {
         socketIOManager.disSocket();
@@ -233,32 +301,65 @@ public class AddMemberActivity extends BaseActivity {
     private void getMemberGradeType(int ctId) {
         HttpCall.getApiService()
                 .findMemberGradeType((Integer) Hawk.get("busId"), ctId)
-                .compose(ResultTransformer.<CardTypeInfoBean.GradeType>transformer())//线程处理 预处理
-                .subscribe(new BaseObserver<CardTypeInfoBean.GradeType>() {
+                .compose(ResultTransformer.<CardGradeInfoBean>transformer())//线程处理 预处理
+                .subscribe(new BaseObserver<CardGradeInfoBean>() {
 
                     @Override
-                    protected void onSuccess(CardTypeInfoBean.GradeType bean) {
+                    protected void onSuccess(CardGradeInfoBean bean) {
 
-                        Log.d(TAG, "onSuccess");
-                        if (bean != null) {
-                            gt_id = bean.gt_id;
+                        if (bean != null && bean.gradeType != null && bean.gradeType.size() > 0) {
+                            gt_id = bean.gradeType.get(0).gt_id;
+                            Log.d(TAG, "getMemberGradeType onSuccess bean.gt_id=");
+
                         }
                     }
 
                     @Override
                     protected void onFailure(int code, String msg) {
                         super.onFailure(code, msg);
-                        Log.d(TAG, "onFailure");
+                        Log.d(TAG, "getMemberGradeType onFailure");
 
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        Log.d(TAG, "onError");
+                        Log.d(TAG, "getMemberGradeType onError e=" + e.getMessage());
 
 
                     }
+                });
+    }
+
+    private void findMemberCardByPhone(final String phone) {
+        HttpCall.getApiService()
+                .findMemberCardByPhone((Integer) Hawk.get("busId"), phone)
+                .compose(ResultTransformer.<MemberCardBean>transformer())//线程处理 预处理
+                .subscribe(new BaseObserver<MemberCardBean>() {
+
+                    @Override
+                    protected void onSuccess(MemberCardBean bean) {
+
+                        Log.d(TAG, "findMemberCardByPhone onSuccess");
+                        ToastUtil.getInstance().showToast("该手机已领取过会员卡");
+                    }
+
+                    @Override
+                    protected void onFailure(int code, String msg) {
+                        super.onFailure(code, msg);
+                        Log.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
+                        if (!TextUtils.isEmpty(msg) && msg.equals("数据不存在")) {
+                            if (bit == 0) {
+                                if (memberId > 0) {
+                                    receiveMemberCard(bit, ct_id, gt_id, memberId, phone);
+                                } else ToastUtil.getInstance().showToast("请先关注微信号");
+                            } else if (bit == 1) {
+                                receiveMemberCardWithoutMemberId(bit, ct_id, gt_id, phone);
+                            }
+                        }
+
+                    }
+
                 });
     }
 
@@ -269,9 +370,11 @@ public class AddMemberActivity extends BaseActivity {
             @Override
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {
                 if (isChecked) {
+                    bit = 0;
                     imgQRCode.setVisibility(View.VISIBLE);
                     textTip.setVisibility(View.VISIBLE);
                 } else {
+                    bit = 1;
                     imgQRCode.setVisibility(View.GONE);
                     textTip.setVisibility(View.GONE);
                 }
@@ -300,6 +403,10 @@ public class AddMemberActivity extends BaseActivity {
                         wheelDialog.dismiss();
                         if (selectPosition != -1 && selectPosition < listCardName.size()) {
                             memberCardType.setText(listCardName.get(selectPosition));
+                            if (cardTypeInfoBean != null && cardTypeInfoBean.cardType.size() > 0) {
+                                ct_id = cardTypeInfoBean.cardType.get(selectPosition).ctId;
+                                getMemberGradeType(ct_id);
+                            }
                         }
                         break;
                 }
@@ -344,17 +451,21 @@ public class AddMemberActivity extends BaseActivity {
                         if (canSendCode) {
                             startCountDownTime(10);
                             smsCode = createIdentifyingCode();
-                            senSMS("您的多粉魔盒验证码是:" + smsCode, phone);
+                            senSMS("您正在办理会员业务，验证码:" + smsCode, phone);
                         }
                     } else ToastUtil.getInstance().showToast("请输入正确位数的手机号");
                 }
                 break;
             case R.id.confirmButton:
                 String userInputCode = identifyingEditText.getEditableText().toString();
+                phone = phoneEditText.getEditableText().toString();
+                if (ct_id <= 0) {
+                    ToastUtil.getInstance().showToast("请先选择会员卡类型");
+                    break;
+                }
                 if (!TextUtils.isEmpty(userInputCode)) {
                     if (userInputCode.equals(smsCode)) {
-
-
+                        findMemberCardByPhone(phone);
                     } else ToastUtil.getInstance().showToast("验证码错误");
                 } else ToastUtil.getInstance().showToast("验证码不能为空");
                 break;
@@ -410,6 +521,7 @@ public class AddMemberActivity extends BaseActivity {
         };
         timer.start();// 开始计时
     }
+
     private void followSocket() {
         socketIOManager = new SocketIOManager(HttpConfig.SOCKET_SERVER_URL);
         socketIOManager.setOnConnect(new Emitter.Listener() {
@@ -425,7 +537,7 @@ public class AddMemberActivity extends BaseActivity {
             @Override
             public void call(Object... args) {
                 JSONObject data = (JSONObject) args[0];
-                Log.d(SocketIOManager.TAG, " args[0]=" +  args[0]);
+                Log.d(SocketIOManager.TAG, " args[0]=" + args[0]);
 
                 String retData = null;
                 try {
@@ -442,9 +554,24 @@ public class AddMemberActivity extends BaseActivity {
                 }
                 Log.d(SocketIOManager.TAG, "retData=" + retData);
                 Log.d(SocketIOManager.TAG, "json=" + json);
+                FollowSocketBean followSocketBean = new Gson().fromJson(json, FollowSocketBean.class);
+                if (followSocketBean != null) {
+                    memberId = followSocketBean.memberId;
+                }
             }
         });
         socketIOManager.connectSocket();
     }
 
+    private void showResultDialog(boolean isSuccess) {
+        String msg = isSuccess ? "领取成功" : "领取失败";
+        if (isSuccess){
+            phoneEditText.getEditableText().clear();
+            identifyingEditText.getEditableText().clear();
+        }
+        if (mMoreFunctionDialog == null) {
+            mMoreFunctionDialog = new MoreFunctionDialog(this, msg, R.style.HttpRequestDialogStyle);
+        }
+        mMoreFunctionDialog.show();
+    }
 }
