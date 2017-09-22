@@ -135,7 +135,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        if (numberString.length() <= maxLength) {
+        if (numberString.length() <maxLength) {
             if (position <= 8) {
                 if (numberString.toString().equals("0")) {
                     numberString.deleteCharAt(0);
@@ -210,7 +210,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             params.setMargins(0,0,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_8))
                     ,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_5)));
             showNumber.setLayoutParams(params);
-            maxLength=16;
+            maxLength=11;
         }else if (keyboardType==TYPE_COUPON_VERIFICATION){
             tipLayout.setVisibility(VISIBLE);
             pay.setText("确认");
@@ -224,7 +224,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             params.setMargins(0,0,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_8))
                     ,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_5)));
             showNumber.setLayoutParams(params);
-            maxLength=16;
+            maxLength=11;
         }
     }
 
@@ -280,10 +280,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                 }
             }else if (keyboardType == TYPE_MEMBER||keyboardType==TYPE_MEMBER_RECHARGE) {
                 if (!TextUtils.isEmpty(numberString)) {
-                    double money = Double.parseDouble(numberString.toString());
-                    if (money != 0) {
-                        onKeyboardDoListener.onPay(money);
-                    }
+                    onKeyboardDoListener.onNumberInput(numberString.toString());
                 }
             }
 

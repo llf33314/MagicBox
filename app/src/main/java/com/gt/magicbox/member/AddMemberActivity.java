@@ -568,6 +568,7 @@ public class AddMemberActivity extends BaseActivity {
         if (isSuccess){
             phoneEditText.getEditableText().clear();
             identifyingEditText.getEditableText().clear();
+            memberId=-1;
         }
         if (mMoreFunctionDialog == null) {
             mMoreFunctionDialog = new MoreFunctionDialog(this, msg, R.style.HttpRequestDialogStyle);

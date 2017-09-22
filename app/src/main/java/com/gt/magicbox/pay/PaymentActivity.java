@@ -3,6 +3,7 @@ package com.gt.magicbox.pay;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -12,10 +13,16 @@ import android.widget.Toast;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.coupon.VerificationActivity;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.WebViewActivity;
+import com.orhanobut.hawk.Hawk;
 
 /**
  * Description:
@@ -23,6 +30,7 @@ import com.gt.magicbox.webview.WebViewActivity;
  */
 
 public class PaymentActivity extends BaseActivity {
+    private final String TAG=PaymentActivity.class.getSimpleName();
     private GridView gridView;
     private KeyboardView keyboardView;
     private int type=0;
@@ -90,6 +98,13 @@ public class PaymentActivity extends BaseActivity {
                 intent.putExtra("money",money);
                 startActivity(intent);
             }
+
+            @Override
+            public void onNumberInput(String num) {
+                if (type == TYPE_MEMBER_RECHARGE) {
+                    findMemberCardByPhone(num);
+                }
+            }
         });
         if (code>0)onKeyDown(code,null);
 
@@ -112,5 +127,33 @@ public class PaymentActivity extends BaseActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+    private void findMemberCardByPhone(final String phone) {
+        if (phone.length()!=11){
+            ToastUtil.getInstance().showToast("请输入11位手机号码");
+            return;
+        }
+        HttpCall.getApiService()
+                .findMemberCardByPhone((Integer) Hawk.get("busId"), phone)
+                .compose(ResultTransformer.<MemberCardBean>transformer())//线程处理 预处理
+                .subscribe(new BaseObserver<MemberCardBean>() {
+
+                    @Override
+                    protected void onSuccess(MemberCardBean bean) {
+
+                        Log.d(TAG, "findMemberCardByPhone onSuccess");
+                        ToastUtil.getInstance().showToast("该手机已领取过会员卡");
+                    }
+
+                    @Override
+                    protected void onFailure(int code, String msg) {
+                        super.onFailure(code, msg);
+                        Log.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
+                        if (!TextUtils.isEmpty(msg) && msg.equals("数据不存在")) {
+                        }
+
+                    }
+
+                });
     }
 }
