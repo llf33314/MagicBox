@@ -19,6 +19,7 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MainActivity;
+import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.member.MemberRechargeActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
@@ -41,7 +42,7 @@ public class PaymentActivity extends BaseActivity {
     public static final int TYPE_MEMBER_PAY=2;
     public static final int TYPE_COUPON_VERIFICATION=3;
     public static final int TYPE_MEMBER_RECHARGE=4;
-
+    private MoreFunctionDialog dialog;
     private int code;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,11 +142,17 @@ public class PaymentActivity extends BaseActivity {
 
                     @Override
                     protected void onSuccess(MemberCardBean bean) {
-
-                        Log.d(TAG, "findMemberCardByPhone onSuccess");
-                        ToastUtil.getInstance().showToast("该手机已领取过会员卡");
-                        Intent intent=new Intent(getApplicationContext(), MemberRechargeActivity.class);
-                        startActivity(intent);
+                        if (bean!=null) {
+                            if (bean.ctName.equals("储值卡")) {
+                                Log.d(TAG, "findMemberCardByPhone onSuccess");
+                                Intent intent = new Intent(getApplicationContext(), MemberRechargeActivity.class);
+                                intent.putExtra("MemberCardBean", bean);
+                                startActivity(intent);
+                            }else  if (bean.ctName.equals("折扣卡")){
+                                dialog=new MoreFunctionDialog(getApplicationContext(), "折扣卡不可以进行充值", R.style.HttpRequestDialogStyle);
+                                dialog.show();
+                            }
+                        }
                     }
 
                     @Override

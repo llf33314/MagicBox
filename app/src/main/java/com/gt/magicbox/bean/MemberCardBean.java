@@ -1,5 +1,6 @@
 package com.gt.magicbox.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * Buddha bless, never BUG!
  */
 
-public class MemberCardBean {
+public class MemberCardBean implements Serializable{
     public String cardNo = "";
     public String cardDate = "";
     public String ctName = "";
@@ -27,7 +28,7 @@ public class MemberCardBean {
     public int discount;
 
 
-    public static class Recharge {
+    public static class Recharge implements Serializable{
         public int id;
         public int ctId;
         public int busId;
