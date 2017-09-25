@@ -87,9 +87,6 @@ public class PaymentActivity extends BaseActivity {
                         startActivity(intent);
                         AppManager.getInstance().finishActivity(PaymentActivity.class);
                         AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
-                }else if (type==TYPE_MEMBER_PAY){
-                    intent=new Intent(PaymentActivity.this, VerificationActivity.class);
-                    startActivity(intent);
                 }
             }
 
@@ -97,13 +94,13 @@ public class PaymentActivity extends BaseActivity {
             public void onMemberPay(double money) {
                 Intent intent=new Intent(PaymentActivity.this,PaymentActivity.class);
                 intent.putExtra("type",2);
-                intent.putExtra("money",money);
+                intent.putExtra("orderMoney",money);
                 startActivity(intent);
             }
 
             @Override
             public void onNumberInput(String num) {
-                if (type == TYPE_MEMBER_RECHARGE) {
+                if (type == TYPE_MEMBER_RECHARGE||type==TYPE_MEMBER_PAY||type==TYPE_COUPON_VERIFICATION) {
                     findMemberCardByPhone(num);
                 }
             }
@@ -143,14 +140,21 @@ public class PaymentActivity extends BaseActivity {
                     @Override
                     protected void onSuccess(MemberCardBean bean) {
                         if (bean!=null) {
-                            if (bean.ctName.equals("储值卡")) {
-                                Log.d(TAG, "findMemberCardByPhone onSuccess");
-                                Intent intent = new Intent(getApplicationContext(), MemberRechargeActivity.class);
+                            Log.d(TAG, "findMemberCardByPhone onSuccess");
+
+                            if (bean.ctName.equals("折扣卡") && type == TYPE_MEMBER_RECHARGE) {
+                                dialog = new MoreFunctionDialog(getApplicationContext(), "折扣卡不可以进行充值", R.style.HttpRequestDialogStyle);
+                                dialog.show();
+                            } else {
+                                Intent intent = null;
+                                if (type==TYPE_MEMBER_RECHARGE)
+                                intent = new Intent(getApplicationContext(), MemberRechargeActivity.class);
+                                else if (type==TYPE_COUPON_VERIFICATION||type==TYPE_MEMBER_PAY) {
+                                    intent = new Intent(getApplicationContext(), VerificationActivity.class);
+                                    intent.putExtra("orderMoney",orderMoney);
+                                }
                                 intent.putExtra("MemberCardBean", bean);
                                 startActivity(intent);
-                            }else  if (bean.ctName.equals("折扣卡")){
-                                dialog=new MoreFunctionDialog(getApplicationContext(), "折扣卡不可以进行充值", R.style.HttpRequestDialogStyle);
-                                dialog.show();
                             }
                         }
                     }

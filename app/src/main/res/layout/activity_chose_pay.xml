@@ -53,6 +53,32 @@
         </LinearLayout>
     </RelativeLayout>
     <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/pay_member"
+        android:background="@drawable/selector_member_pay"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <LinearLayout
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:background="@drawable/home_member"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:text="@string/member_card"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </RelativeLayout>
+    <RelativeLayout
         android:id="@+id/pay_cash"
         android:background="@drawable/selector_cash_pay"
         android:layout_weight="1"

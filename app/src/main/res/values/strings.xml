@@ -9,6 +9,8 @@
     <string name="zfb">支付宝</string>
     <string name="wechat">微信</string>
     <string name="cash">现金</string>
+    <string name="member_card">会员卡</string>
+
     <string name="paid_in_amount">实收金额:</string>
     <string name="should_paid">应收金额:</string>
     <string name="charge">找零:</string>

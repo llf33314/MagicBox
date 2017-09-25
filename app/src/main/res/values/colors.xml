@@ -29,6 +29,8 @@
     <color name="green_wechat_select">#997FC750</color>
     <color name="blue_zfb">#3FB4FF</color>
     <color name="blue_zfb_select">#993FB4FF</color>
+    <color name="red_member">#f04a4a</color>
+    <color name="red_member_select">#99f04a4a</color>
     <color name="yellow_cash">#FFD05A</color>
     <color name="yellow_cash_select">#99FFD05A</color>
     <color name="toolbar_back_p">#484848</color>

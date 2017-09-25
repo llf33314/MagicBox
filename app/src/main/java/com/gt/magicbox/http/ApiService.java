@@ -7,13 +7,18 @@ import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberBean;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.bean.MemberSettlementBean;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 
 import io.reactivex.Observable;
+import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -100,4 +105,8 @@ public interface ApiService {
             @Query("bit") int bit, @Query("busId") int busId,
             @Query("ctId") int ctId, @Query("gtId") int gtId,
             @Query("phone") String phone, @Query("shopId") int shopId);
+
+    @POST(HttpConfig.MEMBER_SETTLEMENT)
+    Observable<BaseResponse> postMemberSettlement(
+            @Body MemberSettlementBean memberSettlementBean);
 }

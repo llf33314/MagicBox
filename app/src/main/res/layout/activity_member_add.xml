@@ -115,7 +115,7 @@
 
         <EditText
             android:id="@+id/phoneEditText"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_92"
             android:background="@null"
@@ -154,7 +154,7 @@
 
         <EditText
             android:id="@+id/identifyingEditText"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/dp_150"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/dp_92"
             android:background="@null"
