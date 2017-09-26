@@ -98,7 +98,8 @@ public class MemberRechargeActivity extends BaseActivity {
                 if (!TextUtils.isEmpty(recharge)) {
                     intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
                     intent.putExtra("customerType", ChosePayModeActivity.TYPE_MEMBER_RECHARGE);
-                    intent.putExtra("money", Integer.parseInt(recharge));
+                    intent.putExtra("money",Double.parseDouble(recharge));
+                    intent.putExtra("memberCardBean",memberCardBean);
                     startActivity(intent);
                 }else ToastUtil.getInstance().showToast("请输入充值金额");
                 break;

@@ -126,8 +126,8 @@
         <EditText
             android:id="@+id/rechargeMoney"
             android:textSize="@dimen/dp_14"
-            android:inputType="number"
-            android:maxLength="4"
+            android:inputType="number|numberDecimal"
+            android:maxLength="6"
             android:textColor="#333333"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

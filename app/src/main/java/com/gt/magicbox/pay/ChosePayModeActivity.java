@@ -1,6 +1,7 @@
 package com.gt.magicbox.pay;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.member.AddMemberActivity;
+import com.gt.magicbox.member.MemberRechargeResultActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.orhanobut.hawk.Hawk;
@@ -160,7 +162,10 @@ public class ChosePayModeActivity extends BaseActivity {
                     });
     }
     private void memberRecharge(int payType) {
+        Log.d(TAG,"memberRecharge customerType="+customerType);
+
         if (memberCardBean != null && customerType == TYPE_MEMBER_RECHARGE) {
+            Log.d(TAG,"memberRecharge");
             HttpCall.getApiService()
                     .memberRecharge(memberCardBean.memberId, money, payType, (Integer) Hawk.get("shopId"))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
@@ -168,7 +173,9 @@ public class ChosePayModeActivity extends BaseActivity {
                     .subscribe(new BaseObserver<BaseResponse>() {
                         @Override
                         public void onSuccess(BaseResponse data) {
-                            Log.d(TAG, "memberRecharge onSuccess data=" + data.getData().toString());
+                            Log.d(TAG, "memberRecharge onSuccess " );
+                            Intent intent=new Intent(getApplicationContext(), MemberRechargeResultActivity.class);
+                            startActivity(intent);
                         }
 
                         @Override

@@ -106,6 +106,9 @@
             android:name=".member.MemberRechargeActivity"
             android:launchMode="singleTask" />
         <activity
+            android:name=".member.MemberRechargeResultActivity"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".setting.VolumeSettingActivity" />
         <activity
             android:name=".setting.printersetting.PrinterSettingActivity" />

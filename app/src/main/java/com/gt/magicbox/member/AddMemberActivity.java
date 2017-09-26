@@ -342,6 +342,8 @@ public class AddMemberActivity extends BaseActivity {
 
                         Log.d(TAG, "findMemberCardByPhone onSuccess");
                         ToastUtil.getInstance().showToast("该手机已领取过会员卡");
+                        mMoreFunctionDialog = new MoreFunctionDialog(AddMemberActivity.this, "该手机已领取过会员卡", R.style.HttpRequestDialogStyle);
+                        mMoreFunctionDialog.show();
                     }
 
                     @Override
@@ -565,14 +567,12 @@ public class AddMemberActivity extends BaseActivity {
 
     private void showResultDialog(boolean isSuccess) {
         String msg = isSuccess ? "领取成功" : "领取失败";
-        if (isSuccess){
+        if (isSuccess) {
             phoneEditText.getEditableText().clear();
             identifyingEditText.getEditableText().clear();
-            memberId=-1;
+            memberId = -1;
         }
-        if (mMoreFunctionDialog == null) {
-            mMoreFunctionDialog = new MoreFunctionDialog(this, msg, R.style.HttpRequestDialogStyle);
-        }
+        mMoreFunctionDialog = new MoreFunctionDialog(this, msg, R.style.HttpRequestDialogStyle);
         mMoreFunctionDialog.show();
     }
 }
