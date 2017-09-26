@@ -124,6 +124,7 @@
         android:layout_marginTop="@dimen/dp_6">
 
         <EditText
+            android:id="@+id/rechargeMoney"
             android:textSize="@dimen/dp_14"
             android:inputType="number"
             android:maxLength="4"

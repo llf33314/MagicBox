@@ -14,6 +14,9 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.CardTypeInfoBean;
+import com.gt.magicbox.bean.CashOrderBean;
+import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
@@ -22,6 +25,7 @@ import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.orhanobut.hawk.Hawk;
 
 import java.io.IOException;
 
@@ -45,6 +49,8 @@ public class PayResultActivity extends BaseActivity {
     @BindView(R.id.printButton)
     Button printButton;
     String message;
+    String orderNo;
+    CashOrderBean cashOrderBean;
     public static final int TYPE_QRCODE_WECHAT = 0;
     public static final int TYPE_QRCODE_ALIPAY = 1;
     public static final int TYPE_CASH = 2;
@@ -68,6 +74,7 @@ public class PayResultActivity extends BaseActivity {
             boolean success = getIntent().getBooleanExtra("success", true);
             payType = getIntent().getIntExtra("payType", 0);
             message = getIntent().getStringExtra("message");
+            orderNo=getIntent().getStringExtra("orderNo");
             showMoney(message);
         }
     }
@@ -81,7 +88,12 @@ public class PayResultActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.printButton:
-                PrinterConnectService.printEsc0829(message, payType);
+                if (payType==TYPE_CASH){
+                    if (cashOrderBean!=null)
+                    orderNo=cashOrderBean.getMagicBoxOrder().getOrderNo();
+                    else orderNo="";
+                }
+                PrinterConnectService.printEsc0829(orderNo,message+"元", payType);
                 // RxBus.get().post(new PrintBean(message));
                 break;
         }
@@ -99,14 +111,17 @@ public class PayResultActivity extends BaseActivity {
     }
 
     private void createCashOrder(String money) {
+        Integer shiftId = Hawk.get("shiftId");
+        if (shiftId == null || shiftId < 0) shiftId = 0;
         HttpCall.getApiService()
-                .createCashOrder(PhoneUtils.getIMEI(), money, "2")
-                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
-                .compose(new DialogTransformer().<BaseResponse>transformer()) //显示对话框
-                .subscribe(new BaseObserver<BaseResponse>() {
+                .createCashOrder(PhoneUtils.getIMEI(), money, 2, shiftId)
+                .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
+                .compose(new DialogTransformer().<CashOrderBean>transformer()) //显示对话框
+                .subscribe(new BaseObserver<CashOrderBean>()  {
                     @Override
-                    protected void onSuccess(BaseResponse baseResponse) {
+                    protected void onSuccess(CashOrderBean bean) {
                         Log.i(TAG, "createCashOrder Success");
+                        cashOrderBean=bean;
                     }
 
                     @Override

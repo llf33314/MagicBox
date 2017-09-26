@@ -92,9 +92,49 @@ public final class CameraManager {
 		}
 	}
 
+	public void openFlashLight() {
+        if (camera!=null)
+		try {
+
+			Camera.Parameters mParameters;
+
+			mParameters = camera.getParameters();
+
+			mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+
+			camera.setParameters(mParameters);
+
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+
+		}
+
+	}
+
+	public void closeFlashLight() {
+		if (camera != null) {
+
+			try {
+
+				Camera.Parameters mParameters;
+
+				mParameters = camera.getParameters();
+
+				mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+
+				camera.setParameters(mParameters);
+
+				camera.release();
+
+			} catch (Exception ex) {
+			}
+
+		}
+	}
 	/**
 	 * 获取相机分辨率
-	 * 
+	 *
 	 * @return
 	 */
 	public Point getCameraResolution() {

@@ -15,6 +15,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberBean;
+import com.gt.magicbox.bean.ShopInfoBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
@@ -135,16 +136,18 @@ public class LoginActivity extends BaseActivity implements ILoginView {
     private void memberQuery(String userName, String password) {
         HttpCall.getApiService()
                 .memberQuery( userName, password)
-                .compose(ResultTransformer.<MemberBean>transformer())//线程处理 预处理
-                .compose(new DialogTransformer().<MemberBean>transformer()) //显示对话框
-                .subscribe(new BaseObserver<MemberBean>() {
+                .compose(ResultTransformer.<ShopInfoBean>transformer())//线程处理 预处理
+                .compose(new DialogTransformer().<ShopInfoBean>transformer()) //显示对话框
+                .subscribe(new BaseObserver<ShopInfoBean>() {
                     @Override
-                    public void onSuccess(MemberBean data) {
+                    public void onSuccess(ShopInfoBean data) {
                         if (data!=null){
-                            Hawk.put("busId",data.busId);
-                            Hawk.put("shopName",data.shopName);
-                            Hawk.put("shopId",data.shopId);
-                            Log.i(TAG,"data name="+data.shopName);
+                            Hawk.put("ShopInfoBean",data);
+                            Hawk.put("busId",data.getBusId());
+                            Hawk.put("shopName",data.getShopName());
+                            Hawk.put("shopId",data.getShops().getId());
+                            ShopInfoBean bean=(ShopInfoBean)Hawk.get("ShopInfoBean");
+                            Log.i(TAG,"data name="+bean.getShopName());
                         }
                     }
 

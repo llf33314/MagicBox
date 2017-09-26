@@ -1,10 +1,12 @@
 package com.gt.magicbox.member;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -13,6 +15,8 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.pay.ChosePayModeActivity;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,6 +55,8 @@ public class MemberRechargeActivity extends BaseActivity {
     Button chosePay;
     @BindView(R.id.returnButton)
     Button returnButton;
+    @BindView(R.id.rechargeMoney)
+    EditText rechargeMoney;
     private MemberCardBean memberCardBean;
 
     @Override
@@ -76,17 +82,25 @@ public class MemberRechargeActivity extends BaseActivity {
                 phone.setText("手机号:" + memberCardBean.phone);
             }
             right.setVisibility(View.GONE);
-            fanCoinNumber.setText(""+memberCardBean.fans_currency);
-            integralNumber.setText(""+memberCardBean.integral);
-            balanceNumber.setText("¥"+memberCardBean.money+"元");
+            fanCoinNumber.setText("" + memberCardBean.fans_currency);
+            integralNumber.setText("" + memberCardBean.integral);
+            balanceNumber.setText("¥" + memberCardBean.money + "元");
 
         }
     }
 
     @OnClick({R.id.chose_pay, R.id.returnButton})
     public void onViewClicked(View view) {
+        Intent intent;
         switch (view.getId()) {
             case R.id.chose_pay:
+                String recharge=rechargeMoney.getEditableText().toString();
+                if (!TextUtils.isEmpty(recharge)) {
+                    intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
+                    intent.putExtra("customerType", ChosePayModeActivity.TYPE_MEMBER_RECHARGE);
+                    intent.putExtra("money", Integer.parseInt(recharge));
+                    startActivity(intent);
+                }else ToastUtil.getInstance().showToast("请输入充值金额");
                 break;
             case R.id.returnButton:
                 break;

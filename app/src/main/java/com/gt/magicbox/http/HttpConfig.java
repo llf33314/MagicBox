@@ -49,7 +49,7 @@ public class HttpConfig {
     public static final String GET_WECHAT_SUBSCRIPTION_QR_CODE="magicBoxMember/newqrcodeCreateFinal";
     public static final String FIND_MEMBER_CARD="magicBoxMember/findMemberCard";
     public static final String MEMBER_SETTLEMENT="magicBoxMember/publicMemberCountMoney";
-
+    public static final String MEMBER_RECHARGE="magicBoxMember/successChongZhi";
 
 
 

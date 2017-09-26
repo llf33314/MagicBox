@@ -3,6 +3,7 @@ package com.gt.magicbox.http;
 
 import com.gt.magicbox.bean.CardGradeInfoBean;
 import com.gt.magicbox.bean.CardTypeInfoBean;
+import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberBean;
@@ -11,6 +12,7 @@ import com.gt.magicbox.bean.MemberSettlementBean;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
+import com.gt.magicbox.bean.ShopInfoBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 
 import io.reactivex.Observable;
@@ -35,14 +37,15 @@ public interface ApiService {
                                                   @Query("password") String pwd);
 
     @POST(HttpConfig.MAGIC_BOX_MEMBER)
-    Observable<BaseResponse<MemberBean>> memberQuery(
+    Observable<BaseResponse<ShopInfoBean>> memberQuery(
             @Query("login_name") String user,
             @Query("password") String pwd);
 
     @POST(HttpConfig.CASH_ORDER_URL)
-    Observable<BaseResponse> createCashOrder(@Query("eqCode") String eqCode,
-                                             @Query("money") String money,
-                                             @Query("type") String type);
+    Observable<BaseResponse<CashOrderBean>> createCashOrder(@Query("eqCode") String eqCode,
+                                                            @Query("money") String money,
+                                                            @Query("type") int type,
+                                                            @Query("shiftId") int  shiftId);
 
     @POST(HttpConfig.GET_UNPAID_ORDER_URL)
     Observable<BaseResponse<UnpaidOrderBean>> getUnpaidOrderCount(@Query("eqCode") String eqCode,
@@ -109,4 +112,11 @@ public interface ApiService {
     @POST(HttpConfig.MEMBER_SETTLEMENT)
     Observable<BaseResponse> postMemberSettlement(
             @Body MemberSettlementBean memberSettlementBean);
+
+    @POST(HttpConfig.MEMBER_RECHARGE)
+    Observable<BaseResponse> memberRecharge(@Query("memberId") int memberId,
+                                            @Query("money") double money,
+                                            @Query("paymentType") int paymentType
+            , @Query("shopId") int shopId);
+
 }

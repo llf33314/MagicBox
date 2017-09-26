@@ -15,7 +15,9 @@ import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.SimpleDividerDecoration;
 import com.gt.magicbox.bean.KeyValueStringBean;
+import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.order.widget.KeyValueAdapter;
+import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 
@@ -41,9 +43,12 @@ public class OrderInfoActivity extends BaseActivity {
     Button printPaper;
     @BindView(R.id.refund)
     Button refund;
+    private double money;
+    private int payType;
+    private String orderNo="";
     List<KeyValueStringBean> lists= new ArrayList<KeyValueStringBean>();
     private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-
+    MoreFunctionDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,18 +62,22 @@ public class OrderInfoActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.printPaper:
+                PrinterConnectService.printEsc0829(orderNo,money+"元", payType);
+
                 break;
             case R.id.refund:
+                dialog=new MoreFunctionDialog(OrderInfoActivity.this,"退款功能正在开发中,敬请期待",R.style.HttpRequestDialogStyle);
+                dialog.show();
                 break;
         }
     }
     private void initData(){
         Intent intent=this.getIntent();
         if (intent!=null){
-            String orderNo=intent.getStringExtra("orderNo");
+            orderNo=intent.getStringExtra("orderNo");
             long time=intent.getLongExtra("time",0);
-            int payType=intent.getIntExtra("payType",0);
-            double money=intent.getDoubleExtra("money",0);
+            payType=intent.getIntExtra("payType",0);
+            money=intent.getDoubleExtra("money",0);
             if (!TextUtils.isEmpty(orderNo))
             lists.add(new KeyValueStringBean("订单号",orderNo));
             lists.add(new KeyValueStringBean("操作人","张三"));

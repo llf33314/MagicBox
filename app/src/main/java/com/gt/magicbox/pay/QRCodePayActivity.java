@@ -341,6 +341,7 @@ public class QRCodePayActivity extends BaseActivity {
             intent.putExtra("success", success);
             intent.putExtra("message", message);
             intent.putExtra("payType", (int) Hawk.get("payType"));
+            intent.putExtra("orderNo",orderNo);
             startActivity(intent);
 
             AppManager.getInstance().finishActivity(QRCodePayActivity.class);
@@ -385,8 +386,9 @@ public class QRCodePayActivity extends BaseActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        mCameraManager.openFlashLight();
         mCamera = mCameraManager.getCamera();
+
         mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
         scanPreview.addView(mPreview);
 
