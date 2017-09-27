@@ -271,7 +271,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                     }
                 }
             } else if (keyboardType == TYPE_CHARGE || keyboardType == TYPE_MEMBER_RECHARGE_CASH) {
-                if (chargeMoney >= 0 && realPay > 0) {
+                if (chargeMoney >= 0 ) {
                     onKeyboardDoListener.onPay(orderMoney);
                 }
             }

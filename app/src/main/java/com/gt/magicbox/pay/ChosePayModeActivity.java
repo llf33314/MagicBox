@@ -153,8 +153,8 @@ public class ChosePayModeActivity extends BaseActivity {
     private void postMemberSettlement() {
         if (memberCardBean != null)
             HttpCall.getApiService()
-                    .postMemberSettlement(new MemberSettlementBean(memberCardBean.memberId, money,
-                            0, 0, 0, 0))
+                    .postMemberSettlement(memberCardBean.memberId, money,
+                            0, 0, 0, 0)
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                     .compose(new DialogTransformer().<BaseResponse>transformer())
                     .subscribe(new BaseObserver<BaseResponse>() {

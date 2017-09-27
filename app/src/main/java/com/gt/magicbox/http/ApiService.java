@@ -115,7 +115,9 @@ public interface ApiService {
 
     @POST(HttpConfig.MEMBER_SETTLEMENT)
     Observable<BaseResponse> postMemberSettlement(
-            @Body MemberSettlementBean memberSettlementBean);
+            @Query("memberId") int memberId,@Query("totalMoney") double totalMoney,
+            @Query("useCoupon") int useCoupon,@Query("useFenbi") int useFenbi,
+            @Query("userJifen") int userJifen,@Query("userLeague") int userLeague);
 
     @POST(HttpConfig.MEMBER_RECHARGE)
     Observable<BaseResponse> memberRecharge(@Query("memberId") int memberId,
@@ -140,6 +142,7 @@ public interface ApiService {
 
     @POST(HttpConfig.GET_NOW_SR)
     Observable<BaseResponse<ShiftRecordsBean>>getNowSR( @Query("eqId") int eqId, @Query("shiftId") int shiftId);
+
 
 
 }

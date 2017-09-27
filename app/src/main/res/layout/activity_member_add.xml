@@ -31,11 +31,12 @@
                 android:layout_height="@dimen/dp_30"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                app:sb_checked="true"
+                app:sb_checked="false"
                 app:sb_show_indicator="false" />
         </RelativeLayout>
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/imgQRCode"
             android:layout_width="@dimen/dp_140"
             android:layout_height="@dimen/dp_140"
@@ -44,6 +45,7 @@
              />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/textTip"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_42"
