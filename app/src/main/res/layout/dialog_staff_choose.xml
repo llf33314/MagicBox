@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/staff_dialog_viewswitch"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    >
+    <include
+        layout="@layout/dialog_wheel_view"
+        />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/dp_10"
+        >
+
+    <LinearLayout
+        android:id="@+id/staff_name_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/dp_10"
+        android:paddingRight="@dimen/dp_10"
+        >
+
+        <ImageView
+            android:layout_width="@dimen/dp_22"
+            android:layout_height="@dimen/dp_18"
+            android:src="@drawable/exchange_work_person"
+            android:layout_marginRight="@dimen/dp_5"/>
+        <TextView
+            android:id="@+id/staff_dialog_choose_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/wifi_connection_tv_color"
+            android:text="请选择当班人员"
+            android:textSize="16sp"
+            />
+        <ImageView
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:src="@drawable/exchange_work_go"
+            android:padding="@dimen/dp_3"
+            />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/staff_dialog_start"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:background="@drawable/selector_red_button"
+        android:text="开始上班"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:layout_marginRight="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/dp_30"
+        />
+    </FrameLayout>
+</ViewSwitcher>

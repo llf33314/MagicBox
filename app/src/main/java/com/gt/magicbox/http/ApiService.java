@@ -13,6 +13,7 @@ import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
 import com.gt.magicbox.bean.ShopInfoBean;
+import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 
 import io.reactivex.Observable;
@@ -116,7 +117,11 @@ public interface ApiService {
     @POST(HttpConfig.MEMBER_RECHARGE)
     Observable<BaseResponse> memberRecharge(@Query("memberId") int memberId,
                                             @Query("money") double money,
-                                            @Query("paymentType") int paymentType
-            , @Query("shopId") int shopId);
+                                            @Query("paymentType") int paymentType,
+                                            @Query("shopId") int shopId);
 
+    @POST(HttpConfig.GET_STAFF_INFO)
+    Observable<BaseResponse<StaffBean>> getStaffInfoFromShopId(
+            @Query("page") int page, @Query("pageSize") int pageSize,
+            @Query("shopId") int shopId);
 }

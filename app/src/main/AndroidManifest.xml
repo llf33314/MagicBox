@@ -127,6 +127,7 @@
         <activity android:name=".coupon.DistributeCouponActivity">
         </activity>
         <activity android:name=".exchange.ExchangeChooseActivity"></activity>
+        <activity android:name=".exchange.ExchangeWorkActivity"></activity>
         <activity android:name=".coupon.CouponQRActivity"></activity>
         <!--<receiver android:name=".setting.printersetting.bluetooth.BluetoothConnectActivityReceiver" >
             <intent-filter android:priority="1000">

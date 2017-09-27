@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    >
+    <TextView
+        android:id="@+id/exchange_dialog_choose_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp_10"
+        android:text="关闭"
+        android:textSize="16sp"
+        android:textColor="@color/green_wechat"
+        android:layout_gravity="right"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/dp_10"
+        android:paddingRight="@dimen/dp_10"
+        >
+
+        <ImageView
+            android:layout_width="@dimen/dp_22"
+            android:layout_height="@dimen/dp_18"
+            android:src="@drawable/exchange_work_person"
+            android:layout_marginRight="@dimen/dp_5"/>
+        <TextView
+            android:id="@+id/exchange_dialog_choose_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/wifi_connection_tv_color"
+            android:text="请选择当班人员"
+            android:textSize="16sp"
+            />
+        <ImageView
+            android:id="@+id/exchange_dialog_choose_go"
+            android:layout_width="@dimen/dp_22"
+            android:layout_height="@dimen/dp_22"
+            android:src="@drawable/exchange_work_go"
+            android:padding="@dimen/dp_3"
+            />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/exchange_dialog_choose_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/dp_10"
+        android:paddingRight="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
+        >
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

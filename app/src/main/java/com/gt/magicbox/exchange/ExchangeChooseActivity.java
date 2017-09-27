@@ -18,7 +18,7 @@ import butterknife.OnClick;
 /**
  * Created by wzb on 2017/8/23 0023.
  */
-
+@Deprecated
 public class ExchangeChooseActivity extends BaseActivity {
     /**
      * 网络访问返回的 数据

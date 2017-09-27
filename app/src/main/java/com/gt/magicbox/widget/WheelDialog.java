@@ -91,7 +91,6 @@ public class WheelDialog extends Dialog {
 
     }
 
-
     public void setOnWheelItemSelectedListener(WheelView.OnWheelItemSelectedListener onWheelItemSelectedListener) {
         this.onWheelItemSelectedListener = onWheelItemSelectedListener;
     }

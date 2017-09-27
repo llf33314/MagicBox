@@ -13,11 +13,14 @@ import android.widget.GridView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 import com.gt.magicbox.coupon.CouponChoseActivity;
 import com.gt.magicbox.coupon.DistributeCouponActivity;
+import com.gt.magicbox.exchange.ExchangeWorkActivity;
 import com.gt.magicbox.exchange.ShiftExchangeActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.member.MemberChooseActivity;
@@ -31,7 +34,9 @@ import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.WebViewActivity;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 import com.service.OrderPushService;
 
@@ -39,6 +44,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import io.reactivex.functions.Consumer;
+
+import static com.gt.magicbox.exchange.ExchangeWorkActivity.STAFF;
 
 public class MainActivity extends BaseActivity {
     private String TAG = "MainActivity";
@@ -112,8 +119,28 @@ public class MainActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 4:
-                        intent = new Intent(MainActivity.this, ShiftExchangeActivity.class);
-                        startActivity(intent);
+                        HttpCall.getApiService()
+                                .getStaffInfoFromShopId(1,100,(int)Hawk.get("shopId"))
+                                .compose(ResultTransformer.<StaffBean>transformer())
+                                .compose(new DialogTransformer().<StaffBean>transformer())
+                                .subscribe(new BaseObserver<StaffBean>() {
+                                    @Override
+                                    protected void onSuccess(StaffBean staffBean) {
+
+                                        if (staffBean.getCount()<=0){//没有员工
+                                            new HintDismissDialog(MainActivity.this,"您还没创建自己的员工\n请先登录多粉后台进行创建")
+                                                    .setOnCancelClickListener(null)
+                                                    .setCancelText("确认")
+                                                    .show();
+                                        }else{
+                                            intent = new Intent(MainActivity.this, ExchangeWorkActivity.class);
+                                            intent.putExtra(STAFF,staffBean);
+                                            startActivity(intent);
+                                        }
+                                    }
+                                });
+
+
                         break;
                     case 0:
                         intent = new Intent(MainActivity.this, PaymentActivity.class);
