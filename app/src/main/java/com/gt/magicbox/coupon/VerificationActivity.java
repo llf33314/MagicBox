@@ -104,10 +104,8 @@ public class VerificationActivity extends BaseActivity {
 
     private void calculateMoneyInAmount() {
         if (memberCardBean != null) {
-            if (memberCardBean.integral == 0 && memberCardBean.fans_currency == 0) {
                 paidInAmountMoney = orderMoney;
                 textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
-            }
         }
     }
 

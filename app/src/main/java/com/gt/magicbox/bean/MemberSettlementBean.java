@@ -10,13 +10,13 @@ import retrofit2.http.Field;
 
 public class MemberSettlementBean {
     public int memberId;
-    public int totalMoney;
+    public double totalMoney;
     public int useCoupon;
     public int useFenbi;
     public int userJifen;
     public int userLeague;
 
-    public MemberSettlementBean(int memberId, int totalMoney, int useCoupon, int useFenbi, int userJifen, int userLeague) {
+    public MemberSettlementBean(int memberId, double totalMoney, int useCoupon, int useFenbi, int userJifen, int userLeague) {
         this.memberId=memberId;
         this.totalMoney=totalMoney;
         this.useCoupon=useCoupon;

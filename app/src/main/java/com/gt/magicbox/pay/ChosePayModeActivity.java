@@ -101,11 +101,18 @@ public class ChosePayModeActivity extends BaseActivity {
                 }
                 break;
             case R.id.pay_cash:
-                memberRecharge(2);
                 Intent intent = new Intent(ChosePayModeActivity.this, PaymentActivity.class);
-                intent.putExtra("type", 1);
-                intent.putExtra("orderMoney", money);
+
+                if (customerType==TYPE_MEMBER_RECHARGE){
+                    intent.putExtra("type", PaymentActivity.TYPE_MEMBER_CALC);
+                    intent.putExtra("MemberCardBean",memberCardBean);
+                    intent.putExtra("orderMoney", money);
+                }else {
+                    intent.putExtra("type", 1);
+                    intent.putExtra("orderMoney", money);
+                }
                 startActivity(intent);
+
                 break;
         }
     }
@@ -115,8 +122,16 @@ public class ChosePayModeActivity extends BaseActivity {
      */
     private void startERCodePay(int type) {
         if (NetworkUtils.isConnected()) {
+
             Hawk.put("payType", type);
             Intent intent = new Intent(ChosePayModeActivity.this, QRCodePayActivity.class);
+            if (customerType==TYPE_MEMBER_RECHARGE){
+                intent.putExtra("type", QRCodePayActivity.TYPE_MEMBER_RECHARGE);
+                intent.putExtra("MemberCardBean",memberCardBean);
+            }else {
+                intent.putExtra("type", QRCodePayActivity.TYPE_PAY);
+
+            }
             intent.putExtra("money", money);
             intent.putExtra("payMode", type);
             startActivity(intent);
@@ -138,7 +153,7 @@ public class ChosePayModeActivity extends BaseActivity {
     private void postMemberSettlement() {
         if (memberCardBean != null)
             HttpCall.getApiService()
-                    .postMemberSettlement(new MemberSettlementBean(memberCardBean.memberId, (int)money,
+                    .postMemberSettlement(new MemberSettlementBean(memberCardBean.memberId, money,
                             0, 0, 0, 0))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                     .compose(new DialogTransformer().<BaseResponse>transformer())
@@ -161,35 +176,5 @@ public class ChosePayModeActivity extends BaseActivity {
                         }
                     });
     }
-    private void memberRecharge(int payType) {
-        Log.d(TAG,"memberRecharge customerType="+customerType);
 
-        if (memberCardBean != null && customerType == TYPE_MEMBER_RECHARGE) {
-            Log.d(TAG,"memberRecharge");
-            HttpCall.getApiService()
-                    .memberRecharge(memberCardBean.memberId, money, payType, (Integer) Hawk.get("shopId"))
-                    .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
-                    .compose(new DialogTransformer().<BaseResponse>transformer())
-                    .subscribe(new BaseObserver<BaseResponse>() {
-                        @Override
-                        public void onSuccess(BaseResponse data) {
-                            Log.d(TAG, "memberRecharge onSuccess " );
-                            Intent intent=new Intent(getApplicationContext(), MemberRechargeResultActivity.class);
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            Log.d(TAG, "memberRecharge onError e" + e.getMessage());
-                            super.onError(e);
-                        }
-
-                        @Override
-                        public void onFailure(int code, String msg) {
-                            Log.d(TAG, "memberRecharge onFailure msg=" + msg);
-                            super.onFailure(code, msg);
-                        }
-                    });
-        }
-    }
 }

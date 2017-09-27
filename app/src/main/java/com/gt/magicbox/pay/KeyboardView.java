@@ -60,6 +60,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     public static final int TYPE_MEMBER = 2;
     public static final int TYPE_COUPON_VERIFICATION=3;
     public static final int TYPE_MEMBER_RECHARGE=4;
+    public static final int TYPE_MEMBER_RECHARGE_CASH=5;
 
     public KeyboardView(Context context) {
         this(context, null);
@@ -162,7 +163,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
     private void showMoney() {
         if (numberString.length() != 0) {
-            if (keyboardType == TYPE_CHARGE) {
+            if (keyboardType == TYPE_CHARGE||keyboardType==TYPE_MEMBER_RECHARGE_CASH) {
                 realPay = Double.parseDouble(numberString.toString());
               //  chargeMoney = realPay - orderMoney;
                 chargeMoney =sub(realPay,orderMoney);
@@ -190,7 +191,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
     public void setKeyboardType(int keyboardType) {
         this.keyboardType = keyboardType;
-        if (keyboardType == TYPE_CHARGE) {
+        if (keyboardType == TYPE_CHARGE|| keyboardType == TYPE_MEMBER_RECHARGE_CASH) {
             chargeLayout.setVisibility(VISIBLE);
             text_paid_in_amount.setVisibility(VISIBLE);
             should_pay.setText(SpannableStringUtils.diffTextSize("¥ " + orderMoney, 14, 0, 1));
@@ -269,12 +270,12 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                         onKeyboardDoListener.onPay(money);
                     }
                 }
-            } else if (keyboardType == TYPE_CHARGE) {
+            } else if (keyboardType == TYPE_CHARGE || keyboardType == TYPE_MEMBER_RECHARGE_CASH) {
                 if (chargeMoney >= 0 && realPay > 0) {
                     onKeyboardDoListener.onPay(orderMoney);
                 }
             }
-            else if (keyboardType == TYPE_CHARGE) {
+            else if (keyboardType == TYPE_CHARGE || keyboardType == TYPE_MEMBER_RECHARGE_CASH) {
                 if (chargeMoney >= 0 && realPay > 0) {
                     onKeyboardDoListener.onPay(orderMoney);
                 }

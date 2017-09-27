@@ -13,14 +13,18 @@ import android.widget.Toast;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.coupon.VerificationActivity;
+import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.member.MemberRechargeActivity;
+import com.gt.magicbox.member.MemberRechargeResultActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.WebViewActivity;
@@ -37,11 +41,14 @@ public class PaymentActivity extends BaseActivity {
     private KeyboardView keyboardView;
     private int type=0;
     private double orderMoney=0;
+    private MemberCardBean memberCardBean;
     public static final int TYPE_INPUT=0;
     public static final int TYPE_CALC=1;
     public static final int TYPE_MEMBER_PAY=2;
     public static final int TYPE_COUPON_VERIFICATION=3;
     public static final int TYPE_MEMBER_RECHARGE=4;
+    public static final int TYPE_MEMBER_CALC=5;
+
     private MoreFunctionDialog dialog;
     private int code;
     @Override
@@ -56,8 +63,9 @@ public class PaymentActivity extends BaseActivity {
             type=getIntent().getIntExtra("type",0);
             orderMoney=getIntent().getDoubleExtra("orderMoney",0);
             code=getIntent().getIntExtra("keyCode",0);
+            memberCardBean= (MemberCardBean) getIntent().getSerializableExtra("MemberCardBean");
         }
-        if (type == TYPE_CALC) {
+        if (type == TYPE_CALC||type==TYPE_MEMBER_CALC) {
             setToolBarTitle("现金支付");
         } else if (type == TYPE_INPUT) {
             setToolBarTitle("收银");
@@ -80,13 +88,15 @@ public class PaymentActivity extends BaseActivity {
                     intent.putExtra("money", money);
                     startActivity(intent);
                 } else if (type == TYPE_CALC) {
-                        intent=new Intent(PaymentActivity.this, PayResultActivity.class);
-                        intent.putExtra("success",true);
-                        intent.putExtra("message",""+money);
-                        intent.putExtra("payType",PayResultActivity.TYPE_CASH);
-                        startActivity(intent);
-                        AppManager.getInstance().finishActivity(PaymentActivity.class);
-                        AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
+                    intent = new Intent(PaymentActivity.this, PayResultActivity.class);
+                    intent.putExtra("success", true);
+                    intent.putExtra("message", "" + money);
+                    intent.putExtra("payType", PayResultActivity.TYPE_CASH);
+                    startActivity(intent);
+                    AppManager.getInstance().finishActivity(PaymentActivity.class);
+                    AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
+                } else if (type == TYPE_MEMBER_CALC) {
+                  memberRecharge(BaseConstant.PAY_ON_CASH);
                 }
             }
 
@@ -122,7 +132,7 @@ public class PaymentActivity extends BaseActivity {
             keyboardView.backspace();
             return true;
         }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_ENTER){
-            keyboardView.enter();
+                keyboardView.enter();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -169,5 +179,38 @@ public class PaymentActivity extends BaseActivity {
                     }
 
                 });
+    }
+    private void memberRecharge(int payType) {
+        Log.d(TAG,"memberRecharge type="+type);
+
+        if (memberCardBean != null && type == TYPE_MEMBER_CALC) {
+            Log.d(TAG,"memberRecharge");
+            HttpCall.getApiService()
+                    .memberRecharge(memberCardBean.memberId, orderMoney, payType, (Integer) Hawk.get("shopId"))
+                    .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                    .compose(new DialogTransformer().<BaseResponse>transformer())
+                    .subscribe(new BaseObserver<BaseResponse>() {
+                        @Override
+                        public void onSuccess(BaseResponse data) {
+                            Log.d(TAG, "memberRecharge onSuccess " );
+                            Intent intent=new Intent(getApplicationContext(), MemberRechargeResultActivity.class);
+                            intent.putExtra("rechargeMoney",orderMoney);
+                            intent.putExtra("balance",memberCardBean.money+orderMoney);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d(TAG, "memberRecharge onError e" + e.getMessage());
+                            super.onError(e);
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            Log.d(TAG, "memberRecharge onFailure msg=" + msg);
+                            super.onFailure(code, msg);
+                        }
+                    });
+        }
     }
 }

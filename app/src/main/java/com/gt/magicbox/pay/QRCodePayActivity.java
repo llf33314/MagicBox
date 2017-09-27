@@ -25,15 +25,19 @@ import com.google.gson.Gson;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.CreatedOrderBean;
+import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
 import com.gt.magicbox.bean.ScanCodePayResultBean;
+import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.http.socket.SocketIOManager;
+import com.gt.magicbox.member.MemberRechargeResultActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -86,6 +90,7 @@ public class QRCodePayActivity extends BaseActivity {
     public final static int TYPE_PAY = 0;
     public final static int TYPE_SERVER_PUSH = 1;
     public final static int TYPE_CREATED_PAY = 2;//已生成的订单并且未支付
+    public final static int TYPE_MEMBER_RECHARGE =3;//会员充值使用支付宝或者微信支付
 
     private HttpRequestDialog dialog;
     private SocketIOManager socketIOManager;
@@ -99,9 +104,10 @@ public class QRCodePayActivity extends BaseActivity {
     private ImageScanner mImageScanner = null;
     private Rect fillRect = null;
     private String orderNo = "";
+    private int payMode;
     private Integer shiftId;
     private boolean isCodePayRequesting = false;
-
+    private MemberCardBean memberCardBean;
     static {
         System.loadLibrary("iconv");
     }
@@ -132,15 +138,23 @@ public class QRCodePayActivity extends BaseActivity {
     private void init() {
         if (this.getIntent() != null) {
             type = this.getIntent().getIntExtra("type", 0);
+            Log.d(TAG,"type="+type);
+
             switch (type) {
+                case TYPE_MEMBER_RECHARGE:
                 case TYPE_PAY:
                     money = this.getIntent().getDoubleExtra("money", 0);
-                    int type = this.getIntent().getIntExtra("payMode", 0);
+                    payMode = this.getIntent().getIntExtra("payMode", 0);
+                    if (type==TYPE_MEMBER_RECHARGE){
+                        memberCardBean = (MemberCardBean) this.getIntent().getSerializableExtra("MemberCardBean");
+                        Log.d(TAG,"memberCardBean="+memberCardBean.ctName);
+
+                    }
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
                     showMoney(cashierMoney, "" + money);
                     showMoney(customerMoney, "" + money);
-                    getQRCodeURL(money, type, shiftId);
+                    getQRCodeURL(money, payMode, shiftId);
                     break;
                 case TYPE_SERVER_PUSH:
                     int orderId = this.getIntent().getIntExtra("orderId", 0);
@@ -335,20 +349,23 @@ public class QRCodePayActivity extends BaseActivity {
     }
 
     public void payResult(boolean success, String message) {
-
         if (success) {
-            Intent intent = new Intent(getApplicationContext(), PayResultActivity.class);
-            intent.putExtra("success", success);
-            intent.putExtra("message", message);
-            intent.putExtra("payType", (int) Hawk.get("payType"));
-            intent.putExtra("orderNo",orderNo);
-            startActivity(intent);
+            if (type == TYPE_MEMBER_RECHARGE) {
+               memberRecharge();
+            } else {
+                Intent intent = new Intent(getApplicationContext(), PayResultActivity.class);
+                intent.putExtra("success", success);
+                intent.putExtra("message", message);
+                intent.putExtra("payType", (int) Hawk.get("payType"));
+                intent.putExtra("orderNo", orderNo);
+                startActivity(intent);
 
-            AppManager.getInstance().finishActivity(QRCodePayActivity.class);
-            AppManager.getInstance().finishActivity(PaymentActivity.class);
-            AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
+                AppManager.getInstance().finishActivity(QRCodePayActivity.class);
+                AppManager.getInstance().finishActivity(PaymentActivity.class);
+                AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
+            }
+
         }
-
     }
 
     @Override
@@ -448,5 +465,40 @@ public class QRCodePayActivity extends BaseActivity {
             autoFocusHandler.postDelayed(doAutoFocus, 1000);
         }
     };
+
+    private void memberRecharge() {
+        Log.d(TAG,"memberRecharge type="+type);
+
+        if (memberCardBean != null) {
+            Log.d(TAG,"memberRecharge");
+            HttpCall.getApiService()
+                    .memberRecharge(memberCardBean.memberId, money, payMode, (Integer) Hawk.get("shopId"))
+                    .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                    .compose(new DialogTransformer().<BaseResponse>transformer())
+                    .subscribe(new BaseObserver<BaseResponse>() {
+                        @Override
+                        public void onSuccess(BaseResponse data) {
+                            Log.d(TAG, "memberRecharge onSuccess " );
+                            Intent intent=new Intent(getApplicationContext(), MemberRechargeResultActivity.class);
+                            intent.putExtra("rechargeMoney",money);
+                            intent.putExtra("balance",memberCardBean.money+money);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            Log.d(TAG, "memberRecharge onError e" + e.getMessage().toString());
+                            super.onError(e);
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            Log.d(TAG, "memberRecharge onFailure msg=" + msg);
+                            super.onFailure(code, msg);
+                        }
+                    });
+        }
+    }
 
 }
