@@ -45,7 +45,7 @@ public abstract class BaseObserver<T> implements Observer<T> {
         } else if (e instanceof UnknownServiceException) {
             ToastUtil.getInstance().showToast("未知的服务器错误");
         } else if (e instanceof IOException) {  //飞行模式等
-            ToastUtil.getInstance().showToast("没有网络，请检查网络连接");
+            ToastUtil.getInstance().showToast("网络服务器异常");
         }else if(e instanceof HttpResponseException){//自定义异常 状态码等
             HttpResponseException  responseException = (HttpResponseException) e;
             onFailure(responseException.getError(),responseException.getMessage());

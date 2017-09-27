@@ -51,14 +51,11 @@ public class ShiftExchangeActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.exchange_next, R.id.exchange_cancel})
+    @OnClick(R.id.staff_dialog_out_work)
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.exchange_next:
-                Intent intent=new Intent(ShiftExchangeActivity.this,ExchangeChooseActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.exchange_cancel:
+
+            case R.id.staff_dialog_out_work:
                 onBackPressed();
                 break;
         }

@@ -2,6 +2,7 @@ package com.gt.magicbox.exchange;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -90,7 +91,7 @@ public class StaffChooseDialog extends Dialog{
 
     }
 
-    @OnClick({R.id.cancel,R.id.confirm,R.id.staff_name_ll})
+    @OnClick({R.id.cancel,R.id.confirm,R.id.staff_name_ll,R.id.staff_dialog_start})
     public void onViewClicked(View view) {
         switch (view.getId()){
             case R.id.cancel:
@@ -105,6 +106,8 @@ public class StaffChooseDialog extends Dialog{
             case R.id.staff_dialog_start:
                 String name=staffName.getText().toString();
                 Hawk.put("shiftId",getIdFromStaffList(staffList,name));
+                Intent intent=new Intent(this.getContext(),ShiftExchangeActivity.class);
+                this.getContext().startActivity(intent);
                 break;
 
         }
