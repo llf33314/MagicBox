@@ -124,8 +124,10 @@ public class PrintESCOrTSCUtil {
         esc.addText("--------------------------------\n");
         esc.addText("订单金额："+money+"\n");
         esc.addText("--------------------------------\n");
+        if (null!=shopInfoBean)
         esc.addText("联系电话："+shopInfoBean.getShops().getTelephone()+"\n");
-        esc.addText("地址:"+shopInfoBean.getShops().getAddress()+"\n");
+        if (null!=shopInfoBean)
+            esc.addText("地址:"+shopInfoBean.getShops().getAddress()+"\n");
         esc.addText("--------------------------------\n");
 
         esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中

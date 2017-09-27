@@ -474,7 +474,6 @@ public class QRCodePayActivity extends BaseActivity {
             HttpCall.getApiService()
                     .memberRecharge(memberCardBean.memberId, money, payMode, (Integer) Hawk.get("shopId"))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
-                    .compose(new DialogTransformer().<BaseResponse>transformer())
                     .subscribe(new BaseObserver<BaseResponse>() {
                         @Override
                         public void onSuccess(BaseResponse data) {

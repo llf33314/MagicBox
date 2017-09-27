@@ -89,7 +89,6 @@ public class MainActivity extends BaseActivity {
         initView();
         //bindOrderService();
         requestUpdate();
-        Log.d(TAG," shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId"));
 
         ScreenUtils.setScreenBrightness(MainActivity.this,255);
     }
@@ -244,6 +243,8 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
       //  getUnpaidOrderCount();
+       // Hawk.put("shiftId",0);
+        Log.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId"));
         super.onResume();
     }
     private void requestUpdate() {
