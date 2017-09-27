@@ -11,6 +11,13 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.recyclerview.LineRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.MapBean;
+import com.gt.magicbox.bean.ShiftRecordsBean;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.utils.commonutil.TimeUtils;
+import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +43,40 @@ public class ShiftExchangeActivity extends BaseActivity {
         setContentView(R.layout.activity_shift_exchange);
         setToolBarTitle("交班");
         rvExchange.setLayoutManager(new LinearLayoutManager(this));
-        rvExchange.setAdapter(new LineRecyclerAdapter(this,getMenu()));
+        init();
     }
 
-    private List<MapBean<String,String>> getMenu(){
+    private void init(){
+        HttpCall.getApiService()
+                .getNowSR((Integer) Hawk.get("eqId"),(Integer)Hawk.get("shiftId"))
+                .compose(ResultTransformer.<ShiftRecordsBean>transformer())
+                .compose(new DialogTransformer().<ShiftRecordsBean>transformer())
+                .subscribe(new BaseObserver<ShiftRecordsBean>() {
+                    @Override
+                    protected void onSuccess(ShiftRecordsBean shiftRecordsBean) {
+                        List<MapBean<String, String>>  listBean=getListBean(shiftRecordsBean);
+                        rvExchange.setAdapter(new LineRecyclerAdapter(ShiftExchangeActivity.this,listBean));
+
+                    }
+                });
+    }
+
+    private  List<MapBean<String, String>>  getListBean(ShiftRecordsBean shiftRecordsBean){
+        List<MapBean<String, String>>  listBean=new ArrayList<MapBean<String, String>>();
+        listBean.add( new MapBean<String ,String>("当班人",shiftRecordsBean.getStaffName()));
+        listBean.add( new MapBean<String ,String>("门店",shiftRecordsBean.getShopName()));
+        listBean.add( new MapBean<String ,String>("设备号",shiftRecordsBean.getEqId()+""));
+        listBean.add( new MapBean<String ,String>("接班时间", TimeUtils.getNowString()));
+        listBean.add( new MapBean<String ,String>("实际支付订单数",shiftRecordsBean.getOrderInNum()+""));
+        listBean.add( new MapBean<String ,String>("实际应收总额",shiftRecordsBean.getMoney()+""));
+        listBean.add( new MapBean<String ,String>("微信支付",shiftRecordsBean.getWechatMoney()+""));
+        listBean.add( new MapBean<String ,String>("支付宝",shiftRecordsBean.getAlipayMoney()+""));
+        listBean.add( new MapBean<String ,String>("现金支付",shiftRecordsBean.getCashMoney()+""));
+        return listBean;
+    }
+
+
+   /* private List<MapBean<String,String>> getMenu(){
         final List<MapBean<String,String>> lists=new ArrayList<>();
         Observable.range(0,7).subscribe(new Consumer<Integer>() {
             @Override
@@ -48,15 +85,16 @@ public class ShiftExchangeActivity extends BaseActivity {
             }
         });
         return lists;
-
-    }
+    }*/
 
     @OnClick(R.id.staff_dialog_out_work)
     public void onViewClicked(View view) {
         switch (view.getId()) {
-
             case R.id.staff_dialog_out_work:
+                //打印下班单 并且清空shithId
+
                 onBackPressed();
+
                 break;
         }
     }

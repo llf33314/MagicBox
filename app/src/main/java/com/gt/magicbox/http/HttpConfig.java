@@ -51,5 +51,8 @@ public class HttpConfig {
     public static final String MEMBER_SETTLEMENT="magicBoxMember/publicMemberCountMoney";
     public static final String MEMBER_RECHARGE="magicBoxMember/successChongZhi";
     public static final String GET_STAFF_INFO="magicBoxMember/getStaffListShopId";
+    public static final String CECORDS_NOW_EXCHANGE="magicBoxMobile/79B4DE7C/recordsNow";
+    public static final String GET_NOW_SR="magicBoxMobile/79B4DE7C/getNowSR";
+
 
 }

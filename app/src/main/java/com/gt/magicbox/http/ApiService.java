@@ -12,8 +12,10 @@ import com.gt.magicbox.bean.MemberSettlementBean;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
+import com.gt.magicbox.bean.ShiftRecordsBean;
 import com.gt.magicbox.bean.ShopInfoBean;
 import com.gt.magicbox.bean.StaffBean;
+import com.gt.magicbox.bean.StartWorkBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 
 import io.reactivex.Observable;
@@ -22,6 +24,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -124,4 +127,19 @@ public interface ApiService {
     Observable<BaseResponse<StaffBean>> getStaffInfoFromShopId(
             @Query("page") int page, @Query("pageSize") int pageSize,
             @Query("shopId") int shopId);
+
+    @FormUrlEncoded
+    @POST(HttpConfig.CECORDS_NOW_EXCHANGE)
+    Observable<BaseResponse<StartWorkBean>> cecordsNowExchange(
+            @Field("eqId") int eqId,
+            @Field("shopId") int shopId,
+            @Field("shopName") String shopName,
+            @Field("staffCode") String staffCode,
+            @Field("staffId") int staffId,
+            @Field("staffName") String staffName);
+
+    @POST(HttpConfig.GET_NOW_SR)
+    Observable<BaseResponse<ShiftRecordsBean>>getNowSR( @Query("eqId") int eqId, @Query("shiftId") int shiftId);
+
+
 }

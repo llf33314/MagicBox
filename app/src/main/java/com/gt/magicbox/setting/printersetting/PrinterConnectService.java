@@ -123,12 +123,6 @@ public class PrinterConnectService extends Service {
 
     }
 
-    @Override
-    public int onStartCommand(Intent intent,int flags, int startId) {
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
     private void connection() {
         if (mGpService==null){
         conn = new PrinterServiceConnection();
@@ -257,23 +251,7 @@ public class PrinterConnectService extends Service {
         }
     }
 
-    public boolean[] getConnectState() {
-        boolean[] state = new boolean[GpPrintService.MAX_PRINTER_CNT];
-        for (int i = 0; i < GpPrintService.MAX_PRINTER_CNT; i++) {
-            state[i] = false;
-        }
-        for (int i = 0; i < GpPrintService.MAX_PRINTER_CNT; i++) {
-            try {
-                if (mGpService.getPrinterConnectStatus(i) == GpDevice.STATE_CONNECTED) {
-                    state[i] = true;
-                }
-            } catch (RemoteException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return state;
-    }
+
 
     /**
      * 打印机状态
@@ -402,6 +380,44 @@ public class PrinterConnectService extends Service {
         return -1;
     }
 
+    /**
+     * 打印交班表
+     * @return
+     */
+    public static int printEscExchange(){
+        if (mGpService==null){
+            showHintNotConnectDialog();
+            return PRINTER_NOT_INTI;
+        }
+        try {//拔插的时候这个sdk有毒  要这么处理
+            int state=mGpService.getPrinterConnectStatus(mPrinterIndex);
+            // ToastUtil.getInstance().showToast("state："+state);
+            if (state==GpDevice.STATE_CONNECTING){
+                ToastUtil.getInstance().showToast("打印机正在连接请稍后再试");
+                return PRINTER_CONNECTING;
+            }
+            if (state==GpDevice.STATE_NONE){
+                //mGpService.closePort(mPrinterIndex);
+                if (mUsbDevice!=null){
+                    openUsbProt();
+                }else{//蓝牙跟USB都没连接
+                    showHintNotConnectDialog();
+                }
+            }
+            //这里很关键   打印机类型是ESC 还是TSC 暂时测试这么用
+            int printType = mGpService.getPrinterCommandType(mPrinterIndex);
+            if (printType == GpCom.ESC_COMMAND) {
+                EscCommand esc=PrintESCOrTSCUtil.getExChangeESC();
+                return  sendEscDataToPrinter(esc);
+            }else{
+                ToastUtil.getInstance().showToast("请连接正确类型打印机");
+            }
+        } catch (RemoteException e1) {
+            e1.printStackTrace();
+        }
+        return -1;
+    }
+
     public static int printEsc0829(String orderNo,String money,int type){
         if (mGpService==null){
             showHintNotConnectDialog();
@@ -441,7 +457,6 @@ public class PrinterConnectService extends Service {
     private static int printEsc(String orderNo,String money,int type){
         EscCommand esc=PrintESCOrTSCUtil.getPrintEscTest(orderNo,money,type);
         return  sendEscDataToPrinter(esc);
-
     }
 
     //发送Esc命令到打印机

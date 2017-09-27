@@ -13,7 +13,14 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.bean.ShopInfoBean;
 import com.gt.magicbox.bean.StaffBean;
+import com.gt.magicbox.bean.StartWorkBean;
+import com.gt.magicbox.http.BaseResponse;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.utils.DialogUtil;
 import com.orhanobut.hawk.Hawk;
 import com.wx.wheelview.adapter.ArrayWheelAdapter;
@@ -105,9 +112,23 @@ public class StaffChooseDialog extends Dialog{
                 break;
             case R.id.staff_dialog_start:
                 String name=staffName.getText().toString();
-                Hawk.put("shiftId",getIdFromStaffList(staffList,name));
-                Intent intent=new Intent(this.getContext(),ShiftExchangeActivity.class);
-                this.getContext().startActivity(intent);
+
+                Hawk.put("StaffListBean",staffList);
+                StaffBean.StaffListBean staff=getStaff(staffList,name);
+                ShopInfoBean shopInfoBean=Hawk.get("ShopInfoBean");
+                HttpCall.getApiService()
+                        .cecordsNowExchange((Integer) Hawk.get("eqId"),staff.getShopId(),shopInfoBean.getShopName(),staff.getJobNumber(),staff.getId(),staff.getName())
+                        .compose(ResultTransformer.<StartWorkBean>transformer())
+                        .compose(new DialogTransformer().<StartWorkBean>transformer())
+                        .subscribe(new BaseObserver<StartWorkBean>() {
+                            @Override
+                            protected void onSuccess(StartWorkBean staffBean) {
+                                Hawk.put("shiftId",staffBean.getShiftId());
+                                Intent intent=new Intent(StaffChooseDialog.this.getContext(),ShiftExchangeActivity.class);
+                                StaffChooseDialog.this.getContext().startActivity(intent);
+                            }
+                        });
+
                 break;
 
         }
@@ -124,6 +145,15 @@ public class StaffChooseDialog extends Dialog{
 
     public void setOnClickListener(View.OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
+    }
+
+    private StaffBean.StaffListBean getStaff(List<StaffBean.StaffListBean> staffList,String staffName){
+        for (StaffBean.StaffListBean s:staffList){
+          if (staffName.equals(s.getName())){
+              return s;
+          }
+        }
+        return new StaffBean.StaffListBean();
     }
 
     private List<String> getNameList(List<StaffBean.StaffListBean> staffList){

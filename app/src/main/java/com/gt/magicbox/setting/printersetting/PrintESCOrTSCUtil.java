@@ -138,6 +138,43 @@ public class PrintESCOrTSCUtil {
         return esc;
     }
 
+    /**
+     * 交班
+     * @return
+     */
+    public static EscCommand getExChangeESC(){
+        EscCommand esc = new EscCommand();
+        esc.addPrintAndFeedLines((byte) 1);
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
+        esc.addText("交班表\n"); // 打印文字
+        esc.addPrintAndLineFeed();
+
+        // 打印文字 *//*
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
+
+        esc.addText("门店："+"门店"+"\n");
+        esc.addText("设备号："+"门店"+"\n");
+        esc.addText("当班人："+"门店"+"\n");
+        esc.addText("…………………………………………\n\n");
+        esc.addText("接班时间："+"门店"+"\n");
+        esc.addText("交班时间："+"门店"+"\n");
+        esc.addText("…………………………………………\n\n");
+        esc.addText("实际支付订单数："+"门店"+"\n");
+        esc.addText("支付订单总额："+"门店"+"\n");
+        esc.addText("实际应收金额："+"门店"+"\n");
+        esc.addText("微信支付："+"门店"+"\n");
+        esc.addText("支付宝："+"门店"+"\n");
+        esc.addText("现金支付："+"门店"+"\n");
+        esc.addText("--------------------------------\n\n");
+        esc.addText("当班人签名："+"        接班人签名："+"\n\n\n");
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印左对齐
+        esc.addText("技术支持·多粉 400-889-4522");
+        esc.addPrintAndFeedLines((byte)5);
+        return esc;
+    }
+
   /*private static int sendLabelReceipt() {
         //总共320*240
         LabelCommand tsc = new LabelCommand();
