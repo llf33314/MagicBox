@@ -26,6 +26,7 @@ import com.gprinter.io.PortParameters;
 import com.gprinter.service.GpPrintService;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.MyApplication;
+import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.setting.printersetting.bluetooth.BluetoothUtil;
@@ -418,8 +419,45 @@ public class PrinterConnectService extends Service {
         }
         return -1;
     }
-
-    public static int printEsc0829(String orderNo,String money,int type){
+    /**
+     * 打印会员充值
+     * @return
+     */
+    public static int printEscMemberRecharge(MemberCardBean memberCardBean, String orderNo
+            , String money, int type,String balance) {
+        if (mGpService == null) {
+            showHintNotConnectDialog();
+            return PRINTER_NOT_INTI;
+        }
+        try {//拔插的时候这个sdk有毒  要这么处理
+            int state = mGpService.getPrinterConnectStatus(mPrinterIndex);
+            // ToastUtil.getInstance().showToast("state："+state);
+            if (state == GpDevice.STATE_CONNECTING) {
+                ToastUtil.getInstance().showToast("打印机正在连接请稍后再试");
+                return PRINTER_CONNECTING;
+            }
+            if (state == GpDevice.STATE_NONE) {
+                //mGpService.closePort(mPrinterIndex);
+                if (mUsbDevice != null) {
+                    openUsbProt();
+                } else {//蓝牙跟USB都没连接
+                    showHintNotConnectDialog();
+                }
+            }
+            //这里很关键   打印机类型是ESC 还是TSC 暂时测试这么用
+            int printType = mGpService.getPrinterCommandType(mPrinterIndex);
+            if (printType == GpCom.ESC_COMMAND) {
+                EscCommand esc = PrintESCOrTSCUtil.getPrintMemberRecharge(memberCardBean,orderNo,money,type,balance);
+                return sendEscDataToPrinter(esc);
+            } else {
+                ToastUtil.getInstance().showToast("请连接正确类型打印机");
+            }
+        } catch (RemoteException e1) {
+            e1.printStackTrace();
+        }
+        return -1;
+    }
+    public static int printEsc0829(String orderNo,String money,int type,String time){
         if (mGpService==null){
             showHintNotConnectDialog();
             return PRINTER_NOT_INTI;
@@ -443,7 +481,7 @@ public class PrinterConnectService extends Service {
             //这里很关键   打印机类型是ESC 还是TSC 暂时测试这么用
             int printType = mGpService.getPrinterCommandType(mPrinterIndex);
             if (printType == GpCom.ESC_COMMAND) {
-                return printEsc(orderNo,money,type);
+                return printEsc(orderNo,money,type,time);
             }else{
                 ToastUtil.getInstance().showToast("请连接正确类型打印机");
             }
@@ -455,8 +493,8 @@ public class PrinterConnectService extends Service {
 
 
 
-    private static int printEsc(String orderNo,String money,int type){
-        EscCommand esc=PrintESCOrTSCUtil.getPrintEscTest(orderNo,money,type);
+    private static int printEsc(String orderNo,String money,int type,String time){
+        EscCommand esc=PrintESCOrTSCUtil.getPrintEscTest(orderNo,money,type,time);
         return  sendEscDataToPrinter(esc);
     }
 

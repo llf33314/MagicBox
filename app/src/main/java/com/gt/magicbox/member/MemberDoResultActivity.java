@@ -8,8 +8,10 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.AppManager;
 
 import java.math.BigDecimal;
@@ -30,7 +32,7 @@ public class MemberDoResultActivity extends BaseActivity {
     @BindView(R.id.cashier_success_tip)
     TextView cashierSuccessTip;
     private int type = 0;
-    public static final int TYPE_MEMBER_RECHARE = 0;
+    public static final int TYPE_MEMBER_RECHARGE = 0;
     public static final int TYPE_MEMBER_PAY = 1;
 
     @BindView(R.id.customer_balance)
@@ -46,6 +48,10 @@ public class MemberDoResultActivity extends BaseActivity {
     private double rechargeMoney;
     private double balance;
 
+
+    private MemberCardBean memberCardBean;
+    private String orderNo;
+    private int payType;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,13 +69,15 @@ public class MemberDoResultActivity extends BaseActivity {
 
         if (this.getIntent() != null) {
             type=getIntent().getIntExtra("type",0);
+            payType=getIntent().getIntExtra("payType",0);
+            orderNo=getIntent().getStringExtra("orderNo");
+            memberCardBean= (MemberCardBean) getIntent().getSerializableExtra("MemberCardBean");
             rechargeMoney = getIntent().getDoubleExtra("rechargeMoney", 0);
             balance = getIntent().getDoubleExtra("balance", 0);
             BigDecimal bg = new BigDecimal(rechargeMoney);
-            bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            rechargeMoney=bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             bg = new BigDecimal(balance);
-            bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-
+            balance=bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         }
     }
 
@@ -89,6 +97,9 @@ public class MemberDoResultActivity extends BaseActivity {
 
     @OnClick(R.id.confirmButton)
     public void onViewClicked() {
+        if (type==TYPE_MEMBER_RECHARGE){
+            PrinterConnectService.printEscMemberRecharge(memberCardBean,orderNo,""+rechargeMoney,payType,""+balance);
+        }
         finish();
     }
 }

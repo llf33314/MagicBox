@@ -93,7 +93,7 @@ public class PayResultActivity extends BaseActivity {
                     orderNo=cashOrderBean.getMagicBoxOrder().getOrderNo();
                     else orderNo="";
                 }
-                PrinterConnectService.printEsc0829(orderNo,message+"元", payType);
+                PrinterConnectService.printEsc0829(orderNo,message+"元", payType,"");
                 // RxBus.get().post(new PrintBean(message));
                 break;
         }

@@ -114,7 +114,7 @@ public class StaffChooseDialog extends Dialog{
                 String name=staffName.getText().toString();
 
                 Hawk.put("StaffListBean",staffList);
-                StaffBean.StaffListBean staff=getStaff(staffList,name);
+                final StaffBean.StaffListBean staff=getStaff(staffList,name);
                 ShopInfoBean shopInfoBean=Hawk.get("ShopInfoBean");
                 HttpCall.getApiService()
                         .cecordsNowExchange((Integer) Hawk.get("eqId"),staff.getShopId(),shopInfoBean.getShopName(),staff.getJobNumber(),staff.getId(),staff.getName())
@@ -124,6 +124,7 @@ public class StaffChooseDialog extends Dialog{
                             @Override
                             protected void onSuccess(StartWorkBean staffBean) {
                                 Hawk.put("shiftId",staffBean.getShiftId());
+                                Hawk.put("StaffListBean",staff);
                                 Intent intent=new Intent(StaffChooseDialog.this.getContext(),ShiftExchangeActivity.class);
                                 StaffChooseDialog.this.getContext().startActivity(intent);
                                 StaffChooseDialog.this.dismiss();

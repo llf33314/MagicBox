@@ -1,11 +1,18 @@
 package com.gt.magicbox.setting.printersetting;
 
+import android.text.TextUtils;
+
 import com.gprinter.command.EscCommand;
 import com.gprinter.command.LabelCommand;
+import com.gt.magicbox.base.BaseConstant;
+import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.bean.ShopInfoBean;
+import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.orhanobut.hawk.Hawk;
+
+import java.math.BigDecimal;
 
 /**
  * Created by wzb on 2017/8/16 0016.
@@ -100,7 +107,7 @@ public class PrintESCOrTSCUtil {
         return tsc;
     }
 
-    public static EscCommand getPrintEscTest(String orderNo,String money,int type){
+    public static EscCommand getPrintEscTest(String orderNo,String money,int type,String time){
         ShopInfoBean shopInfoBean= Hawk.get("ShopInfoBean");
         EscCommand esc = new EscCommand();
         esc.addPrintAndFeedLines((byte) 1);
@@ -114,8 +121,19 @@ public class PrintESCOrTSCUtil {
         esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
         esc.addText("--------------------------------\n");// 打印文字
         esc.addText("订单号："+orderNo+"\n"); // 打印文字
+        if (!TextUtils.isEmpty(time)){
+            esc.addText("开单时间："+time +"\n");
+
+        }else
         esc.addText("开单时间："+ TimeUtils.getNowString()+"\n");
-        esc.addText("收银员：张震\n");
+        StaffBean.StaffListBean staffListBean=Hawk.get("StaffListBean");
+        if (staffListBean!=null&& !TextUtils.isEmpty(staffListBean.getName())){
+            esc.addText("收银员："+staffListBean.getName()+"\n");
+
+        }else {
+           // esc.addText("收银员：张震\n");
+
+        }
         if (type>=0&&type<=2){
             esc.addText("支付方式："+PAY_TYPE[type]+"\n");
         }else{
@@ -140,7 +158,38 @@ public class PrintESCOrTSCUtil {
         esc.addPrintAndFeedLines((byte)5);
         return esc;
     }
+    public static EscCommand getPrintMemberRecharge(MemberCardBean memberCardBean, String orderNo, String money, int type,String balance){
+        ShopInfoBean shopInfoBean= Hawk.get("ShopInfoBean");
 
+        EscCommand esc = new EscCommand();
+        esc.addPrintAndFeedLines((byte) 1);
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
+        esc.addText(shopInfoBean.getShopName()+"\n"); // 打印文字
+        esc.addPrintAndLineFeed();
+
+        // 打印文字 *//*
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印左对齐
+        esc.addText("会员卡充值\n");// 打印文字
+        esc.addText("订单号："+orderNo+"\n\n\n"); // 打印文字
+
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
+        esc.addText("会员昵称："+ memberCardBean.nickName+"\n");
+        esc.addText("会员卡号："+ memberCardBean.cardNo+"\n\n");
+        esc.addText("--------------------------------\n\n");
+
+        esc.addText("充值金额："+ money+"元"+"\n");
+        esc.addText("充值方式："+ BaseConstant.PAY_TYPE[type]+"\n");
+        esc.addText("充值时间："+ TimeUtils.getNowString()+"\n\n");
+        esc.addText("");
+        esc.addText("--------------------------------\n\n");
+        esc.addText("当前卡内余额：          "+balance+"元\n\n\n");
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
+        esc.addText("技术支持·多粉 400-889-4522");
+        esc.addPrintAndFeedLines((byte)5);
+        return esc;
+    }
     /**
      * 交班
      * @return
@@ -172,7 +221,7 @@ public class PrintESCOrTSCUtil {
         esc.addText("--------------------------------\n\n");
         esc.addText("当班人签名：\n\n");
         esc.addText("接班人签名：\n\n");
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印左对齐
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
         esc.addText("技术支持·多粉 400-889-4522");
         esc.addPrintAndFeedLines((byte)5);
         return esc;

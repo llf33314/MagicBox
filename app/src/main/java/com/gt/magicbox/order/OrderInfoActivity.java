@@ -46,6 +46,7 @@ public class OrderInfoActivity extends BaseActivity {
     private double money;
     private int payType;
     private String orderNo="";
+    private long time;
     List<KeyValueStringBean> lists= new ArrayList<KeyValueStringBean>();
     private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
     MoreFunctionDialog dialog;
@@ -62,7 +63,7 @@ public class OrderInfoActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.printPaper:
-                PrinterConnectService.printEsc0829(orderNo,money+"元", payType);
+                PrinterConnectService.printEsc0829(orderNo,money+"元", payType,TimeUtils.millis2String(time,DEFAULT_FORMAT));
 
                 break;
             case R.id.refund:
@@ -75,7 +76,7 @@ public class OrderInfoActivity extends BaseActivity {
         Intent intent=this.getIntent();
         if (intent!=null){
             orderNo=intent.getStringExtra("orderNo");
-            long time=intent.getLongExtra("time",0);
+            time=intent.getLongExtra("time",0);
             payType=intent.getIntExtra("payType",0);
             money=intent.getDoubleExtra("money",0);
             if (!TextUtils.isEmpty(orderNo))

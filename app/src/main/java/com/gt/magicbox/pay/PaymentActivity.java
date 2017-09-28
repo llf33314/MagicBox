@@ -176,7 +176,7 @@ public class PaymentActivity extends BaseActivity {
 
                 });
     }
-    private void memberRecharge(int payType) {
+    private void memberRecharge(final int payType) {
         Log.d(TAG,"memberRecharge type="+type);
 
         if (memberCardBean != null && type == TYPE_MEMBER_CALC) {
@@ -191,6 +191,9 @@ public class PaymentActivity extends BaseActivity {
                             Log.d(TAG, "memberRecharge onSuccess " );
                             Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
                             intent.putExtra("rechargeMoney",orderMoney);
+                            intent.putExtra("MemberCardBean",memberCardBean);
+                            intent.putExtra("orderNo","123");
+                            intent.putExtra("payType",payType);
                             intent.putExtra("balance",memberCardBean.money+orderMoney);
                             startActivity(intent);
                         }

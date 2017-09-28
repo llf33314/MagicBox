@@ -479,6 +479,9 @@ public class QRCodePayActivity extends BaseActivity {
                             Log.d(TAG, "memberRecharge onSuccess " );
                             Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
                             intent.putExtra("rechargeMoney",money);
+                            intent.putExtra("MemberCardBean",memberCardBean);
+                            intent.putExtra("orderNo","123");
+                            intent.putExtra("payType",payMode);
                             intent.putExtra("balance",memberCardBean.money+money);
                             startActivity(intent);
                         }
