@@ -132,8 +132,9 @@ public class MainActivity extends BaseActivity {
                                                     .setCancelText("确认")
                                                     .show();
                                         }else{
-
-                                            if ((Integer)Hawk.get("shiftId")!=0){
+                                            Integer shiftId=Hawk.get("shiftId");
+                                            if (shiftId==null)shiftId=0;
+                                            if (shiftId!=0){
                                                 intent = new Intent(MainActivity.this, ShiftExchangeActivity.class);
                                             }else {
                                                 intent = new Intent(MainActivity.this, ExchangeWorkActivity.class);

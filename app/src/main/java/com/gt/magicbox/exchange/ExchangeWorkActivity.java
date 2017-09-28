@@ -41,7 +41,8 @@ public class ExchangeWorkActivity extends BaseActivity {
     @OnClick(R.id.exchange_change)
     public void onViewClicked() {
 
-        if ((Integer)Hawk.get("shiftId")!=0){//已经选择过员工
+        if (Hawk.get("shiftId")!=null&&
+                (Integer)Hawk.get("shiftId")!=0){//已经选择过员工
             Intent intent=new Intent(this,ShiftExchangeActivity.class);
             this.startActivity(intent);
         }else{
