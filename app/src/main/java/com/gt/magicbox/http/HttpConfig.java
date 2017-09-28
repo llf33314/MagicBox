@@ -11,7 +11,7 @@ public class HttpConfig {
 
     //正式
   //  public static final String BASE_URL="http://duofriend.com/magicBoxMobile/";
-    public static final String BASE_URL="http://yj.deeptel.com.cn/";
+    public static final String BASE_URL="https://yj.deeptel.com.cn/";
 
     public static final String APP_ID="MagicBox";
 

@@ -126,6 +126,7 @@ public class StaffChooseDialog extends Dialog{
                                 Hawk.put("shiftId",staffBean.getShiftId());
                                 Intent intent=new Intent(StaffChooseDialog.this.getContext(),ShiftExchangeActivity.class);
                                 StaffChooseDialog.this.getContext().startActivity(intent);
+                                StaffChooseDialog.this.dismiss();
                             }
                         });
 

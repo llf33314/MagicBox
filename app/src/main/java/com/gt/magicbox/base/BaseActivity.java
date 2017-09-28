@@ -109,6 +109,10 @@ public class BaseActivity extends RxAppCompatActivity {
         mToolbar.setVisibility(View.GONE);
     }
 
+    public void setBackOnClickListener(View.OnClickListener l){
+        toolBarBack.setOnClickListener(l);
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.i("keyCode", "BaseActivity keyCode --> " + keyCode);

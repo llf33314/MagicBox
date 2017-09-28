@@ -2,6 +2,7 @@ package com.gt.magicbox.setting.printersetting;
 
 import com.gprinter.command.EscCommand;
 import com.gprinter.command.LabelCommand;
+import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.bean.ShopInfoBean;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.orhanobut.hawk.Hawk;
@@ -144,7 +145,7 @@ public class PrintESCOrTSCUtil {
      * 交班
      * @return
      */
-    public static EscCommand getExChangeESC(){
+    public static EscCommand getExChangeESC(ShiftRecordsAllBean.ShiftRecordsBean shiftBean){
         EscCommand esc = new EscCommand();
         esc.addPrintAndFeedLines((byte) 1);
         esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
@@ -156,21 +157,21 @@ public class PrintESCOrTSCUtil {
         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
         esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
 
-        esc.addText("门店："+"门店"+"\n");
-        esc.addText("设备号："+"门店"+"\n");
-        esc.addText("当班人："+"门店"+"\n");
+        esc.addText("门店："+shiftBean.getShopName()+"\n");
+        esc.addText("设备号："+shiftBean.getEqId()+"\n");
+        esc.addText("当班人："+shiftBean.getStaffName()+"\n");
         esc.addText("…………………………………………\n\n");
-        esc.addText("接班时间："+"门店"+"\n");
-        esc.addText("交班时间："+"门店"+"\n");
+        esc.addText("上班时间："+shiftBean.getStartTime()+"\n");
+        esc.addText("下班时间："+TimeUtils.getNowString()+"\n");
         esc.addText("…………………………………………\n\n");
-        esc.addText("实际支付订单数："+"门店"+"\n");
-        esc.addText("支付订单总额："+"门店"+"\n");
-        esc.addText("实际应收金额："+"门店"+"\n");
-        esc.addText("微信支付："+"门店"+"\n");
-        esc.addText("支付宝："+"门店"+"\n");
-        esc.addText("现金支付："+"门店"+"\n");
+        esc.addText("实际支付订单数："+shiftBean.getOrderInNum()+"\n");
+        esc.addText("实际应收金额："+shiftBean.getMoney()+"\n");
+        esc.addText("微信支付："+shiftBean.getWechatMoney()+"\n");
+        esc.addText("支付宝："+shiftBean.getAlipayMoney()+"\n");
+        esc.addText("现金支付："+shiftBean.getCashMoney()+"\n");
         esc.addText("--------------------------------\n\n");
-        esc.addText("当班人签名："+"        接班人签名："+"\n\n\n");
+        esc.addText("当班人签名：\n\n");
+        esc.addText("接班人签名：\n\n");
         esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印左对齐
         esc.addText("技术支持·多粉 400-889-4522");
         esc.addPrintAndFeedLines((byte)5);

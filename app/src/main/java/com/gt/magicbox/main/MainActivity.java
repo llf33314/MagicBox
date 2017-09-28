@@ -132,14 +132,17 @@ public class MainActivity extends BaseActivity {
                                                     .setCancelText("确认")
                                                     .show();
                                         }else{
-                                            intent = new Intent(MainActivity.this, ExchangeWorkActivity.class);
-                                            intent.putExtra(STAFF,staffBean);
+
+                                            if ((Integer)Hawk.get("shiftId")!=0){
+                                                intent = new Intent(MainActivity.this, ShiftExchangeActivity.class);
+                                            }else {
+                                                intent = new Intent(MainActivity.this, ExchangeWorkActivity.class);
+                                                intent.putExtra(STAFF,staffBean);
+                                            }
                                             startActivity(intent);
                                         }
                                     }
                                 });
-
-
                         break;
                     case 0:
                         intent = new Intent(MainActivity.this, PaymentActivity.class);

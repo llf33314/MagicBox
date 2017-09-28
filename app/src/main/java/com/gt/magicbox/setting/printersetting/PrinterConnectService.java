@@ -26,6 +26,7 @@ import com.gprinter.io.PortParameters;
 import com.gprinter.service.GpPrintService;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.MyApplication;
+import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.setting.printersetting.bluetooth.BluetoothUtil;
 import com.gt.magicbox.setting.printersetting.bluetooth.OpenPrinterPortMsg;
@@ -384,7 +385,7 @@ public class PrinterConnectService extends Service {
      * 打印交班表
      * @return
      */
-    public static int printEscExchange(){
+    public static int printEscExchange(ShiftRecordsAllBean.ShiftRecordsBean shiftBean){
         if (mGpService==null){
             showHintNotConnectDialog();
             return PRINTER_NOT_INTI;
@@ -407,7 +408,7 @@ public class PrinterConnectService extends Service {
             //这里很关键   打印机类型是ESC 还是TSC 暂时测试这么用
             int printType = mGpService.getPrinterCommandType(mPrinterIndex);
             if (printType == GpCom.ESC_COMMAND) {
-                EscCommand esc=PrintESCOrTSCUtil.getExChangeESC();
+                EscCommand esc=PrintESCOrTSCUtil.getExChangeESC(shiftBean);
                 return  sendEscDataToPrinter(esc);
             }else{
                 ToastUtil.getInstance().showToast("请连接正确类型打印机");

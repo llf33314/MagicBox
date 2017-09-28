@@ -6,13 +6,12 @@ import com.gt.magicbox.bean.CardTypeInfoBean;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.LoginBean;
-import com.gt.magicbox.bean.MemberBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.MemberSettlementBean;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
-import com.gt.magicbox.bean.ShiftRecordsBean;
+import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.bean.ShopInfoBean;
 import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.bean.StartWorkBean;
@@ -23,8 +22,6 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -141,7 +138,7 @@ public interface ApiService {
             @Field("staffName") String staffName);
 
     @POST(HttpConfig.GET_NOW_SR)
-    Observable<BaseResponse<ShiftRecordsBean>>getNowSR( @Query("eqId") int eqId, @Query("shiftId") int shiftId);
+    Observable<BaseResponse<ShiftRecordsAllBean>>getNowSR(@Query("shiftId") int shiftId);
 
 
 
