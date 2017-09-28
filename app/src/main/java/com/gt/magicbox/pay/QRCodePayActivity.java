@@ -33,11 +33,10 @@ import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
-import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.http.socket.SocketIOManager;
-import com.gt.magicbox.member.MemberRechargeResultActivity;
+import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -478,7 +477,7 @@ public class QRCodePayActivity extends BaseActivity {
                         @Override
                         public void onSuccess(BaseResponse data) {
                             Log.d(TAG, "memberRecharge onSuccess " );
-                            Intent intent=new Intent(getApplicationContext(), MemberRechargeResultActivity.class);
+                            Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
                             intent.putExtra("rechargeMoney",money);
                             intent.putExtra("balance",memberCardBean.money+money);
                             startActivity(intent);

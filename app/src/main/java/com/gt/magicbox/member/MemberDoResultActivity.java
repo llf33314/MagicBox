@@ -2,6 +2,7 @@ package com.gt.magicbox.member;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -23,7 +24,15 @@ import butterknife.OnClick;
  * Buddha bless, never BUG!
  */
 
-public class MemberRechargeResultActivity extends BaseActivity {
+public class MemberDoResultActivity extends BaseActivity {
+    @BindView(R.id.customer_success_tip)
+    TextView customerSuccessTip;
+    @BindView(R.id.cashier_success_tip)
+    TextView cashierSuccessTip;
+    private int type = 0;
+    public static final int TYPE_MEMBER_RECHARE = 0;
+    public static final int TYPE_MEMBER_PAY = 1;
+
     @BindView(R.id.customer_balance)
     TextView customerBalance;
     @BindView(R.id.custom_recharge)
@@ -53,6 +62,7 @@ public class MemberRechargeResultActivity extends BaseActivity {
     private void initData() {
 
         if (this.getIntent() != null) {
+            type=getIntent().getIntExtra("type",0);
             rechargeMoney = getIntent().getDoubleExtra("rechargeMoney", 0);
             balance = getIntent().getDoubleExtra("balance", 0);
             BigDecimal bg = new BigDecimal(rechargeMoney);
@@ -62,13 +72,21 @@ public class MemberRechargeResultActivity extends BaseActivity {
 
         }
     }
-    private void initView(){
-        customerBalance.setText("当前账户余额:"+balance+"元");
-        cashierBalance.setText("当前账户余额:"+balance+"元");
-        cashierRecharge.setText("充值金额:"+rechargeMoney+"元");
-        customRecharge.setText("充值金额:"+rechargeMoney+"元");
+
+    private void initView() {
+        customerBalance.setText("当前账户余额:" + balance + "元");
+        cashierBalance.setText("当前账户余额:" + balance + "元");
+        cashierRecharge.setText("充值金额:" + rechargeMoney + "元");
+        customRecharge.setText("充值金额:" + rechargeMoney + "元");
+        if (type == TYPE_MEMBER_PAY) {
+            cashierRecharge.setVisibility(View.GONE);
+            customRecharge.setVisibility(View.GONE);
+            customerSuccessTip.setText("支付成功");
+            cashierSuccessTip.setText("支付成功");
+        }
 
     }
+
     @OnClick(R.id.confirmButton)
     public void onViewClicked() {
         finish();

@@ -1,7 +1,6 @@
 package com.gt.magicbox.pay;
 
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -10,9 +9,8 @@ import android.widget.RelativeLayout;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
-import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberCardBean;
-import com.gt.magicbox.bean.MemberSettlementBean;
+import com.gt.magicbox.bean.MemberCountMoneyBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -20,17 +18,13 @@ import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MoreFunctionDialog;
-import com.gt.magicbox.member.AddMemberActivity;
-import com.gt.magicbox.member.MemberRechargeResultActivity;
+import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import retrofit2.http.Query;
 
 /**
  * Description:
@@ -67,7 +61,8 @@ public class ChosePayModeActivity extends BaseActivity {
             customerType = this.getIntent().getIntExtra("customerType", 0);
             memberCardBean= (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
         }
-        if (customerType == TYPE_MEMBER_PAY) {
+        if (customerType == TYPE_MEMBER_PAY&&
+                memberCardBean!=null&&memberCardBean.ctName.equals("储值卡")) {
             payMember.setVisibility(View.VISIBLE);
         }
     }
@@ -155,12 +150,14 @@ public class ChosePayModeActivity extends BaseActivity {
             HttpCall.getApiService()
                     .postMemberSettlement(memberCardBean.memberId, money,
                             0, 0, 0, 0)
-                    .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
-                    .compose(new DialogTransformer().<BaseResponse>transformer())
-                    .subscribe(new BaseObserver<BaseResponse>() {
+                    .compose(ResultTransformer.<MemberCountMoneyBean>transformer())//线程处理 预处理
+                    .compose(new DialogTransformer().<MemberCountMoneyBean>transformer())
+                    .subscribe(new BaseObserver<MemberCountMoneyBean>() {
                         @Override
-                        public void onSuccess(BaseResponse data) {
-                            Log.d(TAG, "postMemberSettlement onSuccess data=" + data.getData().toString());
+                        public void onSuccess(MemberCountMoneyBean data) {
+                            Log.d(TAG, "postMemberSettlement onSuccess data=" );
+                            if (data!=null)
+                            memberPay(data.getBalanceMoney(),data.getBalanceMoney(),data.getTotalMoney(),5);
                         }
 
                         @Override
@@ -175,6 +172,40 @@ public class ChosePayModeActivity extends BaseActivity {
                             super.onFailure(code, msg);
                         }
                     });
+    }
+
+    private void memberPay(double discountMoney, final double realMoney , double originMoney, int payType){
+        String orderCode="MB"+(Integer) Hawk.get("shopId")+System.currentTimeMillis();
+        HttpCall.getApiService()
+                .memberPay(discountMoney,memberCardBean.memberId, orderCode, realMoney,payType
+                        ,(Integer) Hawk.get("shopId"),originMoney,113)
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .compose(new DialogTransformer().<BaseResponse>transformer())
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse data) {
+                        Log.d(TAG, "memberPay onSuccess " );
+                        Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
+                        intent.putExtra("type",MemberDoResultActivity.TYPE_MEMBER_PAY);
+                        intent.putExtra("balance",memberCardBean.money-realMoney);
+
+                        startActivity(intent);
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "memberPay onError e" + e.getMessage());
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        Log.d(TAG, "memberPay" +
+                                " onFailure msg=" + msg);
+                        super.onFailure(code, msg);
+                    }
+                });
     }
 
 }

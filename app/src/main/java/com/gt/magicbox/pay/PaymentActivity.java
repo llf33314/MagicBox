@@ -6,10 +6,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
@@ -21,13 +18,11 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
-import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.member.MemberRechargeActivity;
-import com.gt.magicbox.member.MemberRechargeResultActivity;
+import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
-import com.gt.magicbox.webview.WebViewActivity;
 import com.orhanobut.hawk.Hawk;
 
 /**
@@ -145,6 +140,7 @@ public class PaymentActivity extends BaseActivity {
         HttpCall.getApiService()
                 .findMemberCardByPhone((Integer) Hawk.get("busId"), phone)
                 .compose(ResultTransformer.<MemberCardBean>transformer())//线程处理 预处理
+                .compose(new DialogTransformer().<MemberCardBean>transformer())
                 .subscribe(new BaseObserver<MemberCardBean>() {
 
                     @Override
@@ -193,7 +189,7 @@ public class PaymentActivity extends BaseActivity {
                         @Override
                         public void onSuccess(BaseResponse data) {
                             Log.d(TAG, "memberRecharge onSuccess " );
-                            Intent intent=new Intent(getApplicationContext(), MemberRechargeResultActivity.class);
+                            Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
                             intent.putExtra("rechargeMoney",orderMoney);
                             intent.putExtra("balance",memberCardBean.money+orderMoney);
                             startActivity(intent);

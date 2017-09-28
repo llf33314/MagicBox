@@ -106,7 +106,7 @@
             android:name=".member.MemberRechargeActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name=".member.MemberRechargeResultActivity"
+            android:name=".member.MemberDoResultActivity"
             android:launchMode="singleTask" />
         <activity
             android:name=".setting.VolumeSettingActivity" />

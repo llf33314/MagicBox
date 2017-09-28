@@ -7,6 +7,7 @@ import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.bean.MemberCountMoneyBean;
 import com.gt.magicbox.bean.MemberSettlementBean;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
@@ -111,7 +112,7 @@ public interface ApiService {
             @Query("phone") String phone, @Query("shopId") int shopId);
 
     @POST(HttpConfig.MEMBER_SETTLEMENT)
-    Observable<BaseResponse> postMemberSettlement(
+    Observable<BaseResponse<MemberCountMoneyBean>> postMemberSettlement(
             @Query("memberId") int memberId,@Query("totalMoney") double totalMoney,
             @Query("useCoupon") int useCoupon,@Query("useFenbi") int useFenbi,
             @Query("userJifen") int userJifen,@Query("userLeague") int userLeague);
@@ -140,6 +141,14 @@ public interface ApiService {
     @POST(HttpConfig.GET_NOW_SR)
     Observable<BaseResponse<ShiftRecordsAllBean>>getNowSR(@Query("shiftId") int shiftId);
 
-
+    @POST(HttpConfig.MEMBER_PAY)
+    Observable<BaseResponse> memberPay(@Query("discountMoney") double discountMoney,
+                                       @Query("memberId") int memberId,
+                                       @Query("orderCode") String orderCode,
+                                       @Query("pay") double pay,
+                                       @Query("payType") int payType,
+                                       @Query("storeId") int storeId,
+                                       @Query("totalMoney") double totalMoney,
+                                       @Query("ucType") int ucType);
 
 }

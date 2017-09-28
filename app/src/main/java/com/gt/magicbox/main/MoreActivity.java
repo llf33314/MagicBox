@@ -29,12 +29,12 @@ import java.util.ArrayList;
  */
 
 public class MoreActivity extends BaseActivity {
-    private String[] itemNameArray = {"打印设置", "网络设置", "设备管理","版本更新","系统设置","退出"};
+    private String[] itemNameArray = {"打印设置", "网络设置", "设备管理","版本更新","退出"};
     private Integer[] imageResArray = {R.drawable.more_printer_setting, R.drawable.more_network_setting,
-            R.drawable.more_devices_setting,R.drawable.icon_update, R.drawable.more_network_setting,
+            R.drawable.more_devices_setting,R.drawable.icon_update,
             R.drawable.more_devices_setting};
-    private int[] colorNormalArray = {0xff4db3ff, 0xff47d09c, 0xffff9a54,0xfffdd451,0xff47d09c,0xff4db3ff};
-    private int[] colorFocusedArray = {0x994db3ff, 0x9947d09c, 0x99ff9a54,0x99fdd451,0x9947d09c,0x994db3ff};
+    private int[] colorNormalArray = {0xff4db3ff, 0xff47d09c, 0xffff9a54,0xfffdd451,0xff4db3ff};
+    private int[] colorFocusedArray = {0x994db3ff, 0x9947d09c, 0x99ff9a54,0x99fdd451,0x994db3ff};
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
@@ -73,12 +73,10 @@ public class MoreActivity extends BaseActivity {
                     case 3:
                         checkUpdate();
                         break;
+//                    case 4:
+//                        intent=new Intent(Settings.ACTION_SETTINGS);
+//                        startActivity(intent);
                     case 4:
-                        intent=new Intent(Settings.ACTION_SETTINGS);
-                        startActivity(intent);
-
-                        break;
-                    case 5:
                         Hawk.delete("busId");
                         AppManager.getInstance().exitApp();
                         intent=new Intent(MoreActivity.this,LoadingActivity.class);

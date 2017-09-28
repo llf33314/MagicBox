@@ -26,6 +26,7 @@ import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.http.socket.SocketIOManager;
@@ -45,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -335,6 +337,7 @@ public class AddMemberActivity extends BaseActivity {
         HttpCall.getApiService()
                 .findMemberCardByPhone((Integer) Hawk.get("busId"), phone)
                 .compose(ResultTransformer.<MemberCardBean>transformer())//线程处理 预处理
+                .compose(new DialogTransformer().<MemberCardBean>transformer())
                 .subscribe(new BaseObserver<MemberCardBean>() {
 
                     @Override
@@ -451,7 +454,7 @@ public class AddMemberActivity extends BaseActivity {
                 if (!TextUtils.isEmpty(phone)) {
                     if (phone.length() == 11) {
                         if (canSendCode) {
-                            startCountDownTime(10);
+                            startCountDownTime(60);
                             smsCode = createIdentifyingCode();
                             senSMS("您正在办理会员业务，验证码:" + smsCode, phone);
                         }
