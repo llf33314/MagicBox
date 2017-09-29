@@ -58,7 +58,7 @@ public class ShiftExchangeActivity extends BaseActivity {
         });
 
         HttpCall.getApiService()
-                .getNowSR((Integer)Hawk.get("shiftId"))
+                .getNowSR(Hawk.get("shiftId",0))
                 .compose(ResultTransformer.<ShiftRecordsAllBean>transformer())
                 .compose(new DialogTransformer().<ShiftRecordsAllBean>transformer())
                 .subscribe(new BaseObserver<ShiftRecordsAllBean>() {
@@ -103,7 +103,6 @@ public class ShiftExchangeActivity extends BaseActivity {
             case R.id.staff_dialog_out_work:
                 //打印下班单 并且清空shithId
                 Hawk.put("shiftId",0);
-                Hawk.put("StaffListBean",null);
 
                 if (shiftRecordsBean!=null){
                     PrinterConnectService.printEscExchange(shiftRecordsBean);
