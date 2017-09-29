@@ -40,6 +40,7 @@ public class HttpRequestDialog extends Dialog {
 
     private HttpRequestDialog(@NonNull Context context, @StyleRes int themeResId) {
         super(context, themeResId);
+        this.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
     }
 
     @Override
