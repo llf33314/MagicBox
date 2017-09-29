@@ -1,11 +1,9 @@
 package com.gt.magicbox.http.rxjava.observable;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-
-
-import com.gt.magicbox.http.HttpRequestDialog;
+import com.bigkoo.svprogresshud.SVProgressHUD;
+import com.bigkoo.svprogresshud.listener.OnDismissListener;
+import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.widget.LoadingProgressDialog;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -31,19 +29,20 @@ public class DialogTransformer {
 
     public <T> ObservableTransformer<T, T> transformer() {
         return new ObservableTransformer<T, T>() {
-            private HttpRequestDialog httpRequestDialog;
+            private LoadingProgressDialog httpRequestDialog;
             @Override
             public ObservableSource<T> apply(final Observable<T> upstream) {
 
                 return  upstream.doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(@NonNull final Disposable disposable) throws Exception {
-                        httpRequestDialog = new HttpRequestDialog();
+
+                        httpRequestDialog = new LoadingProgressDialog(AppManager.getInstance().currentActivity());
                         httpRequestDialog.show();
                         if (cancelable) {
-                            httpRequestDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            httpRequestDialog.setOnDismissListener(new OnDismissListener() {
                                 @Override
-                                public void onCancel(DialogInterface dialog) {
+                                public void onDismiss(SVProgressHUD svProgressHUD) {
                                     disposable.dispose();
                                 }
                             });
@@ -53,7 +52,7 @@ public class DialogTransformer {
                     @Override
                     public void run() throws Exception {
                         if (httpRequestDialog.isShowing()) {
-                            httpRequestDialog.cancel();
+                            httpRequestDialog.dismiss();
                         }
                     }
                 });

@@ -4,6 +4,7 @@
     android:layout_width="@dimen/dp_150"
     android:layout_height="@dimen/dp_150"
     android:gravity="center"
+    android:background="@drawable/loading_dialog_bg"
     >
 
     <ProgressBar

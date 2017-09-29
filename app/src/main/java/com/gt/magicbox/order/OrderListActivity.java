@@ -29,6 +29,7 @@ import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuListView;
 import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     private List<OrderListResultBean.OrderItemBean> orderItemBeanList = new ArrayList<>();
     private int page = 1;
     private int updatePage;
-    HttpRequestDialog dialog;
+    LoadingProgressDialog dialog;
     private int status = 0;
 
     @Override
@@ -64,7 +65,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
 
     private void initView() {
         BaseConstant.isCanSwipe=true;
-        dialog = new HttpRequestDialog();
+        dialog = new LoadingProgressDialog(OrderListActivity.this);
         dialog.show();
         pullToRefreshSwipeListView.setPullLoadEnabled(true);
         pullToRefreshSwipeListView.setScrollLoadEnabled(true);
@@ -231,7 +232,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 status = 1;
                 orderItemBeanList.clear();
                 orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
-                dialog = new HttpRequestDialog();
+                dialog = new LoadingProgressDialog(OrderListActivity.this);
                 dialog.show();
                 orderListAdapter.setData(orderItemBeanList);
                 BaseConstant.isCanSwipe = false;
@@ -243,7 +244,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 page = 1;
                 status = 0;
                 orderItemBeanList.clear();
-                dialog = new HttpRequestDialog();
+                dialog = new LoadingProgressDialog(OrderListActivity.this);
                 dialog.show();
                 orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
                 BaseConstant.isCanSwipe = true;

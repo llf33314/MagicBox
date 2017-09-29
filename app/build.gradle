@@ -43,7 +43,7 @@ dependencies {
 
     compile 'com.github.zcweng:switch-button:0.0.3@aar'
     compile 'com.wx.wheelview:wheelview:1.3.3'
-
+    compile 'com.bigkoo:svprogresshud:1.0.6'
     compile 'com.orhanobut:hawk:2.0.1'
     compile 'com.isupatches:wisefy:1.0.10'
     compile 'com.android.support:recyclerview-v7:23.2.1'

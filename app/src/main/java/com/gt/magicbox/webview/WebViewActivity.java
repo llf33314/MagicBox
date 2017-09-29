@@ -65,7 +65,7 @@ public class WebViewActivity extends BaseActivity{
     private Camera mCamera;
   //  private CameraPreview mPreview;
     private Handler autoFocusHandler;
- //   private CameraManager mCameraManager;
+ //   private ZBarCameraManager mCameraManager;
     private FrameLayout scanPreview;
     private Button scanRestart;
     private RelativeLayout scanContainer;
@@ -388,7 +388,7 @@ public class WebViewActivity extends BaseActivity{
 //        scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
 //
 //        autoFocusHandler = new Handler();
-//        mCameraManager = new CameraManager(this);
+//        mCameraManager = new ZBarCameraManager(this);
 //        try {
 //            mCameraManager.openDriver();
 //        } catch (IOException e) {

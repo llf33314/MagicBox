@@ -33,6 +33,7 @@ import com.gt.magicbox.http.socket.SocketIOManager;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.gt.magicbox.widget.WheelDialog;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
@@ -72,7 +73,7 @@ public class AddMemberActivity extends BaseActivity {
     TextView textTip;
     @BindView(R.id.followLayout)
     RelativeLayout followLayout;
-    HttpRequestDialog dialog;
+    private LoadingProgressDialog dialog;
     ArrayList<String> listCardName = new ArrayList<String>();
     @BindView(R.id.memberCardType)
     TextView memberCardType;
@@ -257,7 +258,6 @@ public class AddMemberActivity extends BaseActivity {
                         Log.d(TAG, "receiveMemberCard onFailure");
                         showResultDialog(false);
 
-                        super.onFailure(code, msg);
                     }
                 });
     }
@@ -369,7 +369,7 @@ public class AddMemberActivity extends BaseActivity {
     }
 
     private void initView() {
-        dialog = new HttpRequestDialog();
+        dialog = new LoadingProgressDialog(AddMemberActivity.this );
         dialog.show();
         switchButton.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
             @Override

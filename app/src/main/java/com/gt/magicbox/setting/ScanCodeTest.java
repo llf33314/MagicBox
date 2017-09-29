@@ -27,7 +27,7 @@ public class ScanCodeTest  extends BaseActivity{
 //    private Camera mCamera;
 //    private CameraPreview mPreview;
 //    private Handler autoFocusHandler;
-//    private CameraManager mCameraManager;
+//    private ZBarCameraManager mCameraManager;
 //    private FrameLayout scanPreview;
 //    private Button scanRestart;
 //    private RelativeLayout scanContainer;
@@ -55,7 +55,7 @@ public class ScanCodeTest  extends BaseActivity{
 //        scanPreview = (FrameLayout) findViewById(R.id.capture_preview);
 //
 //        autoFocusHandler = new Handler();
-//        mCameraManager = new CameraManager(this);
+//        mCameraManager = new ZBarCameraManager(this);
 //        try {
 //            mCameraManager.openDriver();
 //        } catch (IOException e) {

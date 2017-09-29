@@ -41,6 +41,7 @@ import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
@@ -91,14 +92,13 @@ public class QRCodePayActivity extends BaseActivity {
     public final static int TYPE_CREATED_PAY = 2;//已生成的订单并且未支付
     public final static int TYPE_MEMBER_RECHARGE =3;//会员充值使用支付宝或者微信支付
 
-    private HttpRequestDialog dialog;
+    private LoadingProgressDialog dialog;
     private SocketIOManager socketIOManager;
 
     private Camera mCamera;
     private CameraPreview mPreview;
     private Handler autoFocusHandler;
     private CameraManager mCameraManager;
-    private boolean barcodeScanned = false;
     private boolean previewing = true;
     private ImageScanner mImageScanner = null;
     private Rect fillRect = null;
@@ -116,18 +116,7 @@ public class QRCodePayActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_code_pay);
         ButterKnife.bind(this);
-        dialog = new HttpRequestDialog();
-        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    AppManager.getInstance().finishActivity(QRCodePayActivity.class);
-                    return false;
-
-                }
-                return true;
-            }
-        });
+        dialog = new LoadingProgressDialog(QRCodePayActivity.this);
         dialog.show();
         init();
         payResultSocket();
@@ -284,7 +273,6 @@ public class QRCodePayActivity extends BaseActivity {
                     public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
                         imageView.setImageBitmap(bitmap);
                         initCameraViews();
-                        addEvents();
                         dialog.dismiss();
                     }
 
@@ -380,15 +368,6 @@ public class QRCodePayActivity extends BaseActivity {
         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
     }
 
-    private void addEvents() {
-        if (barcodeScanned) {
-            barcodeScanned = false;
-            mCamera.setPreviewCallback(previewCb);
-            mCamera.startPreview();
-            previewing = true;
-            mCamera.autoFocus(autoFocusCB);
-        }
-    }
 
     private void initCameraViews() {
         mImageScanner = new ImageScanner();

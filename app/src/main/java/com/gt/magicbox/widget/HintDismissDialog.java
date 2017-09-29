@@ -37,12 +37,9 @@ public class HintDismissDialog extends Dialog {
 
     public boolean isShowBtnOk=false;
     public boolean isShowBtnCancel=false;
-
     private String okText;
     private String cancelText;
-
     private String msg="";
-
     private HintDismissDialog(@NonNull Context context) {
         super(context);
     }
@@ -88,16 +85,14 @@ public class HintDismissDialog extends Dialog {
             case R.id.dialog_dismiss_ok:
                 if (onOkClickListener!=null){
                     onOkClickListener.onClick(v);
-                }else{
-                    this.dismiss();
                 }
+                this.dismiss();
                 break;
             case R.id.dialog_dismiss_cancel:
                 if (onCancelClickListener!=null){
                     onCancelClickListener.onClick(v);
-                }else{
-                    this.dismiss();
                 }
+                this.dismiss();
                 break;
         }
 
@@ -121,10 +116,10 @@ public class HintDismissDialog extends Dialog {
         }
         return this;
     }
-
     public HintDismissDialog setOkText(String text){
         okText=text;
         if (btnOk!=null){
+            btnOk.setVisibility(View.VISIBLE);
             btnOk.setText(text);
         }
         return this;
@@ -132,8 +127,17 @@ public class HintDismissDialog extends Dialog {
     public HintDismissDialog setCancelText(String text){
         cancelText=text;
         if (btnCancel!=null){
+            btnCancel.setVisibility(View.VISIBLE);
             btnCancel.setText(text);
         }
+        return this;
+    }
+    public HintDismissDialog setDialogCanceledOnTouchOutside(Boolean canceledOnTouchOutside){
+        setCanceledOnTouchOutside(canceledOnTouchOutside);
+        return this;
+    }
+    public HintDismissDialog setDialogOnDismissListener(OnDismissListener dialogOnDismissListener){
+        setOnDismissListener(dialogOnDismissListener);
         return this;
     }
 }

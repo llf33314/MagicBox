@@ -40,6 +40,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private Button member_pay;
     private Button fit_pay;
 
+    private OnInputListener onInputListener;
     private TextView showNumber;
     private StringBuffer numberString = new StringBuffer();
     private OnKeyboardDoListener onKeyboardDoListener;
@@ -115,6 +116,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
+        if (onInputListener!=null)onInputListener.onInput();
         switch (view.getId()) {
             case R.id.keyboard_clear:
                 clearAll();
@@ -136,6 +138,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        if (onInputListener!=null)onInputListener.onInput();
         if (numberString.length() <maxLength) {
             if (position <= 8) {
                 if (numberString.toString().equals("0")) {
@@ -299,5 +302,12 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                 }
             }
         }
+    }
+    public interface OnInputListener{
+        void onInput();
+    }
+
+    public void setOnInputListener(OnInputListener onInputListener) {
+        this.onInputListener = onInputListener;
     }
 }
