@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.StaffBean;
@@ -89,6 +90,7 @@ public class MainActivity extends BaseActivity {
         initView();
         //bindOrderService();
         requestUpdate();
+        ToastUtil.getInstance().showToast(""+ Constant.product);
 
         ScreenUtils.setScreenBrightness(MainActivity.this,255);
     }
