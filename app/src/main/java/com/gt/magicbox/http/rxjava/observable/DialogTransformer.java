@@ -4,6 +4,14 @@ import com.bigkoo.svprogresshud.SVProgressHUD;
 import com.bigkoo.svprogresshud.listener.OnDismissListener;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.widget.LoadingProgressDialog;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.os.Handler;
+import android.os.Looper;
+
+
+import com.gt.magicbox.http.HttpRequestDialog;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -27,6 +35,20 @@ public class DialogTransformer {
         this.cancelable = cancelable;
     }
 
+    private LoadingProgressDialog showDialog(final Disposable disposable){
+        LoadingProgressDialog  httpRequestDialog = new LoadingProgressDialog(AppManager.getInstance().currentActivity());
+        if (cancelable) {
+            httpRequestDialog.setOnDismissListener(new OnDismissListener() {
+                @Override
+                public void onDismiss(SVProgressHUD svProgressHUD) {
+                    disposable.dispose();
+                }
+            });
+        }
+        httpRequestDialog.show();
+        return httpRequestDialog;
+    }
+
     public <T> ObservableTransformer<T, T> transformer() {
         return new ObservableTransformer<T, T>() {
             private LoadingProgressDialog httpRequestDialog;
@@ -37,15 +59,16 @@ public class DialogTransformer {
                     @Override
                     public void accept(@NonNull final Disposable disposable) throws Exception {
 
-                        httpRequestDialog = new LoadingProgressDialog(AppManager.getInstance().currentActivity());
-                        httpRequestDialog.show();
-                        if (cancelable) {
-                            httpRequestDialog.setOnDismissListener(new OnDismissListener() {
+                        if (Looper.myLooper()!=Looper.getMainLooper()){
+                            Handler handler=new Handler(Looper.getMainLooper());
+                            handler.post(new Runnable() {
                                 @Override
-                                public void onDismiss(SVProgressHUD svProgressHUD) {
-                                    disposable.dispose();
+                                public void run() {
+                                    httpRequestDialog=showDialog(disposable);
                                 }
                             });
+                        }else{
+                            httpRequestDialog=showDialog(disposable);
                         }
                     }
                 }).doOnTerminate(new Action() {
