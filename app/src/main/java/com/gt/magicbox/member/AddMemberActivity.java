@@ -140,7 +140,7 @@ public class AddMemberActivity extends BaseActivity {
 
     private void getMemberCardType() {
         HttpCall.getApiService()
-                .findMemberCardType((Integer) Hawk.get("busId"))
+                .findMemberCardType( Hawk.get("busId",0))
                 .compose(ResultTransformer.<CardTypeInfoBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CardTypeInfoBean>() {
 
@@ -178,7 +178,7 @@ public class AddMemberActivity extends BaseActivity {
 
     private void senSMS(String content, String mobiles) {
         HttpCall.getApiService()
-                .sendSMS((Integer) Hawk.get("busId"),
+                .sendSMS(Hawk.get("busId",0),
                         content, mobiles)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
@@ -205,8 +205,8 @@ public class AddMemberActivity extends BaseActivity {
 
     private void getWeChatSubscriptionQRCode() {
         HttpCall.getApiService()
-                .getWeChatSubscriptionQRCode((Integer) Hawk.get("busId"),
-                        (Integer) Hawk.get("eqId"))
+                .getWeChatSubscriptionQRCode( Hawk.get("busId",0),
+                      Hawk.get("eqId",0))
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -234,9 +234,9 @@ public class AddMemberActivity extends BaseActivity {
 
     private void receiveMemberCard(int bit, int ctId, int gtId, int memberId, String phone) {
         HttpCall.getApiService()
-                .receiveMemberCard(bit, (Integer) Hawk.get("busId"),
+                .receiveMemberCard(bit,  Hawk.get("busId",0),
                         ctId, gtId, memberId, phone,
-                        (Integer) Hawk.get("shopId"))
+                        Hawk.get("shopId",0))
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -264,9 +264,9 @@ public class AddMemberActivity extends BaseActivity {
 
     private void receiveMemberCardWithoutMemberId(int bit, int ctId, int gtId, String phone) {
         HttpCall.getApiService()
-                .receiveMemberCardWithoutMemberId(bit, (Integer) Hawk.get("busId"),
+                .receiveMemberCardWithoutMemberId(bit, Hawk.get("busId",0),
                         ctId, gtId, phone,
-                        (Integer) Hawk.get("shopId"))
+                        Hawk.get("shopId",0))
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -302,7 +302,7 @@ public class AddMemberActivity extends BaseActivity {
 
     private void getMemberGradeType(int ctId) {
         HttpCall.getApiService()
-                .findMemberGradeType((Integer) Hawk.get("busId"), ctId)
+                .findMemberGradeType(Hawk.get("busId",0), ctId)
                 .compose(ResultTransformer.<CardGradeInfoBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CardGradeInfoBean>() {
 
@@ -335,7 +335,7 @@ public class AddMemberActivity extends BaseActivity {
 
     private void findMemberCardByPhone(final String phone) {
         HttpCall.getApiService()
-                .findMemberCardByPhone((Integer) Hawk.get("busId"), phone)
+                .findMemberCardByPhone(Hawk.get("busId",0), phone)
                 .compose(ResultTransformer.<MemberCardBean>transformer())//线程处理 预处理
                 .compose(new DialogTransformer().<MemberCardBean>transformer())
                 .subscribe(new BaseObserver<MemberCardBean>() {
@@ -533,8 +533,8 @@ public class AddMemberActivity extends BaseActivity {
             @Override
             public void call(Object... args) {
                 String UUID = PhoneUtils.getIMEI();
-                Log.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId"));
-                socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId"));
+                Log.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId",0));
+                socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId",0));
                 Log.d(SocketIOManager.TAG, "call: send android auth over");
             }
         });

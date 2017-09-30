@@ -193,7 +193,7 @@ public class PaymentActivity extends BaseActivity {
             return;
         }
         HttpCall.getApiService()
-                .findMemberCardByPhone((Integer) Hawk.get("busId"), numberString)
+                .findMemberCardByPhone( Hawk.get("busId",0), numberString)
                 .compose(ResultTransformer.<MemberCardBean>transformer())//线程处理 预处理
                 .compose(new DialogTransformer().<MemberCardBean>transformer())
                 .subscribe(new BaseObserver<MemberCardBean>() {
@@ -246,7 +246,7 @@ public class PaymentActivity extends BaseActivity {
         if (memberCardBean != null && type == TYPE_MEMBER_CALC) {
             Log.d(TAG, "memberRecharge");
             HttpCall.getApiService()
-                    .memberRecharge(memberCardBean.memberId, orderMoney, payType, (Integer) Hawk.get("shopId"))
+                    .memberRecharge(memberCardBean.memberId, orderMoney, payType, Hawk.get("shopId",0))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                     .compose(new DialogTransformer().<BaseResponse>transformer())
                     .subscribe(new BaseObserver<BaseResponse>() {

@@ -11,8 +11,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberBean;
 import com.gt.magicbox.bean.ShopInfoBean;
@@ -29,6 +31,7 @@ import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.RegexUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
@@ -110,6 +113,9 @@ public class LoginActivity extends BaseActivity implements ILoginView {
 
                     @Override
                     public void onFailure(int code, String msg) {
+                        if (code==999){
+                            new HintDismissDialog(LoginActivity.this,"账号或密码错误").show();
+                        }
                         super.onFailure(code, msg);
                     }
                 });

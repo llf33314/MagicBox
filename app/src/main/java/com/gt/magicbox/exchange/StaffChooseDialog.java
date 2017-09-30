@@ -117,7 +117,7 @@ public class StaffChooseDialog extends Dialog{
                 final StaffBean.StaffListBean staff=getStaff(staffList,name);
                 ShopInfoBean shopInfoBean=Hawk.get("ShopInfoBean");
                 HttpCall.getApiService()
-                        .cecordsNowExchange((Integer) Hawk.get("eqId"),staff.getShopId(),shopInfoBean.getShopName(),staff.getJobNumber(),staff.getId(),staff.getName())
+                        .cecordsNowExchange( Hawk.get("eqId",0),staff.getShopId(),shopInfoBean.getShopName(),staff.getJobNumber(),staff.getId(),staff.getName())
                         .compose(ResultTransformer.<StartWorkBean>transformer())
                         .compose(new DialogTransformer().<StartWorkBean>transformer())
                         .subscribe(new BaseObserver<StartWorkBean>() {

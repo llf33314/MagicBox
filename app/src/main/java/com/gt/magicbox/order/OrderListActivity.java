@@ -194,7 +194,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
 
     private void deleteNotPayOrder(int orderId, final int position) {
         HttpCall.getApiService()
-                .deleteNotPayOrder((Integer) Hawk.get("eqId"), orderId)
+                .deleteNotPayOrder(Hawk.get("eqId",0), orderId)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override

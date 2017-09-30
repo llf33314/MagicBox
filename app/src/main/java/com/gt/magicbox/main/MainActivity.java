@@ -90,7 +90,6 @@ public class MainActivity extends BaseActivity {
         initView();
         //bindOrderService();
         requestUpdate();
-        ToastUtil.getInstance().showToast(""+ Constant.product);
 
         ScreenUtils.setScreenBrightness(MainActivity.this,255);
     }
@@ -250,7 +249,8 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
       //  getUnpaidOrderCount();
        // Hawk.put("shiftId",0);
-        Log.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId"));
+        Log.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId")
+        + "  product="+Constant.product);
         super.onResume();
     }
     private void requestUpdate() {

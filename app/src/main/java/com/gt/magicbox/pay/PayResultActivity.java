@@ -111,10 +111,8 @@ public class PayResultActivity extends BaseActivity {
     }
 
     private void createCashOrder(String money) {
-        Integer shiftId = Hawk.get("shiftId");
-        if (shiftId == null || shiftId < 0) shiftId = 0;
         HttpCall.getApiService()
-                .createCashOrder(PhoneUtils.getIMEI(), money, 2, shiftId)
+                .createCashOrder(PhoneUtils.getIMEI(), money, 2, Hawk.get("shiftId",0))
                 .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
                 .compose(new DialogTransformer().<CashOrderBean>transformer()) //显示对话框
                 .subscribe(new BaseObserver<CashOrderBean>()  {

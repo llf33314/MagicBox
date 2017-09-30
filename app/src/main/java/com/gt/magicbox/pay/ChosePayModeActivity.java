@@ -175,7 +175,7 @@ public class ChosePayModeActivity extends BaseActivity {
     }
 
     private void memberPay(double discountMoney, final double realMoney , double originMoney, int payType){
-        String orderCode="MB"+(Integer) Hawk.get("shopId")+System.currentTimeMillis();
+        String orderCode="MB"+Hawk.get("shopId",0)+System.currentTimeMillis();
         HttpCall.getApiService()
                 .memberPay(discountMoney,memberCardBean.memberId, orderCode, realMoney,payType
                         ,(Integer) Hawk.get("shopId"),originMoney,113)

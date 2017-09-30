@@ -134,7 +134,7 @@ public class DuofenJSBridge {
             Intent intent=new Intent(context, PayResultActivity.class);
             intent.putExtra("success",success);
             intent.putExtra("message",message);
-            intent.putExtra("payType", (int)Hawk.get("payType"));
+            intent.putExtra("payType", Hawk.get("payType",0));
             context.startActivity(intent);
 
             AppManager.getInstance().finishActivity(WebViewActivity.class);

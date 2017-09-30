@@ -1,13 +1,11 @@
 package com.gt.magicbox.base;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -19,19 +17,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.gt.magicbox.R;
 import com.gt.magicbox.main.MainActivity;
-import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.main.menu.ShortcutMenuDialog;
-import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
-import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.ActivityUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
-import com.gt.magicbox.utils.commonutil.AppUtils;
-import com.gt.magicbox.utils.commonutil.ToastUtil;
-import com.gt.magicbox.utils.commonutil.Utils;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import butterknife.ButterKnife;
@@ -115,7 +106,7 @@ public class BaseActivity extends RxAppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.i("keyCode", "BaseActivity keyCode --> " + keyCode);
+        Log.d("keyCode", "BaseActivity keyCode --> " + keyCode);
 
         if (((keyCode >= KeyEvent.KEYCODE_NUMPAD_0 && keyCode <= KeyEvent.KEYCODE_NUMPAD_RIGHT_PAREN)
                 || keyCode == KeyEvent.KEYCODE_DEL)
