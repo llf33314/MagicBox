@@ -32,6 +32,7 @@ import com.gt.magicbox.utils.commonutil.RegexUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
+import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
@@ -58,6 +59,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
     Button netSettingButton;
     private ILoginPresenter loginPresenter;
     private String token="";
+    private LoadingProgressDialog loadingProgressDialog;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,10 +84,10 @@ public class LoginActivity extends BaseActivity implements ILoginView {
     }
 
     private void login(final String userName, final String password) {
+        loadingProgressDialog =new LoadingProgressDialog(LoginActivity.this,"登录中...");
         HttpCall.getApiService()
                 .userLogin(PhoneUtils.getIMEI(), userName, password)
                 .compose(ResultTransformer.<LoginBean>transformer())//线程处理 预处理
-                .compose(new DialogTransformer().<LoginBean>transformer()) //显示对话框
                 .subscribe(new BaseObserver<LoginBean>() {
                     @Override
                     public void onSuccess(LoginBean data) {
@@ -95,7 +97,6 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                                 Hawk.put("userName", userName);
                                 Hawk.put("eqId", data.eqId);
                                 memberQuery(userName, password);
-                                showLoginView();
                             }else if (data.checkType==1){
                                 final NormalDialog dialog=new NormalDialog(LoginActivity.this,
                                         "该设备已绑定其他账号   \n是否进行改绑并登陆",R.style.HttpRequestDialogStyle);
@@ -143,7 +144,6 @@ public class LoginActivity extends BaseActivity implements ILoginView {
         HttpCall.getApiService()
                 .memberQuery( userName, password)
                 .compose(ResultTransformer.<ShopInfoBean>transformer())//线程处理 预处理
-                .compose(new DialogTransformer().<ShopInfoBean>transformer()) //显示对话框
                 .subscribe(new BaseObserver<ShopInfoBean>() {
                     @Override
                     public void onSuccess(ShopInfoBean data) {
@@ -155,6 +155,8 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                             ShopInfoBean bean=(ShopInfoBean)Hawk.get("ShopInfoBean");
                             Log.i(TAG,"data name="+bean.getShopName());
                         }
+                        if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
+                        showLoginView();
                     }
 
                     @Override

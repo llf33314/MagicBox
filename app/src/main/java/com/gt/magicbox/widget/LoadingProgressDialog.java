@@ -15,4 +15,8 @@ public class LoadingProgressDialog  extends SVProgressHUD{
         super(context);
         this.showWithStatus("加载中...");
     }
+    public LoadingProgressDialog(Context context,String text) {
+        super(context);
+        this.showWithStatus(text);
+    }
 }

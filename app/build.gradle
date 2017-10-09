@@ -28,7 +28,9 @@ android {
         }
         pos {
             manifestPlaceholders = [categoryName :"LAUNCHER"]
-
+            dependencies {
+                compile files('libs/sdk4upos_20170808_mix.jar')
+            }
         }
     }
 }
