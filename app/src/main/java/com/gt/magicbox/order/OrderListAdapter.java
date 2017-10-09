@@ -43,7 +43,7 @@ public class OrderListAdapter extends BaseAdapter {
     }
     @Override
     public int getItemViewType(int position) {
-        if(TextUtils.isEmpty(data.get(position).orderNo)&&data.get(position).id<=0){
+        if(TextUtils.isEmpty(data.get(position).order_no)&&data.get(position).id<=0){
             return TYPE_HEAD_BUTTON;
         }else{
             return TYPE_ORDER_ITEM;
@@ -95,7 +95,7 @@ public class OrderListAdapter extends BaseAdapter {
                     viewHolder= (OrderItemViewHolder) convertView.getTag();
                 }
                 viewHolder.time.setText(TimeUtils.millis2String(orderItemBean.time,DEFAULT_FORMAT));
-                viewHolder.orderNo.setText(orderItemBean.orderNo);
+                viewHolder.orderNo.setText(orderItemBean.order_no);
                 viewHolder.money.setText(""+orderItemBean.money);
                 break;
         }

@@ -1,5 +1,6 @@
 package com.gt.magicbox.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,16 +15,18 @@ public class OrderListResultBean {
     public int status;
     public List<OrderItemBean> orders;
 
-    public static class OrderItemBean {
+    public static class OrderItemBean implements Serializable{
         public int id;
         public int eqId;
         public int busId;
         private int modelId;
         public int status;
-        public String orderNo = "";
+        public String order_no = "";
         public double money;
         public long time;
         public int type;
+        public int shiftId;
+        public String staff_name="";
         public String businessUtilName = "";
     }
 }

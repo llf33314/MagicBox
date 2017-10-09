@@ -9,8 +9,10 @@ import android.widget.RelativeLayout;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.MemberCountMoneyBean;
+import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -18,9 +20,13 @@ import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MoreFunctionDialog;
+import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
+import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
@@ -50,6 +56,7 @@ public class ChosePayModeActivity extends BaseActivity {
     private MoreFunctionDialog dialog;
     private HttpRequestDialog httpRequestDialog;
     private MemberCardBean memberCardBean;
+    private LoadingProgressDialog loadingProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,7 +88,7 @@ public class ChosePayModeActivity extends BaseActivity {
                     if (memberCardBean.money<money) {
                         if (dialog == null) {
                             dialog = new MoreFunctionDialog(ChosePayModeActivity.this, "您的会员卡余额不足，支付失败", R.style.HttpRequestDialogStyle);
-                            dialog.getConfirmButton().setText("");
+                            dialog.getConfirmButton().setText("确认");
                             dialog.getConfirmButton().setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -91,6 +98,7 @@ public class ChosePayModeActivity extends BaseActivity {
                         }
                         dialog.show();
                     }else {
+                        createCashOrder(""+money);
                         postMemberSettlement();
                     }
                 }
@@ -146,18 +154,19 @@ public class ChosePayModeActivity extends BaseActivity {
         }
     }
     private void postMemberSettlement() {
-        if (memberCardBean != null)
+        if (memberCardBean != null) {
+            loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");
+            loadingProgressDialog.show();
             HttpCall.getApiService()
                     .postMemberSettlement(memberCardBean.memberId, money,
                             0, 0, 0, 0)
                     .compose(ResultTransformer.<MemberCountMoneyBean>transformer())//线程处理 预处理
-                    .compose(new DialogTransformer().<MemberCountMoneyBean>transformer())
                     .subscribe(new BaseObserver<MemberCountMoneyBean>() {
                         @Override
                         public void onSuccess(MemberCountMoneyBean data) {
-                            Log.d(TAG, "postMemberSettlement onSuccess data=" );
-                            if (data!=null)
-                            memberPay(data.getBalanceMoney(),data.getBalanceMoney(),data.getTotalMoney(),5);
+                            Log.d(TAG, "postMemberSettlement onSuccess data=");
+                            if (data != null)
+                                memberPay(data.getBalanceMoney(), data.getBalanceMoney(), data.getTotalMoney(), 5);
                         }
 
                         @Override
@@ -172,6 +181,7 @@ public class ChosePayModeActivity extends BaseActivity {
                             super.onFailure(code, msg);
                         }
                     });
+        }
     }
 
     private void memberPay(double discountMoney, final double realMoney , double originMoney, int payType){
@@ -180,14 +190,16 @@ public class ChosePayModeActivity extends BaseActivity {
                 .memberPay(discountMoney,memberCardBean.memberId, orderCode, realMoney,payType
                         ,(Integer) Hawk.get("shopId"),originMoney,113)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
-                .compose(new DialogTransformer().<BaseResponse>transformer())
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
                         Log.d(TAG, "memberPay onSuccess " );
+                        if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
+                        AppManager.getInstance().finishActivity(VerificationActivity.class);
                         Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
                         intent.putExtra("type",MemberDoResultActivity.TYPE_MEMBER_PAY);
                         intent.putExtra("balance",memberCardBean.money-realMoney);
+                        intent.putExtra("realMoney",realMoney);
 
                         startActivity(intent);
 
@@ -207,5 +219,21 @@ public class ChosePayModeActivity extends BaseActivity {
                     }
                 });
     }
+    private void createCashOrder(String money) {
+        HttpCall.getApiService()
+                .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0))
+                .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
+                .compose(new DialogTransformer().<CashOrderBean>transformer()) //显示对话框
+                .subscribe(new BaseObserver<CashOrderBean>() {
+                    @Override
+                    protected void onSuccess(CashOrderBean bean) {
+                        Log.d(TAG, "createCashOrder Success");
+                    }
 
+                    @Override
+                    protected void onFailure(int code, String msg) {
+                        Log.d(TAG, "onFailure code=" + code + "  msg=" + msg);
+                    }
+                });
+    }
 }

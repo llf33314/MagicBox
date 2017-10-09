@@ -2,17 +2,25 @@ package com.gt.magicbox.member;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.orhanobut.hawk.Hawk;
 
 import java.math.BigDecimal;
 
@@ -27,6 +35,7 @@ import butterknife.OnClick;
  */
 
 public class MemberDoResultActivity extends BaseActivity {
+    private String TAG = MemberDoResultActivity.class.getSimpleName();
     @BindView(R.id.customer_success_tip)
     TextView customerSuccessTip;
     @BindView(R.id.cashier_success_tip)
@@ -47,6 +56,9 @@ public class MemberDoResultActivity extends BaseActivity {
     TextView cashierRecharge;
     private double rechargeMoney;
     private double balance;
+    private double realMoney;
+
+    private CashOrderBean cashOrderBean;
 
 
     private MemberCardBean memberCardBean;
@@ -68,16 +80,17 @@ public class MemberDoResultActivity extends BaseActivity {
     private void initData() {
 
         if (this.getIntent() != null) {
-            type=getIntent().getIntExtra("type",0);
-            payType=getIntent().getIntExtra("payType",0);
-            orderNo=getIntent().getStringExtra("orderNo");
-            memberCardBean= (MemberCardBean) getIntent().getSerializableExtra("MemberCardBean");
+            type = getIntent().getIntExtra("type", 0);
+            payType = getIntent().getIntExtra("payType", 0);
+            orderNo = getIntent().getStringExtra("orderNo");
+            memberCardBean = (MemberCardBean) getIntent().getSerializableExtra("MemberCardBean");
             rechargeMoney = getIntent().getDoubleExtra("rechargeMoney", 0);
             balance = getIntent().getDoubleExtra("balance", 0);
+            realMoney= getIntent().getDoubleExtra("realMoney", 0);
             BigDecimal bg = new BigDecimal(rechargeMoney);
-            rechargeMoney=bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            rechargeMoney = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             bg = new BigDecimal(balance);
-            balance=bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            balance = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         }
     }
 
@@ -97,9 +110,10 @@ public class MemberDoResultActivity extends BaseActivity {
 
     @OnClick(R.id.confirmButton)
     public void onViewClicked() {
-        if (type==TYPE_MEMBER_RECHARGE){
-            PrinterConnectService.printEscMemberRecharge(memberCardBean,orderNo,""+rechargeMoney,payType,""+balance);
+        if (type == TYPE_MEMBER_RECHARGE) {
+            PrinterConnectService.printEscMemberRecharge(memberCardBean, orderNo, "" + rechargeMoney, payType, "" + balance);
         }
         finish();
     }
+
 }

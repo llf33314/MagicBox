@@ -13,12 +13,15 @@ import android.widget.GridView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.http.HttpConfig;
+import com.gt.magicbox.login.LoginActivity;
 import com.gt.magicbox.setting.printersetting.PrinterSettingActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.OnTaskFinishListener;
 import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.HintDismissDialog;
+import com.gt.magicbox.widget.ManualDialog;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
@@ -69,6 +72,9 @@ public class MoreActivity extends BaseActivity {
                     case 2:
                         intent=new Intent(MoreActivity.this,DevicesMangerActivity.class);
                         startActivity(intent);
+                        break;
+                    case 3:
+                        new ManualDialog(MoreActivity.this).show();
                         break;
                     case 4:
                         checkUpdate();

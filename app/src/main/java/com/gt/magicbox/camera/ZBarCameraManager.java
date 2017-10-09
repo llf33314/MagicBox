@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import com.gt.magicbox.utils.commonutil.ToastUtil;
@@ -67,6 +68,7 @@ public class ZBarCameraManager {
     }
 
     public void releaseCamera() {
+        Log.d("camera","releaseCamera");
         if (mCamera != null) {
             previewing = false;
             mCamera.setPreviewCallback(null);

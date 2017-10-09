@@ -79,7 +79,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<SwipeMenuListView> refreshView) {
                 page++;
-                getOrderList(0, 10);
+                getOrderList(status, 10);
             }
         });
         swipeMenuListView = pullToRefreshSwipeListView.getRefreshableView();
@@ -96,11 +96,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                         startActivity(intent);
                     } else if (status == 1) {
                         Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
-                        intent.putExtra("orderNo", orderItemBean.orderNo);
-                        intent.putExtra("time", orderItemBean.time);
-                        intent.putExtra("payType", orderItemBean.type);
-                        intent.putExtra("money", orderItemBean.money);
-
+                        intent.putExtra("OrderItemBean", orderItemBean);
                         startActivity(intent);
                     }
 

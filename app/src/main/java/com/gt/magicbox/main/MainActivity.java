@@ -115,8 +115,7 @@ public class MainActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 3:
-                        intent =new Intent(MainActivity.this,CouponChoseActivity.class);
-                        startActivity(intent);
+                        showMoreDialog();
                         break;
                     case 4:
                         HttpCall.getApiService()

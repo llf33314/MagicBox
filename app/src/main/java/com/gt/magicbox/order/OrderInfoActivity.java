@@ -15,6 +15,7 @@ import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.SimpleDividerDecoration;
 import com.gt.magicbox.bean.KeyValueStringBean;
+import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.order.widget.KeyValueAdapter;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
@@ -39,18 +40,10 @@ import butterknife.OnClick;
 public class OrderInfoActivity extends BaseActivity {
     @BindView(R.id.keyValueView)
     RecyclerView keyValueView;
-    @BindView(R.id.printPaper)
-    Button printPaper;
-    @BindView(R.id.refund)
-    Button refund;
-    private double money;
-    private int payType;
-    private String orderNo="";
-    private long time;
+    private OrderListResultBean.OrderItemBean orderItemBean;
     List<KeyValueStringBean> lists= new ArrayList<KeyValueStringBean>();
     private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
     MoreFunctionDialog dialog;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +56,8 @@ public class OrderInfoActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.printPaper:
-                PrinterConnectService.printEsc0829(orderNo,money+"元", payType,TimeUtils.millis2String(time,DEFAULT_FORMAT));
+                if (orderItemBean!=null)
+                PrinterConnectService.printEsc0829(orderItemBean.order_no,orderItemBean.money+"元", orderItemBean.type,TimeUtils.millis2String(orderItemBean.time,DEFAULT_FORMAT));
 
                 break;
             case R.id.refund:
@@ -75,19 +69,17 @@ public class OrderInfoActivity extends BaseActivity {
     private void initData(){
         Intent intent=this.getIntent();
         if (intent!=null){
-            orderNo=intent.getStringExtra("orderNo");
-            time=intent.getLongExtra("time",0);
-            payType=intent.getIntExtra("payType",0);
-            money=intent.getDoubleExtra("money",0);
-            if (!TextUtils.isEmpty(orderNo))
-            lists.add(new KeyValueStringBean("订单号",orderNo));
-            lists.add(new KeyValueStringBean("操作人","张三"));
-            lists.add(new KeyValueStringBean("创建时间",TimeUtils.millis2String(time,DEFAULT_FORMAT)));
-            lists.add(new KeyValueStringBean("支付方式", BaseConstant.PAY_TYPE[payType]));
-            lists.add(new KeyValueStringBean("支付金额","¥"+money));
+            orderItemBean= (OrderListResultBean.OrderItemBean) intent.getSerializableExtra("OrderItemBean");
+            if (orderItemBean!=null) {
+                lists.add(new KeyValueStringBean("订单号", orderItemBean.order_no));
+                lists.add(new KeyValueStringBean("操作人",
+                        TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name));
+                lists.add(new KeyValueStringBean("创建时间", TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT)));
+                lists.add(new KeyValueStringBean("支付方式", BaseConstant.PAY_TYPE[orderItemBean.type]));
+                lists.add(new KeyValueStringBean("支付金额", "¥" + orderItemBean.money));
 
 
-
+            }
         }
     }
     private void initRecyclerView(RecyclerView recyclerView){
