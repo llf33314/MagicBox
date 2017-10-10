@@ -57,7 +57,7 @@ public class ChosePayModeActivity extends BaseActivity {
     private HttpRequestDialog httpRequestDialog;
     private MemberCardBean memberCardBean;
     private LoadingProgressDialog loadingProgressDialog;
-
+    private CashOrderBean cashOrderBean;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +99,6 @@ public class ChosePayModeActivity extends BaseActivity {
                         dialog.show();
                     }else {
                         createCashOrder(""+money);
-                        postMemberSettlement();
                     }
                 }
                 break;
@@ -155,8 +154,6 @@ public class ChosePayModeActivity extends BaseActivity {
     }
     private void postMemberSettlement() {
         if (memberCardBean != null) {
-            loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");
-            loadingProgressDialog.show();
             HttpCall.getApiService()
                     .postMemberSettlement(memberCardBean.memberId, money,
                             0, 0, 0, 0)
@@ -185,9 +182,9 @@ public class ChosePayModeActivity extends BaseActivity {
     }
 
     private void memberPay(double discountMoney, final double realMoney , double originMoney, int payType){
-        String orderCode="MB"+Hawk.get("shopId",0)+System.currentTimeMillis();
+      //  String orderCode="MB"+Hawk.get("shopId",0)+System.currentTimeMillis();
         HttpCall.getApiService()
-                .memberPay(discountMoney,memberCardBean.memberId, orderCode, realMoney,payType
+                .memberPay(discountMoney,memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney,payType
                         ,(Integer) Hawk.get("shopId"),originMoney,113)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
@@ -220,14 +217,18 @@ public class ChosePayModeActivity extends BaseActivity {
                 });
     }
     private void createCashOrder(String money) {
+        loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");
+        loadingProgressDialog.show();
         HttpCall.getApiService()
                 .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0))
                 .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
-                .compose(new DialogTransformer().<CashOrderBean>transformer()) //显示对话框
                 .subscribe(new BaseObserver<CashOrderBean>() {
                     @Override
                     protected void onSuccess(CashOrderBean bean) {
                         Log.d(TAG, "createCashOrder Success");
+                        cashOrderBean=bean;
+                        postMemberSettlement();
+
                     }
 
                     @Override

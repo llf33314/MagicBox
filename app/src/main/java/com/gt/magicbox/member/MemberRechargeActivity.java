@@ -16,6 +16,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.pay.ChosePayModeActivity;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import butterknife.BindView;
@@ -104,6 +105,7 @@ public class MemberRechargeActivity extends BaseActivity {
                 }else ToastUtil.getInstance().showToast("请输入充值金额");
                 break;
             case R.id.returnButton:
+                AppManager.getInstance().finishActivity();
                 break;
         }
     }

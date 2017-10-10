@@ -134,8 +134,8 @@ public class PrintESCOrTSCUtil {
            // esc.addText("收银员：张震\n");
 
         }
-        if (type>=0&&type<=2){
-            esc.addText("支付方式："+PAY_TYPE[type]+"\n");
+        if (type>=0&&type<BaseConstant.PAY_TYPE.length){
+            esc.addText("支付方式："+BaseConstant.PAY_TYPE[type]+"\n");
         }else{
             esc.addText("支付方式：未知\n");
         }

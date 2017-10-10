@@ -48,6 +48,7 @@ public class ZBarCameraManager {
     }
 
     private void initCameraViews() {
+        releaseCamera();
         mImageScanner = new ImageScanner();
         mImageScanner.setConfig(0, Config.X_DENSITY, 3);
         mImageScanner.setConfig(0, Config.Y_DENSITY, 3);

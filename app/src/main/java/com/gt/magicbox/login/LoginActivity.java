@@ -130,7 +130,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     protected void onSuccess(BaseResponse baseResponse) {
-                        Log.i(TAG, "changeDevicesBind Success");
+                        Log.d(TAG, "changeDevicesBind Success");
                         login(userName,password);
 
                     }

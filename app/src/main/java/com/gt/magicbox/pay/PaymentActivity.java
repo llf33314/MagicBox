@@ -164,6 +164,11 @@ public class PaymentActivity extends BaseActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void initZBar() {
         handler.post(new Runnable() {
             @Override
@@ -216,6 +221,7 @@ public class PaymentActivity extends BaseActivity {
                                 }
                                 intent.putExtra("MemberCardBean", bean);
                                 startActivity(intent);
+                                AppManager.getInstance().finishActivity();
                             }
                         }
                     }

@@ -19,6 +19,7 @@ import com.gt.magicbox.base.recyclerview.SpaceItemDecoration;
 import com.gt.magicbox.bean.DistributeCouponBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.pay.ChosePayModeActivity;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
@@ -148,6 +149,7 @@ public class VerificationActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.cancel:
+                AppManager.getInstance().finishActivity();
                 break;
         }
     }
