@@ -69,4 +69,7 @@
     <string name="please_scan_code_to_get_manual">请扫描二维码获取使用手册</string>
     <string name="manual">使用手册</string>
 
+    <string name="welcome_again">欢迎再次光临</string>
+    <string name="tech_support">技术支持·多粉  400-889-4522</string>
+
 </resources>

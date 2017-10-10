@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
@@ -18,6 +19,7 @@ import com.gt.magicbox.bean.KeyValueStringBean;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.order.widget.KeyValueAdapter;
+import com.gt.magicbox.setting.printersetting.PrintManager;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
@@ -56,12 +58,22 @@ public class OrderInfoActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.printPaper:
-                if (orderItemBean!=null)
-                PrinterConnectService.printEsc0829(orderItemBean.order_no,orderItemBean.money+"元", orderItemBean.type,TimeUtils.millis2String(orderItemBean.time,DEFAULT_FORMAT));
+                if (orderItemBean != null) {
+                    if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
+                        PrintManager printManager=new PrintManager(OrderInfoActivity.this);
+                        printManager.printReceipt(orderItemBean.order_no, orderItemBean.money + "元",
+                                orderItemBean.type,TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT)
+                        , TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name);
+                    } else {
+                        PrinterConnectService.printEsc0829(orderItemBean.order_no, orderItemBean.money + "元",
+                                orderItemBean.type, TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT));
+
+                    }
+                }
 
                 break;
             case R.id.refund:
-                dialog=new MoreFunctionDialog(OrderInfoActivity.this,"退款功能正在开发中,敬请期待",R.style.HttpRequestDialogStyle);
+                dialog = new MoreFunctionDialog(OrderInfoActivity.this, "退款功能正在开发中,敬请期待", R.style.HttpRequestDialogStyle);
                 dialog.show();
                 break;
         }
