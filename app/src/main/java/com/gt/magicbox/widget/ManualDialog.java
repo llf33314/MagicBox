@@ -4,17 +4,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.gt.magicbox.R;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -22,7 +15,6 @@ import butterknife.OnClick;
  */
 
 public class ManualDialog extends Dialog {
-
 
 
     public ManualDialog(@NonNull Context context) {
@@ -40,4 +32,8 @@ public class ManualDialog extends Dialog {
         ButterKnife.bind(this);
     }
 
+    @OnClick(R.id.close)
+    public void onViewClicked() {
+        dismiss();
+    }
 }

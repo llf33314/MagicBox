@@ -33,6 +33,7 @@ import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
+import com.gt.magicbox.widget.ManualDialog;
 import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
@@ -166,7 +167,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                 });
     }
     
-    @OnClick({R.id.loginButton, R.id.netSettingButton})
+    @OnClick({R.id.loginButton, R.id.netSettingButton,R.id.manual})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.loginButton:
@@ -188,6 +189,9 @@ public class LoginActivity extends BaseActivity implements ILoginView {
             case R.id.netSettingButton:
                 Intent intent=new Intent(LoginActivity.this,WifiConnectionActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.manual:
+                new ManualDialog(LoginActivity.this).show();
                 break;
         }
     }
