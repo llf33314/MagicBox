@@ -84,7 +84,8 @@ public class MoreActivity extends BaseActivity {
 //                        startActivity(intent);
                     case 5:
                         Hawk.delete("busId");
-                        AppManager.getInstance().exitApp();
+                        Hawk.delete("shiftId");
+                        //AppManager.getInstance().exitApp();
                         intent=new Intent(MoreActivity.this,LoadingActivity.class);
                         startActivity(intent);
 //                        if (logoutDialog==null){

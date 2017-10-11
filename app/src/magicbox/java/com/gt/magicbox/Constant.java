@@ -8,4 +8,6 @@ package com.gt.magicbox;
 
 public class Constant {
     public static final String product="MagicBox";
+    public static final String BASE_URL="http://nb.yj.deeptel.com.cn/";
+
 }

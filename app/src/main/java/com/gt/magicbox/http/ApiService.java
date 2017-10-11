@@ -47,7 +47,7 @@ public interface ApiService {
     Observable<BaseResponse<CashOrderBean>> createCashOrder(@Query("eqCode") String eqCode,
                                                             @Query("money") String money,
                                                             @Query("type") int type,
-                                                            @Query("shiftId") int  shiftId);
+                                                            @Query("shiftId") int shiftId);
 
     @POST(HttpConfig.GET_UNPAID_ORDER_URL)
     Observable<BaseResponse<UnpaidOrderBean>> getUnpaidOrderCount(@Query("eqCode") String eqCode,
@@ -105,6 +105,7 @@ public interface ApiService {
             @Query("ctId") int ctId, @Query("gtId") int gtId,
             @Query("memberId") int memberId, @Query("phone") String phone,
             @Query("shopId") int shopId);
+
     @POST(HttpConfig.RECEIVE_MEMBER_CARD)
     Observable<BaseResponse<MemberCardBean>> receiveMemberCardWithoutMemberId(
             @Query("bit") int bit, @Query("busId") int busId,
@@ -113,9 +114,9 @@ public interface ApiService {
 
     @POST(HttpConfig.MEMBER_SETTLEMENT)
     Observable<BaseResponse<MemberCountMoneyBean>> postMemberSettlement(
-            @Query("memberId") int memberId,@Query("totalMoney") double totalMoney,
-            @Query("useCoupon") int useCoupon,@Query("useFenbi") int useFenbi,
-            @Query("userJifen") int userJifen,@Query("userLeague") int userLeague);
+            @Query("memberId") int memberId, @Query("totalMoney") double totalMoney,
+            @Query("useCoupon") int useCoupon, @Query("useFenbi") int useFenbi,
+            @Query("userJifen") int userJifen, @Query("userLeague") int userLeague);
 
     @POST(HttpConfig.MEMBER_RECHARGE)
     Observable<BaseResponse> memberRecharge(@Query("memberId") int memberId,
@@ -139,7 +140,7 @@ public interface ApiService {
             @Field("staffName") String staffName);
 
     @POST(HttpConfig.GET_NOW_SR)
-    Observable<BaseResponse<ShiftRecordsAllBean>>getNowSR(@Query("shiftId") int shiftId);
+    Observable<BaseResponse<ShiftRecordsAllBean>> getNowSR(@Query("shiftId") int shiftId);
 
     @POST(HttpConfig.MEMBER_PAY)
     Observable<BaseResponse> memberPay(@Query("discountMoney") double discountMoney,
@@ -150,5 +151,12 @@ public interface ApiService {
                                        @Query("storeId") int storeId,
                                        @Query("totalMoney") double totalMoney,
                                        @Query("ucType") int ucType);
+    @FormUrlEncoded
+    @POST(HttpConfig.POS_ORDER)
+    Observable<BaseResponse> posOrder(@Field("eqCode") String eqCode,
+                                      @Field("orderNo") String orderNo,
+                                      @Field("money") double money,
+                                      @Field("type") int type,
+                                      @Field("shiftId") int shiftId);
 
 }

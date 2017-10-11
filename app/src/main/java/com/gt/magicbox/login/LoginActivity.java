@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -59,7 +60,6 @@ public class LoginActivity extends BaseActivity implements ILoginView {
     @BindView(R.id.netSettingButton)
     Button netSettingButton;
     private ILoginPresenter loginPresenter;
-    private String token="";
     private LoadingProgressDialog loadingProgressDialog;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,7 +67,8 @@ public class LoginActivity extends BaseActivity implements ILoginView {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         loginPresenter = new LoginPresenter(this);
-
+        if (!TextUtils.isEmpty(Hawk.get("userName","")))
+        userEditText.setText(Hawk.get("userName",""));
     }
 
     @Override
@@ -77,7 +78,6 @@ public class LoginActivity extends BaseActivity implements ILoginView {
 
     @Override
     public void showLoginView() {
-        Hawk.put("token",token);
         Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
@@ -194,5 +194,13 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                 new ManualDialog(LoginActivity.this).show();
                 break;
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

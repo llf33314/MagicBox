@@ -1,5 +1,6 @@
 package com.gt.magicbox.http.retrofit;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.http.ApiService;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.retrofit.converter.string.StringConverterFactory;
@@ -37,7 +38,7 @@ public class HttpCall {
                     .build();
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HttpConfig.BASE_URL)
+                    .baseUrl(Constant.BASE_URL)
                     .client(okHttpClient)
                     .addConverterFactory(StringConverterFactory.create()) //String 转换
                     .addConverterFactory(GsonConverterFactory.create())

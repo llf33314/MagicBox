@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -22,6 +23,7 @@ import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.pos.bean.AppNameEnum;
+import com.gt.magicbox.pos.bean.bankcardcollection.cancel.CancelBean;
 import com.gt.magicbox.pos.bean.bankcardcollection.pay.PayBean;
 import com.gt.magicbox.pos.bean.codecollection.TransIdEnum;
 import com.gt.magicbox.pos.bean.codecollection.codepay.CodePayBean;
@@ -93,10 +95,12 @@ public class ChosePayModeActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.pay_wechat:
+                String extOrderNo="POS"+Hawk.get("shopId",0)+System.currentTimeMillis();
                 sanPay(""+(int)(money*100),"");
               //  scanner();
                 break;
             case R.id.pay_zfb:
+                extOrderNo="POS"+Hawk.get("shopId",0)+System.currentTimeMillis();
                 codePay(""+(int)(money*100),"");
                 break;
             case R.id.pay_member:
@@ -121,6 +125,7 @@ public class ChosePayModeActivity extends BaseActivity {
             case R.id.pay_cash:
                 bankCardPay(""+(int)(money*100),"");
                 //createCashOrder(""+money);
+                //returnMoney("1","04176165290W","1011");
                 break;
         }
     }
@@ -217,6 +222,32 @@ public class ChosePayModeActivity extends BaseActivity {
                     @Override
                     public void onFailure(int code, String msg) {
                         Log.d(TAG, "memberPay" +
+                                " onFailure msg=" + msg);
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
+    private void posOrder(String orderNo,  double money , int payType){
+        HttpCall.getApiService()
+                .posOrder(PhoneUtils.getIMEI(),orderNo, money,payType
+                        ,Hawk.get("shiftId",0))
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse data) {
+                        Log.d(TAG, "posOrder onSuccess data="+data.getData().toString() );
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "posOrder onError e" + e.getMessage());
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        Log.d(TAG, "posOrder" +
                                 " onFailure msg=" + msg);
                         super.onFailure(code, msg);
                     }
@@ -330,6 +361,25 @@ public class ChosePayModeActivity extends BaseActivity {
         }
         return false;
     }
+    public boolean returnMoney(String amt, String refNo,String date) {
+        Log.d(TAG, "pay");
+        try {
+            String appName = AppNameEnum.SWEEPCOLLECTION.getValue();
+            String transId = "退货";
+            CancelBean cancelBean = new CancelBean();
+            cancelBean.setAmt(amt);
+            cancelBean.setRefNo(refNo);
+            cancelBean.setDate(date);
+            JSONObject transData = new JSONObject(cancelBean.toJsonString());
+            Log.d(TAG, "pay: " + cancelBean.toJsonString());
+            AppHelper.callTrans(ChosePayModeActivity.this, appName, transId, transData);
+            return true;
+        }catch (Exception e){
+            PromptUtils.getInstance(getApplicationContext()).showSysErrorLong();
+            e.printStackTrace();
+        }
+        return false;
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
@@ -341,8 +391,29 @@ public class ChosePayModeActivity extends BaseActivity {
                     // 不同的transId调用不同的回调方法
                     String appName = map.get(AppHelper.TRANS_APP_NAME);
                     String transId = map.get(AppHelper.TRANS_BIZ_ID);
+                    String resDesc=transData.getString("resDesc");
+                    if (!TextUtils.isEmpty(resDesc)&&resDesc.equals("交易成功")){
+                        String memInfo=transData.getString("memInfo");
+                        JSONObject memInfoObject=new JSONObject(memInfo);
+                        String orderNo=memInfoObject.getString("orderNo");
+                        String amt=transData.getString("amt");
+                        String channelName=memInfoObject.getString("channelName");
+                        int payType=0;
+                        if (!TextUtils.isEmpty(channelName)){
+                            if (channelName.contains("微信"))payType=0;
+                            else if (channelName.contains("支付宝"))payType=1;
+                        }
+
+                        Log.d(TAG, "memInfo="+memInfo.toString());
+                        if (!TextUtils.isEmpty(amt))
+                        posOrder(orderNo,Double.parseDouble(amt),payType);
+
+                    }
+
                    // String callBackFn = DuofenPayCallBackJSFactory.getInstance().callBackJS(appName, transId, transData.toString());
                     Log.d(TAG, "transData="+transData.toString());
+                    Log.d(TAG, "map="+map.toString());
+
                 }else if (Activity.RESULT_CANCELED == resultCode){
                     PromptUtils.getInstance(this).showToastShort("取消操作");
                 }else if (Activity.RESULT_FIRST_USER == resultCode){
@@ -364,4 +435,5 @@ public class ChosePayModeActivity extends BaseActivity {
             PromptUtils.getInstance(this).showSysErrorLong();
         }
     }
+
 }

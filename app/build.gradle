@@ -24,10 +24,14 @@ android {
     productFlavors {
         magicbox {
             manifestPlaceholders = [categoryName :"HOME"]
+            resValue "string", "app_name", "多粉魔盒"
+
 
         }
         pos {
             manifestPlaceholders = [categoryName :"LAUNCHER"]
+            resValue "string", "app_name", "多粉支付"
+
         }
     }
 }
