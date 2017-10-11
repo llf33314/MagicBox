@@ -120,6 +120,7 @@ public class ChosePayModeActivity extends BaseActivity {
                 break;
             case R.id.pay_cash:
                 bankCardPay(""+(int)(money*100),"");
+                //createCashOrder(""+money);
                 break;
         }
     }
@@ -225,7 +226,7 @@ public class ChosePayModeActivity extends BaseActivity {
         loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");
         loadingProgressDialog.show();
         HttpCall.getApiService()
-                .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0))
+                .createCashOrder(PhoneUtils.getIMEI(), money, 2, Hawk.get("shiftId", 0))
                 .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CashOrderBean>() {
                     @Override
