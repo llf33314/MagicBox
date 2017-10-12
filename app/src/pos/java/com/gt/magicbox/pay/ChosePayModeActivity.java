@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
@@ -33,6 +34,7 @@ import com.gt.magicbox.pos.util.PromptUtils;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.FileHelper;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.LoadingProgressDialog;
@@ -44,6 +46,7 @@ import com.ums.upos.sdk.scanner.ScannerManager;
 
 import org.json.JSONObject;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -228,6 +231,8 @@ public class ChosePayModeActivity extends BaseActivity {
                 });
     }
     private void posOrder(String orderNo,  double money , int payType){
+        final LoadingProgressDialog dialog =new LoadingProgressDialog(ChosePayModeActivity.this,"付款成功，生成订单中...");
+        dialog.show();
         HttpCall.getApiService()
                 .posOrder(PhoneUtils.getIMEI(),orderNo, money,payType
                         ,Hawk.get("shiftId",0))
@@ -235,13 +240,16 @@ public class ChosePayModeActivity extends BaseActivity {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        Log.d(TAG, "posOrder onSuccess data="+data.getData().toString() );
-
+                        Log.d(TAG, "posOrder onSuccess data=" );
+                        if (dialog!=null)dialog.dismiss();
+                        payFinish();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG, "posOrder onError e" + e.getMessage());
+                        if (dialog!=null)dialog.dismiss();
+                        payFinish();
                         super.onError(e);
                     }
 
@@ -253,11 +261,17 @@ public class ChosePayModeActivity extends BaseActivity {
                     }
                 });
     }
+    private void payFinish(){
+        AppManager.getInstance().finishActivity();
+        AppManager.getInstance().finishActivity(PaymentActivity.class);
+        Intent intent = new Intent(ChosePayModeActivity.this, PaymentActivity.class);
+        startActivity(intent);
+    }
     private void createCashOrder(String money) {
         loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");
         loadingProgressDialog.show();
         HttpCall.getApiService()
-                .createCashOrder(PhoneUtils.getIMEI(), money, 2, Hawk.get("shiftId", 0))
+                .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0))
                 .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CashOrderBean>() {
                     @Override
@@ -391,25 +405,53 @@ public class ChosePayModeActivity extends BaseActivity {
                     // 不同的transId调用不同的回调方法
                     String appName = map.get(AppHelper.TRANS_APP_NAME);
                     String transId = map.get(AppHelper.TRANS_BIZ_ID);
-                    String resDesc=transData.getString("resDesc");
-                    if (!TextUtils.isEmpty(resDesc)&&resDesc.equals("交易成功")){
-                        String memInfo=transData.getString("memInfo");
-                        JSONObject memInfoObject=new JSONObject(memInfo);
-                        String orderNo=memInfoObject.getString("orderNo");
-                        String amt=transData.getString("amt");
-                        String channelName=memInfoObject.getString("channelName");
-                        int payType=0;
-                        if (!TextUtils.isEmpty(channelName)){
-                            if (channelName.contains("微信"))payType=0;
-                            else if (channelName.contains("支付宝"))payType=1;
+                    if (appName.equals("POS 通")) {
+                        String resDesc = transData.getString("resDesc");
+                        if (!TextUtils.isEmpty(resDesc) && resDesc.equals("交易成功")) {
+                            String memInfo = transData.getString("memInfo");
+                            JSONObject memInfoObject = new JSONObject(memInfo);
+                            String refNo = transData.getString("refNo");
+                            String amt = transData.getString("amt");
+                            String channelName = memInfoObject.getString("channelName");
+                            int payType = 0;
+                            if (!TextUtils.isEmpty(channelName)) {
+                                if (channelName.contains("微信")) payType = 0;
+                                else if (channelName.contains("支付宝")) payType = 1;
+                            }
+
+                            Log.d(TAG, "memInfo=" + memInfo.toString());
+                            if (!TextUtils.isEmpty(amt))
+                                posOrder(refNo, Double.parseDouble(amt), payType);
                         }
+                    }else  if (appName.equals("POS通码上收")) {
+                        String resDesc = transData.getString("resDesc");
+                        if (!TextUtils.isEmpty(resDesc) && resDesc.equals("交易成功")) {
+                            String memInfo = transData.getString("memInfo");
+                            JSONObject memInfoObject = new JSONObject(memInfo);
+                            String refNo = transData.getString("refNo");
+                            String amt = transData.getString("amt");
+                            String targetSys = memInfoObject.getString("targetSys");
+                            int payType = 0;
+                            if (!TextUtils.isEmpty(targetSys)) {
+                                if (targetSys.contains("WXPay")) payType = 0;
+                                else if (targetSys.contains("Alipay")) payType = 1;
+                            }
 
-                        Log.d(TAG, "memInfo="+memInfo.toString());
-                        if (!TextUtils.isEmpty(amt))
-                        posOrder(orderNo,Double.parseDouble(amt),payType);
-
+                            Log.d(TAG, "memInfo=" + memInfo.toString());
+                            if (!TextUtils.isEmpty(amt))
+                                posOrder(refNo, Double.parseDouble(amt), payType);
+                        }
+                    }else  if (appName.equals("银行卡收款")){
+                        String resDesc = transData.getString("resDesc");
+                        Log.d(TAG, "银行卡收款 resDesc=" + resDesc.toString());
+                        if (!TextUtils.isEmpty(resDesc) && resDesc.equals("交易成功")) {
+                            String refNo = transData.getString("refNo");
+                            String amt = transData.getString("amt");
+                            int payType = 4;
+                            if (!TextUtils.isEmpty(amt))
+                                posOrder(refNo, Double.parseDouble(amt), payType);
+                        }
                     }
-
                    // String callBackFn = DuofenPayCallBackJSFactory.getInstance().callBackJS(appName, transId, transData.toString());
                     Log.d(TAG, "transData="+transData.toString());
                     Log.d(TAG, "map="+map.toString());

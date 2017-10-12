@@ -14,6 +14,7 @@ import android.widget.GridView;
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 import com.gt.magicbox.coupon.CouponChoseActivity;
@@ -91,7 +92,9 @@ public class MainActivity extends BaseActivity {
         //bindOrderService();
         requestUpdate();
 
-        ScreenUtils.setScreenBrightness(MainActivity.this,255);
+        if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
+            ScreenUtils.setScreenBrightness(MainActivity.this,255);
+        }
     }
 
     /**

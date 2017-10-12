@@ -457,7 +457,7 @@ public class PrinterConnectService extends Service {
         }
         return -1;
     }
-    public static int printEsc0829(String orderNo,String money,int type,String time){
+    public static int printEsc0829(String orderNo,String money,String staffName,int type,String time){
         if (mGpService==null){
             showHintNotConnectDialog();
             return PRINTER_NOT_INTI;
@@ -481,7 +481,7 @@ public class PrinterConnectService extends Service {
             //这里很关键   打印机类型是ESC 还是TSC 暂时测试这么用
             int printType = mGpService.getPrinterCommandType(mPrinterIndex);
             if (printType == GpCom.ESC_COMMAND) {
-                return printEsc(orderNo,money,type,time);
+                return printEsc(orderNo,money,staffName,type,time);
             }else{
                 ToastUtil.getInstance().showToast("请连接正确类型打印机");
             }
@@ -493,8 +493,8 @@ public class PrinterConnectService extends Service {
 
 
 
-    private static int printEsc(String orderNo,String money,int type,String time){
-        EscCommand esc=PrintESCOrTSCUtil.getPrintEscTest(orderNo,money,type,time);
+    private static int printEsc(String orderNo,String money,String staffName,int type,String time){
+        EscCommand esc=PrintESCOrTSCUtil.getPrintEscTest(orderNo,money,staffName,type,time);
         return  sendEscDataToPrinter(esc);
     }
 

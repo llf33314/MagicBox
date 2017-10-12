@@ -66,6 +66,7 @@ public class OrderInfoActivity extends BaseActivity {
                         , TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name);
                     } else {
                         PrinterConnectService.printEsc0829(orderItemBean.order_no, orderItemBean.money + "元",
+                                TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name,
                                 orderItemBean.type, TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT));
 
                     }
@@ -87,6 +88,7 @@ public class OrderInfoActivity extends BaseActivity {
                 lists.add(new KeyValueStringBean("操作人",
                         TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name));
                 lists.add(new KeyValueStringBean("创建时间", TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT)));
+                if (orderItemBean.type<BaseConstant.PAY_TYPE.length)
                 lists.add(new KeyValueStringBean("支付方式", BaseConstant.PAY_TYPE[orderItemBean.type]));
                 lists.add(new KeyValueStringBean("支付金额", "¥" + orderItemBean.money));
 

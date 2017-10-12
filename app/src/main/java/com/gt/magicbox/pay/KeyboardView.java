@@ -50,7 +50,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private TextView should_pay;
     private TextView charge;
     private TextView text_paid_in_amount;
-    private int maxLength = 8;
+    private int maxLength = 4;
     private int keyboardType = 0;
     private double chargeMoney;
     private double realPay;
@@ -139,6 +139,11 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         if (onInputListener!=null)onInputListener.onInput();
+        if (keyboardType==TYPE_INPUT_MONEY||keyboardType==TYPE_CHARGE
+                ||keyboardType==TYPE_MEMBER_RECHARGE_CASH){
+            if (numberString.toString().contains("."))maxLength=7;
+            else maxLength=4;
+        }
         if (numberString.length() <maxLength) {
             if (position <= 8) {
                 if (numberString.toString().equals("0")) {

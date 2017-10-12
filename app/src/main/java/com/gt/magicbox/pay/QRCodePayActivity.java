@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.CreatedOrderBean;
@@ -295,7 +296,7 @@ public class QRCodePayActivity extends BaseActivity {
     }
 
     private void payResultSocket() {
-        socketIOManager = new SocketIOManager(HttpConfig.SOCKET_SERVER_URL);
+        socketIOManager = new SocketIOManager(Constant.SOCKET_SERVER_URL);
         socketIOManager.setOnConnect(new Emitter.Listener() {
             @Override
             public void call(Object... args) {
@@ -425,14 +426,9 @@ public class QRCodePayActivity extends BaseActivity {
             }
 
             if (!TextUtils.isEmpty(resultStr)) {
-//                previewing = false;
-//                mCamera.setPreviewCallback(null);
-//                mCamera.stopPreview();
                 if (!isCodePayRequesting) {
                     getCodePayResult(resultStr, orderNo);
                 }
-                ToastUtil.getInstance().showToast("resultStr=" + resultStr+"  orderNo="+orderNo);
-                //               barcodeScanned = true;
             }
         }
     };

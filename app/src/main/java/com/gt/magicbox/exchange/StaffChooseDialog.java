@@ -113,7 +113,6 @@ public class StaffChooseDialog extends Dialog{
             case R.id.staff_dialog_start:
                 String name=staffName.getText().toString();
 
-                Hawk.put("StaffListBean",staffList);
                 final StaffBean.StaffListBean staff=getStaff(staffList,name);
                 ShopInfoBean shopInfoBean=Hawk.get("ShopInfoBean");
                 HttpCall.getApiService()

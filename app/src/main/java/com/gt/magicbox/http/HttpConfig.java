@@ -23,9 +23,8 @@ public class HttpConfig {
 
    // public static final String SOCKET_SERVER_URL = "http://113.106.202.51:8881";//测试
    //public static final String SOCKET_SERVER_URL = "https://socket.deeptel.com.cn";//
-   public static final String SOCKET_SERVER_URL = "http://nb.socket.deeptel.com.cn";//
 
-    // public static final String SOCKET_SERVER_URL = "http://183.47.242.2:8881";
+     public static final String SOCKET_SERVER_URL = "http://183.47.242.2:8881";//正式socket
 
     //堡垒地址
    // public static final String SOCKET_SERVER_URL = "http://183.47.242.2:8881";
@@ -56,6 +55,6 @@ public class HttpConfig {
     public static final String CECORDS_NOW_EXCHANGE="magicBoxMobile/79B4DE7C/recordsNow";
     public static final String GET_NOW_SR="magicBoxMobile/79B4DE7C/getNowSR";
     public static final String MEMBER_PAY="magicBoxMember/paySuccess";
-    public static final String POS_ORDER="magicBoxMobile/79B4DE7C/customPostMachineOrder";
+    public static final String POS_ORDER="magicBoxMobile/79B4DE7C/cpOrder";
 
 }

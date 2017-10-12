@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.CardGradeInfoBean;
@@ -528,7 +529,7 @@ public class AddMemberActivity extends BaseActivity {
     }
 
     private void followSocket() {
-        socketIOManager = new SocketIOManager(HttpConfig.SOCKET_SERVER_URL);
+        socketIOManager = new SocketIOManager(Constant.SOCKET_SERVER_URL);
         socketIOManager.setOnConnect(new Emitter.Listener() {
             @Override
             public void call(Object... args) {

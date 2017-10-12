@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.bean.OrderBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 import com.gt.magicbox.http.BaseResponse;
@@ -172,7 +173,7 @@ public class OrderPushService extends Service {
      */
     public void initSocketHttp() {
         try {
-            mSocket = IO.socket(HttpConfig.SOCKET_SERVER_URL); // 初始化Socket
+            mSocket = IO.socket(Constant.SOCKET_SERVER_URL); // 初始化Socket
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

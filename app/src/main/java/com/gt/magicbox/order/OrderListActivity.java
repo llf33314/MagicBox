@@ -147,27 +147,29 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 .subscribe(new BaseObserver<OrderListResultBean>() {
                     @Override
                     public void onSuccess(OrderListResultBean data) {
-                        Log.i(TAG, "onSuccess");
+                        Log.d(TAG, "onSuccess");
 
                         if (data != null) {
+                            orderListAdapter.getHeadButtonViewHolder().noPayOrder.setOnClickListener(OrderListActivity.this);
+                            orderListAdapter.getHeadButtonViewHolder().payOrder.setOnClickListener(OrderListActivity.this);
                             if (data.orders != null && data.orders.size() > 0) {
-                                Log.i(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
+                                Log.d(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
                                 orderItemBeanList.addAll(data.orders);
                                 orderListAdapter.setData(orderItemBeanList);
-                                orderListAdapter.getHeadButtonViewHolder().noPayOrder.setOnClickListener(OrderListActivity.this);
-                                orderListAdapter.getHeadButtonViewHolder().payOrder.setOnClickListener(OrderListActivity.this);
                                 if (page == 1) {
-
                                     dialog.dismiss();
                                     if (status == 0)
                                         setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
                                 } else if (page > 1)
                                     pullToRefreshSwipeListView.onPullUpRefreshComplete();
                             } else {
-                                if (page == 1) dialog.dismiss();
+                                if (page == 1) {
+                                    if (status == 0)
+                                    setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
+                                    dialog.dismiss();
+                                }
                                 else if (page > 1) {
                                     pullToRefreshSwipeListView.onPullUpRefreshComplete();
-                                    //pullToRefreshSwipeListView.setHasMoreData(false);
                                 }
                             }
                         }
@@ -175,13 +177,13 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.i(TAG, "onError");
+                        Log.d(TAG, "onError");
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.i(TAG, "onFailure");
+                        Log.d(TAG, "onFailure");
 
                         super.onFailure(code, msg);
                     }

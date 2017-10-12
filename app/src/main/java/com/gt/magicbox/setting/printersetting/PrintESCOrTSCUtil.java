@@ -107,7 +107,7 @@ public class PrintESCOrTSCUtil {
         return tsc;
     }
 
-    public static EscCommand getPrintEscTest(String orderNo,String money,int type,String time){
+    public static EscCommand getPrintEscTest(String orderNo,String money,String staffName,int type,String time){
         ShopInfoBean shopInfoBean= Hawk.get("ShopInfoBean");
         EscCommand esc = new EscCommand();
         esc.addPrintAndFeedLines((byte) 1);
@@ -126,9 +126,8 @@ public class PrintESCOrTSCUtil {
 
         }else
         esc.addText("开单时间："+ TimeUtils.getNowString()+"\n");
-        StaffBean.StaffListBean staffListBean=Hawk.get("StaffListBean");
-        if (staffListBean!=null&& !TextUtils.isEmpty(staffListBean.getName())){
-            esc.addText("收银员："+staffListBean.getName()+"\n");
+        if ( !TextUtils.isEmpty(staffName)){
+            esc.addText("收银员："+staffName+"\n");
 
         }else {
            // esc.addText("收银员：张震\n");

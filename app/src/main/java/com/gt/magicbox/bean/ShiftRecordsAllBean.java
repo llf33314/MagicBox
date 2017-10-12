@@ -52,6 +52,8 @@ public class ShiftRecordsAllBean {
         private double alipayMoney;
         private double wechatMoney;
         private double cashMoney;
+        private double bankMoney;
+        private double memberMoney;
         private int orderInNum;
         private int orderOutNum;
         private double refundMoney;
@@ -187,5 +189,21 @@ public class ShiftRecordsAllBean {
         public void setShopName(String shopName) {
             this.shopName = shopName;
         }
+        public double getBankMoney() {
+            return bankMoney;
+        }
+
+        public void setBankMoney(double bankMoney) {
+            this.bankMoney = bankMoney;
+        }
+
+        public double getMemberMoney() {
+            return memberMoney;
+        }
+
+        public void setMemberMoney(double memberMoney) {
+            this.memberMoney = memberMoney;
+        }
     }
+
 }

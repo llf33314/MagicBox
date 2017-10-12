@@ -8,8 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.base.recyclerview.LineRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.MapBean;
 import com.gt.magicbox.bean.ShiftRecordsAllBean;
@@ -72,16 +74,25 @@ public class ShiftExchangeActivity extends BaseActivity {
     }
 
     private  List<MapBean<String, String>>  getListBean(ShiftRecordsAllBean.ShiftRecordsBean shiftRecordsBean){
+
         List<MapBean<String, String>>  listBean=new ArrayList<MapBean<String, String>>();
-        listBean.add( new MapBean<String ,String>("当班人：", shiftRecordsBean.getStaffName()));
-        listBean.add( new MapBean<String ,String>("门店：", shiftRecordsBean.getShopName()));
-        listBean.add( new MapBean<String ,String>("设备号：", shiftRecordsBean.getEqId()+""));
-        listBean.add( new MapBean<String ,String>("上班时间：",shiftRecordsBean.getStartTime()));
-        listBean.add( new MapBean<String ,String>("实际支付订单数：", shiftRecordsBean.getOrderInNum()+""));
-        listBean.add( new MapBean<String ,String>("实际应收总额：", shiftRecordsBean.getMoney()+""));
-        listBean.add( new MapBean<String ,String>("微信支付：", shiftRecordsBean.getWechatMoney()+""));
-        listBean.add( new MapBean<String ,String>("支付宝：", shiftRecordsBean.getAlipayMoney()+""));
-        listBean.add( new MapBean<String ,String>("现金支付：", shiftRecordsBean.getCashMoney()+""));
+        if (shiftRecordsBean!=null) {
+            listBean.add(new MapBean<String, String>("当班人：", shiftRecordsBean.getStaffName()));
+            listBean.add(new MapBean<String, String>("门店：", shiftRecordsBean.getShopName()));
+            listBean.add(new MapBean<String, String>("设备号：", shiftRecordsBean.getEqId() + ""));
+            listBean.add(new MapBean<String, String>("上班时间：", shiftRecordsBean.getStartTime()));
+            listBean.add(new MapBean<String, String>("实际支付订单数：", shiftRecordsBean.getOrderInNum() + ""));
+            listBean.add(new MapBean<String, String>("实际应收总额：", shiftRecordsBean.getMoney() + ""));
+            listBean.add(new MapBean<String, String>("微信支付：", shiftRecordsBean.getWechatMoney() + ""));
+            listBean.add(new MapBean<String, String>("支付宝：", shiftRecordsBean.getAlipayMoney() + ""));
+            if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
+                listBean.add(new MapBean<String, String>("银行卡：", shiftRecordsBean.getBankMoney() + ""));
+            }
+            listBean.add(new MapBean<String, String>("会员卡支付：", shiftRecordsBean.getMemberMoney() + ""));
+
+            listBean.add(new MapBean<String, String>("现金支付：", shiftRecordsBean.getCashMoney() + ""));
+
+        }
         return listBean;
     }
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.CardTypeInfoBean;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.LoginBean;
+import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
@@ -93,7 +95,11 @@ public class PayResultActivity extends BaseActivity {
                     orderNo=cashOrderBean.getMagicBoxOrder().getOrderNo();
                     else orderNo="";
                 }
-                PrinterConnectService.printEsc0829(orderNo,message+"元", payType,"");
+                StaffBean.StaffListBean staffListBean=Hawk.get("StaffListBean");
+
+                PrinterConnectService.printEsc0829(orderNo,message+"元",
+                        staffListBean!=null&&TextUtils.isEmpty(staffListBean.getName())?"空":staffListBean.getName()
+                        ,payType,"");
                 // RxBus.get().post(new PrintBean(message));
                 break;
         }
