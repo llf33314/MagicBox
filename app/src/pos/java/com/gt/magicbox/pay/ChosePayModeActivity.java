@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -21,7 +23,11 @@ import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.main.GridItem;
+import com.gt.magicbox.main.HomeGridViewAdapter;
 import com.gt.magicbox.main.MoreFunctionDialog;
+import com.gt.magicbox.member.AddMemberActivity;
+import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.pos.bean.AppNameEnum;
 import com.gt.magicbox.pos.bean.bankcardcollection.cancel.CancelBean;
@@ -34,6 +40,7 @@ import com.gt.magicbox.pos.util.PromptUtils;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.FileHelper;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
@@ -46,6 +53,7 @@ import com.ums.upos.sdk.scanner.ScannerManager;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -58,20 +66,21 @@ import butterknife.OnClick;
  */
 
 public class ChosePayModeActivity extends BaseActivity {
+    private String[] itemNameArray = {"会员卡","扫一扫", "码上收","银行卡","现金"};
+    private Integer[] imageResArray = {R.drawable.home_member,R.drawable.chose_scan, R.drawable.chose_code,
+            R.drawable.chose_bank_card,R.drawable.chose_cash};
+    private int[] colorNormalArray = {0xfff04a4a,0xfffdd451, 0xffa871e6,0xfffc7473,0xff4db3ff};
+    private int[] colorFocusedArray = {0x99f04a4a,0x99fdd451, 0x99a871e6,0x99fc7473,0x994db3ff};
+    private ArrayList<GridItem> homeData = new ArrayList<>();
+    private ListView home_grid;
+    private HomeGridViewAdapter gridViewAdapter;
+
     private static final String TAG = ChosePayModeActivity.class.getSimpleName();
-    @BindView(R.id.pay_member)
     RelativeLayout payMember;
     private int customerType;
     public static final int TYPE_FIT_PAY = 0;
     public static final int TYPE_MEMBER_PAY = 1;
     public static final int TYPE_MEMBER_RECHARGE = 2;
-
-    @BindView(R.id.pay_wechat)
-    RelativeLayout payWechat;
-    @BindView(R.id.pay_zfb)
-    RelativeLayout payZfb;
-    @BindView(R.id.pay_cash)
-    RelativeLayout payCash;
     private double money;
     private MoreFunctionDialog dialog;
     private HttpRequestDialog httpRequestDialog;
@@ -81,56 +90,102 @@ public class ChosePayModeActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chose_pay);
+        setContentView(R.layout.activity_member_chose);
         setToolBarTitle("选择支付方式");
         if (this.getIntent() != null) {
             money = this.getIntent().getDoubleExtra("money", 0);
             customerType = this.getIntent().getIntExtra("customerType", 0);
             memberCardBean= (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
         }
-        if (customerType == TYPE_MEMBER_PAY&&
-                memberCardBean!=null&&memberCardBean.ctName.equals("储值卡")) {
-            payMember.setVisibility(View.VISIBLE);
+        initView();
+    }
+    private void initView() {
+        initViewData();
+        home_grid = (ListView) findViewById(R.id.listView);
+        int itemCount=4;
+        if (haveMemberPay()){
+            itemCount=5;
         }
+        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData, itemCount);
+        if (haveMemberPay()){
+            gridViewAdapter.setLogoSize(ConvertUtils.dp2px(30),ConvertUtils.dp2px(30));
+        }else gridViewAdapter.setLogoSize(ConvertUtils.dp2px(40),ConvertUtils.dp2px(40));
+        home_grid.setAdapter(gridViewAdapter);
+        home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent;
+                if (!haveMemberPay()) {
+                    i++;
+                }
+                switch (i) {
+                    case 0:
+                        if (memberCardBean!=null){
+                            if (memberCardBean.money<money) {
+                                if (dialog == null) {
+                                    dialog = new MoreFunctionDialog(ChosePayModeActivity.this, "您的会员卡余额不足，支付失败", R.style.HttpRequestDialogStyle);
+                                    dialog.getConfirmButton().setText("确认");
+                                    dialog.getConfirmButton().setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                }
+                                dialog.show();
+                            }else {
+                                createCashOrder(""+money);
+                            }
+                        }
+                        break;
+                    case 1:
+                        sanPay(""+(int)(money*100),"");
+                        break;
+                    case 2:
+                        codePay(""+(int)(money*100),"");
+
+                        break;
+                    case 3:
+                        bankCardPay(""+(int)(money*100),"");
+
+                        break;
+                    case 4:
+                         intent = new Intent(ChosePayModeActivity.this, PaymentActivity.class);
+
+                        if (customerType==TYPE_MEMBER_RECHARGE){
+                            intent.putExtra("type", PaymentActivity.TYPE_MEMBER_CALC);
+                            intent.putExtra("MemberCardBean",memberCardBean);
+                            intent.putExtra("orderMoney", money);
+                        }else {
+                            intent.putExtra("type", 1);
+                            intent.putExtra("orderMoney", money);
+                        }
+                        startActivity(intent);
+
+                        break;
+                }
+            }
+        });
     }
 
-    @OnClick({R.id.pay_wechat, R.id.pay_zfb, R.id.pay_cash, R.id.pay_member})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.pay_wechat:
-                String extOrderNo="POS"+Hawk.get("shopId",0)+System.currentTimeMillis();
-                sanPay(""+(int)(money*100),"");
-              //  scanner();
-                break;
-            case R.id.pay_zfb:
-                extOrderNo="POS"+Hawk.get("shopId",0)+System.currentTimeMillis();
-                codePay(""+(int)(money*100),"");
-                break;
-            case R.id.pay_member:
-                if (memberCardBean!=null){
-                    if (memberCardBean.money<money) {
-                        if (dialog == null) {
-                            dialog = new MoreFunctionDialog(ChosePayModeActivity.this, "您的会员卡余额不足，支付失败", R.style.HttpRequestDialogStyle);
-                            dialog.getConfirmButton().setText("确认");
-                            dialog.getConfirmButton().setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    dialog.dismiss();
-                                }
-                            });
-                        }
-                        dialog.show();
-                    }else {
-                        createCashOrder(""+money);
-                    }
-                }
-                break;
-            case R.id.pay_cash:
-                bankCardPay(""+(int)(money*100),"");
-                //createCashOrder(""+money);
-                //returnMoney("1","04176165290W","1011");
-                break;
+    private void initViewData() {
+        for (int i = 0; i < itemNameArray.length; i++) {
+            GridItem item = new GridItem();
+            item.setNormalColor(colorNormalArray[i]);
+            item.setFocusedColor(colorFocusedArray[i]);
+            item.setImgRes(imageResArray[i]);
+            item.setName(itemNameArray[i]);
+            homeData.add(item);
         }
+        if (!haveMemberPay()) {
+            homeData.remove(0);
+        }
+    }
+    private boolean haveMemberPay() {
+        if ((customerType == TYPE_MEMBER_PAY &&
+                memberCardBean != null && memberCardBean.ctName.equals("储值卡"))) {
+            return true;
+        } else return false;
     }
 
     /**

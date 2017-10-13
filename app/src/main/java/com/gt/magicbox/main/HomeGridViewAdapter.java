@@ -34,8 +34,10 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
     private int layoutResourceId;
     private ArrayList<GridItem> mGridData = new ArrayList<GridItem>();
     private int itemHeight;
+    private int logoWidth;
+    private int logoHeight;
     private int displayAreaHeight;
-
+    private ViewHolder holder;
     public HomeGridViewAdapter(@NonNull Context context, int resource, ArrayList<GridItem> objects,int heightCount) {
         super(context, resource);
         this.mContext = context;
@@ -65,7 +67,6 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
         if (convertView == null) {
             LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
             convertView = inflater.inflate(layoutResourceId, parent, false);
@@ -75,8 +76,13 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
             holder = new ViewHolder();
             holder.badge = (TextView) convertView.findViewById(R.id.badge);
             holder.textView = (TextView) convertView.findViewById(R.id.name_item);
-
             holder.imageView = (ImageView) convertView.findViewById(R.id.img_item);
+            if (logoHeight>0&&logoWidth>0){
+                RelativeLayout.LayoutParams  layoutParams= (RelativeLayout.LayoutParams) holder.imageView.getLayoutParams();
+                layoutParams.width=logoWidth;
+                layoutParams.height=logoHeight;
+                holder.imageView.setLayoutParams(layoutParams);
+            }
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -110,6 +116,9 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         this.mGridData = mGridData;
         notifyDataSetChanged();
     }
-
+    public void setLogoSize(int width,int height){
+        logoWidth=width;
+        logoHeight=height;
+    }
 
 }

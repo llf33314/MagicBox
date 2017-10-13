@@ -61,7 +61,7 @@ public class OrderInfoActivity extends BaseActivity {
                 if (orderItemBean != null) {
                     if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
                         PrintManager printManager=new PrintManager(OrderInfoActivity.this);
-                        printManager.printReceipt(orderItemBean.order_no, orderItemBean.money + "元",
+                        printManager.startReceiptByText(orderItemBean.order_no, orderItemBean.money + "元",
                                 orderItemBean.type,TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT)
                         , TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name);
                     } else {

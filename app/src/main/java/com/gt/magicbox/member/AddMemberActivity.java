@@ -409,8 +409,8 @@ public class AddMemberActivity extends BaseActivity {
                         wheelDialog.dismiss();
                         if (selectPosition != -1 && selectPosition < listCardName.size()) {
                             memberCardType.setText(listCardName.get(selectPosition));
-                            if (cardTypeInfoBean != null && cardTypeInfoBean.cardType.size() > 0) {
-                                ct_id = cardTypeInfoBean.cardType.get(selectPosition).ctId;
+                            if (cardTypeInfoBean != null && cardTypeInfoBean.getCardType().size() > 0) {
+                                ct_id = cardTypeInfoBean.getCardType().get(selectPosition).getCtId();
                                 getMemberGradeType(ct_id);
                             }
                         }
@@ -423,10 +423,10 @@ public class AddMemberActivity extends BaseActivity {
 
     private ArrayList<String> createArrays(CardTypeInfoBean cardTypeInfoBean) {
         listCardName.clear();
-        if (cardTypeInfoBean != null && cardTypeInfoBean.cardType != null) {
-            for (int i = 0; i < cardTypeInfoBean.cardType.size(); i++) {
-                if (!TextUtils.isEmpty(cardTypeInfoBean.cardType.get(i).ctName))
-                    listCardName.add(cardTypeInfoBean.cardType.get(i).ctName);
+        if (cardTypeInfoBean != null && cardTypeInfoBean.getCardType() != null) {
+            for (int i = 0; i < cardTypeInfoBean.getCardType().size(); i++) {
+                if (!TextUtils.isEmpty(cardTypeInfoBean.getCardType().get(i).getCtName()))
+                    listCardName.add(cardTypeInfoBean.getCardType().get(i).getCtName());
 
             }
         }
