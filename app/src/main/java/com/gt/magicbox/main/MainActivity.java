@@ -90,7 +90,7 @@ public class MainActivity extends BaseActivity {
         goneBack();
         initView();
         //bindOrderService();
-        requestUpdate();
+        //requestUpdate();
 
         if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
             ScreenUtils.setScreenBrightness(MainActivity.this,255);

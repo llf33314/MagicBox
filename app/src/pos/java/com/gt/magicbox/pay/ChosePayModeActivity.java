@@ -252,9 +252,9 @@ public class ChosePayModeActivity extends BaseActivity {
 
     private void memberPay(double discountMoney, final double realMoney , double originMoney, int payType){
       //  String orderCode="MB"+Hawk.get("shopId",0)+System.currentTimeMillis();
-        HttpCall.getApiService()
-                .memberPay(discountMoney,memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney,payType
-                        ,(Integer) Hawk.get("shopId"),originMoney,113)
+        HttpCall.getApiService().
+        memberPay(discountMoney,memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney,payType
+                , Hawk.get("shiftId",0), Hawk.get("shopId",0),originMoney,3,113)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override

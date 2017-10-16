@@ -70,5 +70,6 @@
 
     <string name="welcome_again">欢迎再次光临</string>
     <string name="tech_support">技术支持·多粉  400-889-4522</string>
-
+    <string name="update_later">稍后更新</string>
+    <string name="update_immediately">立即更新</string>
 </resources>

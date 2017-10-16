@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/dp_28"
+        android:id="@+id/text_pay_success"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/pay_success"
+        android:textColor="@color/pay_number"
+        android:textSize="@dimen/dp_18" />
+    <TextView
+        android:layout_below="@id/text_pay_success"
+        android:layout_marginTop="@dimen/dp_85"
+        android:id="@+id/payNumber"
+        android:singleLine="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="365"
+        android:textColor="@color/pay_number"
+        android:textSize="@dimen/dp_36" />
+    <ImageView
+        android:layout_marginTop="@dimen/dp_16"
+        android:layout_below="@id/payNumber"
+        android:background="@drawable/success"
+        android:layout_centerHorizontal="true"
+        android:layout_width="@dimen/dp_73"
+        android:layout_height="@dimen/dp_73" />
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_42"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_63"
+        android:layout_marginLeft="@dimen/dp_14"
+        android:layout_marginRight="@dimen/dp_14"
+        android:background="@drawable/selector_white_button"
+        android:text="@string/confirm"
+        android:textColor="@drawable/selector_text_color"
+        android:textSize="@dimen/dp_16" />
+
+    <Button
+        android:id="@+id/printButton"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_42"
+        android:layout_above="@id/confirmButton"
+        android:layout_margin="@dimen/dp_14"
+        android:background="@drawable/selector_red_button"
+        android:text="@string/print_receipt"
+        android:textColor="@color/white"
+        android:textSize="@dimen/dp_16" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/printButton"
+        android:gravity="center"
+        android:text="@string/cash_success"
+        android:textColor="@color/pay_number"
+        android:textSize="@dimen/dp_18" />
+
+</RelativeLayout>

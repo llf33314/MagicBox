@@ -137,7 +137,7 @@ public class PrintManager {
             fontConfig.setSize(FontSizeEnum.MIDDLE);
             // 打印文字 *//*
             printer.setPrnText("会员卡充值\n", fontConfig);// 打印文字
-            printer.setPrnText("订单号：" + orderNo + "\n\n\n", fontConfig); // 打印文字
+            //printer.setPrnText("订单号：" + orderNo + "\n\n\n", fontConfig); // 打印文字
 
             printer.setPrnText("会员昵称：" + memberCardBean.nickName + "\n", fontConfig);
             printer.setPrnText("会员卡号：" + memberCardBean.cardNo + "\n\n", fontConfig);
@@ -147,7 +147,8 @@ public class PrintManager {
             printer.setPrnText("充值方式：" + BaseConstant.PAY_TYPE[type] + "\n", fontConfig);
             printer.setPrnText("充值时间：" + TimeUtils.getNowString() + "\n\n", fontConfig);
             printer.setBitmap(createLineBitmap(20, 1));
-            printer.setPrnText("当前卡内余额：          " + balance + "元\n\n\n", fontConfig);
+            printer.setPrnText("当前卡内余额：      " + balance + "元\n\n\n", fontConfig);
+            printer.setBitmap(createEmptyBitmap(1));
             printer.setPrnText(" 技术支持 ·多粉 400-889-4522", fontConfig);
             printer.startPrint(new OnPrintResultListener() {
 
@@ -198,9 +199,6 @@ public class PrintManager {
                 printer.setBitmap(createEmptyBitmap(1));
                 printer.setPrnText("接班人签名：\n\n",fontConfig);
                 printer.setBitmap(createEmptyBitmap(1));
-                fontConfig.setBold(BoldEnum.BOLD);
-                fontConfig.setSize(FontSizeEnum.BIG);
-                printer.setPrnText("       欢迎再次光临\n",fontConfig);
                 fontConfig.setBold(BoldEnum.NOT_BOLD);
                 fontConfig.setSize(FontSizeEnum.MIDDLE);
                 printer.setPrnText(" 技术支持 ·多粉 400-889-4522",fontConfig);

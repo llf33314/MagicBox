@@ -148,8 +148,10 @@ public interface ApiService {
                                        @Query("orderCode") String orderCode,
                                        @Query("pay") double pay,
                                        @Query("payType") int payType,
+                                       @Query("shiftId") int shiftId,
                                        @Query("storeId") int storeId,
                                        @Query("totalMoney") double totalMoney,
+                                       @Query("type") int type,
                                        @Query("ucType") int ucType);
     @FormUrlEncoded
     @POST(HttpConfig.POS_ORDER)

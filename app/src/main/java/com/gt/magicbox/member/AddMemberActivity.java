@@ -100,7 +100,7 @@ public class AddMemberActivity extends BaseActivity {
     private SocketIOManager socketIOManager;
     private boolean isPhoneRegistered;
     private MoreFunctionDialog mMoreFunctionDialog;
-    private int bit = 0;
+    private int bit = 1;
     private int memberId;
     private CardTypeInfoBean cardTypeInfoBean;
     private Handler handler = new Handler() {
