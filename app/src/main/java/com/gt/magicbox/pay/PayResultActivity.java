@@ -13,8 +13,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.CardTypeInfoBean;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.LoginBean;
@@ -24,12 +26,18 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.order.OrderInfoActivity;
+import com.gt.magicbox.setting.printersetting.PrintManager;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.orhanobut.hawk.Hawk;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -58,6 +66,7 @@ public class PayResultActivity extends BaseActivity {
     public static final int TYPE_CASH = 2;
     private int payType;
     private MediaPlayer mp = new MediaPlayer();
+    private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,9 +106,18 @@ public class PayResultActivity extends BaseActivity {
                 }
                 StaffBean.StaffListBean staffListBean=Hawk.get("StaffListBean");
 
-                PrinterConnectService.printEsc0829(orderNo,message+"元",
-                        staffListBean!=null&&TextUtils.isEmpty(staffListBean.getName())?"空":staffListBean.getName()
-                        ,payType,"");
+
+                if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
+                    PrintManager printManager=new PrintManager(PayResultActivity.this);
+                    printManager.startReceiptByText(orderNo, message+ "元",
+                            payType, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT)
+                            , staffListBean!=null&&TextUtils.isEmpty(staffListBean.getName())?"空":staffListBean.getName());
+                } else {
+                    PrinterConnectService.printEsc0829(orderNo,message+"元",
+                            staffListBean!=null&&TextUtils.isEmpty(staffListBean.getName())?"空":staffListBean.getName()
+                            ,payType,"");
+
+                }
                 // RxBus.get().post(new PrintBean(message));
                 break;
         }

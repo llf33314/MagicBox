@@ -35,11 +35,14 @@ public class HintDismissDialog extends Dialog {
     View.OnClickListener onOkClickListener;
     View.OnClickListener onCancelClickListener;
 
-    public boolean isShowBtnOk=false;
-    public boolean isShowBtnCancel=false;
+    public boolean isShowBtnOk = false;
+    public boolean isShowBtnCancel = false;
+    @BindView(R.id.close)
+    TextView close;
     private String okText;
     private String cancelText;
-    private String msg="";
+    private String msg = "";
+
     private HintDismissDialog(@NonNull Context context) {
         super(context);
     }
@@ -47,13 +50,14 @@ public class HintDismissDialog extends Dialog {
     private HintDismissDialog(@NonNull Context context, @StyleRes int themeResId) {
         super(context, themeResId);
     }
-    public HintDismissDialog(@NonNull Context context,String msg) {
-        this(context,R.style.HttpRequestDialogStyle,msg);
+
+    public HintDismissDialog(@NonNull Context context, String msg) {
+        this(context, R.style.HttpRequestDialogStyle, msg);
     }
 
-    public HintDismissDialog(@NonNull Context context, @StyleRes int themeResId,String msg) {
+    public HintDismissDialog(@NonNull Context context, @StyleRes int themeResId, String msg) {
         super(context, themeResId);
-        this.msg=msg;
+        this.msg = msg;
     }
 
     @Override
@@ -61,37 +65,42 @@ public class HintDismissDialog extends Dialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_dismiss_hint);
         ButterKnife.bind(this);
-        if (!TextUtils.isEmpty(msg)){
+        if (!TextUtils.isEmpty(msg)) {
             tvMsg.setText(msg);
         }
-        if (isShowBtnOk){
+        if (isShowBtnOk) {
             btnOk.setVisibility(View.VISIBLE);
         }
-        if (isShowBtnCancel){
+        if (isShowBtnCancel) {
             btnCancel.setVisibility(View.VISIBLE);
         }
-
-        if (!TextUtils.isEmpty(okText)){
+        if (!isShowBtnCancel&&!isShowBtnOk){
+            close.setVisibility(View.VISIBLE);
+        }
+        if (!TextUtils.isEmpty(okText)) {
             btnOk.setText(okText);
         }
-        if (!TextUtils.isEmpty(cancelText)){
+        if (!TextUtils.isEmpty(cancelText)) {
             btnCancel.setText(cancelText);
         }
     }
 
-    @OnClick({R.id.dialog_dismiss_ok,R.id.dialog_dismiss_cancel})
+    @OnClick({R.id.dialog_dismiss_ok, R.id.dialog_dismiss_cancel, R.id.close})
     public void onViewClicked(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.dialog_dismiss_ok:
-                if (onOkClickListener!=null){
+                if (onOkClickListener != null) {
                     onOkClickListener.onClick(v);
                 }
                 this.dismiss();
                 break;
             case R.id.dialog_dismiss_cancel:
-                if (onCancelClickListener!=null){
+                if (onCancelClickListener != null) {
                     onCancelClickListener.onClick(v);
                 }
+                this.dismiss();
+                break;
+            case R.id.close:
                 this.dismiss();
                 break;
         }
@@ -99,9 +108,9 @@ public class HintDismissDialog extends Dialog {
     }
 
     public HintDismissDialog setOnOkClickListener(@Nullable View.OnClickListener onOkClickListener) {
-        isShowBtnOk=true;
+        isShowBtnOk = true;
         this.onOkClickListener = onOkClickListener;
-        if (btnOk!=null){
+        if (btnOk != null) {
             btnOk.setVisibility(View.VISIBLE);
         }
 
@@ -109,34 +118,38 @@ public class HintDismissDialog extends Dialog {
     }
 
     public HintDismissDialog setOnCancelClickListener(@Nullable View.OnClickListener onCancelClickListener) {
-        isShowBtnCancel=true;
+        isShowBtnCancel = true;
         this.onCancelClickListener = onCancelClickListener;
-        if (btnCancel!=null){//没有执行show之前
+        if (btnCancel != null) {//没有执行show之前
             btnCancel.setVisibility(View.VISIBLE);
         }
         return this;
     }
-    public HintDismissDialog setOkText(String text){
-        okText=text;
-        if (btnOk!=null){
+
+    public HintDismissDialog setOkText(String text) {
+        okText = text;
+        if (btnOk != null) {
             btnOk.setVisibility(View.VISIBLE);
             btnOk.setText(text);
         }
         return this;
     }
-    public HintDismissDialog setCancelText(String text){
-        cancelText=text;
-        if (btnCancel!=null){
+
+    public HintDismissDialog setCancelText(String text) {
+        cancelText = text;
+        if (btnCancel != null) {
             btnCancel.setVisibility(View.VISIBLE);
             btnCancel.setText(text);
         }
         return this;
     }
-    public HintDismissDialog setDialogCanceledOnTouchOutside(Boolean canceledOnTouchOutside){
+
+    public HintDismissDialog setDialogCanceledOnTouchOutside(Boolean canceledOnTouchOutside) {
         setCanceledOnTouchOutside(canceledOnTouchOutside);
         return this;
     }
-    public HintDismissDialog setDialogOnDismissListener(OnDismissListener dialogOnDismissListener){
+
+    public HintDismissDialog setDialogOnDismissListener(OnDismissListener dialogOnDismissListener) {
         setOnDismissListener(dialogOnDismissListener);
         return this;
     }

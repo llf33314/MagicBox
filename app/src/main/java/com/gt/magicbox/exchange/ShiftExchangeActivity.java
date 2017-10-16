@@ -22,6 +22,7 @@ import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
@@ -113,13 +114,23 @@ public class ShiftExchangeActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.staff_dialog_out_work:
                 //打印下班单 并且清空shithId
-                Hawk.put("shiftId",0);
+                new HintDismissDialog(ShiftExchangeActivity.this,"是否现在下班").setCancelText("取消")
+                        .setOnCancelClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                            }
+                        }).setOkText("确定")
+                        .setOnOkClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Hawk.put("shiftId",0);
+                                if (shiftRecordsBean!=null){
+                                    PrinterConnectService.printEscExchange(shiftRecordsBean);
+                                }
+                                onBackPressed();
+                            }
+                        }).show();
 
-                if (shiftRecordsBean!=null){
-                    PrinterConnectService.printEscExchange(shiftRecordsBean);
-                }
-
-                onBackPressed();
                 break;
         }
     }

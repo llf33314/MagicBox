@@ -96,7 +96,7 @@ public class PrintManager {
             ShopInfoBean shopInfoBean = Hawk.get("ShopInfoBean");
             if (shopInfoBean != null && !TextUtils.isEmpty(shopInfoBean.getShopName()))
                 printer.setPrnText(shopInfoBean.getShopName() + "\n", fontConfig);
-
+            printer.setBitmap(createLineBitmap(20,1));
             fontConfig.setBold(BoldEnum.NOT_BOLD);
             fontConfig.setSize(FontSizeEnum.MIDDLE);
             if (!TextUtils.isEmpty(orderNo))
@@ -106,6 +106,8 @@ public class PrintManager {
             if (!TextUtils.isEmpty(cashier))
                 printer.setPrnText("收银员:" + cashier + "\n", fontConfig);
             printer.setPrnText("支付方式: " + BaseConstant.PAY_TYPE[type] + "\n", fontConfig);
+            printer.setBitmap(createLineBitmap(20,1));
+
             if (!TextUtils.isEmpty(money))
                 printer.setPrnText("订单金额: " + money + "\n", fontConfig);
             printer.setBitmap(createLineBitmap(20,1));
@@ -114,6 +116,13 @@ public class PrintManager {
                 printer.setPrnText("联系电话: " + shopInfoBean.getShops().getTelephone() + "\n", fontConfig);
             if (shopInfoBean != null && !TextUtils.isEmpty(shopInfoBean.getShops().getAddress()))
                 printer.setPrnText("地址: " + shopInfoBean.getShops().getAddress() + "\n", fontConfig);
+            printer.setBitmap(createLineBitmap(20,1));
+            fontConfig.setBold(BoldEnum.BOLD);
+            fontConfig.setSize(FontSizeEnum.BIG);
+            printer.setPrnText("       欢迎再次光临\n",fontConfig);
+            fontConfig.setBold(BoldEnum.NOT_BOLD);
+            fontConfig.setSize(FontSizeEnum.MIDDLE);
+            printer.setPrnText(" 技术支持 ·多粉 400-889-4522",fontConfig);
             printer.startPrint(new OnPrintResultListener() {
 
                 @Override
