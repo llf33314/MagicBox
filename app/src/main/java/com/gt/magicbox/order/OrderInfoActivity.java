@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
@@ -61,7 +60,7 @@ public class OrderInfoActivity extends BaseActivity {
                 if (orderItemBean != null) {
                     if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
                         PrintManager printManager=new PrintManager(OrderInfoActivity.this);
-                        printManager.startReceiptByText(orderItemBean.order_no, orderItemBean.money + "元",
+                        printManager.startPrintReceiptByText(orderItemBean.order_no, orderItemBean.money + "元",
                                 orderItemBean.type,TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT)
                         , TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name);
                     } else {

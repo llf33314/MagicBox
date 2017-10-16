@@ -16,9 +16,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gprinter.command.EscCommand;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseConstant;
+import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.bean.ShopInfoBean;
+import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.orhanobut.hawk.Hawk;
 import com.ums.AppHelper;
@@ -69,7 +73,7 @@ public class PrintManager {
         this.activity=activity;
         this.context=activity.getApplicationContext();
     }
-    public void startReceiptByText(final String orderNo, final String money, final int type, final String time, final String cashier) {
+    public void startPrintReceiptByText(final String orderNo, final String money, final int type, final String time, final String cashier) {
         try {
             BaseSystemManager.getInstance().deviceServiceLogin(
                     activity, null, "99999998",//设备ID，生产找后台配置
@@ -83,6 +87,139 @@ public class PrintManager {
                     });
         } catch (SdkException e) {
             // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    public void startPrintExchangeByText(final ShiftRecordsAllBean.ShiftRecordsBean shiftBean) {
+        try {
+            BaseSystemManager.getInstance().deviceServiceLogin(
+                    activity, null, "99999998",//设备ID，生产找后台配置
+                    new OnServiceStatusListener() {
+                        @Override
+                        public void onStatus(int arg0) {//arg0可见ServiceResult.java
+                            if (0 == arg0 || 2 == arg0 || 100 == arg0) {//0：登录成功，有相关参数；2：登录成功，无相关参数；100：重复登录。
+                                printExchangeByText(shiftBean);
+                            }
+                        }
+                    });
+        } catch (SdkException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    public void startPrintMemberRechargeByText(final MemberCardBean memberCardBean, final String orderNo, final String money, final int type, final String balance) {
+        try {
+            BaseSystemManager.getInstance().deviceServiceLogin(
+                    activity, null, "99999998",//设备ID，生产找后台配置
+                    new OnServiceStatusListener() {
+                        @Override
+                        public void onStatus(int arg0) {//arg0可见ServiceResult.java
+                            if (0 == arg0 || 2 == arg0 || 100 == arg0) {//0：登录成功，有相关参数；2：登录成功，无相关参数；100：重复登录。
+                                printMemberRechargeByText(memberCardBean, orderNo, money, type, balance);
+                            }
+                        }
+                    });
+        } catch (SdkException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    private void printMemberRechargeByText(MemberCardBean memberCardBean, String orderNo, String money, int type, String balance) {
+        ShopInfoBean shopInfoBean = Hawk.get("ShopInfoBean");
+        PrinterManager printer = new PrinterManager();
+        try {
+            printer.initPrinter();
+            FontConfig fontConfig = new FontConfig();
+            fontConfig.setBold(BoldEnum.BOLD);
+            fontConfig.setSize(FontSizeEnum.BIG);
+            printer.setPrnText(shopInfoBean.getShopName() + "\n", fontConfig); // 打印文字
+            fontConfig.setBold(BoldEnum.NOT_BOLD);
+            fontConfig.setSize(FontSizeEnum.MIDDLE);
+            // 打印文字 *//*
+            printer.setPrnText("会员卡充值\n", fontConfig);// 打印文字
+            printer.setPrnText("订单号：" + orderNo + "\n\n\n", fontConfig); // 打印文字
+
+            printer.setPrnText("会员昵称：" + memberCardBean.nickName + "\n", fontConfig);
+            printer.setPrnText("会员卡号：" + memberCardBean.cardNo + "\n\n", fontConfig);
+            printer.setBitmap(createLineBitmap(20, 1));
+
+            printer.setPrnText("充值金额：" + money + "元" + "\n", fontConfig);
+            printer.setPrnText("充值方式：" + BaseConstant.PAY_TYPE[type] + "\n", fontConfig);
+            printer.setPrnText("充值时间：" + TimeUtils.getNowString() + "\n\n", fontConfig);
+            printer.setBitmap(createLineBitmap(20, 1));
+            printer.setPrnText("当前卡内余额：          " + balance + "元\n\n\n", fontConfig);
+            printer.setPrnText(" 技术支持 ·多粉 400-889-4522", fontConfig);
+            printer.startPrint(new OnPrintResultListener() {
+
+                @Override
+                public void onPrintResult(int arg0) {//arg0可见ServiceResult.java
+                    try {
+                        BaseSystemManager.getInstance().deviceServiceLogout();
+                    } catch (SdkException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (SdkException e) {
+
+        } catch (CallServiceException e) {
+            e.printStackTrace();
+        }
+    }
+    private void printExchangeByText(ShiftRecordsAllBean.ShiftRecordsBean shiftBean){
+        PrinterManager printer = new PrinterManager();
+        try {
+            printer.initPrinter();
+            FontConfig fontConfig = new FontConfig();
+            fontConfig.setBold(BoldEnum.BOLD);
+            fontConfig.setSize(FontSizeEnum.BIG);
+            printer.setPrnText("          交班表\n",fontConfig);
+            fontConfig.setBold(BoldEnum.NOT_BOLD);
+            fontConfig.setSize(FontSizeEnum.MIDDLE);
+            if(shiftBean!=null){
+                printer.setPrnText("门店："+shiftBean.getShopName()+"\n",fontConfig);
+                printer.setPrnText("设备号："+shiftBean.getEqId()+"\n",fontConfig);
+                printer.setPrnText("当班人："+shiftBean.getStaffName()+"\n",fontConfig);
+                printer.setBitmap(createLineBitmap(20,1));
+                printer.setPrnText("上班时间："+shiftBean.getStartTime()+"\n",fontConfig);
+                printer.setPrnText("下班时间："+TimeUtils.getNowString()+"\n",fontConfig);
+                printer.setBitmap(createLineBitmap(20,1));
+                printer.setPrnText("实际支付订单数："+shiftBean.getOrderInNum()+"\n",fontConfig);
+                printer.setPrnText("实际应收金额："+shiftBean.getMoney()+"\n",fontConfig);
+                printer.setPrnText("微信支付："+shiftBean.getWechatMoney()+"\n",fontConfig);
+                printer.setPrnText("支付宝："+shiftBean.getAlipayMoney()+"\n",fontConfig);
+                printer.setPrnText("现金支付："+shiftBean.getCashMoney()+"\n",fontConfig);
+                printer.setPrnText("会员卡："+shiftBean.getMemberMoney()+"\n",fontConfig);
+                printer.setPrnText("银行卡："+shiftBean.getBankMoney()+"\n",fontConfig);
+
+                printer.setBitmap(createLineBitmap(20,1));
+                printer.setPrnText("当班人签名：\n\n",fontConfig);
+                printer.setBitmap(createEmptyBitmap(1));
+                printer.setPrnText("接班人签名：\n\n",fontConfig);
+                printer.setBitmap(createEmptyBitmap(1));
+                fontConfig.setBold(BoldEnum.BOLD);
+                fontConfig.setSize(FontSizeEnum.BIG);
+                printer.setPrnText("       欢迎再次光临\n",fontConfig);
+                fontConfig.setBold(BoldEnum.NOT_BOLD);
+                fontConfig.setSize(FontSizeEnum.MIDDLE);
+                printer.setPrnText(" 技术支持 ·多粉 400-889-4522",fontConfig);
+            }
+                printer.startPrint(new OnPrintResultListener() {
+
+                @Override
+                public void onPrintResult(int arg0) {//arg0可见ServiceResult.java
+                    try {
+                        BaseSystemManager.getInstance().deviceServiceLogout();
+                    } catch (SdkException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }catch (SdkException e){
+
+        } catch (CallServiceException e) {
             e.printStackTrace();
         }
     }

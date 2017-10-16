@@ -7,16 +7,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.exchange.ShiftExchangeActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.setting.printersetting.PrintManager;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -111,7 +115,12 @@ public class MemberDoResultActivity extends BaseActivity {
     @OnClick(R.id.confirmButton)
     public void onViewClicked() {
         if (type == TYPE_MEMBER_RECHARGE) {
-            PrinterConnectService.printEscMemberRecharge(memberCardBean, orderNo, "" + rechargeMoney, payType, "" + balance);
+            if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
+                PrintManager printManager=new PrintManager(MemberDoResultActivity.this);
+                printManager.startPrintMemberRechargeByText(memberCardBean, orderNo, "" + rechargeMoney, payType, "" + balance);
+            } else   if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
+                PrinterConnectService.printEscMemberRecharge(memberCardBean, orderNo, "" + rechargeMoney, payType, "" + balance);
+            }
         }
         finish();
     }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -20,6 +21,8 @@ import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MainActivity;
+import com.gt.magicbox.order.OrderInfoActivity;
+import com.gt.magicbox.setting.printersetting.PrintManager;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
@@ -124,8 +127,13 @@ public class ShiftExchangeActivity extends BaseActivity {
                             @Override
                             public void onClick(View v) {
                                 Hawk.put("shiftId",0);
-                                if (shiftRecordsBean!=null){
-                                    PrinterConnectService.printEscExchange(shiftRecordsBean);
+                                if (shiftRecordsBean != null) {
+                                    if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
+                                        PrintManager printManager=new PrintManager(ShiftExchangeActivity.this);
+                                        printManager.startPrintExchangeByText(shiftRecordsBean);
+                                    } else {
+                                        PrinterConnectService.printEscExchange(shiftRecordsBean);
+                                    }
                                 }
                                 onBackPressed();
                             }

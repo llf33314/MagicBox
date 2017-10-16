@@ -217,6 +217,8 @@ public class PrintESCOrTSCUtil {
         esc.addText("微信支付："+shiftBean.getWechatMoney()+"\n");
         esc.addText("支付宝："+shiftBean.getAlipayMoney()+"\n");
         esc.addText("现金支付："+shiftBean.getCashMoney()+"\n");
+        esc.addText("会员卡："+shiftBean.getMemberMoney()+"\n");
+
         esc.addText("--------------------------------\n\n");
         esc.addText("当班人签名：\n\n");
         esc.addText("接班人签名：\n\n");

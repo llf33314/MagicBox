@@ -17,16 +17,12 @@ import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
-import com.gt.magicbox.bean.CardTypeInfoBean;
 import com.gt.magicbox.bean.CashOrderBean;
-import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.StaffBean;
-import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
-import com.gt.magicbox.order.OrderInfoActivity;
 import com.gt.magicbox.setting.printersetting.PrintManager;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
@@ -34,7 +30,6 @@ import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.orhanobut.hawk.Hawk;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -109,7 +104,7 @@ public class PayResultActivity extends BaseActivity {
 
                 if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
                     PrintManager printManager=new PrintManager(PayResultActivity.this);
-                    printManager.startReceiptByText(orderNo, message+ "元",
+                    printManager.startPrintReceiptByText(orderNo, message+ "元",
                             payType, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT)
                             , staffListBean!=null&&TextUtils.isEmpty(staffListBean.getName())?"空":staffListBean.getName());
                 } else {
