@@ -60,6 +60,7 @@ public class PaymentActivity extends BaseActivity {
     private MoreFunctionDialog dialog;
     private int code;
     private boolean isRequestingData=false;
+    private Runnable handlerRunnable;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,14 +95,15 @@ public class PaymentActivity extends BaseActivity {
             @Override
             public void onInput() {
                 if (zBarCameraManager!=null){
+                    if (handlerRunnable!=null)handler.removeCallbacks(handlerRunnable);
                     zBarCameraManager.setHandleData(false);
-                    handler.postDelayed(new Runnable() {
+                    handlerRunnable=new Runnable() {
                         @Override
                         public void run() {
                             zBarCameraManager.setHandleData(true);
-
                         }
-                    },1000);
+                    };
+                    handler.postDelayed(handlerRunnable,10000);
                 }
             }
         });

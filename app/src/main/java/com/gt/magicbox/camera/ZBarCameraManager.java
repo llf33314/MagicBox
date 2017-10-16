@@ -86,6 +86,7 @@ public class ZBarCameraManager {
     };
     Camera.PreviewCallback previewCb = new Camera.PreviewCallback() {
         public void onPreviewFrame(byte[] data, Camera camera) {
+            Log.d("camera","isHandleData="+isHandleData);
             if (!isHandleData)return;
             Camera.Size size = camera.getParameters().getPreviewSize();
 

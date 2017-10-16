@@ -96,14 +96,11 @@ public class PrintManager {
             ShopInfoBean shopInfoBean = Hawk.get("ShopInfoBean");
             if (shopInfoBean != null && !TextUtils.isEmpty(shopInfoBean.getShopName()))
                 printer.setPrnText(shopInfoBean.getShopName() + "\n", fontConfig);
-            printer.setBitmap(createEmptyBitmap(1));
 
             fontConfig.setBold(BoldEnum.NOT_BOLD);
             fontConfig.setSize(FontSizeEnum.MIDDLE);
             if (!TextUtils.isEmpty(orderNo))
                 printer.setPrnText("订单号: " + orderNo + "\n", fontConfig);
-            printer.setBitmap(createEmptyBitmap(1));
-
             if (!TextUtils.isEmpty(time))
                 printer.setPrnText("开单时间: " + time + "\n", fontConfig);
             if (!TextUtils.isEmpty(cashier))
@@ -111,6 +108,8 @@ public class PrintManager {
             printer.setPrnText("支付方式: " + BaseConstant.PAY_TYPE[type] + "\n", fontConfig);
             if (!TextUtils.isEmpty(money))
                 printer.setPrnText("订单金额: " + money + "\n", fontConfig);
+            printer.setBitmap(createLineBitmap(20,1));
+
             if (shopInfoBean != null && !TextUtils.isEmpty(shopInfoBean.getShops().getTelephone()))
                 printer.setPrnText("联系电话: " + shopInfoBean.getShops().getTelephone() + "\n", fontConfig);
             if (shopInfoBean != null && !TextUtils.isEmpty(shopInfoBean.getShops().getAddress()))
@@ -226,15 +225,15 @@ public class PrintManager {
         v.draw(c);
         return b;
     }
-    private  Bitmap createLineBitmap(int height)
+    private  Bitmap createLineBitmap(int emptyTopHeight,int height)
     {
         View v=new View(context);
-        //这个方法也非常重要，设置布局的尺寸和位置
-        Bitmap b = Bitmap.createBitmap(200,height, Bitmap.Config.ARGB_8888);
+        Bitmap b = Bitmap.createBitmap(200,height+emptyTopHeight, Bitmap.Config.ARGB_8888);
         Paint p=new Paint();
         p.setColor(0xff000000);
+        p.setStrokeWidth(height);
         Canvas c = new Canvas(b);
-        c.drawLine(0,0,200,1,p);
+        c.drawLine(0,emptyTopHeight,200,emptyTopHeight,p);
         v.draw(c);
         return b;
     }
