@@ -33,18 +33,34 @@
         android:layout_gravity="right|center_vertical"
         android:gravity="center_vertical"
         >
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_wifi_sign"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_20"
+
+                android:layout_marginRight="@dimen/dp_8"
+                />
+            <ImageView
+                android:id="@+id/iv_wifi_lock"
+                android:layout_width="@dimen/dp_8"
+                android:layout_height="@dimen/dp_8"
+                android:src="@drawable/wifi_lock"
+                android:layout_marginRight="@dimen/dp_5"
+                android:layout_gravity="right|bottom"
+                />
+        </FrameLayout>
         <ImageView
-            android:id="@+id/iv_wifi_lock"
-            android:layout_width="@dimen/dp_18"
-            android:layout_height="@dimen/dp_18"
-            android:src="@drawable/iocn_wifi_lock"
-            android:layout_marginRight="@dimen/dp_5"
+            android:layout_width="@dimen/dp_8"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/dp_2"
+            android:paddingBottom="@dimen/dp_2"
+            android:src="@drawable/setting_go"
             />
-        <ImageView
-            android:id="@+id/iv_wifi_sign"
-            android:layout_width="@dimen/dp_20"
-            android:layout_height="@dimen/dp_20"
-            />
+
     </LinearLayout>
 
 </FrameLayout>

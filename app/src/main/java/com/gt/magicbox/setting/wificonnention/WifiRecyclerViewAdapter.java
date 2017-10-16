@@ -22,7 +22,7 @@ public class WifiRecyclerViewAdapter extends RecyclerView.Adapter<WifiRecyclerVi
 
     private List<WifiBean> wifiList;
 
-    private final int [] WIFI_SIGN_IOCN={R.drawable.wifi_sign_1,R.drawable.wifi_sign_2,R.drawable.wifi_sign_3,R.drawable.wifi_sign_4};
+    private final int [] WIFI_SIGN_IOCN={R.drawable.wifi_1,R.drawable.wifi_2,R.drawable.wifi_3};
 
     @Override
     public void onClick(View v) {
@@ -88,7 +88,8 @@ public class WifiRecyclerViewAdapter extends RecyclerView.Adapter<WifiRecyclerVi
         }else{
             holder.lock.setVisibility(View.VISIBLE);
         }
-        if (wifiBean.getSignLevel()>=1&&wifiBean.getSignLevel()<=4){
+        if (wifiBean.getSignLevel()>=1&&wifiBean.getSignLevel()<=3){
+
             holder.sign.setImageResource(WIFI_SIGN_IOCN[wifiBean.getSignLevel()-1]);
         }
 
