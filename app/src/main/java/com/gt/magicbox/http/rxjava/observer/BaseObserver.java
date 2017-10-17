@@ -70,7 +70,8 @@ public abstract class BaseObserver<T> implements Observer<T> {
      * 简单提示 服务器返回信息 若需要处理 则重写
      */
     protected void onFailure(int code,String msg) {
-        ToastUtil.getInstance().showNewShort(msg);
+        Log.d("BaseObserver","code="+code+"  msg="+msg);
+       // ToastUtil.getInstance().showNewShort(msg);
     }
 
 }

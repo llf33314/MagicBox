@@ -8,8 +8,10 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.coupon.CouponChoseActivity;
 import com.gt.magicbox.main.GridItem;
 import com.gt.magicbox.main.HomeGridViewAdapter;
@@ -53,9 +55,15 @@ public class MemberChooseActivity extends BaseActivity {
                 Intent intent;
                 switch (i) {
                     case 0:
-                        intent=new Intent(MemberChooseActivity.this,PaymentActivity.class);
-                        intent.putExtra("type",4);
-                        startActivity(intent);
+                        if (Constant.product == BaseConstant.PRODUCTS[0]) {
+                            intent=new Intent(MemberChooseActivity.this,PaymentActivity.class);
+                            intent.putExtra("type",4);
+                            startActivity(intent);
+                        } else if (Constant.product == BaseConstant.PRODUCTS[1]) {
+                            intent = new Intent(MemberChooseActivity.this, VerificationChoseActivity.class);
+                            intent.putExtra("type",4);
+                            startActivity(intent);
+                        }
                         break;
                     case 1:
                         intent =new Intent(MemberChooseActivity.this,AddMemberActivity.class);

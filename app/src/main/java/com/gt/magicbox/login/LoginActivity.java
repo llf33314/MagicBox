@@ -66,6 +66,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        goneBack();
         loginPresenter = new LoginPresenter(this);
         if (!TextUtils.isEmpty(Hawk.get("userName","")))
         userEditText.setText(Hawk.get("userName",""));

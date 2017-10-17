@@ -106,10 +106,10 @@ public class PayResultActivity extends BaseActivity {
                     PrintManager printManager=new PrintManager(PayResultActivity.this);
                     printManager.startPrintReceiptByText(orderNo, message+ "元",
                             payType, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT)
-                            , staffListBean!=null&&TextUtils.isEmpty(staffListBean.getName())?"空":staffListBean.getName());
+                            , staffListBean!=null&&!TextUtils.isEmpty(staffListBean.getName())?staffListBean.getName():"空");
                 } else {
                     PrinterConnectService.printEsc0829(orderNo,message+"元",
-                            staffListBean!=null&&TextUtils.isEmpty(staffListBean.getName())?"空":staffListBean.getName()
+                            staffListBean!=null&&!TextUtils.isEmpty(staffListBean.getName())?staffListBean.getName():"空"
                             ,payType,"");
 
                 }

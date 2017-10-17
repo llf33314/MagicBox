@@ -101,6 +101,9 @@
             android:name=".member.MemberChooseActivity"
             android:launchMode="singleTask" />
         <activity
+            android:name=".member.VerificationChoseActivity"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".member.AddMemberActivity"
             android:launchMode="singleTask" />
         <activity

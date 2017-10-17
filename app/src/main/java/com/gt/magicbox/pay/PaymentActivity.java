@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
@@ -27,6 +28,7 @@ import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.member.MemberRechargeActivity;
+import com.gt.magicbox.member.VerificationChoseActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
@@ -81,12 +83,14 @@ public class PaymentActivity extends BaseActivity {
             setToolBarTitle("收银");
         } else if (type == TYPE_MEMBER_PAY) {
             setToolBarTitle("会员收银");
-            initZBar();
+            if (Constant.product == BaseConstant.PRODUCTS[0])
+                initZBar();
         } else if (type == TYPE_COUPON_VERIFICATION) {
             setToolBarTitle("优惠券核销");
         } else if (type == TYPE_MEMBER_RECHARGE) {
             setToolBarTitle("会员卡充值");
-            initZBar();
+            if (Constant.product == BaseConstant.PRODUCTS[0])
+                initZBar();
         }
         keyboardView = (KeyboardView) findViewById(R.id.keyboard);
         keyboardView.setOrderMoney(orderMoney);
@@ -94,16 +98,16 @@ public class PaymentActivity extends BaseActivity {
         keyboardView.setOnInputListener(new KeyboardView.OnInputListener() {
             @Override
             public void onInput() {
-                if (zBarCameraManager!=null){
-                    if (handlerRunnable!=null)handler.removeCallbacks(handlerRunnable);
+                if (zBarCameraManager != null) {
+                    if (handlerRunnable != null) handler.removeCallbacks(handlerRunnable);
                     zBarCameraManager.setHandleData(false);
-                    handlerRunnable=new Runnable() {
+                    handlerRunnable = new Runnable() {
                         @Override
                         public void run() {
                             zBarCameraManager.setHandleData(true);
                         }
                     };
-                    handler.postDelayed(handlerRunnable,10000);
+                    handler.postDelayed(handlerRunnable, 10000);
                 }
             }
         });
@@ -130,10 +134,17 @@ public class PaymentActivity extends BaseActivity {
 
             @Override
             public void onMemberPay(double money) {
-                Intent intent = new Intent(PaymentActivity.this, PaymentActivity.class);
-                intent.putExtra("type", 2);
-                intent.putExtra("orderMoney", money);
-                startActivity(intent);
+                if (Constant.product == BaseConstant.PRODUCTS[0]) {
+                    Intent intent = new Intent(PaymentActivity.this, PaymentActivity.class);
+                    intent.putExtra("type", 2);
+                    intent.putExtra("orderMoney", money);
+                    startActivity(intent);
+                } else if (Constant.product == BaseConstant.PRODUCTS[1]) {
+                    Intent intent = new Intent(PaymentActivity.this, VerificationChoseActivity.class);
+                    intent.putExtra("orderMoney", money);
+                    startActivity(intent);
+                }
+
             }
 
             @Override

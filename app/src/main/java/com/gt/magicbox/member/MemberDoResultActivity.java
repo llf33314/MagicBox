@@ -79,6 +79,7 @@ public class MemberDoResultActivity extends BaseActivity {
         AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
         AppManager.getInstance().finishActivity(MemberRechargeActivity.class);
         AppManager.getInstance().finishActivity(PaymentActivity.class);
+        AppManager.getInstance().finishActivity(VerificationChoseActivity.class);
     }
 
     private void initData() {
