@@ -253,6 +253,7 @@ public class MainActivity extends BaseActivity {
        // Hawk.put("shiftId",0);
         Log.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId")
         + "  product="+Constant.product);
+        requestUpdate();
         super.onResume();
     }
     private void requestUpdate() {

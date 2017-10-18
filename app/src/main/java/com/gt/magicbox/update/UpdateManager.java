@@ -3,6 +3,7 @@ package com.gt.magicbox.update;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -62,7 +63,7 @@ public class UpdateManager {
     private AppUpdateBean appUpdateBean;
     private Dialog dialog;
     private boolean isNeedUpdate = false;
-
+    private boolean isShowUpdateUI=true;
 
     private OnTaskFinishListener onTaskFinishListener;
     private Handler mHandler = new Handler() {
@@ -217,7 +218,13 @@ public class UpdateManager {
                     askUpdateDialog.getConfirmButton().setVisibility(View.GONE);
                     askUpdateDialog.getCancelButton().setVisibility(View.GONE);
                     downloadAPK(appUpdateBean.apkUrl, APK_FILE_NAME);
-
+                    askUpdateDialog.setCanceledOnTouchOutside(false);
+                    askUpdateDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            mHandler.sendEmptyMessage(CANCEL_DOWNLOAD);
+                        }
+                    });
                 }
             });
         }
@@ -231,7 +238,7 @@ public class UpdateManager {
             switch (v.getId()) {
                 case R.id.start:
                     Log.d(TAG, "onClickListener start");
-                    Log.i(TAG, "downloadAPK appUpdateBean.apkUrl=" + appUpdateBean.apkUrl);
+                    Log.d(TAG, "downloadAPK appUpdateBean.apkUrl=" + appUpdateBean.apkUrl);
                     downloadAPK(appUpdateBean.apkUrl, APK_FILE_NAME);
                     break;
                 case R.id.pause:
