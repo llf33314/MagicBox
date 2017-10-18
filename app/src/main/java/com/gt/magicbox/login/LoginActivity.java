@@ -116,10 +116,17 @@ public class LoginActivity extends BaseActivity implements ILoginView {
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        if (code==999){
+                        if (code==999||code==1){
+                            if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
                             new HintDismissDialog(LoginActivity.this,"账号或密码错误").show();
                         }
                         super.onFailure(code, msg);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
+                        super.onError(e);
                     }
                 });
     }
@@ -139,6 +146,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                     @Override
                     protected void onFailure(int code, String msg) {
                         Log.i(TAG, "onFailure code=" + code + "  msg=" + msg);
+                        if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
                     }
                 });
     }

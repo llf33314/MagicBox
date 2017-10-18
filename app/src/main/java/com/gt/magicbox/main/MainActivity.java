@@ -244,7 +244,7 @@ public class MainActivity extends BaseActivity {
     }
     private void getUnpaidOrderCount(){
         HttpCall.getApiService()
-                .getUnpaidOrderCount(PhoneUtils.getIMEI(), (String) Hawk.get("token"))
+                .getUnpaidOrderCount(PhoneUtils.getIMEI())
                 .compose(ResultTransformer.<UnpaidOrderBean>transformer())
                 .subscribe(new BaseObserver<UnpaidOrderBean>() {
                     @Override
@@ -263,7 +263,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
-      //  getUnpaidOrderCount();
+       getUnpaidOrderCount();
        // Hawk.put("shiftId",0);
         Log.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId")
         + "  product="+Constant.product);

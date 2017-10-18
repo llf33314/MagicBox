@@ -116,7 +116,7 @@ public class OrderPushService extends Service {
     };
     private void getUnpaidOrderCount(){
         HttpCall.getApiService()
-                .getUnpaidOrderCount(PhoneUtils.getIMEI(), (String) Hawk.get("token"))
+                .getUnpaidOrderCount(PhoneUtils.getIMEI())
                 .compose(ResultTransformer.<UnpaidOrderBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<UnpaidOrderBean>() {
                     @Override

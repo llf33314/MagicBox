@@ -50,8 +50,7 @@ public interface ApiService {
                                                             @Query("shiftId") int shiftId);
 
     @POST(HttpConfig.GET_UNPAID_ORDER_URL)
-    Observable<BaseResponse<UnpaidOrderBean>> getUnpaidOrderCount(@Query("eqCode") String eqCode,
-                                                                  @Query("token") String token);
+    Observable<BaseResponse<UnpaidOrderBean>> getUnpaidOrderCount(@Query("eqCode") String eqCode);
 
     @POST(HttpConfig.CHANGE_BIND)
     Observable<BaseResponse> changeBind(@Query("eqCode") String eqCode,
