@@ -141,6 +141,7 @@ public class PaymentActivity extends BaseActivity {
                     startActivity(intent);
                 } else if (Constant.product == BaseConstant.PRODUCTS[1]) {
                     Intent intent = new Intent(PaymentActivity.this, VerificationChoseActivity.class);
+                    intent.putExtra("type", 2);
                     intent.putExtra("orderMoney", money);
                     startActivity(intent);
                 }
@@ -222,7 +223,7 @@ public class PaymentActivity extends BaseActivity {
                             Log.d(TAG, "findMemberCardByPhone onSuccess");
 
                             if (bean.ctName.equals("折扣卡") && type == TYPE_MEMBER_RECHARGE) {
-                                dialog = new MoreFunctionDialog(getApplicationContext(), "折扣卡不可以进行充值", R.style.HttpRequestDialogStyle);
+                                dialog = new MoreFunctionDialog(PaymentActivity.this, "折扣卡不可以进行充值", R.style.HttpRequestDialogStyle);
                                 dialog.show();
                             } else {
                                 Intent intent = null;

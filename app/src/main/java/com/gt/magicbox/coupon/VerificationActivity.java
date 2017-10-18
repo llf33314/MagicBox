@@ -147,6 +147,7 @@ public class VerificationActivity extends BaseActivity {
                 intent.putExtra("money", paidInAmountMoney);
                 intent.putExtra("memberCardBean",memberCardBean);
                 startActivity(intent);
+                AppManager.getInstance().finishActivity();
                 break;
             case R.id.cancel:
                 AppManager.getInstance().finishActivity();

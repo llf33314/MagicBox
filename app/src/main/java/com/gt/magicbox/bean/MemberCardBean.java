@@ -18,7 +18,7 @@ public class MemberCardBean implements Serializable{
     public String gradeName = "";
     public int ctId;
     public String phone = "";
-    public int fans_currency;
+    public double fans_currency;
     public String nickName = "";
     public List<Recharge> recharges = new ArrayList<>();
     public double money;

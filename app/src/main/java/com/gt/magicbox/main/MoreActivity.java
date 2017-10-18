@@ -128,7 +128,7 @@ public class MoreActivity extends BaseActivity {
     private void checkUpdate(){
         if (SystemClock.uptimeMillis()-clickTime<1500)return;
             clickTime= SystemClock.uptimeMillis();
-        UpdateManager updateManager=new UpdateManager(this, HttpConfig.APP_ID);
+        UpdateManager updateManager=new UpdateManager(this, HttpConfig.APP_ID,UpdateManager.UPDATE_DIALOG);
         updateManager.requestUpdate();
         updateManager.setOnTaskFinishListener(new OnTaskFinishListener() {
             @Override

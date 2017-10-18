@@ -52,6 +52,7 @@ public abstract class BaseObserver<T> implements Observer<T> {
         } else if(e instanceof javax.net.ssl.SSLHandshakeException){
             ToastUtil.getInstance().showToast("HTTPS异常");
         } else if(e instanceof JsonParseException || e instanceof JSONException || e instanceof ParseException){
+            Log.d("okhttp","e="+e.toString());
             ToastUtil.getInstance().showToast("后台数据有误");
         }else{
             e.printStackTrace();

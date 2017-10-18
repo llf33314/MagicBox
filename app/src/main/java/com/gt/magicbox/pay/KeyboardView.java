@@ -145,13 +145,13 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             else maxLength=4;
         }
         if (numberString.length() <maxLength) {
+            if (position <= 10&&numberString.toString().contains(".")
+                    &&numberString.toString().substring(numberString.toString().indexOf("."),numberString.toString().length()).length()>2){
+                return;
+            }
             if (position <= 8) {
                 if (numberString.toString().equals("0")) {
                     numberString.deleteCharAt(0);
-                }
-                if (numberString.toString().contains(".")
-                        &&numberString.toString().substring(numberString.toString().indexOf("."),numberString.toString().length()).length()>2){
-                return;
                 }
                 numberString.append("" + (position + 1));
             } else if (position == 9) {

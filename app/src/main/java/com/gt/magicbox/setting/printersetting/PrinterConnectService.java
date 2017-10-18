@@ -15,6 +15,8 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.gprinter.aidl.GpService;
@@ -28,11 +30,14 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.MyApplication;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.ShiftRecordsAllBean;
+import com.gt.magicbox.main.MoreActivity;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.setting.printersetting.bluetooth.BluetoothUtil;
 import com.gt.magicbox.setting.printersetting.bluetooth.OpenPrinterPortMsg;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.HintDismissDialog;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -72,7 +77,7 @@ public class PrinterConnectService extends Service {
 
     private static UsbDevice mUsbDevice;
 
-    private  static MoreFunctionDialog hintNotConnectDialog;
+    private  static HintDismissDialog hintDismissDialog;
 
     /**
      * 端口连接状态广播
@@ -320,12 +325,23 @@ public class PrinterConnectService extends Service {
 
     }
 
-    private static void showHintNotConnectDialog(){
-        if (hintNotConnectDialog==null){
-            hintNotConnectDialog=new MoreFunctionDialog(MyApplication.getAppContext(),"打印机未连接请连接后再打印",R.style.HttpRequestDialogStyle);
-            hintNotConnectDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+    private static void showHintNotConnectDialog() {
+        if (hintDismissDialog == null) {
+            Log.d("app","AppManager.getInstance().currentActivity()="+AppManager.getInstance().currentActivity().toString());
+            hintDismissDialog = new HintDismissDialog(AppManager.getInstance().currentActivity(), "打印机未连接请连接后再打印")
+                    .setOkText("去设置").setCancelText("取消").setOnOkClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(AppManager.getInstance().currentActivity(), PrinterSettingActivity.class);
+                            AppManager.getInstance().currentActivity().startActivity(intent);
+                        }
+                    }).setOnCancelClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                        }
+                    });
         }
-        hintNotConnectDialog.show();
+        hintDismissDialog.show();
 
     }
 

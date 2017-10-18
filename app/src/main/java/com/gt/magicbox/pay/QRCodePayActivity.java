@@ -42,6 +42,7 @@ import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
@@ -258,6 +259,16 @@ public class QRCodePayActivity extends BaseActivity {
                         @Override
                         public void onFailure(int code, String msg) {
                             isCodePayRequesting = false;
+                            if (code==1) {
+                                HintDismissDialog dismissDialog = new HintDismissDialog(QRCodePayActivity.this, msg);
+                                dismissDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                        isCodePayRequesting = true;
+                                    }
+                                });
+                                dismissDialog.show();
+                            }
                             super.onFailure(code, msg);
                         }
                     });

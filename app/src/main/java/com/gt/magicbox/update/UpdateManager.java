@@ -27,6 +27,7 @@ import com.gt.magicbox.update.ui.UpdateDialog;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
+import com.orhanobut.hawk.Hawk;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,10 @@ import okhttp3.Response;
 public class UpdateManager {
     private final static String TAG = "update";
     private Context context;
-
+    private int type;
+    public static final int UPDATE_DIALOG=0;
+    public static final int UPDATE_BADGE=1;
+    public static final int UPDATE_BADGE_AND_DIALOG=2;
     private String appId = "";
     //String VERSION_URL = "https://deeptel.com.cn/app/79B4DE7C/getInfoByAppId.do?appId=";
     String VERSION_URL = "https://duofriend.com/app/79B4DE7C/getInfoByAppId.do?appId=";
@@ -75,11 +79,16 @@ public class UpdateManager {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case NEED_UPDATE:
+                    if (type==UPDATE_DIALOG)
                     showAskUpdateDialog();
-                    //主菜单显示可更新1
-                    RxBus.get().post(new UpdateMainBadgeBean(1,5));
-                    RxBus.get().post(new UpdateMoreBadgeBean(1,4));
-                    //showDownloadDialog();
+                    else if (type==UPDATE_BADGE) {
+                        RxBus.get().post(new UpdateMainBadgeBean(1, 5));
+                        RxBus.get().post(new UpdateMoreBadgeBean(1, 4));
+                    }else if(type==UPDATE_BADGE_AND_DIALOG){
+                        RxBus.get().post(new UpdateMainBadgeBean(1, 5));
+                        RxBus.get().post(new UpdateMoreBadgeBean(1, 4));
+                        showAskUpdateDialog();
+                    }
                     break;
                 case DOWNLOADING:
                     int progress = msg.arg1;
@@ -108,7 +117,8 @@ public class UpdateManager {
         }
     };
 
-    public UpdateManager(Context context, String appId) {
+    public UpdateManager(Context context, String appId,int type) {
+        this.type=type;
         this.appId = appId;
         this.context = context;
     }
@@ -179,11 +189,11 @@ public class UpdateManager {
             if (updateBean != null&&!TextUtils.isEmpty(updateBean.appVersionCode)) {
                 appUpdateBean = updateBean;
                 isNeedUpdate = compareVersion(Integer.parseInt(updateBean.appVersionCode));
+                Hawk.put("newestVersion",updateBean.appVersionCode);
             }
             return null;
         }
     }
-
     /**
      * 显示软件下载对话框
      */
@@ -232,6 +242,7 @@ public class UpdateManager {
                         @Override
                         public void onDismiss(DialogInterface dialog) {
                             mHandler.sendEmptyMessage(CANCEL_DOWNLOAD);
+                            Hawk.put("UPDATE_DIALOG-"+ Hawk.get("newestVersion",""),false);
                         }
                     });
                 }

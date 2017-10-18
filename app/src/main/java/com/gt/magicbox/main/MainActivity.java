@@ -31,6 +31,7 @@ import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
@@ -100,6 +101,7 @@ public class MainActivity extends BaseActivity {
         startService(intent);
     }
     private void initView() {
+        requestUpdate();
         initViewData();
         home_grid = (GridView) findViewById(R.id.gird);
         gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData,3);
@@ -267,18 +269,16 @@ public class MainActivity extends BaseActivity {
        // Hawk.put("shiftId",0);
         Log.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId")
         + "  product="+Constant.product);
-       // requestUpdate();
         super.onResume();
     }
     private void requestUpdate() {
-        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String date = sDateFormat.format(new java.util.Date());
-        String keyName="update-"+date;
-        boolean onceDayRequestUpdate = Hawk.get(keyName, false);
-        if (!onceDayRequestUpdate) {
-            UpdateManager updateManager = new UpdateManager(this, "MagicBox");
+        boolean isShowUpdateDialog=Hawk.get("UPDATE_DIALOG-"+ Hawk.get("newestVersion",""),true);
+        if (isShowUpdateDialog) {
+            UpdateManager updateManager = new UpdateManager(this, "MagicBox",UpdateManager.UPDATE_BADGE_AND_DIALOG);
             updateManager.requestUpdate();
-            Hawk.put(keyName, true);
+        }else {
+            UpdateManager updateManager = new UpdateManager(this, "MagicBox",UpdateManager.UPDATE_BADGE);
+            updateManager.requestUpdate();
         }
     }
 }
