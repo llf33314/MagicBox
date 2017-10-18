@@ -19,8 +19,12 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.gt.magicbox.R;
+import com.gt.magicbox.base.MyApplication;
+import com.gt.magicbox.bean.UpdateMainBadgeBean;
+import com.gt.magicbox.bean.UpdateMoreBadgeBean;
 import com.gt.magicbox.update.bean.AppUpdateBean;
 import com.gt.magicbox.update.ui.UpdateDialog;
+import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 
@@ -72,6 +76,9 @@ public class UpdateManager {
             switch (msg.what) {
                 case NEED_UPDATE:
                     showAskUpdateDialog();
+                    //主菜单显示可更新1
+                    RxBus.get().post(new UpdateMainBadgeBean(1,5));
+                    RxBus.get().post(new UpdateMoreBadgeBean(1,4));
                     //showDownloadDialog();
                     break;
                 case DOWNLOADING:
@@ -141,11 +148,13 @@ public class UpdateManager {
     }
 
     private boolean compareVersion(int versionCode) {
+
         int currentVersionCode = AppUtils.getAppVersionCode();
         Log.i(TAG, "checkUpdate versionCode=" + versionCode + "  currentVersionCode=" + currentVersionCode);
         if (versionCode > 0 && versionCode != currentVersionCode) {
             if (versionCode > currentVersionCode) {
                 mHandler.sendEmptyMessage(NEED_UPDATE);
+                MyApplication.setNeedUpdateApp(true);
                 return true;
             }
         }

@@ -3,28 +3,30 @@ package com.gt.magicbox.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.MyApplication;
+import com.gt.magicbox.bean.UpdateMainBadgeBean;
+import com.gt.magicbox.bean.UpdateMoreBadgeBean;
 import com.gt.magicbox.http.HttpConfig;
-import com.gt.magicbox.login.LoginActivity;
 import com.gt.magicbox.setting.printersetting.PrinterSettingActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.OnTaskFinishListener;
 import com.gt.magicbox.update.UpdateManager;
-import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
-import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.ManualDialog;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 /**
  * Description:
@@ -109,6 +111,19 @@ public class MoreActivity extends BaseActivity {
                 }
             }
         });
+
+        RxBus.get().toObservable(UpdateMoreBadgeBean.class).subscribe(new Consumer<UpdateMoreBadgeBean>() {
+            @Override
+            public void accept(@NonNull UpdateMoreBadgeBean updateMoreBadgeBean) throws Exception {
+                if (gridViewAdapter!=null){
+                    if (updateMoreBadgeBean.getPosition()<0|| updateMoreBadgeBean.getPosition()>gridViewAdapter.getCount()-1){
+                        return;
+                    }
+                    gridViewAdapter.updateBadge(updateMoreBadgeBean);
+                }
+            }
+        });
+
     }
     private void checkUpdate(){
         if (SystemClock.uptimeMillis()-clickTime<1500)return;
@@ -131,6 +146,10 @@ public class MoreActivity extends BaseActivity {
             item.setFocusedColor(colorFocusedArray[i]);
             item.setImgRes(imageResArray[i]);
             item.setName(itemNameArray[i]);
+            //App更新右上角上标提示
+            if (i==4&& MyApplication.isNeedUpdateApp()){
+                item.setMessageCount(1);
+            }
             homeData.add(item);
         }
     }

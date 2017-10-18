@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
@@ -15,10 +13,10 @@ import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
+import com.gt.magicbox.base.MyApplication;
 import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
-import com.gt.magicbox.coupon.CouponChoseActivity;
-import com.gt.magicbox.coupon.DistributeCouponActivity;
+import com.gt.magicbox.bean.UpdateMainBadgeBean;
 import com.gt.magicbox.exchange.ExchangeWorkActivity;
 import com.gt.magicbox.exchange.ShiftExchangeActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -28,7 +26,6 @@ import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.order.OrderListActivity;
 import com.gt.magicbox.pay.PaymentActivity;
-import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.UpdateManager;
@@ -36,8 +33,6 @@ import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
-import com.gt.magicbox.utils.commonutil.ToastUtil;
-import com.gt.magicbox.webview.WebViewActivity;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 import com.service.OrderPushService;
@@ -203,6 +198,19 @@ public class MainActivity extends BaseActivity {
 
         portIntent=new Intent(this, PrinterConnectService.class);
         startService(portIntent);
+
+
+        RxBus.get().toObservable(UpdateMainBadgeBean.class).subscribe(new Consumer<UpdateMainBadgeBean>() {
+            @Override
+            public void accept(UpdateMainBadgeBean updateMainBadgeBean) throws Exception {
+                if (gridViewAdapter!=null){
+                    if (updateMainBadgeBean.getPosition()<0|| updateMainBadgeBean.getPosition()>gridViewAdapter.getCount()-1){
+                        return;
+                    }
+                    gridViewAdapter.updateBadge(updateMainBadgeBean);
+                }
+            }
+        });
     }
 
     private void initViewData() {
@@ -212,6 +220,12 @@ public class MainActivity extends BaseActivity {
             item.setFocusedColor(colorFocusedArray[i]);
             item.setImgRes(imageResArray[i]);
             item.setName(itemNameArray[i]);
+
+            //App更新右上角上标提示
+            if (i==5&&MyApplication.isNeedUpdateApp()){
+                item.setMessageCount(1);
+            }
+
             homeData.add(item);
         }
     }

@@ -15,6 +15,9 @@ import com.orhanobut.hawk.Hawk;
 public class MyApplication extends Application {
 
     private static Context applicationContext;
+
+    //标记是否需要显示更新右上角
+    private static boolean needUpdateApp=false;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -36,4 +39,11 @@ public class MyApplication extends Application {
 
     }
 
+    public static boolean isNeedUpdateApp() {
+        return needUpdateApp;
+    }
+
+    public static void setNeedUpdateApp(boolean needUpdateApp) {
+        MyApplication.needUpdateApp = needUpdateApp;
+    }
 }

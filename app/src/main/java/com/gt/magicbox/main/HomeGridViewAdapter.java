@@ -2,9 +2,6 @@ package com.gt.magicbox.main;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.StateListDrawable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,13 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
-import com.gt.magicbox.utils.commonutil.ConvertUtils;
+import com.gt.magicbox.bean.UpdateBadgeBean;
+import com.gt.magicbox.bean.UpdateMainBadgeBean;
 import com.gt.magicbox.utils.commonutil.DrawableUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
 
@@ -47,7 +44,6 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         int toolbarHeight =(int) mContext.getResources().getDimension(R.dimen.toolbar_height);
         displayAreaHeight = screenHeight - toolbarHeight -ScreenUtils.getStatusHeight();
         itemHeight = displayAreaHeight / heightCount ;
-
     }
 
     @Override
@@ -121,4 +117,13 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         logoHeight=height;
     }
 
+    /**
+     * 更新右上角红色数字
+         数字
+         第几个菜单
+     */
+    public void updateBadge(UpdateBadgeBean bean){
+        this.mGridData.get(bean.getPosition()).setMessageCount(bean.getMessageCount());
+        notifyDataSetChanged();
+    }
 }
