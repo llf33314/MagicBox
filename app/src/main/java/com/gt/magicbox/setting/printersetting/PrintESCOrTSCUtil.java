@@ -171,7 +171,7 @@ public class PrintESCOrTSCUtil {
         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
         esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印左对齐
         esc.addText("会员卡充值\n");// 打印文字
-        esc.addText("订单号："+orderNo+"\n\n\n"); // 打印文字
+        //esc.addText("订单号："+orderNo+"\n\n\n"); // 打印文字
 
         esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
         esc.addText("会员昵称："+ memberCardBean.nickName+"\n");

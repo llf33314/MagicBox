@@ -124,6 +124,7 @@ public class MemberDoResultActivity extends BaseActivity {
             }
         }
         finish();
+
     }
 
 }

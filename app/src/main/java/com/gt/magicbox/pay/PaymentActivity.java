@@ -220,10 +220,9 @@ public class PaymentActivity extends BaseActivity {
                     @Override
                     protected void onSuccess(MemberCardBean bean) {
                         if (bean != null) {
-                            Log.d(TAG, "findMemberCardByPhone onSuccess");
-
-                            if (bean.ctName.equals("折扣卡") && type == TYPE_MEMBER_RECHARGE) {
-                                dialog = new MoreFunctionDialog(PaymentActivity.this, "折扣卡不可以进行充值", R.style.HttpRequestDialogStyle);
+                            if ((bean.ctName.equals("折扣卡")||bean.ctName.equals("积分卡"))
+                            && type == TYPE_MEMBER_RECHARGE) {
+                                dialog = new MoreFunctionDialog(PaymentActivity.this, "此类型的卡暂不支持充值", R.style.HttpRequestDialogStyle);
                                 dialog.show();
                             } else {
                                 Intent intent = null;

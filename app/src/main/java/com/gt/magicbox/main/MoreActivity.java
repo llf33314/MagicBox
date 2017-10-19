@@ -8,8 +8,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.base.MyApplication;
 import com.gt.magicbox.bean.UpdateMainBadgeBean;
 import com.gt.magicbox.bean.UpdateMoreBadgeBean;
@@ -19,6 +21,7 @@ import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.OnTaskFinishListener;
 import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.ManualDialog;
 import com.orhanobut.hawk.Hawk;
@@ -81,32 +84,11 @@ public class MoreActivity extends BaseActivity {
                     case 4:
                         checkUpdate();
                         break;
-//                    case 4:
-//                        intent=new Intent(Settings.ACTION_SETTINGS);
-//                        startActivity(intent);
                     case 5:
                         Hawk.delete("busId");
                         Hawk.delete("shiftId");
-                        //AppManager.getInstance().exitApp();
                         intent=new Intent(MoreActivity.this,LoadingActivity.class);
                         startActivity(intent);
-//                        if (logoutDialog==null){
-//                            logoutDialog=new LogoutDialog(MoreActivity.this);
-//                        }
-//                        logoutDialog.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                switch (v.getId()){
-//                                    case R.id.confirm:
-//                                        Hawk.delete("token");
-//                                        AppManager.getInstance().exitApp();
-//                                        Intent intent=new Intent(MoreActivity.this,LoadingActivity.class);
-//                                        startActivity(intent);
-//                                        break;
-//                                }
-//                            }
-//                        });
-//                        logoutDialog.show();
                         break;
                 }
             }

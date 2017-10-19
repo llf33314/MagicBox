@@ -358,12 +358,10 @@ public class QRCodePayActivity extends BaseActivity {
                 intent.putExtra("payType", (int) Hawk.get("payType"));
                 intent.putExtra("orderNo", orderNo);
                 startActivity(intent);
-
-                AppManager.getInstance().finishActivity(QRCodePayActivity.class);
-                AppManager.getInstance().finishActivity(PaymentActivity.class);
-                AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
             }
-
+            AppManager.getInstance().finishActivity(QRCodePayActivity.class);
+            AppManager.getInstance().finishActivity(PaymentActivity.class);
+            AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
         }
     }
 

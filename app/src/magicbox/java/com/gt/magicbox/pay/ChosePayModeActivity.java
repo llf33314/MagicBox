@@ -26,6 +26,7 @@ import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.orhanobut.hawk.Hawk;
 
@@ -212,9 +213,14 @@ public class ChosePayModeActivity extends BaseActivity {
                     public void onFailure(int code, String msg) {
                         Log.d(TAG, "memberPay" +
                                 " onFailure msg=" + msg);
+                        memberPayFailed();
                         super.onFailure(code, msg);
                     }
                 });
+    }
+    private void memberPayFailed(){
+        if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
+        new HintDismissDialog(ChosePayModeActivity.this,"会员卡支付失败!").show();
     }
     private void createCashOrder(String money) {
         loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");

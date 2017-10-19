@@ -108,7 +108,6 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
     }
 
     public void setGridData(ArrayList<GridItem> mGridData) {
-        Log.i("grid","setGridData");
         this.mGridData = mGridData;
         notifyDataSetChanged();
     }

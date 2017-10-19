@@ -85,6 +85,23 @@
 
 -dontwarn android.support.**
 
+#retrofit 混淆保护
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn okhttp3.**
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+-dontwarn retrofit2.Platform$Java8
+
+#rxlifecycle2
+-dontwarn com.trello.rxlifecycle2.**
+#微兔打印机
+-dontwarn com.printsdk.**
+
+-dontwarn org.xmlpull.v1.**
+-dontwarn org.**
+
+-dontwarn com.ums.**
 #keep相关注解
 -keep class android.support.annotation.Keep
 
@@ -101,6 +118,10 @@
 -keepclasseswithmembers class * {
     @android.support.annotation.Keep <init>(...);
 }
+
+-keep class org.xmlpull.v1.** { *; }
+
+
 
 # 保持测试相关的代码
 #-dontnote junit.framework.**
