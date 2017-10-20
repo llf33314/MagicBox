@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
+def keystorePSW = ''
+def keystoreAlias = ''
+def keystoreAliasPSW = ''
+Properties properties = new Properties()
+// local.properties file in the root director
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
+keystorePSW = properties.getProperty("keystore.password")
+keystoreAlias = properties.getProperty("keystore.alias")
+keystoreAliasPSW = properties.getProperty("keystore.alias_password")
 android {
     compileSdkVersion 25
     buildToolsVersion "26.0.0"
@@ -10,6 +19,14 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters 'arm64-v8a', 'armeabi-v7a', 'armeabi', "x86"
+        }
+    }
+    signingConfigs {
+        release {
+            keyAlias keystoreAlias
+            keyPassword keystoreAliasPSW
+            storeFile file("magic_box_key.jks")
+            storePassword keystorePSW
         }
     }
     buildTypes {
@@ -25,6 +42,7 @@ android {
             versionCode 1
             versionName "1.0.0"
             resValue "string", "app_name", "多粉魔盒"
+            signingConfig signingConfigs.release
 
 
         }
@@ -33,9 +51,27 @@ android {
             versionCode 2
             versionName "1.0.1"
             resValue "string", "app_name", "多粉支付"
+            signingConfig signingConfigs.release
 
         }
     }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            if (output.outputFile != null && output.outputFile.name.endsWith('.apk')) {
+                def flavorName = variant.flavorName.startsWith("_") ? variant.flavorName.substring(1) : variant.flavorName
+                def apkFile = new File(
+                        output.outputFile.getParent(),
+                        "MagicBoxApp_${flavorName}_${variant.buildType.name}_v${variant.versionName}_${buildTime()}.apk")
+                output.outputFile = apkFile
+            }
+        }
+    }
+
+}
+def buildTime() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMdd')
+    return formattedDate
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
