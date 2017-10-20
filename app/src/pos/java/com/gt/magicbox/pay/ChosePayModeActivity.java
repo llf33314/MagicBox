@@ -21,6 +21,7 @@ import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.GridItem;
@@ -29,6 +30,7 @@ import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.member.AddMemberActivity;
 import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.member.MemberDoResultActivity;
+import com.gt.magicbox.member.MemberRechargeActivity;
 import com.gt.magicbox.pos.bean.AppNameEnum;
 import com.gt.magicbox.pos.bean.bankcardcollection.cancel.CancelBean;
 import com.gt.magicbox.pos.bean.bankcardcollection.pay.PayBean;
@@ -188,39 +190,6 @@ public class ChosePayModeActivity extends BaseActivity {
         } else return false;
     }
 
-    /**
-     * @param type 0-微信，1-支付宝
-     */
-    private void startERCodePay(int type) {
-        if (NetworkUtils.isConnected()) {
-
-            Hawk.put("payType", type);
-            Intent intent = new Intent(ChosePayModeActivity.this, QRCodePayActivity.class);
-            if (customerType==TYPE_MEMBER_RECHARGE){
-                intent.putExtra("type", QRCodePayActivity.TYPE_MEMBER_RECHARGE);
-                intent.putExtra("MemberCardBean",memberCardBean);
-            }else {
-                intent.putExtra("type", QRCodePayActivity.TYPE_PAY);
-
-            }
-            intent.putExtra("money", money);
-            intent.putExtra("payMode", type);
-            startActivity(intent);
-        } else {
-            if (dialog == null) {
-                dialog = new MoreFunctionDialog(ChosePayModeActivity.this, "没有网络，请连接后重试", R.style.HttpRequestDialogStyle);
-                dialog.getConfirmButton().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                        Intent intent = new Intent(ChosePayModeActivity.this, WifiConnectionActivity.class);
-                        startActivity(intent);
-                    }
-                });
-            }
-            dialog.show();
-        }
-    }
     private void postMemberSettlement() {
         if (memberCardBean != null) {
             HttpCall.getApiService()
@@ -286,6 +255,11 @@ public class ChosePayModeActivity extends BaseActivity {
                 });
     }
     private void posOrder(String orderNo,  double money , int payType){
+        if (customerType==TYPE_MEMBER_RECHARGE){//充值不生成订单
+            memberRecharge(payType);
+            payFinish();
+            return;
+        }
         final LoadingProgressDialog dialog =new LoadingProgressDialog(ChosePayModeActivity.this,"付款成功，生成订单中...");
         dialog.show();
         HttpCall.getApiService()
@@ -316,11 +290,17 @@ public class ChosePayModeActivity extends BaseActivity {
                     }
                 });
     }
-    private void payFinish(){
+    private void payFinish() {
         AppManager.getInstance().finishActivity();
         AppManager.getInstance().finishActivity(PaymentActivity.class);
-        Intent intent = new Intent(ChosePayModeActivity.this, PaymentActivity.class);
-        startActivity(intent);
+        if (customerType == TYPE_MEMBER_RECHARGE) {
+            AppManager.getInstance().finishActivity(MemberRechargeActivity.class);
+            AppManager.getInstance().finishActivity(MemberChooseActivity.class);
+        } else if (customerType == TYPE_MEMBER_PAY) {
+            Intent intent = new Intent(ChosePayModeActivity.this, PaymentActivity.class);
+            startActivity(intent);
+        }
+
     }
     private void createCashOrder(String money) {
         loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");
@@ -532,5 +512,41 @@ public class ChosePayModeActivity extends BaseActivity {
             PromptUtils.getInstance(this).showSysErrorLong();
         }
     }
+    private void memberRecharge(final int payType) {
+        Log.d(TAG,"memberRecharge type="+payType);
 
+        if (memberCardBean != null) {
+            Log.d(TAG,"memberRecharge");
+            HttpCall.getApiService()
+                    .memberRecharge(memberCardBean.memberId, money, payType, (Integer) Hawk.get("shopId"))
+                    .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                    .compose(new DialogTransformer().<BaseResponse>transformer())
+                    .subscribe(new BaseObserver<BaseResponse>() {
+                        @Override
+                        public void onSuccess(BaseResponse data) {
+                            Log.d(TAG, "memberRecharge onSuccess " );
+                            Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
+                            intent.putExtra("rechargeMoney",money);
+                            intent.putExtra("MemberCardBean",memberCardBean);
+                            intent.putExtra("orderNo","123");
+                            intent.putExtra("payType",payType);
+                            intent.putExtra("balance",memberCardBean.money+money);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            Log.d(TAG, "memberRecharge onError e" + e.getMessage().toString());
+                            super.onError(e);
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            Log.d(TAG, "memberRecharge onFailure msg=" + msg);
+                            super.onFailure(code, msg);
+                        }
+                    });
+        }
+    }
 }

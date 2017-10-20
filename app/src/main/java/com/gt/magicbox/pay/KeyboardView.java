@@ -19,7 +19,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.utils.SpannableStringUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
@@ -55,6 +57,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private double chargeMoney;
     private double realPay;
 
+    private String tipContent="";
     private double orderMoney;
     public static final int TYPE_INPUT_MONEY = 0;
     public static final int TYPE_CHARGE = 1;
@@ -183,6 +186,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         if (keyboardType==TYPE_MEMBER||keyboardType==TYPE_COUPON_VERIFICATION
                 ||keyboardType==TYPE_MEMBER_RECHARGE){
             showNumber.setText(numberString);
+            if (TextUtils.isEmpty(numberString.toString()))showNumber.setText(tipContent);
         }else  showNumber.setText(SpannableStringUtils.diffTextSize("¥ " + numberString, 20, 0, 1));
 
     }
@@ -208,12 +212,14 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             member_pay.setVisibility(GONE);
             fit_pay.setVisibility(GONE);
         }else if (keyboardType==TYPE_MEMBER||keyboardType==TYPE_MEMBER_RECHARGE){
-            tipLayout.setVisibility(VISIBLE);
+            if (Constant.product == BaseConstant.PRODUCTS[1]) tipLayout.setVisibility(GONE);
+            else tipLayout.setVisibility(VISIBLE);
             pay.setText("确认");
             pay.setVisibility(VISIBLE);
             member_pay.setVisibility(GONE);
             fit_pay.setVisibility(GONE);
-            showNumber.setText(getResources().getText(R.string.please_input_member_or_phone));
+            tipContent=getResources().getText(R.string.please_input_member_or_phone).toString();
+            showNumber.setText(tipContent);
             showNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP,25);
             RelativeLayout.LayoutParams params= (LayoutParams) showNumber.getLayoutParams();
             params.setMargins(0,0,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_8))
@@ -221,12 +227,14 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             showNumber.setLayoutParams(params);
             maxLength=11;
         }else if (keyboardType==TYPE_COUPON_VERIFICATION){
-            tipLayout.setVisibility(VISIBLE);
+            if (Constant.product == BaseConstant.PRODUCTS[1]) tipLayout.setVisibility(GONE);
+            else tipLayout.setVisibility(VISIBLE);
             pay.setText("确认");
             pay.setVisibility(VISIBLE);
             member_pay.setVisibility(GONE);
             fit_pay.setVisibility(GONE);
-            showNumber.setText(getResources().getText(R.string.please_input_coupon_number));
+            tipContent=getResources().getText(R.string.please_input_coupon_number).toString();
+            showNumber.setText(tipContent);
             aimTip.setText(getResources().getText(R.string.please_aim_coupon_tip));
             showNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP,25);
             RelativeLayout.LayoutParams params= (LayoutParams) showNumber.getLayoutParams();
@@ -262,6 +270,10 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         showMoney();
         charge.setText("");
         showNumber.setText("");
+        if (keyboardType==TYPE_MEMBER||keyboardType==TYPE_COUPON_VERIFICATION
+                ||keyboardType==TYPE_MEMBER_RECHARGE) {
+            showNumber.setText(tipContent);
+        }
     }
     public void backspace(){
         if (numberString.length() > 0) {

@@ -108,8 +108,7 @@ public class BaseActivity extends RxAppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d("keyCode", "BaseActivity keyCode --> " + keyCode);
 
-        if (((keyCode >= KeyEvent.KEYCODE_NUMPAD_0 && keyCode <= KeyEvent.KEYCODE_NUMPAD_RIGHT_PAREN)
-                || keyCode == KeyEvent.KEYCODE_DEL)
+        if (((keyCode >= KeyEvent.KEYCODE_NUMPAD_0 && keyCode <= KeyEvent.KEYCODE_NUMPAD_RIGHT_PAREN))
                 && !(ActivityUtils.getTopActivity(BaseActivity.this).contains("PaymentActivity"))
                 && !(ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity"))
                 && !(ActivityUtils.getTopActivity(BaseActivity.this).contains("ChosePayModeActivity"))) {
