@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.login.LoginActivity;
@@ -40,5 +41,11 @@ public class LoadingActivity extends Activity{
 
             }
         }).start();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK)return false;
+        return super.onKeyDown(keyCode, event);
     }
 }

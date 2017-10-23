@@ -2,6 +2,7 @@ package com.gt.magicbox.exchange;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,6 +36,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+
+import static com.gt.magicbox.base.BaseConstant.clickTime;
 
 /**
  * Created by wzb on 2017/8/23 0023.
@@ -151,8 +154,12 @@ public class ShiftExchangeActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_BACK){
-            startMain();
-            return true;
+            if (SystemClock.uptimeMillis()-clickTime<1500){
+                return false;
+            }else {
+                startMain();
+            }
+            clickTime= SystemClock.uptimeMillis();
         }
         return super.onKeyDown(keyCode, event);
     }

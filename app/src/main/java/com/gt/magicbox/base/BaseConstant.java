@@ -13,5 +13,5 @@ public class BaseConstant {
     public static final int PAY_ON_WECHAT=0;
     public static final int PAY_ON_ALIPAY=1;
     public static final int PAY_ON_CASH=2;
-
+    public static long clickTime;
 }

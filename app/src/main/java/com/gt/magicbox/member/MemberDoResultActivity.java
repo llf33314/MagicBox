@@ -2,6 +2,7 @@ package com.gt.magicbox.member;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.exchange.ShiftExchangeActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
@@ -24,9 +26,13 @@ import com.gt.magicbox.setting.printersetting.PrintManager;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.orhanobut.hawk.Hawk;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +53,7 @@ public class MemberDoResultActivity extends BaseActivity {
     private int type = 0;
     public static final int TYPE_MEMBER_RECHARGE = 0;
     public static final int TYPE_MEMBER_PAY = 1;
+    private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     @BindView(R.id.customer_balance)
     TextView customerBalance;
@@ -117,10 +124,22 @@ public class MemberDoResultActivity extends BaseActivity {
     public void onViewClicked() {
         if (type == TYPE_MEMBER_RECHARGE) {
             if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
-                PrintManager printManager=new PrintManager(MemberDoResultActivity.this);
+                PrintManager printManager = new PrintManager(MemberDoResultActivity.this);
                 printManager.startPrintMemberRechargeByText(memberCardBean, orderNo, "" + rechargeMoney, payType, "" + balance);
-            } else   if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
+            } else if (Constant.product.equals(BaseConstant.PRODUCTS[0])) {
                 PrinterConnectService.printEscMemberRecharge(memberCardBean, orderNo, "" + rechargeMoney, payType, "" + balance);
+            }
+        } else if (type == TYPE_MEMBER_PAY) {
+            StaffBean.StaffListBean staffListBean = Hawk.get("StaffListBean");
+            if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
+                PrintManager printManager = new PrintManager(MemberDoResultActivity.this);
+                printManager.startPrintReceiptByText(orderNo, realMoney + "元",
+                        3, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT)
+                        , staffListBean != null && !TextUtils.isEmpty(staffListBean.getName()) ? staffListBean.getName() : "空");
+            } else if (Constant.product.equals(BaseConstant.PRODUCTS[0])) {
+                PrinterConnectService.printEsc0829(orderNo, realMoney + "元",
+                        staffListBean != null && !TextUtils.isEmpty(staffListBean.getName()) ? staffListBean.getName() : "空"
+                        , 3, "");
             }
         }
         finish();

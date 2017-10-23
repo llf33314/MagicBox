@@ -100,8 +100,6 @@ public class PayResultActivity extends BaseActivity {
                     else orderNo="";
                 }
                 StaffBean.StaffListBean staffListBean=Hawk.get("StaffListBean");
-
-
                 if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
                     PrintManager printManager=new PrintManager(PayResultActivity.this);
                     printManager.startPrintReceiptByText(orderNo, message+ "元",

@@ -3,6 +3,7 @@ package com.gt.magicbox.base;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -27,6 +28,8 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import butterknife.ButterKnife;
 
+import static com.gt.magicbox.base.BaseConstant.clickTime;
+
 /**
  * Created by wzb on 2017/7/14 0014.
  */
@@ -36,7 +39,6 @@ public class BaseActivity extends RxAppCompatActivity {
     private TextView toolBarTitle;
     private ImageView toolBarBack;
     private ShortcutMenuDialog shortcutMenuDialog;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +64,6 @@ public class BaseActivity extends RxAppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.d("activity", "activity=" + ActivityUtils.getTopActivity(this));
         super.onResume();
     }
 
@@ -128,11 +129,16 @@ public class BaseActivity extends RxAppCompatActivity {
             shortcutMenuDialog.show();
 
             return false;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK &&(
-                (ActivityUtils.getTopActivity(BaseActivity.this).contains("MainActivity"))
-                ||(ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity"))
-        )) {
+        } else if (keyCode == KeyEvent.KEYCODE_BACK ) {
+            if ( (ActivityUtils.getTopActivity(BaseActivity.this).contains("MainActivity"))
+                    || (ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity")))
             return false;
+            else {
+                if (SystemClock.uptimeMillis()-clickTime<1500){
+                    return false;
+                }
+                clickTime= SystemClock.uptimeMillis();
+            }
         }
         return super.onKeyDown(keyCode, event);
     }

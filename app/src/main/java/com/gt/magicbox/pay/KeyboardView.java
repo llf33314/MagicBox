@@ -225,7 +225,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             params.setMargins(0,0,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_8))
                     ,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_5)));
             showNumber.setLayoutParams(params);
-            maxLength=11;
+            maxLength=20;
         }else if (keyboardType==TYPE_COUPON_VERIFICATION){
             if (Constant.product == BaseConstant.PRODUCTS[1]) tipLayout.setVisibility(GONE);
             else tipLayout.setVisibility(VISIBLE);
