@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.http.HttpConfig;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.webview.jsinterface.DuofenJSBridge;
@@ -123,7 +124,7 @@ public class WebViewActivity extends BaseActivity{
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.d(TAG, "onNewIntent: ");
+        LogUtils.d(TAG, "onNewIntent: ");
         getCode(intent);
     }
 
@@ -146,12 +147,12 @@ public class WebViewActivity extends BaseActivity{
                     webUrl = HttpConfig.BASE_URL + PhoneUtils.getIMEI()+"/"  + status + "/" + HttpConfig.ORDER_URL;
                     break;
             }
-            Log.i(TAG,"webUrl="+webUrl);
+            LogUtils.i(TAG,"webUrl="+webUrl);
         }
     }
     // 初始化UUID
     private void initUUID() {
-        Log.d(TAG, "initUUID: ");
+        LogUtils.d(TAG, "initUUID: ");
         UUIDService uuidService = new UUIDService(WebViewActivity.this);
         uuidService.initUUID();
     }
@@ -179,7 +180,7 @@ public class WebViewActivity extends BaseActivity{
      * 重启socket
      */
     public void reloadSocket() {
-        Log.d(TAG, "reloadSocket: ");
+        LogUtils.d(TAG, "reloadSocket: ");
         disSocket();
        // initSocket();
     }
@@ -193,20 +194,20 @@ public class WebViewActivity extends BaseActivity{
      * 调用zbar
      */
     public void scanCode() {
-        Log.i(TAG, "scanCode: " + nowUrl);
+        LogUtils.i(TAG, "scanCode: " + nowUrl);
 //        Intent intent = new Intent(WebViewActivity.this,ScanCaptureAct.class);
 //        startActivity(intent);
     }
 
     // 扫码返回
     private void getCode(Intent intent){
-        Log.i(TAG, "getCode: in");
+        LogUtils.i(TAG, "getCode: in");
         if (intent != null){
-            Log.d(TAG, "getCode: intent not null");
+            LogUtils.d(TAG, "getCode: intent not null");
             String result = intent.getStringExtra("RQ_CODE");
             if (result != null){
                 viewPage--;
-                Log.i(TAG, "getCode: " + result);
+                LogUtils.i(TAG, "getCode: " + result);
                 webLoadJS("scanCallBack", result);
             }
         }
@@ -222,7 +223,7 @@ public class WebViewActivity extends BaseActivity{
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.d(TAG, "keyCode --> " + keyCode);
+        LogUtils.d(TAG, "keyCode --> " + keyCode);
         /** 按下键盘上返回按钮 */
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             if (webType == WEB_TYPE_PAY||webType ==WEB_TYPE_SERVER_PUSH) {
@@ -283,7 +284,7 @@ public class WebViewActivity extends BaseActivity{
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 bar.setVisibility(View.VISIBLE);
-                Log.i(TAG,"newProgress="+newProgress);
+                LogUtils.i(TAG,"newProgress="+newProgress);
                 bar.setProgress(newProgress);
                 if (newProgress >= 100) {
                     bar.setVisibility(View.GONE);
@@ -320,7 +321,7 @@ public class WebViewActivity extends BaseActivity{
         if (viewPage > 1) {
             viewPage--;
             flag = false;
-            Log.d("viewPage", viewPage + "");
+            LogUtils.d("viewPage", viewPage + "");
             web.goBack();
             return true;
         }
@@ -334,7 +335,7 @@ public class WebViewActivity extends BaseActivity{
             public void run() {
                 viewPage--;
                 flag = false;
-                Log.d("viewPage", viewPage + "");
+                LogUtils.d("viewPage", viewPage + "");
                 web.goBack();
             }
         });
@@ -346,7 +347,7 @@ public class WebViewActivity extends BaseActivity{
             viewPage++;
         }
         flag = true;
-        Log.d("viewPage", viewPage + "");
+        LogUtils.d("viewPage", viewPage + "");
     }
 
     // webView页面刷新
@@ -376,7 +377,7 @@ public class WebViewActivity extends BaseActivity{
                 stringBuilder.append("('");
                 stringBuilder.append(jsParam);
                 stringBuilder.append("')");
-                Log.d(TAG, stringBuilder.toString());
+                LogUtils.d(TAG, stringBuilder.toString());
                 web.loadUrl(stringBuilder.toString());
             }
         });
@@ -439,7 +440,7 @@ public class WebViewActivity extends BaseActivity{
     }
 
     private void releaseCamera() {
-        Log.i("camera","releaseCamera");
+        LogUtils.i("camera","releaseCamera");
         if (mCamera != null) {
             previewing = false;
             mCamera.setPreviewCallback(null);
@@ -479,7 +480,7 @@ public class WebViewActivity extends BaseActivity{
 //            String result = zBarDecoder.decodeCrop(rotatedData, size.width, size.height, fillRect.left, fillRect.top, fillRect.width(), fillRect.height());
 //
 //            if (!TextUtils.isEmpty(result)) {
-//                Log.d(TAG, "getCode: " + result);
+//                LogUtils.d(TAG, "getCode: " + result);
 //                webLoadJS("scanCallBack", result);
 //
 //            }
@@ -532,7 +533,7 @@ public class WebViewActivity extends BaseActivity{
     }
 
     public void reload() {
-        Log.i(TAG,"getUrl="+webUrl);
+        LogUtils.i(TAG,"getUrl="+webUrl);
 
         web.loadUrl(webUrl);
     }

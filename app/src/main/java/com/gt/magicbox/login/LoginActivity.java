@@ -28,6 +28,7 @@ import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreActivity;
 import com.gt.magicbox.main.NormalDialog;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.RegexUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
@@ -93,7 +94,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                 .subscribe(new BaseObserver<LoginBean>() {
                     @Override
                     public void onSuccess(LoginBean data) {
-                        Log.i(TAG,"data check="+data.checkType);
+                        LogUtils.i(TAG,"data check="+data.checkType);
                         if (data!=null){
                             if (data.checkType==0) {
                                 Hawk.put("userName", userName);
@@ -138,14 +139,14 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     protected void onSuccess(BaseResponse baseResponse) {
-                        Log.d(TAG, "changeDevicesBind Success");
+                        LogUtils.d(TAG, "changeDevicesBind Success");
                         login(userName,password);
 
                     }
 
                     @Override
                     protected void onFailure(int code, String msg) {
-                        Log.i(TAG, "onFailure code=" + code + "  msg=" + msg);
+                        LogUtils.i(TAG, "onFailure code=" + code + "  msg=" + msg);
                         if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
                     }
                 });
@@ -163,7 +164,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                             Hawk.put("shopName",data.getShopName());
                             Hawk.put("shopId",data.getShops().getId());
                             ShopInfoBean bean=(ShopInfoBean)Hawk.get("ShopInfoBean");
-                            Log.i(TAG,"data name="+bean.getShopName());
+                            LogUtils.i(TAG,"data name="+bean.getShopName());
                         }
                         if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
                         showLoginView();

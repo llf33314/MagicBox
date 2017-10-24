@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.gt.magicbox.bean.OrderBean;
 import com.gt.magicbox.http.HttpConfig;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 
 import org.json.JSONException;
@@ -34,7 +35,7 @@ public class SocketIOManager {
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d(TAG, "diconnected");
+            LogUtils.d(TAG, "diconnected");
         }
     };
 
@@ -42,7 +43,7 @@ public class SocketIOManager {
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d(TAG, "Error connecting");
+            LogUtils.d(TAG, "Error connecting");
         }
     };
 
@@ -55,7 +56,7 @@ public class SocketIOManager {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        Log.i(TAG, "initSocketHttp");
+        LogUtils.i(TAG, "initSocketHttp");
 
     }
 
@@ -89,7 +90,7 @@ public class SocketIOManager {
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d(TAG, "onConnect");
+            LogUtils.d(TAG, "onConnect");
         }
     };
 
@@ -97,7 +98,7 @@ public class SocketIOManager {
     private Emitter.Listener socketEvent = new Emitter.Listener() {
         @Override
         public void call(Object... objects) {
-            Log.d(TAG, "socketEvent");
+            LogUtils.d(TAG, "socketEvent");
 
         }
     };

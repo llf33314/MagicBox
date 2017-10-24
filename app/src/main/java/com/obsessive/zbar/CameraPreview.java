@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.gt.magicbox.utils.commonutil.LogUtils;
+
 /** A basic Camera preview class */
 public class CameraPreview extends SurfaceView implements
 		SurfaceHolder.Callback {
@@ -53,7 +55,7 @@ public class CameraPreview extends SurfaceView implements
 		try {
 			mCamera.setPreviewDisplay(holder);
 		} catch (IOException e) {
-			Log.d("DBG", "Error setting camera preview: " + e.getMessage());
+			LogUtils.d("DBG", "Error setting camera preview: " + e.getMessage());
 		}
 	}
 
@@ -89,7 +91,7 @@ public class CameraPreview extends SurfaceView implements
 			mCamera.startPreview();
 			mCamera.autoFocus(autoFocusCallback);
 		} catch (Exception e) {
-			Log.d("DBG", "Error starting camera preview: " + e.getMessage());
+			LogUtils.d("DBG", "Error starting camera preview: " + e.getMessage());
 		}
 	}
 }

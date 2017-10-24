@@ -25,6 +25,7 @@ import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
@@ -162,20 +163,20 @@ public class ChosePayModeActivity extends BaseActivity {
                     .subscribe(new BaseObserver<MemberCountMoneyBean>() {
                         @Override
                         public void onSuccess(MemberCountMoneyBean data) {
-                            Log.d(TAG, "postMemberSettlement onSuccess data=");
+                            LogUtils.d(TAG, "postMemberSettlement onSuccess data=");
                             if (data != null)
                                 memberPay(data.getBalanceMoney(), data.getBalanceMoney(), data.getTotalMoney(), 5);
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d(TAG, "postMemberSettlement onError e" + e.getMessage());
+                            LogUtils.d(TAG, "postMemberSettlement onError e" + e.getMessage());
                             super.onError(e);
                         }
 
                         @Override
                         public void onFailure(int code, String msg) {
-                            Log.d(TAG, "postMemberSettlement onFailure msg=" + msg);
+                            LogUtils.d(TAG, "postMemberSettlement onFailure msg=" + msg);
                             super.onFailure(code, msg);
                         }
                     });
@@ -191,7 +192,7 @@ public class ChosePayModeActivity extends BaseActivity {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        Log.d(TAG, "memberPay onSuccess " );
+                        LogUtils.d(TAG, "memberPay onSuccess " );
                         if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
                         AppManager.getInstance().finishActivity(VerificationActivity.class);
                         Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
@@ -205,13 +206,13 @@ public class ChosePayModeActivity extends BaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "memberPay onError e" + e.getMessage());
+                        LogUtils.d(TAG, "memberPay onError e" + e.getMessage());
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG, "memberPay" +
+                        LogUtils.d(TAG, "memberPay" +
                                 " onFailure msg=" + msg);
                         memberPayFailed();
                         super.onFailure(code, msg);
@@ -231,7 +232,7 @@ public class ChosePayModeActivity extends BaseActivity {
                 .subscribe(new BaseObserver<CashOrderBean>() {
                     @Override
                     protected void onSuccess(CashOrderBean bean) {
-                        Log.d(TAG, "createCashOrder Success");
+                        LogUtils.d(TAG, "createCashOrder Success");
                         cashOrderBean=bean;
                         postMemberSettlement();
 
@@ -239,7 +240,7 @@ public class ChosePayModeActivity extends BaseActivity {
 
                     @Override
                     protected void onFailure(int code, String msg) {
-                        Log.d(TAG, "onFailure code=" + code + "  msg=" + msg);
+                        LogUtils.d(TAG, "onFailure code=" + code + "  msg=" + msg);
                     }
                 });
     }

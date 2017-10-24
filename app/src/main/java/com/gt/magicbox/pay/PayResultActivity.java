@@ -26,6 +26,7 @@ import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.setting.printersetting.PrintManager;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.orhanobut.hawk.Hawk;
@@ -135,13 +136,13 @@ public class PayResultActivity extends BaseActivity {
                 .subscribe(new BaseObserver<CashOrderBean>()  {
                     @Override
                     protected void onSuccess(CashOrderBean bean) {
-                        Log.i(TAG, "createCashOrder Success");
+                        LogUtils.i(TAG, "createCashOrder Success");
                         cashOrderBean=bean;
                     }
 
                     @Override
                     protected void onFailure(int code, String msg) {
-                        Log.i(TAG, "onFailure code=" + code + "  msg=" + msg);
+                        LogUtils.i(TAG, "onFailure code=" + code + "  msg=" + msg);
                     }
                 });
     }

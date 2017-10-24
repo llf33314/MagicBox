@@ -7,6 +7,8 @@ import android.graphics.Point;
 import android.hardware.Camera;
 import android.util.Log;
 
+import com.gt.magicbox.utils.commonutil.LogUtils;
+
 public final class CameraManager {
 
 	private static final String TAG = CameraManager.class.getSimpleName();
@@ -55,7 +57,7 @@ public final class CameraManager {
 			// Driver failed
 			Log.w(TAG,
 					"Camera rejected parameters. Setting only minimal safe-mode parameters");
-			Log.i(TAG, "Resetting to saved camera params: "
+			LogUtils.i(TAG, "Resetting to saved camera params: "
 					+ parametersFlattened);
 			// Reset:
 			if (parametersFlattened != null) {

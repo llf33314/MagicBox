@@ -140,7 +140,7 @@ public class SwipeMenuListView extends ListView {
                     super.onTouchEvent(ev);
                     return true;
                 } else {
-                    // Log.i("byz", "state = " + mTouchState + ", dx = " + dx
+                    // LogUtils.i("byz", "state = " + mTouchState + ", dx = " + dx
                     // + ", max = " + MAX_X);
                     if (mTouchState != TOUCH_STATE_X && Math.abs(dy) > MAX_Y) {//是左右滑动，改写状态为TOUCH_STATE_X
                         mTouchState = TOUCH_STATE_Y;

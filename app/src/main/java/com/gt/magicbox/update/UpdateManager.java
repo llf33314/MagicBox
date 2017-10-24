@@ -27,6 +27,7 @@ import com.gt.magicbox.update.ui.UpdateDialog;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.orhanobut.hawk.Hawk;
 
 import java.io.File;
@@ -142,7 +143,7 @@ public class UpdateManager {
                 .url(VERSION_URL+appId)
                 .get()
                 .build();
-        Log.d("requestUpdate", "request==" + request.toString());
+        LogUtils.d("requestUpdate", "request==" + request.toString());
         Response response = null;
         try {
             response = client.newCall(request).execute();
@@ -160,7 +161,7 @@ public class UpdateManager {
     private boolean compareVersion(int versionCode) {
 
         int currentVersionCode = AppUtils.getAppVersionCode();
-        Log.i(TAG, "checkUpdate versionCode=" + versionCode + "  currentVersionCode=" + currentVersionCode);
+        LogUtils.i(TAG, "checkUpdate versionCode=" + versionCode + "  currentVersionCode=" + currentVersionCode);
         if (versionCode > 0 && versionCode != currentVersionCode) {
             if (versionCode > currentVersionCode) {
                 mHandler.sendEmptyMessage(NEED_UPDATE);
@@ -183,7 +184,7 @@ public class UpdateManager {
         @Override
         protected Object doInBackground(Object[] objects) {
             String response = requestByGet();
-            Log.d(TAG, "response==" + response);
+            LogUtils.d(TAG, "response==" + response);
             String str = ConvertUtils.unicode2String(response);
             AppUpdateBean updateBean = new Gson().fromJson(str, AppUpdateBean.class);
             if (updateBean != null&&!TextUtils.isEmpty(updateBean.appVersionCode)) {
@@ -198,7 +199,7 @@ public class UpdateManager {
      * 显示软件下载对话框
      */
     private void showDownloadDialog() {
-        Log.d(TAG, "appUpdateBean=" + appUpdateBean.remarks);
+        LogUtils.d(TAG, "appUpdateBean=" + appUpdateBean.remarks);
 
         // 构造软件下载对话框
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -257,8 +258,8 @@ public class UpdateManager {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.start:
-                    Log.d(TAG, "onClickListener start");
-                    Log.d(TAG, "downloadAPK appUpdateBean.apkUrl=" + appUpdateBean.apkUrl);
+                    LogUtils.d(TAG, "onClickListener start");
+                    LogUtils.d(TAG, "downloadAPK appUpdateBean.apkUrl=" + appUpdateBean.apkUrl);
                     downloadAPK(appUpdateBean.apkUrl, APK_FILE_NAME);
                     break;
                 case R.id.pause:
@@ -290,7 +291,7 @@ public class UpdateManager {
     private void installAPK() {
         if (mDownloadDialog != null) mDownloadDialog.dismiss();
         //安装应用
-        Log.i(TAG, "installAPK APK_FILE_NAME=" + APK_FILE_NAME);
+        LogUtils.i(TAG, "installAPK APK_FILE_NAME=" + APK_FILE_NAME);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                         , APK_FILE_NAME)),

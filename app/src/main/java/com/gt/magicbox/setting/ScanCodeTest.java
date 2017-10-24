@@ -95,7 +95,7 @@ public class ScanCodeTest  extends BaseActivity{
 //    }
 //
 //    private void releaseCamera() {
-//        Log.i("camera","releaseCamera");
+//        LogUtils.i("camera","releaseCamera");
 //        if (mCamera != null) {
 //            previewing = false;
 //            mCamera.setPreviewCallback(null);

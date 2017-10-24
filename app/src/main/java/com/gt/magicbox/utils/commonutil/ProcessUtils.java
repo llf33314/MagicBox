@@ -82,7 +82,7 @@ public final class ProcessUtils {
                     e.printStackTrace();
                 }
             } else {
-                Log.d("ProcessUtils", "getForegroundProcessName() called" + ": 无\"有权查看使用权限的应用\"选项");
+                LogUtils.d("ProcessUtils", "getForegroundProcessName() called" + ": 无\"有权查看使用权限的应用\"选项");
             }
         }
         return null;

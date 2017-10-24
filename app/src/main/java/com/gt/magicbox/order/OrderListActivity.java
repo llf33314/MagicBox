@@ -28,6 +28,7 @@ import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuItem;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuListView;
 import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.orhanobut.hawk.Hawk;
@@ -147,13 +148,13 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 .subscribe(new BaseObserver<OrderListResultBean>() {
                     @Override
                     public void onSuccess(OrderListResultBean data) {
-                        Log.d(TAG, "onSuccess");
+                        LogUtils.d(TAG, "onSuccess");
 
                         if (data != null) {
                             orderListAdapter.getHeadButtonViewHolder().noPayOrder.setOnClickListener(OrderListActivity.this);
                             orderListAdapter.getHeadButtonViewHolder().payOrder.setOnClickListener(OrderListActivity.this);
                             if (data.orders != null && data.orders.size() > 0) {
-                                Log.d(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
+                                LogUtils.d(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
                                 orderItemBeanList.addAll(data.orders);
                                 orderListAdapter.setData(orderItemBeanList);
                                 if (page == 1) {
@@ -177,13 +178,13 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "onError");
+                        LogUtils.d(TAG, "onError");
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG, "onFailure");
+                        LogUtils.d(TAG, "onFailure");
 
                         super.onFailure(code, msg);
                     }
@@ -197,7 +198,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        Log.d(TAG, "deleteNotPayOrder onSuccess");
+                        LogUtils.d(TAG, "deleteNotPayOrder onSuccess");
 
                         if (data != null) {
                             orderItemBeanList.remove(position);
@@ -207,13 +208,13 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "deleteNotPayOrder onError");
+                        LogUtils.d(TAG, "deleteNotPayOrder onError");
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG, "deleteNotPayOrder onFailure");
+                        LogUtils.d(TAG, "deleteNotPayOrder onFailure");
 
                         super.onFailure(code, msg);
                     }

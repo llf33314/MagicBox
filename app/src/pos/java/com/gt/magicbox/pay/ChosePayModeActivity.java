@@ -199,20 +199,20 @@ public class ChosePayModeActivity extends BaseActivity {
                     .subscribe(new BaseObserver<MemberCountMoneyBean>() {
                         @Override
                         public void onSuccess(MemberCountMoneyBean data) {
-                            Log.d(TAG, "postMemberSettlement onSuccess data=");
+                            LogUtils.d(TAG, "postMemberSettlement onSuccess data=");
                             if (data != null)
                                 memberPay(data.getBalanceMoney(), data.getBalanceMoney(), data.getTotalMoney(), 5);
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d(TAG, "postMemberSettlement onError e" + e.getMessage());
+                            LogUtils.d(TAG, "postMemberSettlement onError e" + e.getMessage());
                             super.onError(e);
                         }
 
                         @Override
                         public void onFailure(int code, String msg) {
-                            Log.d(TAG, "postMemberSettlement onFailure msg=" + msg);
+                            LogUtils.d(TAG, "postMemberSettlement onFailure msg=" + msg);
                             super.onFailure(code, msg);
                         }
                     });
@@ -228,7 +228,7 @@ public class ChosePayModeActivity extends BaseActivity {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        Log.d(TAG, "memberPay onSuccess " );
+                        LogUtils.d(TAG, "memberPay onSuccess " );
                         if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
                         AppManager.getInstance().finishActivity(VerificationActivity.class);
                         Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
@@ -242,13 +242,13 @@ public class ChosePayModeActivity extends BaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "memberPay onError e" + e.getMessage());
+                        LogUtils.d(TAG, "memberPay onError e" + e.getMessage());
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG, "memberPay" +
+                        LogUtils.d(TAG, "memberPay" +
                                 " onFailure msg=" + msg);
                         super.onFailure(code, msg);
                     }
@@ -269,14 +269,14 @@ public class ChosePayModeActivity extends BaseActivity {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        Log.d(TAG, "posOrder onSuccess data=" );
+                        LogUtils.d(TAG, "posOrder onSuccess data=" );
                         if (dialog!=null)dialog.dismiss();
                         payFinish();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "posOrder onError e" + e.getMessage());
+                        LogUtils.d(TAG, "posOrder onError e" + e.getMessage());
                         if (dialog!=null)dialog.dismiss();
                         payFinish();
                         super.onError(e);
@@ -284,7 +284,7 @@ public class ChosePayModeActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG, "posOrder" +
+                        LogUtils.d(TAG, "posOrder" +
                                 " onFailure msg=" + msg);
                         super.onFailure(code, msg);
                     }
@@ -311,7 +311,7 @@ public class ChosePayModeActivity extends BaseActivity {
                 .subscribe(new BaseObserver<CashOrderBean>() {
                     @Override
                     protected void onSuccess(CashOrderBean bean) {
-                        Log.d(TAG, "createCashOrder Success");
+                        LogUtils.d(TAG, "createCashOrder Success");
                         cashOrderBean=bean;
                         postMemberSettlement();
 
@@ -319,12 +319,12 @@ public class ChosePayModeActivity extends BaseActivity {
 
                     @Override
                     protected void onFailure(int code, String msg) {
-                        Log.d(TAG, "onFailure code=" + code + "  msg=" + msg);
+                        LogUtils.d(TAG, "onFailure code=" + code + "  msg=" + msg);
                     }
                 });
     }
     public boolean scanner(){
-        Log.d(TAG, "scanner");
+        LogUtils.d(TAG, "scanner");
         ScannerManager scannerManager = new ScannerManager();
         Bundle bundle = new Bundle();
         bundle.putInt(ScannerConfig.COMM_SCANNER_TYPE, 1);
@@ -337,10 +337,10 @@ public class ChosePayModeActivity extends BaseActivity {
                     if(i == -2001){
                         ToastUtil.getInstance().showToast("操作取消");
                     }
-                    Log.d(TAG, "scanner result : " + i);
+                    LogUtils.d(TAG, "scanner result : " + i);
                     if (bytes != null && !bytes.equals("")) {
                         String res = new String(bytes);
-                        Log.d(TAG, "string : " + res);
+                        LogUtils.d(TAG, "string : " + res);
                     }
                 }
             });
@@ -351,7 +351,7 @@ public class ChosePayModeActivity extends BaseActivity {
         return true;
     }
     public boolean codePay(String amt, String extOrderNo) {
-        Log.d(TAG, "codePay");
+        LogUtils.d(TAG, "codePay");
         try {
             String appName = AppNameEnum.CODEPAYCOLLECTION.getValue();
             String transId = "码上收";
@@ -360,7 +360,7 @@ public class ChosePayModeActivity extends BaseActivity {
             if (ObjectUtils.isNotEmpty(extOrderNo)){
                 codePayBean.setExtOrderNo(extOrderNo);
             }
-            Log.d(TAG, "codePay: " + codePayBean.toJsonString());
+            LogUtils.d(TAG, "codePay: " + codePayBean.toJsonString());
             JSONObject transData = new JSONObject(codePayBean.toJsonString());
             AppHelper.callTrans(ChosePayModeActivity.this, appName, transId, transData);
             return true;
@@ -371,7 +371,7 @@ public class ChosePayModeActivity extends BaseActivity {
         return false;
     }
     public boolean sanPay(String amt, String extOrderNo) {
-        Log.d(TAG, "sanPay");
+        LogUtils.d(TAG, "sanPay");
         try {
             String transId = "扫一扫";
             String appName = AppNameEnum.SWEEPCOLLECTION.getValue();
@@ -380,7 +380,7 @@ public class ChosePayModeActivity extends BaseActivity {
             if (ObjectUtils.isNotEmpty(extOrderNo)){
                 scanPayBean.setExtOrderNo(extOrderNo);
             }
-            Log.d(TAG, "sanPay: " + scanPayBean.toJsonString());
+            LogUtils.d(TAG, "sanPay: " + scanPayBean.toJsonString());
             JSONObject transData = new JSONObject(scanPayBean.toJsonString());
             AppHelper.callTrans(ChosePayModeActivity.this, appName, transId, transData);
             return true;
@@ -391,7 +391,7 @@ public class ChosePayModeActivity extends BaseActivity {
         return false;
     }
     public boolean bankCardPay(String amt, String extOrderNo) {
-        Log.d(TAG, "pay");
+        LogUtils.d(TAG, "pay");
         try {
             String appName = AppNameEnum.BANKCARDCOLLECTION.getValue();
             String transId = "消费";
@@ -401,7 +401,7 @@ public class ChosePayModeActivity extends BaseActivity {
                 payBean.setExtOrderNo(extOrderNo);
             }
             JSONObject transData = new JSONObject(payBean.toJsonString());
-            Log.d(TAG, "pay: " + payBean.toJsonString());
+            LogUtils.d(TAG, "pay: " + payBean.toJsonString());
             AppHelper.callTrans(ChosePayModeActivity.this, appName, transId, transData);
             return true;
         }catch (Exception e){
@@ -411,7 +411,7 @@ public class ChosePayModeActivity extends BaseActivity {
         return false;
     }
     public boolean returnMoney(String amt, String refNo,String date) {
-        Log.d(TAG, "pay");
+        LogUtils.d(TAG, "pay");
         try {
             String appName = AppNameEnum.SWEEPCOLLECTION.getValue();
             String transId = "退货";
@@ -420,7 +420,7 @@ public class ChosePayModeActivity extends BaseActivity {
             cancelBean.setRefNo(refNo);
             cancelBean.setDate(date);
             JSONObject transData = new JSONObject(cancelBean.toJsonString());
-            Log.d(TAG, "pay: " + cancelBean.toJsonString());
+            LogUtils.d(TAG, "pay: " + cancelBean.toJsonString());
             AppHelper.callTrans(ChosePayModeActivity.this, appName, transId, transData);
             return true;
         }catch (Exception e){
@@ -432,7 +432,7 @@ public class ChosePayModeActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
-            Log.d(TAG, "requestCode --> " + requestCode + "  resultCode --> " + requestCode + "  data --> " + data);
+            LogUtils.d(TAG, "requestCode --> " + requestCode + "  resultCode --> " + requestCode + "  data --> " + data);
             if(AppHelper.TRANS_REQUEST_CODE == requestCode){
                 if(Activity.RESULT_OK == resultCode && ObjectUtils.isNotEmpty(data)){
                     Map<String,String> map = AppHelper.filterTransResult(data);
@@ -454,7 +454,7 @@ public class ChosePayModeActivity extends BaseActivity {
                                 else if (channelName.contains("支付宝")) payType = 1;
                             }
 
-                            Log.d(TAG, "memInfo=" + memInfo.toString());
+                            LogUtils.d(TAG, "memInfo=" + memInfo.toString());
                             if (!TextUtils.isEmpty(amt))
                                 posOrder(refNo, Double.parseDouble(amt), payType);
                         }
@@ -472,13 +472,13 @@ public class ChosePayModeActivity extends BaseActivity {
                                 else if (targetSys.contains("Alipay")) payType = 1;
                             }
 
-                            Log.d(TAG, "memInfo=" + memInfo.toString());
+                            LogUtils.d(TAG, "memInfo=" + memInfo.toString());
                             if (!TextUtils.isEmpty(amt))
                                 posOrder(refNo, Double.parseDouble(amt), payType);
                         }
                     }else  if (appName.equals("银行卡收款")){
                         String resDesc = transData.getString("resDesc");
-                        Log.d(TAG, "银行卡收款 resDesc=" + resDesc.toString());
+                        LogUtils.d(TAG, "银行卡收款 resDesc=" + resDesc.toString());
                         if (!TextUtils.isEmpty(resDesc) && resDesc.equals("交易成功")) {
                             String refNo = transData.getString("refNo");
                             String amt = transData.getString("amt");
@@ -488,8 +488,8 @@ public class ChosePayModeActivity extends BaseActivity {
                         }
                     }
                    // String callBackFn = DuofenPayCallBackJSFactory.getInstance().callBackJS(appName, transId, transData.toString());
-                    Log.d(TAG, "transData="+transData.toString());
-                    Log.d(TAG, "map="+map.toString());
+                    LogUtils.d(TAG, "transData="+transData.toString());
+                    LogUtils.d(TAG, "map="+map.toString());
 
                 }else if (Activity.RESULT_CANCELED == resultCode){
                     PromptUtils.getInstance(this).showToastShort("取消操作");
@@ -499,12 +499,12 @@ public class ChosePayModeActivity extends BaseActivity {
                     PromptUtils.getInstance(this).showToastLong("其他错误，请尝试再次操作！错误码：resultCode");
                 }
             }else if (AppHelper.PRINT_REQUEST_CODE == requestCode){
-                Log.d(TAG, "in print");
+                LogUtils.d(TAG, "in print");
                 Map<String,String> map = AppHelper.filterTransResult(data);
                 for (String key : map.keySet()){
                     System.out.println(key + " : " + map.get(key));
                 }
-                Log.d(TAG, ObjectUtils.map2String(map));
+                LogUtils.d(TAG, ObjectUtils.map2String(map));
             }else {
                 PromptUtils.getInstance(this).showCallBackErrorLong();
             }
@@ -513,10 +513,10 @@ public class ChosePayModeActivity extends BaseActivity {
         }
     }
     private void memberRecharge(final int payType) {
-        Log.d(TAG,"memberRecharge type="+payType);
+        LogUtils.d(TAG,"memberRecharge type="+payType);
 
         if (memberCardBean != null) {
-            Log.d(TAG,"memberRecharge");
+            LogUtils.d(TAG,"memberRecharge");
             HttpCall.getApiService()
                     .memberRecharge(memberCardBean.memberId, money, payType, (Integer) Hawk.get("shopId"))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
@@ -524,7 +524,7 @@ public class ChosePayModeActivity extends BaseActivity {
                     .subscribe(new BaseObserver<BaseResponse>() {
                         @Override
                         public void onSuccess(BaseResponse data) {
-                            Log.d(TAG, "memberRecharge onSuccess " );
+                            LogUtils.d(TAG, "memberRecharge onSuccess " );
                             Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
                             intent.putExtra("rechargeMoney",money);
                             intent.putExtra("MemberCardBean",memberCardBean);
@@ -537,13 +537,13 @@ public class ChosePayModeActivity extends BaseActivity {
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
-                            Log.d(TAG, "memberRecharge onError e" + e.getMessage().toString());
+                            LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage().toString());
                             super.onError(e);
                         }
 
                         @Override
                         public void onFailure(int code, String msg) {
-                            Log.d(TAG, "memberRecharge onFailure msg=" + msg);
+                            LogUtils.d(TAG, "memberRecharge onFailure msg=" + msg);
                             super.onFailure(code, msg);
                         }
                     });

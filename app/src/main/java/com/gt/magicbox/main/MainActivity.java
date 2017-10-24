@@ -32,6 +32,7 @@ import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.AppUtils;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
@@ -70,7 +71,7 @@ public class MainActivity extends BaseActivity {
             super.handleMessage(msg);
             switch (msg.what){
                 case MSG_UPDATE_UI:
-                    Log.i("grid","msg.arg1="+msg.arg1+"  msg.arg2="+msg.arg2);
+                    LogUtils.i("grid","msg.arg1="+msg.arg1+"  msg.arg2="+msg.arg2);
 
                     homeData.get(msg.arg1).setMessageCount(msg.arg2);
                     gridViewAdapter.setGridData(homeData);
@@ -251,13 +252,13 @@ public class MainActivity extends BaseActivity {
                 .subscribe(new BaseObserver<UnpaidOrderBean>() {
                     @Override
                     public void onSuccess(UnpaidOrderBean data) {
-                        Log.d(TAG,"UnpaidOrderBean onSuccess");
+                        LogUtils.d(TAG,"UnpaidOrderBean onSuccess");
                         updateUnpaid(data);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG,"onFailure code="+code+"  msg="+msg);
+                        LogUtils.d(TAG,"onFailure code="+code+"  msg="+msg);
                         super.onFailure(code, msg);
                     }
                 });
@@ -266,8 +267,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
        getUnpaidOrderCount();
-       // Hawk.put("shiftId",0);
-        Log.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId")
+        LogUtils.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId")
         + "  product="+Constant.product);
         super.onResume();
     }

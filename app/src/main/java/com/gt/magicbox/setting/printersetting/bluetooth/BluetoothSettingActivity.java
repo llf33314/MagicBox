@@ -460,17 +460,17 @@ public class BluetoothSettingActivity extends BaseActivity {
                 switch (intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1)) {
 
                     case BluetoothDevice.BOND_BONDING:
-                       // Log.i(TAG,"BOND_BONDING");
+                       // LogUtils.i(TAG,"BOND_BONDING");
                         scanResultAdapter.updateStateStr(device);
                         RxBus.get().post(new OpenPrinterPortMsg(OpenPrinterPortMsg.CLOSE_PROT));
                         break;
                     case BluetoothDevice.BOND_NONE:
-                        //Log.i(TAG,"BOND_NONE");
+                        //LogUtils.i(TAG,"BOND_NONE");
                         refreshBondedHandler.sendEmptyMessage(CONNECTIONED);
                         RxBus.get().post(new OpenPrinterPortMsg(OpenPrinterPortMsg.CLOSE_PROT));
                         break;
                     case BluetoothDevice.BOND_BONDED:
-                      //  Log.i(TAG,"BOND_BONDED");
+                      //  LogUtils.i(TAG,"BOND_BONDED");
                         refreshBondedHandler.sendEmptyMessage(CONNECTIONED);
                         //打开端口
                         OpenPrinterPortMsg rxMsg=new OpenPrinterPortMsg(OpenPrinterPortMsg.OPEN_PROT);

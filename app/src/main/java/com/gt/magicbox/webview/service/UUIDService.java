@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.webview.util.ObjectUtils;
 
 import java.util.Map;
@@ -38,7 +39,7 @@ public class UUIDService {
         if ("1".equals(unique_status)){
             unique_uuid = map.get("unique_uuid").toString();
             unique_status = map.get("unique_status").toString();
-            Log.d(TAG, "initUUID: has uuid " + unique_uuid);
+            LogUtils.d(TAG, "initUUID: has uuid " + unique_uuid);
             return false;
         }
         unique_status = "1";
@@ -56,18 +57,18 @@ public class UUIDService {
         if (notUpdate && map.containsKey("unique_uuid")){
             unique_uuid = map.get("unique_uuid").toString();
             unique_status = map.get("unique_status").toString();
-            Log.d(TAG, "initUUID: has uuid " + unique_uuid);
+            LogUtils.d(TAG, "initUUID: has uuid " + unique_uuid);
             return unique_uuid;
         }
         // 没有unique_uuid
         String rduuid = java.util.UUID.randomUUID().toString();
-        Log.d(TAG, "initUUID: rduuid --> " + rduuid);
+        LogUtils.d(TAG, "initUUID: rduuid --> " + rduuid);
         String serialNumber = android.os.Build.SERIAL;
-        Log.d(TAG, "initUUID: serialNumber --> " + serialNumber);
+        LogUtils.d(TAG, "initUUID: serialNumber --> " + serialNumber);
 
         String uuid = (serialNumber + PJWHash(rduuid)).toUpperCase();
 
-        Log.d(TAG, "initUUID: uuid --> " + uuid);
+        LogUtils.d(TAG, "initUUID: uuid --> " + uuid);
         map.put("unique_uuid",uuid);
         map.put("unique_status",unique_status);
         preferencesService.save("uuid", map);

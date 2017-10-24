@@ -4,6 +4,8 @@ import android.os.Environment;
 import android.support.annotation.IntDef;
 import android.util.Log;
 
+import com.gt.magicbox.base.BaseConstant;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -274,6 +276,9 @@ public final class LogUtils {
     }
 
     private static void log(final int type, final String tag, final Object... contents) {
+        if (!BaseConstant.isPrintLog) {
+            return;
+        }
         if (!sLogSwitch || (!sLog2ConsoleSwitch && !sLog2FileSwitch)) return;
         int type_low = type & 0x0f, type_high = type & 0xf0;
         if (type_low < sConsoleFilter && type_low < sFileFilter) return;
@@ -440,7 +445,7 @@ public final class LogUtils {
                 try {
                     bw = new BufferedWriter(new FileWriter(fullPath, true));
                     bw.write(content);
-                    Log.d(tag, "log to " + fullPath + " success!");
+                    LogUtils.d(tag, "log to " + fullPath + " success!");
                 } catch (IOException e) {
                     e.printStackTrace();
                     Log.e(tag, "log to " + fullPath + " failed!");

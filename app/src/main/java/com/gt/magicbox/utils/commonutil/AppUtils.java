@@ -153,7 +153,7 @@ public final class AppUtils {
             return true;
         }
         if (result.errorMsg != null) {
-            Log.d("AppUtils", "isAppRoot() called" + result.errorMsg);
+            LogUtils.d("AppUtils", "isAppRoot() called" + result.errorMsg);
         }
         return false;
     }

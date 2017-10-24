@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.JsonParseException;
 import com.gt.magicbox.http.HttpResponseException;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import org.json.JSONException;
@@ -52,7 +53,7 @@ public abstract class BaseObserver<T> implements Observer<T> {
         } else if(e instanceof javax.net.ssl.SSLHandshakeException){
             ToastUtil.getInstance().showToast("HTTPS异常");
         } else if(e instanceof JsonParseException || e instanceof JSONException || e instanceof ParseException){
-            Log.d("okhttp","e="+e.toString());
+            LogUtils.d("okhttp","e="+e.toString());
             ToastUtil.getInstance().showToast("后台数据有误");
         }else{
             e.printStackTrace();
@@ -71,7 +72,7 @@ public abstract class BaseObserver<T> implements Observer<T> {
      * 简单提示 服务器返回信息 若需要处理 则重写
      */
     protected void onFailure(int code,String msg) {
-        Log.d("BaseObserver","code="+code+"  msg="+msg);
+        LogUtils.d("BaseObserver","code="+code+"  msg="+msg);
        // ToastUtil.getInstance().showNewShort(msg);
     }
 

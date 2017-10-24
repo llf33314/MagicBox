@@ -24,6 +24,7 @@ import com.gt.magicbox.main.menu.ShortcutMenuDialog;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.utils.commonutil.ActivityUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import butterknife.ButterKnife;
@@ -107,7 +108,7 @@ public class BaseActivity extends RxAppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.d("keyCode", "BaseActivity keyCode --> " + keyCode);
+        LogUtils.d("keyCode", "BaseActivity keyCode --> " + keyCode);
 
         if (((keyCode >= KeyEvent.KEYCODE_NUMPAD_0 && keyCode <= KeyEvent.KEYCODE_NUMPAD_RIGHT_PAREN))
                 && !(ActivityUtils.getTopActivity(BaseActivity.this).contains("PaymentActivity"))
@@ -134,7 +135,7 @@ public class BaseActivity extends RxAppCompatActivity {
                     || (ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity")))
             return false;
             else {
-                if (SystemClock.uptimeMillis()-clickTime<1500){
+                if (SystemClock.uptimeMillis()-clickTime<500){
                     return false;
                 }
                 clickTime= SystemClock.uptimeMillis();

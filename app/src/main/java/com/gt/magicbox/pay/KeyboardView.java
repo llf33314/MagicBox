@@ -24,6 +24,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.utils.SpannableStringUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import java.math.BigDecimal;
@@ -249,11 +250,11 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         this.orderMoney = orderMoney;
     }
     public void input(String str) {
-        Log.i("keycode", "input numberString=" + numberString.toString());
+        LogUtils.i("keycode", "input numberString=" + numberString.toString());
 
             if (numberString.length() <= maxLength) {
                 if (numberString.toString().equals("0") && !str.equals(".")) {
-                    Log.i("keycode", "input numberString.deleteCharAt(0)=" + numberString.toString());
+                    LogUtils.i("keycode", "input numberString.deleteCharAt(0)=" + numberString.toString());
                     numberString.deleteCharAt(0);
                 }
                 if (str.equals(".") && (numberString.toString().contains(".") && numberString.length() == 0))//已经有小数点了或者小数点不能作为开头

@@ -32,6 +32,7 @@ import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.http.socket.SocketIOManager;
 import com.gt.magicbox.main.MoreFunctionDialog;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.LoadingProgressDialog;
@@ -155,14 +156,14 @@ public class AddMemberActivity extends BaseActivity {
                             cardTypeInfoBean = bean;
                         }
 
-                        Log.d(TAG, "onSuccess");
+                        LogUtils.d(TAG, "onSuccess");
                     }
 
                     @Override
                     protected void onFailure(int code, String msg) {
                         super.onFailure(code, msg);
                         dialog.dismiss();
-                        Log.d(TAG, "onFailure");
+                        LogUtils.d(TAG, "onFailure");
 
                     }
 
@@ -170,7 +171,7 @@ public class AddMemberActivity extends BaseActivity {
                     public void onError(Throwable e) {
                         super.onError(e);
                         dialog.dismiss();
-                        Log.d(TAG, "onError");
+                        LogUtils.d(TAG, "onError");
 
 
                     }
@@ -185,19 +186,19 @@ public class AddMemberActivity extends BaseActivity {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        Log.d(TAG, "senSMS onSuccess");
+                        LogUtils.d(TAG, "senSMS onSuccess");
 
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "senSMS onError");
+                        LogUtils.d(TAG, "senSMS onError");
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG, "senSMS onFailure");
+                        LogUtils.d(TAG, "senSMS onFailure");
 
                         super.onFailure(code, msg);
                     }
@@ -212,7 +213,7 @@ public class AddMemberActivity extends BaseActivity {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        Log.d(TAG, "getWeChatSubscriptionQRCode onSuccess data=" + data.getData().toString());
+                        LogUtils.d(TAG, "getWeChatSubscriptionQRCode onSuccess data=" + data.getData().toString());
                         if (data != null && !TextUtils.isEmpty(data.getData().toString())) {
                             showQRCodeView(data.getData().toString());
                         }
@@ -220,13 +221,13 @@ public class AddMemberActivity extends BaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "getWeChatSubscriptionQRCode onError");
+                        LogUtils.d(TAG, "getWeChatSubscriptionQRCode onError");
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG, "getWeChatSubscriptionQRCode onFailure");
+                        LogUtils.d(TAG, "getWeChatSubscriptionQRCode onFailure");
 
                         super.onFailure(code, msg);
                     }
@@ -242,13 +243,13 @@ public class AddMemberActivity extends BaseActivity {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        Log.d(TAG, "receiveMemberCard onSuccess ");
+                        LogUtils.d(TAG, "receiveMemberCard onSuccess ");
                         showResultDialog(true);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "receiveMemberCard onError");
+                        LogUtils.d(TAG, "receiveMemberCard onError");
                         showResultDialog(false);
 
                         super.onError(e);
@@ -256,7 +257,7 @@ public class AddMemberActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG, "receiveMemberCard onFailure");
+                        LogUtils.d(TAG, "receiveMemberCard onFailure");
                         showResultDialog(false);
 
                     }
@@ -274,12 +275,12 @@ public class AddMemberActivity extends BaseActivity {
                     public void onSuccess(BaseResponse data) {
                         showResultDialog(true);
 
-                        Log.d(TAG, "receiveMemberCard onSuccess ");
+                        LogUtils.d(TAG, "receiveMemberCard onSuccess ");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "receiveMemberCard onError");
+                        LogUtils.d(TAG, "receiveMemberCard onError");
                         showResultDialog(false);
 
                         super.onError(e);
@@ -287,7 +288,7 @@ public class AddMemberActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.d(TAG, "receiveMemberCard onFailure");
+                        LogUtils.d(TAG, "receiveMemberCard onFailure");
                         showResultDialog(false);
 
                         super.onFailure(code, msg);
@@ -312,7 +313,7 @@ public class AddMemberActivity extends BaseActivity {
 
                         if (bean != null && bean.gradeType != null && bean.gradeType.size() > 0) {
                             gt_id = bean.gradeType.get(0).gt_id;
-                            Log.d(TAG, "getMemberGradeType onSuccess bean.gt_id=");
+                            LogUtils.d(TAG, "getMemberGradeType onSuccess bean.gt_id=");
 
                         }
                     }
@@ -320,14 +321,14 @@ public class AddMemberActivity extends BaseActivity {
                     @Override
                     protected void onFailure(int code, String msg) {
                         super.onFailure(code, msg);
-                        Log.d(TAG, "getMemberGradeType onFailure");
+                        LogUtils.d(TAG, "getMemberGradeType onFailure");
 
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        Log.d(TAG, "getMemberGradeType onError e=" + e.getMessage());
+                        LogUtils.d(TAG, "getMemberGradeType onError e=" + e.getMessage());
 
 
                     }
@@ -344,8 +345,7 @@ public class AddMemberActivity extends BaseActivity {
                     @Override
                     protected void onSuccess(MemberCardBean bean) {
 
-                        Log.d(TAG, "findMemberCardByPhone onSuccess");
-                        ToastUtil.getInstance().showToast("该手机已领取过会员卡");
+                        LogUtils.d(TAG, "findMemberCardByPhone onSuccess");
                         mMoreFunctionDialog = new MoreFunctionDialog(AddMemberActivity.this, "该手机已领取过会员卡", R.style.HttpRequestDialogStyle);
                         mMoreFunctionDialog.show();
                     }
@@ -353,7 +353,7 @@ public class AddMemberActivity extends BaseActivity {
                     @Override
                     protected void onFailure(int code, String msg) {
                         super.onFailure(code, msg);
-                        Log.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
+                        LogUtils.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
                         if (!TextUtils.isEmpty(msg) && msg.equals("数据不存在")) {
                             if (bit == 0) {
                                 if (memberId > 0) {
@@ -511,7 +511,7 @@ public class AddMemberActivity extends BaseActivity {
             @Override
             public void onTick(long millisUntilFinished) {
                 //每隔countDownInterval秒会回调一次onTick()方法
-                Log.d(TAG, "onTick  " + millisUntilFinished / 1000);
+                LogUtils.d(TAG, "onTick  " + millisUntilFinished / 1000);
                 Message msg = new Message();
                 msg.what = MSG_UPDATE_COUNT_TIME;
                 msg.arg1 = (int) millisUntilFinished / 1000;
@@ -522,7 +522,7 @@ public class AddMemberActivity extends BaseActivity {
             public void onFinish() {
                 handler.sendEmptyMessage(MSG_UPDATE_SEND_CODE_ENABLE);
                 canSendCode = true;
-                Log.d(TAG, "onFinish -- 倒计时结束");
+                LogUtils.d(TAG, "onFinish -- 倒计时结束");
             }
         };
         timer.start();// 开始计时
@@ -534,16 +534,16 @@ public class AddMemberActivity extends BaseActivity {
             @Override
             public void call(Object... args) {
                 String UUID = PhoneUtils.getIMEI();
-                Log.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId",0));
+                LogUtils.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId",0));
                 socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId",0));
-                Log.d(SocketIOManager.TAG, "call: send android auth over");
+                LogUtils.d(SocketIOManager.TAG, "call: send android auth over");
             }
         });
         socketIOManager.setSocketEvent(new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 JSONObject data = (JSONObject) args[0];
-                Log.d(SocketIOManager.TAG, " args[0]=" + args[0]);
+                LogUtils.d(SocketIOManager.TAG, " args[0]=" + args[0]);
 
                 String retData = null;
                 try {
@@ -554,12 +554,12 @@ public class AddMemberActivity extends BaseActivity {
                 }
                 String json = retData.replace("\\", "");
                 if (!TextUtils.isEmpty(json) && json.startsWith("\"") && json.endsWith("\"")) {
-                    Log.d(SocketIOManager.TAG, "startsWith---------");
+                    LogUtils.d(SocketIOManager.TAG, "startsWith---------");
 
                     json = json.substring(1, json.length() - 1);
                 }
-                Log.d(SocketIOManager.TAG, "retData=" + retData);
-                Log.d(SocketIOManager.TAG, "json=" + json);
+                LogUtils.d(SocketIOManager.TAG, "retData=" + retData);
+                LogUtils.d(SocketIOManager.TAG, "json=" + json);
                 FollowSocketBean followSocketBean = new Gson().fromJson(json, FollowSocketBean.class);
                 if (followSocketBean != null) {
                     memberId = followSocketBean.memberId;

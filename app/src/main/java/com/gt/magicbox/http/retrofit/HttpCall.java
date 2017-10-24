@@ -1,6 +1,8 @@
 package com.gt.magicbox.http.retrofit;
 
+import com.gt.magicbox.BuildConfig;
 import com.gt.magicbox.Constant;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.http.ApiService;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.retrofit.converter.string.StringConverterFactory;
@@ -23,18 +25,16 @@ public class HttpCall {
     public static ApiService getApiService(){
         if (mApiService==null){
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-           /* PersistentCookieStore persistentCookieStore = new PersistentCookieStore(MyApplication.getAppContext());
-            CookieJarImpl cookieJarImpl = new CookieJarImpl(persistentCookieStore,MyApplication.getAppContext());*/
+            if (BaseConstant.isPrintLog){
+                loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            }else {
+                loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
+            }
 
             OkHttpClient okHttpClient = new OkHttpClient.Builder()
                     .retryOnConnectionFailure(true)
                     .connectTimeout(15, TimeUnit.SECONDS)
-                    // .addNetworkInterceptor(mRequestInterceptor)
                     .addInterceptor(loggingInterceptor)
-                  //  .cookieJar(cookieJarImpl)
-                    // .authenticator(mAuthenticator2)
                     .build();
 
             Retrofit retrofit = new Retrofit.Builder()

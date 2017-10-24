@@ -93,7 +93,7 @@ public final class KeyboardUtils {
      * <p>参照以下注释代码</p>
      */
     public static void clickBlankArea2HideSoftInput() {
-        Log.d("tips", "U should copy the following code.");
+        LogUtils.d("tips", "U should copy the following code.");
         /*
         @Override
         public boolean dispatchTouchEvent(MotionEvent ev) {

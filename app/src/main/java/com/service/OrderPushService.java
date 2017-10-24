@@ -22,6 +22,7 @@ import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
 import com.gt.magicbox.webview.WebViewActivity;
@@ -74,7 +75,7 @@ public class OrderPushService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG,"onDestroy");
+        LogUtils.i(TAG,"onDestroy");
             disSocket();
         super.onDestroy();
     }
@@ -85,11 +86,11 @@ public class OrderPushService extends Service {
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d(TAG, "onConnect");
+            LogUtils.d(TAG, "onConnect");
             String UUID = PhoneUtils.getIMEI();
-            Log.d(TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
+            LogUtils.d(TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
             mSocket.emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
-            Log.d(TAG, "call: send android auth over");
+            LogUtils.d(TAG, "call: send android auth over");
         }
     };
 
@@ -97,7 +98,7 @@ public class OrderPushService extends Service {
     private Emitter.Listener socketEvent = new Emitter.Listener() {
         @Override
         public void call(Object... objects) {
-            Log.d(TAG, "socketEvent");
+            LogUtils.d(TAG, "socketEvent");
             JSONObject data = (JSONObject) objects[0];
             String retData = null;
             try {
@@ -107,7 +108,7 @@ public class OrderPushService extends Service {
                 retData = "";
             }
             OrderBean orderBean= new Gson().fromJson(retData,OrderBean.class);
-            Log.d(TAG, "socket --> " + retData.toString()+"  orderBean.orderNo="+orderBean.pay_type+"  time="+orderBean.money);
+            LogUtils.d(TAG, "socket --> " + retData.toString()+"  orderBean.orderNo="+orderBean.pay_type+"  time="+orderBean.money);
             if (orderBean!=null){
                 startERCodePay(orderBean.orderId);
                 getUnpaidOrderCount();
@@ -121,13 +122,13 @@ public class OrderPushService extends Service {
                 .subscribe(new BaseObserver<UnpaidOrderBean>() {
                     @Override
                     public void onSuccess(UnpaidOrderBean data) {
-                        Log.i(TAG,"UnpaidOrderBean onSuccess");
+                        LogUtils.i(TAG,"UnpaidOrderBean onSuccess");
                         RxBus.get().post(data);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        Log.i(TAG,"onFailure code="+code+"  msg="+msg);
+                        LogUtils.i(TAG,"onFailure code="+code+"  msg="+msg);
                         super.onFailure(code, msg);
                     }
                 });
@@ -156,7 +157,7 @@ public class OrderPushService extends Service {
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d(TAG, "diconnected");
+            LogUtils.d(TAG, "diconnected");
         }
     };
 
@@ -164,7 +165,7 @@ public class OrderPushService extends Service {
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d(TAG, "Error connecting");
+            LogUtils.d(TAG, "Error connecting");
         }
     };
 
@@ -177,7 +178,7 @@ public class OrderPushService extends Service {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        Log.i(TAG,"initSocketHttp");
+        LogUtils.i(TAG,"initSocketHttp");
 
     }
 

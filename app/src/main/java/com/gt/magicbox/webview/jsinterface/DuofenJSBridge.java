@@ -14,6 +14,7 @@ import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.webview.WebViewActivity;
 import com.gt.magicbox.webview.service.UUIDService;
@@ -66,7 +67,7 @@ public class DuofenJSBridge {
             ((WebViewActivity) context).reloadSocket();
         }
         String json = "{'uuid':'" + PhoneUtils.getIMEI()+"','status':'" + unqiueStatus + "'}";
-        Log.d(TAG, "getUniqueUuId" + json);
+        LogUtils.d(TAG, "getUniqueUuId" + json);
         return json;
     }
 
@@ -85,7 +86,7 @@ public class DuofenJSBridge {
      */
     @JavascriptInterface
     public boolean webBack(){
-        Log.d(TAG, "webBack");
+        LogUtils.d(TAG, "webBack");
         ((WebViewActivity) context).webBack();
         return true;
     }
@@ -96,7 +97,7 @@ public class DuofenJSBridge {
      */
     @JavascriptInterface
     public boolean webReload(){
-        Log.d(TAG, "webBack");
+        LogUtils.d(TAG, "webBack");
         ((WebViewActivity) context).webReload();
         return true;
     }
@@ -108,7 +109,7 @@ public class DuofenJSBridge {
      */
     @JavascriptInterface
     public boolean saveUUID(String uuid){
-        Log.d(TAG, "saveUUID");
+        LogUtils.d(TAG, "saveUUID");
         boolean flag = false;
         try {
             flag = UUIDService.saveUUID(uuid);
@@ -149,7 +150,7 @@ public class DuofenJSBridge {
      */
     @JavascriptInterface
     public void resetUUID(){
-        Log.d(TAG, "resetUUID");
+        LogUtils.d(TAG, "resetUUID");
      //   UUIDService.resetUUID();
     }
 
@@ -158,7 +159,7 @@ public class DuofenJSBridge {
      */
     @JavascriptInterface
     public boolean scanCode(){
-        Log.d(TAG, "scanCode");
+        LogUtils.d(TAG, "scanCode");
         ((WebViewActivity) context).scanCode();
         return true;
     }

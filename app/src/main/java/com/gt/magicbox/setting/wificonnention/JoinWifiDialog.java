@@ -167,7 +167,7 @@ public class JoinWifiDialog extends Dialog {
                         case 0:
                         case 2:   //这里都去连接
                         case 3:
-                            Log.i(TAG," 0,跑到3了");
+                            LogUtils.i(TAG," 0,跑到3了");
                             conncetionWifi();
                             break;
                         default:

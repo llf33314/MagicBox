@@ -102,7 +102,7 @@ public class SwipeMenuLayout extends FrameLayout {
                         && velocityX < MAX_VELOCITYX) {
                     isFling = true;
                 }
-                // Log.i("byz", MAX_VELOCITYX + ", velocityX = " + velocityX);
+                // LogUtils.i("byz", MAX_VELOCITYX + ", velocityX = " + velocityX);
                 return super.onFling(e1, e2, velocityX, velocityY);
             }
         };
@@ -176,7 +176,7 @@ public class SwipeMenuLayout extends FrameLayout {
                 isFling = false;
                 break;
             case MotionEvent.ACTION_MOVE:
-                // Log.i("byz", "downX = " + mDownX + ", moveX = " + event.getX());
+                // LogUtils.i("byz", "downX = " + mDownX + ", moveX = " + event.getX());
                 int dis = (int) (mDownX - event.getX());
                 if (state == STATE_OPEN) {
                     dis += mMenuView.getWidth();

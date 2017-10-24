@@ -23,6 +23,7 @@ import com.gt.magicbox.main.HomeGridViewAdapter;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
@@ -176,7 +177,7 @@ public class VerificationChoseActivity extends BaseActivity {
                     @Override
                     protected void onSuccess(MemberCardBean bean) {
                         if (bean != null) {
-                            Log.d(TAG, "findMemberCardByPhone onSuccess");
+                            LogUtils.d(TAG, "findMemberCardByPhone onSuccess");
 
                             if (bean.ctName.equals("折扣卡") && type == TYPE_MEMBER_RECHARGE) {
                                 dialog = new MoreFunctionDialog(getApplicationContext(), "折扣卡不可以进行充值", R.style.HttpRequestDialogStyle);
@@ -199,7 +200,7 @@ public class VerificationChoseActivity extends BaseActivity {
                     @Override
                     protected void onFailure(int code, String msg) {
                         super.onFailure(code, msg);
-                        Log.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
+                        LogUtils.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
                         if (!TextUtils.isEmpty(msg) && msg.equals("数据不存在")) {
                             new HintDismissDialog(VerificationChoseActivity.this, "该卡号不存在")
                                     .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {

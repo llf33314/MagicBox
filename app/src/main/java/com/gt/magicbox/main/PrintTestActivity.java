@@ -28,6 +28,7 @@ import com.gprinter.io.PortParameters;
 import com.gprinter.service.GpPrintService;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -142,7 +143,7 @@ public class PrintTestActivity extends BaseActivity {
     class PrinterServiceConnection implements ServiceConnection {
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.i("ServiceConnection", "onServiceDisconnected() called");
+            LogUtils.i("ServiceConnection", "onServiceDisconnected() called");
             mGpService = null;
         }
 

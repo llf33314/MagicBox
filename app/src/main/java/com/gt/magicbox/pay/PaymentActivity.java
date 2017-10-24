@@ -30,6 +30,7 @@ import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.member.MemberRechargeActivity;
 import com.gt.magicbox.member.VerificationChoseActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
@@ -89,8 +90,9 @@ public class PaymentActivity extends BaseActivity {
             setToolBarTitle("优惠券核销");
         } else if (type == TYPE_MEMBER_RECHARGE) {
             setToolBarTitle("会员卡充值");
-            if (Constant.product == BaseConstant.PRODUCTS[0])
+            if (Constant.product == BaseConstant.PRODUCTS[0]) {
                 initZBar();
+            }
         }
         keyboardView = (KeyboardView) findViewById(R.id.keyboard);
         keyboardView.setOrderMoney(orderMoney);
@@ -99,7 +101,9 @@ public class PaymentActivity extends BaseActivity {
             @Override
             public void onInput() {
                 if (zBarCameraManager != null) {
-                    if (handlerRunnable != null) handler.removeCallbacks(handlerRunnable);
+                    if (handlerRunnable != null) {
+                        handler.removeCallbacks(handlerRunnable);
+                    }
                     zBarCameraManager.setHandleData(false);
                     handlerRunnable = new Runnable() {
                         @Override
@@ -191,8 +195,7 @@ public class PaymentActivity extends BaseActivity {
                 zBarCameraManager.setOnScanCodeCallBack(new ZBarCameraManager.OnScanCodeCallBack() {
                     @Override
                     public void scanResult(String result) {
-                        Log.d("scanResult","result="+result);
-                        ToastUtil.getInstance().showToast(" result =" +result );
+                        LogUtils.d("scanResult","result="+result);
                         if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY || type == TYPE_COUPON_VERIFICATION) {
                             if (!isRequestingData) {
                                 isRequestingData=true;
@@ -242,7 +245,7 @@ public class PaymentActivity extends BaseActivity {
                     @Override
                     protected void onFailure(int code, String msg) {
                         super.onFailure(code, msg);
-                        Log.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
+                        LogUtils.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
                         if (!TextUtils.isEmpty(msg) && msg.equals("数据不存在")) {
                             new HintDismissDialog(PaymentActivity.this, "该卡号不存在")
                                     .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -260,10 +263,10 @@ public class PaymentActivity extends BaseActivity {
     }
 
     private void memberRecharge(final int payType) {
-        Log.d(TAG, "memberRecharge type=" + type);
+        LogUtils.d(TAG, "memberRecharge type=" + type);
 
         if (memberCardBean != null && type == TYPE_MEMBER_CALC) {
-            Log.d(TAG, "memberRecharge");
+            LogUtils.d(TAG, "memberRecharge");
             HttpCall.getApiService()
                     .memberRecharge(memberCardBean.memberId, orderMoney, payType, Hawk.get("shopId",0))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
@@ -271,7 +274,7 @@ public class PaymentActivity extends BaseActivity {
                     .subscribe(new BaseObserver<BaseResponse>() {
                         @Override
                         public void onSuccess(BaseResponse data) {
-                            Log.d(TAG, "memberRecharge onSuccess ");
+                            LogUtils.d(TAG, "memberRecharge onSuccess ");
                             Intent intent = new Intent(getApplicationContext(), MemberDoResultActivity.class);
                             intent.putExtra("rechargeMoney", orderMoney);
                             intent.putExtra("MemberCardBean", memberCardBean);
@@ -283,13 +286,13 @@ public class PaymentActivity extends BaseActivity {
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.d(TAG, "memberRecharge onError e" + e.getMessage());
+                            LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage());
                             super.onError(e);
                         }
 
                         @Override
                         public void onFailure(int code, String msg) {
-                            Log.d(TAG, "memberRecharge onFailure msg=" + msg);
+                            LogUtils.d(TAG, "memberRecharge onFailure msg=" + msg);
                             super.onFailure(code, msg);
                         }
                     });

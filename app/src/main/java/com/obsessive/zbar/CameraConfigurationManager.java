@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.gt.magicbox.utils.commonutil.LogUtils;
+
 public final class CameraConfigurationManager {
 
 	private static final String TAG = "CameraConfiguration";
@@ -41,7 +43,7 @@ public final class CameraConfigurationManager {
 		theScreenResolution = getDisplaySize(display);
 
 		screenResolution = theScreenResolution;
-		Log.i(TAG, "Screen resolution: " + screenResolution);
+		LogUtils.i(TAG, "Screen resolution: " + screenResolution);
 
 		/** 因为换成了竖屏显示，所以不替换屏幕宽高得出的预览图是变形的 */
 		Point screenResolutionForCamera = new Point();
@@ -55,8 +57,8 @@ public final class CameraConfigurationManager {
 
 		cameraResolution = findBestPreviewSizeValue(parameters,
 				screenResolutionForCamera);
-		Log.i(TAG, "Camera resolution x: " + cameraResolution.x);
-		Log.i(TAG, "Camera resolution y: " + cameraResolution.y);
+		LogUtils.i(TAG, "Camera resolution x: " + cameraResolution.x);
+		LogUtils.i(TAG, "Camera resolution y: " + cameraResolution.y);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -81,7 +83,7 @@ public final class CameraConfigurationManager {
 			return;
 		}
 
-		Log.i(TAG, "Initial camera parameters: " + parameters.flatten());
+		LogUtils.i(TAG, "Initial camera parameters: " + parameters.flatten());
 
 		if (safeMode) {
 			Log.w(TAG,
@@ -158,7 +160,7 @@ public final class CameraConfigurationManager {
 						.append('x').append(supportedPreviewSize.height)
 						.append(' ');
 			}
-			Log.i(TAG, "Supported preview sizes: " + previewSizesString);
+			LogUtils.i(TAG, "Supported preview sizes: " + previewSizesString);
 		}
 
 		double screenAspectRatio = (double) screenResolution.x
@@ -192,7 +194,7 @@ public final class CameraConfigurationManager {
 			if (maybeFlippedWidth == screenResolution.x
 					&& maybeFlippedHeight == screenResolution.y) {
 				Point exactPoint = new Point(realWidth, realHeight);
-				Log.i(TAG, "Found preview size exactly matching screen size: "
+				LogUtils.i(TAG, "Found preview size exactly matching screen size: "
 						+ exactPoint);
 				return exactPoint;
 			}
@@ -207,7 +209,7 @@ public final class CameraConfigurationManager {
 			Camera.Size largestPreview = supportedPreviewSizes.get(0);
 			Point largestSize = new Point(largestPreview.width,
 					largestPreview.height);
-			Log.i(TAG, "Using largest suitable preview size: " + largestSize);
+			LogUtils.i(TAG, "Using largest suitable preview size: " + largestSize);
 			return largestSize;
 		}
 
@@ -215,7 +217,7 @@ public final class CameraConfigurationManager {
 		Camera.Size defaultPreview = parameters.getPreviewSize();
 		Point defaultSize = new Point(defaultPreview.width,
 				defaultPreview.height);
-		Log.i(TAG, "No suitable preview sizes, using default: " + defaultSize);
+		LogUtils.i(TAG, "No suitable preview sizes, using default: " + defaultSize);
 
 		return defaultSize;
 	}

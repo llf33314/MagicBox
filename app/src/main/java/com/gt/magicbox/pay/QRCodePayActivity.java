@@ -40,6 +40,7 @@ import com.gt.magicbox.http.socket.SocketIOManager;
 import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
@@ -128,7 +129,7 @@ public class QRCodePayActivity extends BaseActivity {
     private void init() {
         if (this.getIntent() != null) {
             type = this.getIntent().getIntExtra("type", 0);
-            Log.d(TAG,"type="+type);
+            LogUtils.d(TAG,"type="+type);
 
             switch (type) {
                 case TYPE_MEMBER_RECHARGE:
@@ -137,7 +138,7 @@ public class QRCodePayActivity extends BaseActivity {
                     payMode = this.getIntent().getIntExtra("payMode", 0);
                     if (type==TYPE_MEMBER_RECHARGE){
                         memberCardBean = (MemberCardBean) this.getIntent().getSerializableExtra("MemberCardBean");
-                        Log.d(TAG,"memberCardBean="+memberCardBean.ctName);
+                        LogUtils.d(TAG,"memberCardBean="+memberCardBean.ctName);
 
                     }
                     shiftId = Hawk.get("shiftId");
@@ -162,7 +163,7 @@ public class QRCodePayActivity extends BaseActivity {
                     getCreatedQRCodeURL(orderId,shiftId);
                     break;
             }
-            Log.i(TAG, "Url=" + url);
+            LogUtils.i(TAG, "Url=" + url);
         }
     }
 
@@ -174,10 +175,10 @@ public class QRCodePayActivity extends BaseActivity {
                 .subscribe(new BaseObserver<QRCodeBitmapBean>() {
                     @Override
                     public void onSuccess(QRCodeBitmapBean data) {
-                        Log.i(TAG, "onSuccess");
+                        LogUtils.i(TAG, "onSuccess");
 
                         if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
-                            Log.i(TAG, "data qrUrl=" + data.qrUrl);
+                            LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
                             showQRCodeView(data.qrUrl);
                             orderNo = data.orderNo;
                         }
@@ -206,10 +207,10 @@ public class QRCodePayActivity extends BaseActivity {
                 .subscribe(new BaseObserver<CreatedOrderBean>() {
                     @Override
                     public void onSuccess(CreatedOrderBean data) {
-                        Log.i(TAG, "onSuccess");
+                        LogUtils.i(TAG, "onSuccess");
 
                         if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
-                            Log.i(TAG, "data qrUrl=" + data.qrUrl);
+                            LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
                             showQRCodeView(data.qrUrl);
                             orderNo = data.orderNo;
                         }
@@ -240,12 +241,12 @@ public class QRCodePayActivity extends BaseActivity {
                     .subscribe(new BaseObserver<PayCodeResultBean>() {
                         @Override
                         public void onSuccess(PayCodeResultBean data) {
-                            Log.i(TAG, "onSuccess");
+                            LogUtils.i(TAG, "onSuccess");
                             if (data != null && data.code == 1) {
                                 // payResult(true,""+money);
                             }
 //                        if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
-//                            Log.i(TAG, "data qrUrl=" + data.qrUrl);
+//                            LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
 //                            showQRCodeView(data.qrUrl);
 //                        }
                         }
@@ -312,9 +313,9 @@ public class QRCodePayActivity extends BaseActivity {
             @Override
             public void call(Object... args) {
                 String UUID = PhoneUtils.getIMEI();
-                Log.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
+                LogUtils.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
                 socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
-                Log.d(SocketIOManager.TAG, "call: send android auth over");
+                LogUtils.d(SocketIOManager.TAG, "call: send android auth over");
             }
         });
         socketIOManager.setSocketEvent(new Emitter.Listener() {
@@ -330,12 +331,12 @@ public class QRCodePayActivity extends BaseActivity {
                 }
                 String json = retData.replace("\\", "");
                 if (!TextUtils.isEmpty(json) && json.startsWith("\"") && json.endsWith("\"")) {
-                    Log.d(SocketIOManager.TAG, "startsWith---------");
+                    LogUtils.d(SocketIOManager.TAG, "startsWith---------");
 
                     json = json.substring(1, json.length() - 1);
                 }
-                Log.d(SocketIOManager.TAG, "retData=" + retData);
-                Log.d(SocketIOManager.TAG, "json=" + json);
+                LogUtils.d(SocketIOManager.TAG, "retData=" + retData);
+                LogUtils.d(SocketIOManager.TAG, "json=" + json);
                 ScanCodePayResultBean scanCodePayResultBean = new Gson().fromJson(json, ScanCodePayResultBean.class);
                 if (scanCodePayResultBean != null) {
                     boolean success = (!TextUtils.isEmpty(scanCodePayResultBean.status)
@@ -368,7 +369,7 @@ public class QRCodePayActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(SocketIOManager.TAG, "disSocket");
+        LogUtils.d(SocketIOManager.TAG, "disSocket");
         releaseCamera();
         socketIOManager.disSocket();
     }
@@ -450,17 +451,17 @@ public class QRCodePayActivity extends BaseActivity {
     };
 
     private void memberRecharge() {
-        Log.d(TAG,"memberRecharge type="+type);
+        LogUtils.d(TAG,"memberRecharge type="+type);
 
         if (memberCardBean != null) {
-            Log.d(TAG,"memberRecharge");
+            LogUtils.d(TAG,"memberRecharge");
             HttpCall.getApiService()
                     .memberRecharge(memberCardBean.memberId, money, payMode, (Integer) Hawk.get("shopId"))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                     .subscribe(new BaseObserver<BaseResponse>() {
                         @Override
                         public void onSuccess(BaseResponse data) {
-                            Log.d(TAG, "memberRecharge onSuccess " );
+                            LogUtils.d(TAG, "memberRecharge onSuccess " );
                             Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
                             intent.putExtra("rechargeMoney",money);
                             intent.putExtra("MemberCardBean",memberCardBean);
@@ -473,13 +474,13 @@ public class QRCodePayActivity extends BaseActivity {
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
-                            Log.d(TAG, "memberRecharge onError e" + e.getMessage().toString());
+                            LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage().toString());
                             super.onError(e);
                         }
 
                         @Override
                         public void onFailure(int code, String msg) {
-                            Log.d(TAG, "memberRecharge onFailure msg=" + msg);
+                            LogUtils.d(TAG, "memberRecharge onFailure msg=" + msg);
                             super.onFailure(code, msg);
                         }
                     });
