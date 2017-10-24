@@ -150,6 +150,12 @@
 
         <service android:name=".setting.printersetting.PrinterConnectService"/>
         <service android:name="com.service.OrderPushService"/>
+        <service android:name="com.talkingdata.sdk.TDAntiCheatingService"
+            android:process="com.talkingdata.sdk.TDAntiCheatingService">  <!--用户质量评估Service可以配置在主进程或者单独进程-->
+            <intent-filter>
+                <action android:name="com.talkingdata.sdk.TDAntiCheatingService" />
+            </intent-filter>
+        </service>
     </application>
 
 

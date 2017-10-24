@@ -326,8 +326,6 @@ public class PrinterConnectService extends Service {
     }
 
     private static void showHintNotConnectDialog() {
-        if (hintDismissDialog == null) {
-            Log.d("app","AppManager.getInstance().currentActivity()="+AppManager.getInstance().currentActivity().toString());
             hintDismissDialog = new HintDismissDialog(AppManager.getInstance().currentActivity(), "打印机未连接请连接后再打印")
                     .setOkText("去设置").setCancelText("取消").setOnOkClickListener(new View.OnClickListener() {
                         @Override
@@ -340,9 +338,7 @@ public class PrinterConnectService extends Service {
                         public void onClick(View v) {
                         }
                     });
-        }
         hintDismissDialog.show();
-
     }
 
     /**
