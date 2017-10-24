@@ -74,10 +74,7 @@ public class MoreActivity extends BaseActivity {
                         new ManualDialog(MoreActivity.this).show();
                         break;
                     case 3:
-                        Hawk.delete("busId");
-                        Hawk.delete("shiftId");
-                        intent=new Intent(MoreActivity.this,LoadingActivity.class);
-                        startActivity(intent);
+                        showExitDialog();
                         break;
                 }
             }
@@ -94,5 +91,23 @@ public class MoreActivity extends BaseActivity {
             item.setName(itemNameArray[i]);
             homeData.add(item);
         }
+    }
+    private void showExitDialog() {
+        HintDismissDialog  hintDismissDialog = new HintDismissDialog(MoreActivity.this,
+                getResources().getString(R.string.confirm_exit))
+                .setOkText("确定").setCancelText("取消").setOnOkClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Hawk.delete("busId");
+                        Hawk.delete("shiftId");
+                        Intent  intent=new Intent(MoreActivity.this,LoadingActivity.class);
+                        startActivity(intent);
+                    }
+                }).setOnCancelClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                    }
+                });
+        hintDismissDialog.show();
     }
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
@@ -18,7 +19,9 @@ import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.OnTaskFinishListener;
 import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.ManualDialog;
 import com.orhanobut.hawk.Hawk;
 
@@ -81,10 +84,7 @@ public class MoreActivity extends BaseActivity {
                         checkUpdate();
                         break;
                     case 5:
-                        Hawk.delete("busId");
-                        Hawk.delete("shiftId");
-                        intent=new Intent(MoreActivity.this,LoadingActivity.class);
-                        startActivity(intent);
+                      showExitDialog();
                         break;
                 }
             }
@@ -131,4 +131,23 @@ public class MoreActivity extends BaseActivity {
             homeData.add(item);
         }
     }
+    private void showExitDialog() {
+        HintDismissDialog  hintDismissDialog = new HintDismissDialog(MoreActivity.this,
+                getResources().getString(R.string.confirm_exit))
+                .setOkText("确定").setCancelText("取消").setOnOkClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Hawk.delete("busId");
+                        Hawk.delete("shiftId");
+                        Intent  intent=new Intent(MoreActivity.this,LoadingActivity.class);
+                        startActivity(intent);
+                    }
+                }).setOnCancelClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                    }
+                });
+        hintDismissDialog.show();
+    }
+
 }
