@@ -35,6 +35,7 @@ import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.gt.magicbox.widget.WheelDialog;
 import com.lidroid.xutils.BitmapUtils;
@@ -94,6 +95,8 @@ public class AddMemberActivity extends BaseActivity {
     private CountDownTimer timer;
     private static final int MSG_UPDATE_COUNT_TIME = 0;
     private static final int MSG_UPDATE_SEND_CODE_ENABLE = 1;
+    private static final int MSG_SHOW_FOLLOW_SUCCESS = 2;
+
     private boolean canSendCode = true;
     private String smsCode = "";
     private boolean isMemberCardInit = false;
@@ -119,7 +122,9 @@ public class AddMemberActivity extends BaseActivity {
 
                     getIdentifyingCode.setEnabled(true);
                     break;
-
+                case MSG_SHOW_FOLLOW_SUCCESS:
+                    new HintDismissDialog(AddMemberActivity.this,"粉丝关注成功").show();
+                    break;
             }
             super.handleMessage(msg);
         }
@@ -563,6 +568,7 @@ public class AddMemberActivity extends BaseActivity {
                 FollowSocketBean followSocketBean = new Gson().fromJson(json, FollowSocketBean.class);
                 if (followSocketBean != null) {
                     memberId = followSocketBean.memberId;
+                    handler.sendEmptyMessage(MSG_SHOW_FOLLOW_SUCCESS);
                 }
             }
         });
@@ -579,4 +585,5 @@ public class AddMemberActivity extends BaseActivity {
         mMoreFunctionDialog = new MoreFunctionDialog(this, msg, R.style.HttpRequestDialogStyle);
         mMoreFunctionDialog.show();
     }
+
 }

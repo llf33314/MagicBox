@@ -63,7 +63,7 @@ public class DeviceInfoActivity extends BaseActivity {
 
     @OnClick(R.id.camera_layout)
     public void onViewClicked() {
-        Intent intent = new Intent(this, ScanCodeTest.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, ScanCodeTest.class);
+//        startActivity(intent);
     }
 }

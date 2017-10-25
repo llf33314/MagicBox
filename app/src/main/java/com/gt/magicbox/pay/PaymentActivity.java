@@ -6,9 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 
@@ -24,7 +22,6 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
-import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.member.MemberRechargeActivity;
@@ -36,11 +33,12 @@ import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Description:
- * Created by jack-lin on 2017/7/18 0018.
+ *
+ * @author jack-lin
+ * @date 2017/7/18 0018
  */
 
 public class PaymentActivity extends BaseActivity {
@@ -206,7 +204,6 @@ public class PaymentActivity extends BaseActivity {
                 });
             }
         });
-
     }
 
     private void findMemberCardByPhone(final String numberString) {
@@ -246,7 +243,7 @@ public class PaymentActivity extends BaseActivity {
                     protected void onFailure(int code, String msg) {
                         super.onFailure(code, msg);
                         LogUtils.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
-                        if (!TextUtils.isEmpty(msg) && msg.equals("数据不存在")) {
+                        if (!TextUtils.isEmpty(msg) && getString(R.string.data_is_not_exit).equals(msg)) {
                             new HintDismissDialog(PaymentActivity.this, "该卡号不存在")
                                     .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
                                         public void onDismiss(DialogInterface dialog) {

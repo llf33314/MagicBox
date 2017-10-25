@@ -19,6 +19,7 @@ import com.gt.magicbox.update.OnTaskFinishListener;
 import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.ManualDialog;
 import com.orhanobut.hawk.Hawk;
 
@@ -93,7 +94,7 @@ public class MoreActivity extends BaseActivity {
         }
     }
     private void showExitDialog() {
-        HintDismissDialog  hintDismissDialog = new HintDismissDialog(MoreActivity.this,
+        HintDismissDialog hintDismissDialog = new HintDismissDialog(MoreActivity.this,
                 getResources().getString(R.string.confirm_exit))
                 .setOkText("确定").setCancelText("取消").setOnOkClickListener(new View.OnClickListener() {
                     @Override
