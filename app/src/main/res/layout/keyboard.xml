@@ -88,7 +88,13 @@
                 android:textSize="16dp" />
         </LinearLayout>
     </LinearLayout>
-
+    <View
+        android:id="@+id/inputBg"
+        android:layout_above="@id/input"
+        android:background="@drawable/tip_bg"
+        android:layout_margin="@dimen/dp_10"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -101,7 +107,7 @@
             android:id="@+id/tip_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2">
+            android:layout_weight="1">
 
             <LinearLayout
                 android:gravity="center_vertical"
@@ -110,8 +116,7 @@
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="@dimen/dp_20"
                 android:layout_marginRight="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_28"
-                android:background="@drawable/tip_bg"
+                android:layout_marginTop="@dimen/dp_20"
                 android:orientation="vertical">
 
                 <TextView
@@ -190,18 +195,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_margin="5dp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginRight="14dp"
                 android:gravity="right"
                 android:singleLine="true"
                 android:text=""
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="34dp" />
+            <ImageView
+                android:id="@+id/inputCursor"
+                android:layout_marginRight="@dimen/dp_12"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/input_cursor"
+                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginBottom="@dimen/dp_20"
+                android:layout_width="@dimen/dp_2"
+                android:layout_height="match_parent"
+                />
 
             <TextView
                 android:id="@+id/text_paid_in_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:text="@string/paid_in_amount"
                 android:textColor="@color/white"
                 android:visibility="invisible" />

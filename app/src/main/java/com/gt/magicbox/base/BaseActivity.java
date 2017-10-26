@@ -19,12 +19,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.login.LoginActivity;
 import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.menu.ShortcutMenuDialog;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.utils.commonutil.ActivityUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.LogUtils;
+import com.orhanobut.hawk.Hawk;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import butterknife.ButterKnife;
@@ -118,10 +120,14 @@ public class BaseActivity extends RxAppCompatActivity {
             intent.putExtra("type", PaymentActivity.TYPE_INPUT);
             intent.putExtra("keyCode", keyCode);
             startActivity(intent);
-        } else if (keyCode == 250 &&
-                !(ActivityUtils.getTopActivity(BaseActivity.this).contains("LoginActivity"))) {
-            Intent intent = new Intent(BaseActivity.this, MainActivity.class);
-            startActivity(intent);
+        } else if (keyCode == 250) {
+            if (Hawk.get("isLogin",false)){
+                Intent intent = new Intent(BaseActivity.this, MainActivity.class);
+                startActivity(intent);
+            }else {
+                Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
             return false;
         } else if (keyCode == 251) {
             if (shortcutMenuDialog == null)
@@ -143,5 +149,4 @@ public class BaseActivity extends RxAppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
 }

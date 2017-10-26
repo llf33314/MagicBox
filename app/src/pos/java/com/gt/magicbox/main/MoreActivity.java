@@ -99,6 +99,7 @@ public class MoreActivity extends BaseActivity {
                 .setOkText("确定").setCancelText("取消").setOnOkClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Hawk.put("isLogin",false);
                         Hawk.delete("busId");
                         Hawk.delete("shiftId");
                         Intent  intent=new Intent(MoreActivity.this,LoadingActivity.class);

@@ -80,6 +80,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
 
     @Override
     public void showLoginView() {
+        Hawk.put("isLogin",true);
         Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);

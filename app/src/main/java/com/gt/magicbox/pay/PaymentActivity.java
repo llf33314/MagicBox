@@ -265,7 +265,7 @@ public class PaymentActivity extends BaseActivity {
         if (memberCardBean != null && type == TYPE_MEMBER_CALC) {
             LogUtils.d(TAG, "memberRecharge");
             HttpCall.getApiService()
-                    .memberRecharge(memberCardBean.memberId, orderMoney, payType, Hawk.get("shopId",0))
+                    .memberRecharge(memberCardBean.memberId, orderMoney, 10, Hawk.get("shopId",0))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                     .compose(new DialogTransformer().<BaseResponse>transformer())
                     .subscribe(new BaseObserver<BaseResponse>() {
@@ -284,6 +284,7 @@ public class PaymentActivity extends BaseActivity {
                         @Override
                         public void onError(Throwable e) {
                             LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage());
+                            new HintDismissDialog(PaymentActivity.this,"会员卡充值失败").show();
                             super.onError(e);
                         }
 

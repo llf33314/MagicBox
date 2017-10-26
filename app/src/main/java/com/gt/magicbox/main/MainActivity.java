@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -269,6 +270,7 @@ public class MainActivity extends BaseActivity {
        getUnpaidOrderCount();
         LogUtils.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId")
         + "  product="+Constant.product);
+        LogUtils.d(TAG,"W="+ ScreenUtils.getScreenWidth()+" H="+ScreenUtils.getScreenHeight());
         super.onResume();
     }
     private void requestUpdate() {

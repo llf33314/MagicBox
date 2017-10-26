@@ -11,6 +11,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -42,7 +45,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private Button pay;
     private Button member_pay;
     private Button fit_pay;
-
+    private ImageView inputCursor;
     private OnInputListener onInputListener;
     private TextView showNumber;
     private StringBuffer numberString = new StringBuffer();
@@ -57,7 +60,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private int keyboardType = 0;
     private double chargeMoney;
     private double realPay;
-
+    private View inputBg;
     private String tipContent="";
     private double orderMoney;
     public static final int TYPE_INPUT_MONEY = 0;
@@ -81,7 +84,8 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         pay = (Button) view.findViewById(R.id.keyboard_pay);
         member_pay = (Button) view.findViewById(R.id.keyboard_member_pay);
         fit_pay = (Button) view.findViewById(R.id.keyboard_fit_pay);
-
+        inputCursor=(ImageView)view.findViewById(R.id.inputCursor) ;
+        inputBg=view.findViewById(R.id.inputBg);
         showNumber = (TextView) view.findViewById(R.id.showNumber);
         should_pay = (TextView) view.findViewById(R.id.should_pay);
         charge = (TextView) view.findViewById(R.id.charge);
@@ -94,11 +98,11 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         pay.setOnClickListener(this);
         fit_pay.setOnClickListener(this);
         member_pay.setOnClickListener(this);
-
         KeyboardAdapter keyboardAdapter = new KeyboardAdapter(context);
         gridView.setOnItemClickListener(this);
         gridView.setAdapter(keyboardAdapter);
         addView(view);
+        setFlickerAnimation(inputCursor);
 
     }
 
@@ -187,7 +191,11 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         if (keyboardType==TYPE_MEMBER||keyboardType==TYPE_COUPON_VERIFICATION
                 ||keyboardType==TYPE_MEMBER_RECHARGE){
             showNumber.setText(numberString);
-            if (TextUtils.isEmpty(numberString.toString()))showNumber.setText(tipContent);
+            showNumber.setTextColor(getResources().getColor(R.color.black));
+            if (TextUtils.isEmpty(numberString.toString())) {
+                showNumber.setText(tipContent);
+                showNumber.setTextColor(getResources().getColor(R.color.hint_text));
+            }
         }else  showNumber.setText(SpannableStringUtils.diffTextSize("¥ " + numberString, 20, 0, 1));
 
     }
@@ -207,13 +215,15 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         if (keyboardType == TYPE_CHARGE|| keyboardType == TYPE_MEMBER_RECHARGE_CASH) {
             chargeLayout.setVisibility(VISIBLE);
             text_paid_in_amount.setVisibility(VISIBLE);
+            showNumber.setTextColor(getResources().getColor(R.color.white));
             should_pay.setText(SpannableStringUtils.diffTextSize("¥ " + orderMoney, 14, 0, 1));
             pay.setText("确认");
             pay.setVisibility(VISIBLE);
             member_pay.setVisibility(GONE);
             fit_pay.setVisibility(GONE);
+            inputBg.setVisibility(GONE);
         }else if (keyboardType==TYPE_MEMBER||keyboardType==TYPE_MEMBER_RECHARGE){
-            if (Constant.product == BaseConstant.PRODUCTS[1]) tipLayout.setVisibility(GONE);
+            if (Constant.product == BaseConstant.PRODUCTS[1]) tipLayout.setVisibility(INVISIBLE);
             else tipLayout.setVisibility(VISIBLE);
             pay.setText("确认");
             pay.setVisibility(VISIBLE);
@@ -221,12 +231,15 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             fit_pay.setVisibility(GONE);
             tipContent=getResources().getText(R.string.please_input_member_or_phone).toString();
             showNumber.setText(tipContent);
-            showNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP,25);
+            showNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP,26);
+            showNumber.setTextColor(getResources().getColor(R.color.hint_text));
             RelativeLayout.LayoutParams params= (LayoutParams) showNumber.getLayoutParams();
             params.setMargins(0,0,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_8))
                     ,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_5)));
             showNumber.setLayoutParams(params);
             maxLength=20;
+            setCursorLayout(inputCursor);
+            setNumberLayout(showNumber);
         }else if (keyboardType==TYPE_COUPON_VERIFICATION){
             if (Constant.product == BaseConstant.PRODUCTS[1]) tipLayout.setVisibility(GONE);
             else tipLayout.setVisibility(VISIBLE);
@@ -236,12 +249,15 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             fit_pay.setVisibility(GONE);
             tipContent=getResources().getText(R.string.please_input_coupon_number).toString();
             showNumber.setText(tipContent);
+            showNumber.setTextColor(getResources().getColor(R.color.hint_text));
             aimTip.setText(getResources().getText(R.string.please_aim_coupon_tip));
             showNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP,25);
             RelativeLayout.LayoutParams params= (LayoutParams) showNumber.getLayoutParams();
             params.setMargins(0,0,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_8))
                     ,ConvertUtils.dp2px(getResources().getDimension(R.dimen.dp_5)));
             showNumber.setLayoutParams(params);
+            setCursorLayout(inputCursor);
+            setNumberLayout(showNumber);
             maxLength=11;
         }
     }
@@ -327,5 +343,25 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
     public void setOnInputListener(OnInputListener onInputListener) {
         this.onInputListener = onInputListener;
+    }
+    private void setFlickerAnimation(ImageView imageView) {
+        final Animation animation = new AlphaAnimation(1, 0);
+        animation.setDuration(420);//闪烁时间间隔
+        animation.setInterpolator(new AccelerateDecelerateInterpolator());
+        animation.setRepeatCount(Animation.INFINITE);
+        animation.setRepeatMode(Animation.REVERSE);
+        imageView.setAnimation(animation);
+    }
+    private void setCursorLayout(ImageView imageView){
+        RelativeLayout.LayoutParams layoutParams= (LayoutParams) imageView.getLayoutParams();
+        layoutParams.setMargins(ConvertUtils.dp2px(0),ConvertUtils.dp2px(4),
+                ConvertUtils.dp2px(14),ConvertUtils.dp2px(22));
+        imageView.setLayoutParams(layoutParams);
+    }
+    private void setNumberLayout(TextView textView){
+        RelativeLayout.LayoutParams layoutParams= (LayoutParams) textView.getLayoutParams();
+        layoutParams.setMargins(ConvertUtils.dp2px(0),ConvertUtils.dp2px(0),
+                ConvertUtils.dp2px(14),ConvertUtils.dp2px(20));
+        textView.setLayoutParams(layoutParams);
     }
 }
