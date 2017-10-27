@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.order.OrderListActivity;
 import com.gt.magicbox.pay.PaymentActivity;
+import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.UpdateManager;
@@ -39,6 +41,9 @@ import com.gt.magicbox.utils.commonutil.ScreenUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 import com.service.OrderPushService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,7 +92,7 @@ public class MainActivity extends BaseActivity {
         setToolBarTitle("主页");
         goneBack();
         initView();
-        //bindOrderService();
+        bindOrderService();
         //requestUpdate();
 
         if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
@@ -172,6 +177,7 @@ public class MainActivity extends BaseActivity {
                         }
                         break;
                     case 5:
+                        //testOrderPush();
                         intent = new Intent(MainActivity.this, MoreActivity.class);
                         startActivity(intent);
                         break;
@@ -216,7 +222,27 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
-
+    private void testOrderPush(){
+        try {
+            String   retData="{\"busId\":36,\"businessUtilName\":\"shops.yifriend.net:711/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f58b4ed015f58cb308f003b\"," +
+                        "\"eqCode\":\"865067034465453\",\"model\":53,\"money\":150,\"orderId\":1047," +
+                        "\"orderNo\":\"YD1509023232136\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-27 17:40:24\",\"type\":1}";
+            LogUtils.d(TAG, "socketEvent retData="+retData);
+            JSONObject orderObject= new JSONObject(retData);
+            if (orderObject!=null) {
+                int orderId = orderObject.getInt("orderId");
+                double money =  orderObject.getDouble("money");
+                LogUtils.d(TAG," money="+money);
+                Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
+                intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
+                intent.putExtra("orderId",orderId);
+                intent.putExtra("money", money);
+                startActivity(intent);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     private void initViewData() {
         for (int i = 0; i < itemNameArray.length; i++) {
             GridItem item = new GridItem();

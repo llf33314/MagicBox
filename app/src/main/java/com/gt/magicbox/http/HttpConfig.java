@@ -32,6 +32,7 @@ public class HttpConfig {
     public static final String SOCKET_ANDROID_AUTH = "androidAuth";
     // socket auth key 发送socket请求或接收socket请求的key值
     public static final String SOCKET_ANDROID_AUTH_KEY = "dfmagicboxsocket_";
+    public static final String SOCKET_ORDER_AUTH_KEY = "dfmagicboxsocket_order";
     public static final String SOCKET_FOLLOW_AUTH_KEY = "MagicBox_Key_";
 
     public static final String PAYMENT_URL="magicBoxMobile/79B4DE7C/payQR.do";

@@ -104,11 +104,18 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                             }else if (data.checkType==1){
                                 final NormalDialog dialog=new NormalDialog(LoginActivity.this,
                                         "该设备已绑定其他账号   \n是否进行改绑并登陆",R.style.HttpRequestDialogStyle);
-                                dialog.setOnClickListener(new View.OnClickListener() {
+                                dialog.setOnOkClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         changeDevicesBind(userName,password);
                                         dialog.dismiss();
+                                    }
+                                });
+                                dialog.setOnCancelClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if (loadingProgressDialog!=null)
+                                        loadingProgressDialog.dismiss();
                                     }
                                 });
                                 dialog.show();
@@ -136,7 +143,6 @@ public class LoginActivity extends BaseActivity implements ILoginView {
         HttpCall.getApiService()
                 .changeBind(PhoneUtils.getIMEI(),userName ,password)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
-                .compose(new DialogTransformer().<BaseResponse>transformer()) //显示对话框
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     protected void onSuccess(BaseResponse baseResponse) {

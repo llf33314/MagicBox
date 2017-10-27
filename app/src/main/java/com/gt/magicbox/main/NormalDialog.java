@@ -24,7 +24,9 @@ import butterknife.OnClick;
  */
 
 public class NormalDialog extends Dialog {
-    private View.OnClickListener onClickListener;
+    private View.OnClickListener onOkClickListener;
+    private View.OnClickListener onCancelClickListener;
+
     @BindView(R.id.title)
     TextView title;
     @BindView(R.id.cancel)
@@ -51,18 +53,24 @@ public class NormalDialog extends Dialog {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.cancel:
+                if (onCancelClickListener != null) {
+                    onCancelClickListener.onClick(view);
+                }
                 dismiss();
                 break;
             case R.id.confirm:
-                if (onClickListener != null) {
-                    onClickListener.onClick(view);
+                if (onOkClickListener != null) {
+                    onOkClickListener.onClick(view);
                 }
                 break;
         }
     }
 
-    public void setOnClickListener(View.OnClickListener onClickListener) {
-        this.onClickListener = onClickListener;
+    public void setOnOkClickListener(View.OnClickListener onClickListener) {
+        this.onOkClickListener = onClickListener;
+    }
+    public void setOnCancelClickListener(View.OnClickListener onClickListener) {
+        this.onCancelClickListener = onClickListener;
     }
 }
 

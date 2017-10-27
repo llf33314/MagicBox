@@ -21,6 +21,7 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -88,8 +89,8 @@ public class OrderPushService extends Service {
         public void call(Object... args) {
             LogUtils.d(TAG, "onConnect");
             String UUID = PhoneUtils.getIMEI();
-            LogUtils.d(TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
-            mSocket.emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
+            LogUtils.d(TAG, "auth key : " + HttpConfig.SOCKET_ORDER_AUTH_KEY + UUID);
+            mSocket.emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_ORDER_AUTH_KEY + UUID);
             LogUtils.d(TAG, "call: send android auth over");
         }
     };
@@ -102,17 +103,28 @@ public class OrderPushService extends Service {
             JSONObject data = (JSONObject) objects[0];
             String retData = null;
             try {
+               /* retData="{\"busId\":36,\"businessUtilName\":\"shops.yifriend.net:711/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f58b4ed015f58cb308f003b\"," +
+                        "\"eqCode\":\"865067034465453\",\"model\":53,\"money\":150,\"orderId\":1047," +
+                        "\"orderNo\":\"YD1509023232136\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-27 17:40:24\",\"type\":1}"*/
                 retData = data.get("message").toString();
+                LogUtils.d(TAG, "socketEvent retData="+retData);
+                JSONObject orderObject= new JSONObject(retData);
+                if (orderObject!=null) {
+                    playOrderSound();
+                    String orderNo = orderObject.getString("orderNo");
+                    String money = orderObject.getString("money");
+                    Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
+                    intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
+                    intent.putExtra("orderId",orderNo);
+                    intent.putExtra("money", money);
+                    startActivity(intent);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
                 retData = "";
             }
-            OrderBean orderBean= new Gson().fromJson(retData,OrderBean.class);
-            LogUtils.d(TAG, "socket --> " + retData.toString()+"  orderBean.orderNo="+orderBean.pay_type+"  time="+orderBean.money);
-            if (orderBean!=null){
-                startERCodePay(orderBean.orderId);
-                getUnpaidOrderCount();
-            }
+
+
         }
     };
     private void getUnpaidOrderCount(){
@@ -138,11 +150,11 @@ public class OrderPushService extends Service {
      */
     private void startERCodePay(int orderId){
         playOrderSound();
-        Intent intent=new Intent(getApplicationContext(), WebViewActivity.class);
-        intent.putExtra("webType",WebViewActivity.WEB_TYPE_SERVER_PUSH);
-        intent.putExtra("orderId",orderId);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+//        Intent intent=new Intent(getApplicationContext(), WebViewActivity.class);
+//        intent.putExtra("webType",WebViewActivity.WEB_TYPE_SERVER_PUSH);
+//        intent.putExtra("orderId",orderId);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent);
     }
 
     private void playOrderSound(){
