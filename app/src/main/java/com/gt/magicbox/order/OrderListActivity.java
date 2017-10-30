@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,8 +40,11 @@ import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -61,7 +65,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     private int status = 0;
     private final static int RESULT_FROM_PAY=1;
     public final static int RESULT_FROM_PAY_SUCCESS=101;
-
+    private Handler handler=new Handler();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,8 +170,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                     @Override
                     public void onSuccess(OrderListResultBean data) {
                         LogUtils.d(TAG, "onSuccess");
-
-                        if (data != null) {
+                        if (data != null&&orderListAdapter!=null) {
                             orderListAdapter.getHeadButtonViewHolder().noPayOrder.setOnClickListener(OrderListActivity.this);
                             orderListAdapter.getHeadButtonViewHolder().payOrder.setOnClickListener(OrderListActivity.this);
                             if (data.orders != null && data.orders.size() > 0) {
@@ -283,9 +286,15 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
         RxBus.get().toObservable(UpdateOrderListUIBean.class).subscribe(new Consumer<UpdateOrderListUIBean>() {
             @Override
             public void accept(UpdateOrderListUIBean updateOrderListUIBean) throws Exception {
+                orderItemBeanList.clear();
                 orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
-                getOrderList(0, 10);
                 initView();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getOrderList(0, 10);
+                    }
+                },500);
             }
         });
     }

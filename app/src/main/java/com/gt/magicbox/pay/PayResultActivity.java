@@ -19,12 +19,14 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.StaffBean;
+import com.gt.magicbox.bean.UpdateOrderListUIBean;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.setting.printersetting.PrintManager;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
+import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -61,6 +63,10 @@ public class PayResultActivity extends BaseActivity {
     public static final int TYPE_QRCODE_ALIPAY = 1;
     public static final int TYPE_CASH = 2;
     private int payType;
+    private int fromType=0;
+    public static final int TYPE_FROM_DEFAULT=0;
+    public static final int TYPE_FROM_ORDER_LIST=1;
+
     private MediaPlayer mp = new MediaPlayer();
     private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
@@ -82,6 +88,7 @@ public class PayResultActivity extends BaseActivity {
             payType = getIntent().getIntExtra("payType", 0);
             message = getIntent().getStringExtra("message");
             orderNo=getIntent().getStringExtra("orderNo");
+            fromType=getIntent().getIntExtra("fromType",0);
             showMoney(message);
         }
     }
@@ -90,8 +97,12 @@ public class PayResultActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.confirmButton:
-                Intent intent = new Intent(PayResultActivity.this, PaymentActivity.class);
-                startActivity(intent);
+                if (fromType==TYPE_FROM_DEFAULT) {
+                    Intent intent = new Intent(PayResultActivity.this, PaymentActivity.class);
+                    startActivity(intent);
+                }else if (fromType==TYPE_FROM_ORDER_LIST){
+                    RxBus.get().post(new UpdateOrderListUIBean());
+                }
                 finish();
                 break;
             case R.id.printButton:
