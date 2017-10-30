@@ -159,5 +159,7 @@ public interface ApiService {
                                       @Field("money") double money,
                                       @Field("type") int type,
                                       @Field("shiftId") int shiftId);
+    @GET("magicBoxMobile/{orderNo}/{shiftId}/callBack")
+    Observable<BaseResponse> posPayCallBack(@Path("orderNo") String orderNo, @Path("shiftId") int shiftId);
 
 }

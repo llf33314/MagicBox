@@ -149,12 +149,21 @@ public class QRCodePayActivity extends BaseActivity {
                     break;
                 case TYPE_SERVER_PUSH:
                     int orderId = this.getIntent().getIntExtra("orderId", 0);
-                    if (orderId != 0)
-                        url = HttpConfig.BASE_URL + PhoneUtils.getIMEI() + "/" + orderId + "/" + HttpConfig.PAYMENT_URL;
+                    money = this.getIntent().getDoubleExtra("money", 0);
+                    orderNo = this.getIntent().getStringExtra("orderNo");
+
+                    shiftId = Hawk.get("shiftId");
+                    if (shiftId == null || shiftId < 0) shiftId = 0;
+                    showMoney(cashierMoney, "" + money);
+                    showMoney(customerMoney, "" + money);
+                    reChosePay.setVisibility(View.GONE);
+                    getCreatedQRCodeURL(orderId,shiftId);
                     break;
                 case TYPE_CREATED_PAY:
                     orderId = this.getIntent().getIntExtra("orderId", 0);
                     money = this.getIntent().getDoubleExtra("money", 0);
+                    orderNo = this.getIntent().getStringExtra("orderNo");
+
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
                     showMoney(cashierMoney, "" + money);
@@ -212,6 +221,7 @@ public class QRCodePayActivity extends BaseActivity {
                         if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
                             LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
                             showQRCodeView(data.qrUrl);
+                            if (type!=TYPE_SERVER_PUSH)
                             orderNo = data.orderNo;
                         }
                     }

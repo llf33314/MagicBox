@@ -17,6 +17,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.MemberCountMoneyBean;
+import com.gt.magicbox.bean.UpdateOrderListUIBean;
 import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpRequestDialog;
@@ -31,6 +32,7 @@ import com.gt.magicbox.member.AddMemberActivity;
 import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.member.MemberRechargeActivity;
+import com.gt.magicbox.order.OrderListActivity;
 import com.gt.magicbox.pos.bean.AppNameEnum;
 import com.gt.magicbox.pos.bean.bankcardcollection.cancel.CancelBean;
 import com.gt.magicbox.pos.bean.bankcardcollection.pay.PayBean;
@@ -41,6 +43,7 @@ import com.gt.magicbox.pos.util.ObjectUtils;
 import com.gt.magicbox.pos.util.PromptUtils;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
+import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.FileHelper;
@@ -84,7 +87,10 @@ public class ChosePayModeActivity extends BaseActivity {
     public static final int TYPE_FIT_PAY = 0;
     public static final int TYPE_MEMBER_PAY = 1;
     public static final int TYPE_MEMBER_RECHARGE = 2;
+    public static final int TYPE_ORDER_PUSH = 3;
+
     private double money;
+    private String orderNo="";
     private MoreFunctionDialog dialog;
     private HttpRequestDialog httpRequestDialog;
     private MemberCardBean memberCardBean;
@@ -99,6 +105,7 @@ public class ChosePayModeActivity extends BaseActivity {
             money = this.getIntent().getDoubleExtra("money", 0);
             customerType = this.getIntent().getIntExtra("customerType", 0);
             memberCardBean= (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
+            orderNo=this.getIntent().getStringExtra("orderNo");
         }
         initView();
     }
@@ -118,13 +125,13 @@ public class ChosePayModeActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent;
-                if (!haveMemberPay()) {
+                if (!haveMemberPay() || customerType == TYPE_ORDER_PUSH) {
                     i++;
                 }
                 switch (i) {
                     case 0:
-                        if (memberCardBean!=null){
-                            if (memberCardBean.money<money) {
+                        if (memberCardBean != null) {
+                            if (memberCardBean.money < money) {
                                 if (dialog == null) {
                                     dialog = new MoreFunctionDialog(ChosePayModeActivity.this, "您的会员卡余额不足，支付失败", R.style.HttpRequestDialogStyle);
                                     dialog.getConfirmButton().setText("确认");
@@ -136,30 +143,30 @@ public class ChosePayModeActivity extends BaseActivity {
                                     });
                                 }
                                 dialog.show();
-                            }else {
-                                createCashOrder(""+money);
+                            } else {
+                                createCashOrder("" + money);
                             }
                         }
                         break;
                     case 1:
-                        sanPay(""+(int)(money*100),"");
+                        sanPay("" + (int) (money * 100), "");
                         break;
                     case 2:
-                        codePay(""+(int)(money*100),"");
+                        codePay("" + (int) (money * 100), "");
 
                         break;
                     case 3:
-                        bankCardPay(""+(int)(money*100),"");
+                        bankCardPay("" + (int) (money * 100), "");
 
                         break;
                     case 4:
-                         intent = new Intent(ChosePayModeActivity.this, PaymentActivity.class);
+                        intent = new Intent(ChosePayModeActivity.this, PaymentActivity.class);
 
-                        if (customerType==TYPE_MEMBER_RECHARGE){
+                        if (customerType == TYPE_MEMBER_RECHARGE) {
                             intent.putExtra("type", PaymentActivity.TYPE_MEMBER_CALC);
-                            intent.putExtra("MemberCardBean",memberCardBean);
+                            intent.putExtra("MemberCardBean", memberCardBean);
                             intent.putExtra("orderMoney", money);
-                        }else {
+                        } else {
                             intent.putExtra("type", 1);
                             intent.putExtra("orderMoney", money);
                         }
@@ -182,6 +189,9 @@ public class ChosePayModeActivity extends BaseActivity {
         }
         if (!haveMemberPay()) {
             homeData.remove(0);
+        }
+        if (customerType==TYPE_ORDER_PUSH){
+            homeData.remove(3);
         }
     }
     private boolean haveMemberPay() {
@@ -261,6 +271,10 @@ public class ChosePayModeActivity extends BaseActivity {
             payFinish();
             return;
         }
+        if (customerType==TYPE_ORDER_PUSH){
+            orderPushPayCallBack();
+            return;
+        }
         final LoadingProgressDialog dialog =new LoadingProgressDialog(ChosePayModeActivity.this,"付款成功，生成订单中...");
         dialog.show();
         HttpCall.getApiService()
@@ -302,6 +316,40 @@ public class ChosePayModeActivity extends BaseActivity {
             startActivity(intent);
         }
 
+    }
+    private void orderPushPayCallBack(){
+        final LoadingProgressDialog dialog =new LoadingProgressDialog(ChosePayModeActivity.this,"付款成功，生成订单中...");
+        HttpCall.getApiService()
+                .posPayCallBack(orderNo,Hawk.get("shiftId",0))
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse data) {
+                        LogUtils.d(TAG, "orderPushPayCallBack onSuccess ");
+                        orderPushPayFinish();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.d(TAG, "orderPushPayCallBack onError");
+                        orderPushPayFinish();
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        LogUtils.d(TAG, "orderPushPayCallBack onFailure");
+                        orderPushPayFinish();
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
+    private void orderPushPayFinish(){
+        RxBus.get().post(new UpdateOrderListUIBean());
+        payFinish();
+        if (dialog!=null) {
+            dialog.dismiss();
+        }
     }
     private void createCashOrder(String money) {
         loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");

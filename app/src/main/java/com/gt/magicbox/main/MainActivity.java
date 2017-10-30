@@ -5,17 +5,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.google.gson.Gson;
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.base.MyApplication;
+import com.gt.magicbox.bean.OrderPushBean;
 import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 import com.gt.magicbox.bean.UpdateMainBadgeBean;
@@ -27,6 +27,7 @@ import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.order.OrderListActivity;
+import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
@@ -34,7 +35,6 @@ import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
-import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
@@ -45,7 +45,6 @@ import com.service.OrderPushService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import io.reactivex.functions.Consumer;
@@ -177,7 +176,7 @@ public class MainActivity extends BaseActivity {
                         }
                         break;
                     case 5:
-                        //testOrderPush();
+                       // handlerOrderData();
                         intent = new Intent(MainActivity.this, MoreActivity.class);
                         startActivity(intent);
                         break;
@@ -221,27 +220,6 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
-    }
-    private void testOrderPush(){
-        try {
-            String   retData="{\"busId\":36,\"businessUtilName\":\"shops.yifriend.net:711/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f58b4ed015f58cb308f003b\"," +
-                        "\"eqCode\":\"865067034465453\",\"model\":53,\"money\":150,\"orderId\":1047," +
-                        "\"orderNo\":\"YD1509023232136\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-27 17:40:24\",\"type\":1}";
-            LogUtils.d(TAG, "socketEvent retData="+retData);
-            JSONObject orderObject= new JSONObject(retData);
-            if (orderObject!=null) {
-                int orderId = orderObject.getInt("orderId");
-                double money =  orderObject.getDouble("money");
-                LogUtils.d(TAG," money="+money);
-                Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
-                intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
-                intent.putExtra("orderId",orderId);
-                intent.putExtra("money", money);
-                startActivity(intent);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
     private void initViewData() {
         for (int i = 0; i < itemNameArray.length; i++) {
@@ -296,7 +274,6 @@ public class MainActivity extends BaseActivity {
        getUnpaidOrderCount();
         LogUtils.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId")
         + "  product="+Constant.product);
-        LogUtils.d(TAG,"W="+ ScreenUtils.getScreenWidth()+" H="+ScreenUtils.getScreenHeight());
         super.onResume();
     }
     private void requestUpdate() {
@@ -308,5 +285,36 @@ public class MainActivity extends BaseActivity {
             UpdateManager updateManager = new UpdateManager(this, "MagicBox",UpdateManager.UPDATE_BADGE);
             updateManager.requestUpdate();
         }
+    }
+    private void handlerOrderData(){
+        //String retData= "{\"busId\":36,\"businessUtilName\":\"shop.deeptel.com.cn/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f629703015f6abdceaa006c\",\"eqCode\":\"865067034465453\",\"model\":53,\"money\":0.01,\"orderId\":1069,\"orderNo\":\"YD1509324344993\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-30 08:45:47\",\"type\":1}";
+        String retData=getResources().getString(R.string.order_push_data);
+        if (!TextUtils.isEmpty(retData) && retData.startsWith("\"") && retData.endsWith("\"")) {
+            retData = retData.trim().substring(1, retData.length() - 1);
+        }
+            LogUtils.d(TAG, "socketEvent retData="+retData);
+            OrderPushBean orderPushBean=new Gson().fromJson(retData,OrderPushBean.class);
+            //JSONObject orderObject= new JSONObject(retData);
+            if (orderPushBean!=null) {
+                int orderId = orderPushBean.getOrderId();
+                double money =  orderPushBean.getMoney();
+                String orderNo=orderPushBean.getOrderNo();
+                LogUtils.d(TAG," money="+money);
+                if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
+                    Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
+                    intent.putExtra("type", QRCodePayActivity.TYPE_SERVER_PUSH);
+                    intent.putExtra("orderId",orderId);
+                    intent.putExtra("money", money);
+                    intent.putExtra("orderNo",orderNo);
+                    startActivity(intent);
+                }else if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
+                    Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
+                    intent.putExtra("customerType", ChosePayModeActivity.TYPE_ORDER_PUSH);
+                    intent.putExtra("orderNo",orderNo);
+                    intent.putExtra("money", money);
+                    startActivity(intent);
+                }
+
+            }
     }
 }

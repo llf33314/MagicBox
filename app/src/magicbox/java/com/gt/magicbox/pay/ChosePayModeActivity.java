@@ -47,6 +47,7 @@ public class ChosePayModeActivity extends BaseActivity {
     public static final int TYPE_FIT_PAY = 0;
     public static final int TYPE_MEMBER_PAY = 1;
     public static final int TYPE_MEMBER_RECHARGE = 2;
+    public static final int TYPE_ORDER_PUSH = 3;
 
     @BindView(R.id.pay_wechat)
     RelativeLayout payWechat;
@@ -134,7 +135,6 @@ public class ChosePayModeActivity extends BaseActivity {
                 intent.putExtra("MemberCardBean",memberCardBean);
             }else {
                 intent.putExtra("type", QRCodePayActivity.TYPE_PAY);
-
             }
             intent.putExtra("money", money);
             intent.putExtra("payMode", type);

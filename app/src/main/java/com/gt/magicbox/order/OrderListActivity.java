@@ -11,10 +11,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.OrderListResultBean;
+import com.gt.magicbox.bean.UpdateOrderListUIBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -26,7 +28,9 @@ import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenu;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuCreator;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuItem;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuListView;
+import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
+import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -37,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import io.reactivex.functions.Consumer;
 
 /**
  * Description:
@@ -54,6 +59,8 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     private int updatePage;
     LoadingProgressDialog dialog;
     private int status = 0;
+    private final static int RESULT_FROM_PAY=1;
+    public final static int RESULT_FROM_PAY_SUCCESS=101;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +69,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
         orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
         getOrderList(0, 10);
         initView();
+        registerUpdateUI();
     }
 
     private void initView() {
@@ -90,11 +98,20 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
                 if (orderItemBean != null) {
                     if (orderItemBean.id > 0 && status == 0) {
-                        Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
-                        intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
-                        intent.putExtra("orderId", orderItemBean.id);
-                        intent.putExtra("money", orderItemBean.money);
-                        startActivity(intent);
+                        if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
+                            Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
+                            intent.putExtra("customerType", ChosePayModeActivity.TYPE_ORDER_PUSH);
+                            intent.putExtra("orderNo",orderItemBean.order_no);
+                            intent.putExtra("money", orderItemBean.money);
+                            startActivity(intent);
+                        }else if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
+                            Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
+                            intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
+                            intent.putExtra("orderId", orderItemBean.id);
+                            intent.putExtra("money", orderItemBean.money);
+                            startActivityForResult(intent,RESULT_FROM_PAY);
+                        }
+
                     } else if (status == 1) {
                         Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
                         intent.putExtra("OrderItemBean", orderItemBean);
@@ -261,5 +278,15 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
             int textColor = selected ? 0xffffffff : 0xfff04a4a;
             button.setTextColor(textColor);
         }
+    }
+    private void registerUpdateUI(){
+        RxBus.get().toObservable(UpdateOrderListUIBean.class).subscribe(new Consumer<UpdateOrderListUIBean>() {
+            @Override
+            public void accept(UpdateOrderListUIBean updateOrderListUIBean) throws Exception {
+                orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
+                getOrderList(0, 10);
+                initView();
+            }
+        });
     }
 }

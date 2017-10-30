@@ -1,5 +1,6 @@
 package com.service;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.media.Ringtone;
@@ -9,11 +10,15 @@ import android.nfc.Tag;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import com.gt.magicbox.Constant;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.OrderBean;
+import com.gt.magicbox.bean.OrderPushBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpConfig;
@@ -21,8 +26,12 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.http.socket.SocketIOManager;
+import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.FileHelper;
+import com.gt.magicbox.utils.commonutil.FileUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.SPUtils;
@@ -32,6 +41,7 @@ import com.orhanobut.hawk.Hawk;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.StringReader;
 import java.net.URISyntaxException;
 
 import io.socket.client.IO;
@@ -95,7 +105,6 @@ public class OrderPushService extends Service {
         }
     };
 
-    // 接收推送事件
     private Emitter.Listener socketEvent = new Emitter.Listener() {
         @Override
         public void call(Object... objects) {
@@ -103,25 +112,14 @@ public class OrderPushService extends Service {
             JSONObject data = (JSONObject) objects[0];
             String retData = null;
             try {
-               /* retData="{\"busId\":36,\"businessUtilName\":\"shops.yifriend.net:711/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f58b4ed015f58cb308f003b\"," +
-                        "\"eqCode\":\"865067034465453\",\"model\":53,\"money\":150,\"orderId\":1047," +
-                        "\"orderNo\":\"YD1509023232136\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-27 17:40:24\",\"type\":1}"*/
                 retData = data.get("message").toString();
                 LogUtils.d(TAG, "socketEvent retData="+retData);
-                JSONObject orderObject= new JSONObject(retData);
-                if (orderObject!=null) {
-                    playOrderSound();
-                    String orderNo = orderObject.getString("orderNo");
-                    String money = orderObject.getString("money");
-                    Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
-                    intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
-                    intent.putExtra("orderId",orderNo);
-                    intent.putExtra("money", money);
-                    startActivity(intent);
-                }
+                handlerOrderData(retData);
             } catch (JSONException e) {
                 e.printStackTrace();
                 retData = "";
+            }catch (Exception e){
+               e.printStackTrace();
             }
 
 
@@ -145,18 +143,56 @@ public class OrderPushService extends Service {
                     }
                 });
     }
-    /**
-     * @param orderId 订单编号
-     */
-    private void startERCodePay(int orderId){
-        playOrderSound();
-//        Intent intent=new Intent(getApplicationContext(), WebViewActivity.class);
-//        intent.putExtra("webType",WebViewActivity.WEB_TYPE_SERVER_PUSH);
-//        intent.putExtra("orderId",orderId);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        startActivity(intent);
-    }
 
+    /**
+     * @param json
+     *
+     * String   retData="{\"busId\":36,\"businessUtilName\":\"shops.yifriend.net:711/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f58b4ed015f58cb308f003b\"," +
+     *                "\"eqCode\":\"865067034465453\",\"model\":53,\"money\":150,\"orderId\":1047," +
+     *                "\"orderNo\":\"YD1509023232136\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-27 17:40:24\",\"type\":1}";
+     */
+    private void handlerOrderData(String json){
+        json=convertStandardJSONString(json);
+        LogUtils.d(TAG, "handlerOrderData retData="+json);
+        playOrderSound();
+        try {
+            json=json.replaceAll("\\\\","");
+            JSONObject orderObject= new JSONObject(json);
+            if (orderObject!=null) {
+                int orderId = orderObject.getInt("orderId");
+                double money =  orderObject.getDouble("money");
+                String orderNo=orderObject.getString("orderNo");
+                LogUtils.d(TAG," money="+money);
+                if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
+                    Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("type", QRCodePayActivity.TYPE_SERVER_PUSH);
+                    intent.putExtra("orderId",orderId);
+                    intent.putExtra("money", money);
+                    intent.putExtra("orderNo",orderNo);
+                    startActivity(intent);
+                }else if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
+                    Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("customerType", ChosePayModeActivity.TYPE_ORDER_PUSH);
+                    intent.putExtra("orderNo",orderNo);
+                    intent.putExtra("money", money);
+                    startActivity(intent);
+                }
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public static String convertStandardJSONString(String data_json) {
+        data_json = data_json.replaceAll("\\\\r\\\\n", "");
+        data_json = data_json.replace("\"{", "{");
+        data_json = data_json.replace("}\",", "},");
+        data_json = data_json.replace("}\"", "}");
+        return data_json;
+    }
     private void playOrderSound(){
         if (mRingtone==null){
             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -165,7 +201,6 @@ public class OrderPushService extends Service {
         mRingtone.play();
 
     }
-    // socket disConnect
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -173,7 +208,6 @@ public class OrderPushService extends Service {
         }
     };
 
-    // socket connectError
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
