@@ -170,7 +170,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                     @Override
                     public void onSuccess(OrderListResultBean data) {
                         LogUtils.d(TAG, "onSuccess");
-                        if (data != null&&orderListAdapter!=null) {
+                        if (data != null&&orderListAdapter!=null&&orderListAdapter.getHeadButtonViewHolder()!=null) {
                             orderListAdapter.getHeadButtonViewHolder().noPayOrder.setOnClickListener(OrderListActivity.this);
                             orderListAdapter.getHeadButtonViewHolder().payOrder.setOnClickListener(OrderListActivity.this);
                             if (data.orders != null && data.orders.size() > 0) {

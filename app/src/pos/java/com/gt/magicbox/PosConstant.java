@@ -7,7 +7,7 @@ package com.gt.magicbox;
  */
 
 public class PosConstant {
-    public static final String APP_ID="201705041538001234567887654321";
+    public static final String APP_ID="2e1d32f0d455419388eaf2658c5a42be";
     //public static final String APP_ID="2e1d32f0d455419388eaf2658c5a42be";
 
 

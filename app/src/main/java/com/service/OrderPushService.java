@@ -114,7 +114,9 @@ public class OrderPushService extends Service {
             try {
                 retData = data.get("message").toString();
                 LogUtils.d(TAG, "socketEvent retData="+retData);
-                handlerOrderData(retData);
+                if(Hawk.get("isLogin",false)) {
+                    handlerOrderData(retData);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
                 retData = "";

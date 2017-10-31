@@ -10,6 +10,8 @@ public class Constant {
     public static final String product="Pos";
     public static final String BASE_URL="https://yj.deeptel.com.cn/";
     //public static final String BASE_URL="http://nb.yj.deeptel.com.cn/";
+    //public static final String BASE_URL="http://yj.duofriend.com";
+
     public static final String SOCKET_SERVER_URL = "https://socket.deeptel.com.cn";
     //public static final String SOCKET_SERVER_URL = "http://183.47.242.2:8881";//正式socket
 
