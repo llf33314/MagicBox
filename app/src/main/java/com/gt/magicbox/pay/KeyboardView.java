@@ -354,14 +354,14 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     }
     private void setCursorLayout(ImageView imageView){
         RelativeLayout.LayoutParams layoutParams= (LayoutParams) imageView.getLayoutParams();
-        layoutParams.setMargins(ConvertUtils.dp2px(0),ConvertUtils.dp2px(4),
-                ConvertUtils.dp2px(14),ConvertUtils.dp2px(22));
+        layoutParams.setMargins(0,(int) getResources().getDimension(R.dimen.dp_4),
+                (int) getResources().getDimension(R.dimen.dp_14),(int) getResources().getDimension(R.dimen.dp_20));
         imageView.setLayoutParams(layoutParams);
     }
     private void setNumberLayout(TextView textView){
         RelativeLayout.LayoutParams layoutParams= (LayoutParams) textView.getLayoutParams();
-        layoutParams.setMargins(ConvertUtils.dp2px(0),ConvertUtils.dp2px(0),
-                ConvertUtils.dp2px(14),ConvertUtils.dp2px(20));
+        layoutParams.setMargins(0,0,
+                (int) getResources().getDimension(R.dimen.dp_14),(int) getResources().getDimension(R.dimen.dp_20));
         textView.setLayoutParams(layoutParams);
     }
 }
