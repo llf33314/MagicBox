@@ -23,6 +23,7 @@ import com.gt.magicbox.setting.printersetting.PrinterSettingActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.commonutil.ActivityUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
+import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -96,7 +97,7 @@ public class ShortcutMenuDialog extends Dialog {
                 this.dismiss();
             }
             return false;
-        } else if (keyCode == 250 ) {
+        } else if (keyCode == 250 && Hawk.get("isLogin",false) ) {
              if (this.isShowing()) {
                  this.dismiss();
              }

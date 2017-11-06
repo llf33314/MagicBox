@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
@@ -285,6 +286,49 @@ public class QRCodePayActivity extends BaseActivity {
                     });
         }
     }
+    private void getCodeAliPayResult(String qrCode, String orderNo) {
+        if (!TextUtils.isEmpty(orderNo)) {
+            isCodePayRequesting = true;
+            HttpCall.getApiService()
+                    .scanCodeAliPay(qrCode, (Integer) Hawk.get("busId"), orderNo, shiftId, money)
+                    .compose(ResultTransformer.<PayCodeResultBean>transformer())//线程处理 预处理
+                    .subscribe(new BaseObserver<PayCodeResultBean>() {
+                        @Override
+                        public void onSuccess(PayCodeResultBean data) {
+                            LogUtils.i(TAG, "onSuccess");
+                            if (data != null && data.code == 1) {
+                                // payResult(true,""+money);
+                            }
+//                        if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
+//                            LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
+//                            showQRCodeView(data.qrUrl);
+//                        }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            isCodePayRequesting = false;
+                            super.onError(e);
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            isCodePayRequesting = false;
+                            if (code==1) {
+                                HintDismissDialog dismissDialog = new HintDismissDialog(QRCodePayActivity.this, msg);
+                                dismissDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                        isCodePayRequesting = true;
+                                    }
+                                });
+                                dismissDialog.show();
+                            }
+                            super.onFailure(code, msg);
+                        }
+                    });
+        }
+    }
 
     private void showQRCodeView(String url) {
         // TODO Auto-generated method stub
@@ -451,7 +495,11 @@ public class QRCodePayActivity extends BaseActivity {
 
             if (!TextUtils.isEmpty(resultStr)) {
                 if (!isCodePayRequesting) {
-                    getCodePayResult(resultStr, orderNo);
+                    if (payMode== BaseConstant.PAY_ON_WECHAT) {
+                        getCodePayResult(resultStr, orderNo);
+                    }else if (payMode==BaseConstant.PAY_ON_ALIPAY){
+                        getCodeAliPayResult(resultStr, orderNo);
+                    }
                 }
             }
         }

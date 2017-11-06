@@ -65,7 +65,10 @@ public interface ApiService {
     Observable<BaseResponse<PayCodeResultBean>> scanCodePay(@Query("auth_code") String auth_code, @Query("busId") int busId,
                                                             @Query("out_trade_no") String out_trade_no, @Query("shiftId") int shiftId
             , @Query("total_fee") double total_fee);
-
+    @POST(HttpConfig.SCAN_CODE_ALI_PAY)
+    Observable<BaseResponse<PayCodeResultBean>> scanCodeAliPay(@Query("auth_code") String auth_code, @Query("busId") int busId,
+                                                            @Query("out_trade_no") String out_trade_no, @Query("shiftId") int shiftId
+            , @Query("total_fee") double total_fee);
     @GET("magicBoxMobile/{eqCode}/{status}/79B4DE7C/getOrderList")
     Observable<BaseResponse<OrderListResultBean>> getOrderList(@Path("eqCode") String eqCode, @Path("status") int status
             , @Query("current") int current, @Query("size") int size);
