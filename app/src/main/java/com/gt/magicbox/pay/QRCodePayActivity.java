@@ -254,24 +254,25 @@ public class QRCodePayActivity extends BaseActivity {
                         public void onSuccess(PayCodeResultBean data) {
                             LogUtils.i(TAG, "onSuccess");
                             if (data != null && data.code == 1) {
-                                // payResult(true,""+money);
+                                if (!TextUtils.isEmpty(data.msg) && data.msg.startsWith(getString(R.string.please_use_wechat_code))) {
+                                    showCodePayFailDialog(getString(R.string.please_use_wechat_code));
+                                }
                             }
-//                        if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
-//                            LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
-//                            showQRCodeView(data.qrUrl);
-//                        }
                         }
 
                         @Override
                         public void onError(Throwable e) {
+                            LogUtils.d(TAG, "onError=");
+
                             isCodePayRequesting = false;
                             super.onError(e);
                         }
 
                         @Override
                         public void onFailure(int code, String msg) {
+                            LogUtils.d(TAG, "onFailure code=" + code);
                             isCodePayRequesting = false;
-                            if (code==1) {
+                            if (code == 1) {
                                 HintDismissDialog dismissDialog = new HintDismissDialog(QRCodePayActivity.this, msg);
                                 dismissDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                     @Override
@@ -297,12 +298,13 @@ public class QRCodePayActivity extends BaseActivity {
                         public void onSuccess(PayCodeResultBean data) {
                             LogUtils.i(TAG, "onSuccess");
                             if (data != null && data.code == 1) {
-                                // payResult(true,""+money);
+                                isCodePayRequesting=true;
+
+                            }else if(data != null && data.code == -1){
+                                showCodePayFailDialog(data.msg);
+
                             }
-//                        if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
-//                            LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
-//                            showQRCodeView(data.qrUrl);
-//                        }
+
                         }
 
                         @Override
@@ -313,23 +315,24 @@ public class QRCodePayActivity extends BaseActivity {
 
                         @Override
                         public void onFailure(int code, String msg) {
-                            isCodePayRequesting = false;
                             if (code==1) {
-                                HintDismissDialog dismissDialog = new HintDismissDialog(QRCodePayActivity.this, msg);
-                                dismissDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                    @Override
-                                    public void onDismiss(DialogInterface dialog) {
-                                        isCodePayRequesting = true;
-                                    }
-                                });
-                                dismissDialog.show();
+                                showCodePayFailDialog(msg);
                             }
                             super.onFailure(code, msg);
                         }
                     });
         }
     }
-
+    private void showCodePayFailDialog(String msg){
+        HintDismissDialog dismissDialog = new HintDismissDialog(QRCodePayActivity.this, msg);
+        dismissDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                isCodePayRequesting = false;
+            }
+        });
+        dismissDialog.show();
+    }
     private void showQRCodeView(String url) {
         // TODO Auto-generated method stub
         BitmapUtils bitmapUtils = new BitmapUtils(this);

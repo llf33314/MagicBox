@@ -75,4 +75,5 @@
     <string name="update_immediately">立即更新</string>
     <string name="data_is_not_exit">数据不存在</string>
     <string name="order_push_data" >"{\"busId\":36,\"businessUtilName\":\"shop.deeptel.com.cn/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f6b4f93015f6b5ff9d3001b\",\"eqCode\":\"863326012751264\",\"model\":53,\"money\":0.01,\"orderId\":1085,\"orderNo\":\"YD1509334972874\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-30 11:42:57\",\"type\":1}"</string>
+    <string name="please_use_wechat_code">请扫描微信支付授权码</string>
 </resources>
