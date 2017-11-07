@@ -28,6 +28,8 @@ import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.main.MoreActivity;
 import com.gt.magicbox.main.NormalDialog;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
+import com.gt.magicbox.update.UpdateManager;
+import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.RegexUtils;
@@ -71,6 +73,11 @@ public class LoginActivity extends BaseActivity implements ILoginView {
         loginPresenter = new LoginPresenter(this);
         if (!TextUtils.isEmpty(Hawk.get("userName","")))
         userEditText.setText(Hawk.get("userName",""));
+        if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
+            UpdateManager updateManager = new UpdateManager(this, "MagicBox",UpdateManager.UPDATE_BADGE_AND_DIALOG);
+            updateManager.requestUpdate();
+        }
+        LogUtils.d("LoginActivity ="+ AppUtils.getAppVersionCode());
     }
 
     @Override
