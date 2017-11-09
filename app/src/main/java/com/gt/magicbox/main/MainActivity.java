@@ -277,6 +277,7 @@ public class MainActivity extends BaseActivity {
         super.onResume();
     }
     private void requestUpdate() {
+        if (Constant.product.equals(BaseConstant.PRODUCTS[1]))return;
         boolean isShowUpdateDialog=Hawk.get("UPDATE_DIALOG-"+ Hawk.get("newestVersion",""),true);
         if (isShowUpdateDialog) {
             UpdateManager updateManager = new UpdateManager(this, "MagicBox",UpdateManager.UPDATE_BADGE_AND_DIALOG);
