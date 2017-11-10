@@ -359,7 +359,7 @@ public class AddMemberActivity extends BaseActivity {
                     protected void onFailure(int code, String msg) {
                         super.onFailure(code, msg);
                         LogUtils.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
-                        if (!TextUtils.isEmpty(msg) && msg.equals("数据不存在")) {
+                        if (!TextUtils.isEmpty(msg) && msg.equals("非会员")) {
                             if (bit == 0) {
                                 if (memberId > 0) {
                                     receiveMemberCard(bit, ct_id, gt_id, memberId, phone);
