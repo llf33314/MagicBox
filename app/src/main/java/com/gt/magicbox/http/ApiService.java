@@ -11,6 +11,7 @@ import com.gt.magicbox.bean.MemberCountMoneyBean;
 import com.gt.magicbox.bean.MemberSettlementBean;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
+import com.gt.magicbox.bean.PosRequestBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
 import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.bean.ShopInfoBean;
@@ -162,7 +163,8 @@ public interface ApiService {
                                       @Field("money") double money,
                                       @Field("type") int type,
                                       @Field("shiftId") int shiftId);
-    @GET("magicBoxMobile/{orderNo}/{shiftId}/callBack")
-    Observable<BaseResponse> posPayCallBack(@Path("orderNo") String orderNo, @Path("shiftId") int shiftId);
+
+    @POST("magicBoxMobile/{orderNo}/{shiftId}/callBack")
+    Observable<BaseResponse> posPayCallBack(@Path("orderNo") String orderNo, @Path("shiftId") int shiftId, @Body PosRequestBean posRequestBean);
 
 }

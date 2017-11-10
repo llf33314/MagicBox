@@ -17,6 +17,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.MemberCountMoneyBean;
+import com.gt.magicbox.bean.PosRequestBean;
 import com.gt.magicbox.bean.UpdateOrderListUIBean;
 import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.http.BaseResponse;
@@ -272,7 +273,7 @@ public class ChosePayModeActivity extends BaseActivity {
             return;
         }
         if (customerType==TYPE_ORDER_PUSH){
-            orderPushPayCallBack();
+            orderPushPayCallBack(payType);
             return;
         }
         final LoadingProgressDialog dialog =new LoadingProgressDialog(ChosePayModeActivity.this,"付款成功，生成订单中...");
@@ -317,10 +318,12 @@ public class ChosePayModeActivity extends BaseActivity {
         }
 
     }
-    private void orderPushPayCallBack(){
+    private void orderPushPayCallBack(int payType){
         final LoadingProgressDialog dialog =new LoadingProgressDialog(ChosePayModeActivity.this,"付款成功，生成订单中...");
+        PosRequestBean posRequestBean= new PosRequestBean();
+        posRequestBean.payType=payType;
         HttpCall.getApiService()
-                .posPayCallBack(orderNo,Hawk.get("shiftId",0))
+                .posPayCallBack(orderNo,Hawk.get("shiftId",0),posRequestBean)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
