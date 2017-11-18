@@ -162,6 +162,14 @@ public class PaymentActivity extends BaseActivity {
     }
 
     @Override
+    protected void onPause() {
+        if (zBarCameraManager!=null) {
+            zBarCameraManager.releaseCamera();
+        }
+        super.onPause();
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyboardView != null)
             if (keyCode >= KeyEvent.KEYCODE_NUMPAD_0 && keyCode <= KeyEvent.KEYCODE_NUMPAD_9) {

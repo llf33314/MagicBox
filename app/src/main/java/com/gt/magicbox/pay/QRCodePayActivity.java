@@ -1,5 +1,6 @@
 package com.gt.magicbox.pay;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -435,11 +436,16 @@ public class QRCodePayActivity extends BaseActivity {
         socketIOManager.disSocket();
     }
 
+    @Override
+    protected void onPause() {
+        releaseCamera();
+        super.onPause();
+    }
+
     @OnClick(R.id.reChosePay)
     public void onViewClicked() {
         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
     }
-
 
     private void initCameraViews() {
         mImageScanner = new ImageScanner();

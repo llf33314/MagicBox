@@ -40,6 +40,7 @@ import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
+import com.service.CustomerDisplayService;
 import com.service.OrderPushService;
 
 import org.json.JSONException;
@@ -92,6 +93,7 @@ public class MainActivity extends BaseActivity {
         goneBack();
         initView();
         bindOrderService();
+        bindCustomerDisplayService();
         //requestUpdate();
 
         if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
@@ -105,6 +107,12 @@ public class MainActivity extends BaseActivity {
     private void bindOrderService(){
         Intent intent=new Intent(MainActivity.this, OrderPushService.class);
         startService(intent);
+    }
+    private void bindCustomerDisplayService(){
+        if (Hawk.get("hadMatchCustomerDisplay",true)){
+            Intent intent=new Intent(MainActivity.this, CustomerDisplayService.class);
+            startService(intent);
+        }
     }
     private void initView() {
         requestUpdate();

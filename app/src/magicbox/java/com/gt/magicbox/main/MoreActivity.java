@@ -3,6 +3,7 @@ package com.gt.magicbox.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.WindowManager;
@@ -81,6 +82,8 @@ public class MoreActivity extends BaseActivity {
                         new ManualDialog(MoreActivity.this).show();
                         break;
                     case 4:
+                        //intent=new Intent(Settings.ACTION_SETTINGS);
+                        //startActivity(intent);
                         checkUpdate();
                         break;
                     case 5:
