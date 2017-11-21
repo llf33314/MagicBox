@@ -29,7 +29,6 @@
         android:visibility="gone"
         />
     <TextView
-        android:visibility="gone"
         android:id="@+id/tv_config_show"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_40"

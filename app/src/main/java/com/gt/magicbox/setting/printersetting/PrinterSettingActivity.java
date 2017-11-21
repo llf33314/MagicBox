@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.custom_display.MatchActivity;
 import com.gt.magicbox.setting.printersetting.bluetooth.BluetoothSettingActivity;
 import com.gt.magicbox.setting.printersetting.usb.RxBusUsbMsg;
 import com.gt.magicbox.utils.RxBus;
@@ -31,7 +32,7 @@ public class PrinterSettingActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_printer_setting);
-        setToolBarTitle("打印设置");
+        setToolBarTitle("硬件设置");
     }
 
     @OnClick({R.id.tv_config_bt, R.id.tv_config_usb, R.id.tv_config_show})
@@ -46,6 +47,8 @@ public class PrinterSettingActivity extends BaseActivity {
                 RxBus.get().post(new RxBusUsbMsg());
                 break;
             case R.id.tv_config_show:
+                intent =new Intent(PrinterSettingActivity.this, MatchActivity.class);
+                startActivity(intent);
                 break;
         }
     }

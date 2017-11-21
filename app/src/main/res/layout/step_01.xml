@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ececec">
+
+    <ImageView
+        android:id="@+id/step01_bg"
+        android:layout_width="@dimen/dp_330"
+        android:layout_height="@dimen/dp_358"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_62"
+        android:src="@drawable/step01_bg" />
+
+    <TextView
+        android:id="@+id/tip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/step1"
+        android:layout_marginTop="@dimen/dp_371"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/please_check_customer_display_connect"
+        android:textColor="#333333"
+        android:textSize="@dimen/dp_16" />
+
+    <Button
+
+        android:id="@+id/step01_next"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40"
+        android:layout_below="@id/step01_bg"
+        android:layout_marginTop="@dimen/dp_24"
+        android:layout_marginLeft="@dimen/dp_14"
+        android:layout_marginRight="@dimen/dp_14"
+        android:background="@drawable/selector_red_button"
+        android:text="@string/next_step"
+        android:textColor="@color/white" />
+</RelativeLayout>

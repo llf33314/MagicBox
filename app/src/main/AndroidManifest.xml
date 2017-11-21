@@ -124,6 +124,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
+        <activity
+            android:name=".custom_display.MatchActivity"
+            android:launchMode="singleTask" />
         <activity android:name=".exchange.ShiftExchangeActivity">
         </activity>
         <activity android:name=".coupon.DistributeCouponActivity">

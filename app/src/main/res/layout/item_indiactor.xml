@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="120dp"
+    android:layout_height="60dp"
+    android:gravity="center_horizontal"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="25dp">
+    <TextView
+        android:layout_centerHorizontal="true"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:id="@+id/numberTextView"
+        android:text="1"
+        android:background="@drawable/match_indicator_selected"
+        android:layout_width="25dp"
+        android:layout_height="25dp" />
+        <View
+            android:background="#ececec"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/numberTextView"
+            android:id="@+id/leftLine"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <View
+            android:background="#ececec"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/numberTextView"
+            android:id="@+id/rightLine"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+    </RelativeLayout>
+    <TextView
+        android:textColor="#20a0ff"
+        android:id="@+id/tipTextView"
+        android:gravity="center"
+        android:text="第一步"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

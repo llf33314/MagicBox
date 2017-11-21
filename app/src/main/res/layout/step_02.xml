@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/step1"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="@dimen/dp_20"
+        android:gravity="center"
+        android:text="@string/step2"
+        android:textColor="@color/blue_zfb"
+        android:textSize="@dimen/dp_20" />
+
+    <TextView
+        android:id="@+id/tip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/step1"
+        android:gravity="center"
+        android:text="@string/please_select_baud_rate"
+        android:textColor="@color/black"
+        android:textSize="@dimen/dp_25" />
+    <Button
+        android:id="@+id/baud1200"
+        android:text="@string/baud1200"
+        android:layout_margin="@dimen/dp_20"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40" />
+    <Button
+        android:id="@+id/baud2400"
+        android:text="@string/baud2400"
+        android:layout_margin="@dimen/dp_20"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40" />
+    <Button
+        android:id="@+id/baud4800"
+        android:text="@string/baud4800"
+        android:layout_margin="@dimen/dp_20"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40" />
+    <Button
+        android:id="@+id/baud9600"
+        android:text="@string/baud9600"
+        android:layout_margin="@dimen/dp_20"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40" />
+    <Button
+        android:id="@+id/other"
+        android:text="@string/other"
+        android:layout_margin="@dimen/dp_20"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40" />
+</LinearLayout>

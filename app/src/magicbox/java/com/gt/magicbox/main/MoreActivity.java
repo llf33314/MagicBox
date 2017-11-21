@@ -37,7 +37,7 @@ import io.reactivex.functions.Consumer;
  */
 
 public class MoreActivity extends BaseActivity {
-    private String[] itemNameArray = {"打印设置", "网络设置", "设备管理","使用手册","版本更新","退出账号"};
+    private String[] itemNameArray = {"硬件设置", "网络设置", "设备管理","使用手册","版本更新","退出账号"};
     private Integer[] imageResArray = {R.drawable.more_printer_setting, R.drawable.more_network_setting,
             R.drawable.more_devices_setting,R.drawable.more_guide,R.drawable.icon_update,
             R.drawable.more_exit};

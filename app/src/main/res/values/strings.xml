@@ -76,4 +76,29 @@
     <string name="data_is_not_exit">非会员</string>
     <string name="order_push_data" >"{\"busId\":36,\"businessUtilName\":\"shop.deeptel.com.cn/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f6b4f93015f6b5ff9d3001b\",\"eqCode\":\"863326012751264\",\"model\":53,\"money\":0.01,\"orderId\":1085,\"orderNo\":\"YD1509334972874\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-30 11:42:57\",\"type\":1}"</string>
     <string name="please_use_wechat_code">请扫描微信支付授权码</string>
+    
+    <string name="please_check_customer_display_connect">请检查收银系统的客显端口设置和连线</string>
+    <string name="please_select_baud_rate">请选择模式</string>
+    <string name="please_input_baud_rate">请输入模式</string>
+    <string name="current_baud_rate">当前模式</string>
+    <string name="please_scan_one_good_on_cashier_desk">请拿扫码枪录入一件商品</string>
+    <string name="waiting_for_data_receive">等待数据接收中...</string>
+    <string name="please_counting_money">请在收银台查看当前金额</string>
+    <string name="please_input_counting_money">请输入上一步的商品金额然后按确定</string>
+    <string name="connect_success_and_open_customer_display">调试成功\n开启客显收银模式</string>
+
+    <string name="next_step">下一步</string>
+    <string name="step1">第一步</string>
+    <string name="step2">第二步</string>
+    <string name="step3">第三步</string>
+    <string name="step4">第四步</string>
+    <string name="step5">第五步</string>
+
+    <string name="baud1200">1200波特率</string>
+    <string name="baud2400">2400波特率</string>
+    <string name="baud4800">4800波特率</string>
+    <string name="baud9600">9600波特率</string>
+    <string name="other">其他</string>
+
+
 </resources>

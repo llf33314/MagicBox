@@ -92,6 +92,9 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
             if (item.getMessageCount()>0){
                 holder.badge.setVisibility(View.VISIBLE);
                 holder.badge.setText(""+item.getMessageCount());
+                if (item.getMessageCount()>999){
+                    holder.badge.setText(""+999);
+                }
             }else {
                 holder.badge.setVisibility(View.INVISIBLE);
 
