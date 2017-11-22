@@ -14,7 +14,6 @@ public class Constant {
     //public static final String BASE_URL="http://yj.duofriend.com";
     //public static  String BASE_URL="https://nb.yj.deeptel.com.cn/";
     public static final String SOCKET_SERVER_URL = "https://socket.deeptel.com.cn";
-    //public static  String SOCKET_SERVER_URL = "http://183.47.242.2:8881";//正式socket
-    //public static  String SOCKET_SERVER_URL ="https://socket1.duofriend.com";//堡垒
+   // public static  String SOCKET_SERVER_URL = "http://183.47.242.2:8881";//正式socket
 
 }

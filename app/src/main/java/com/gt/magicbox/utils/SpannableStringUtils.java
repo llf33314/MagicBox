@@ -24,7 +24,7 @@ public class SpannableStringUtils {
      */
     public static SpannableStringBuilder diffTextSize(String target,int size,int start,int end) {
         SpannableStringBuilder spannableString = new SpannableStringBuilder();
-        if (!TextUtils.isEmpty(target)&&target.length()>end) {
+        if (!TextUtils.isEmpty(target)&&target.length()>=end) {
             spannableString.append(target);
             AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(ConvertUtils.dp2px(size));
             spannableString.setSpan(absoluteSizeSpan, start, end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);

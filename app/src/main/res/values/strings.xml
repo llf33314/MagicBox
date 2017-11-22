@@ -99,6 +99,8 @@
     <string name="baud4800">4800波特率</string>
     <string name="baud9600">9600波特率</string>
     <string name="other">其他</string>
+    <string name="often_baud_rate">常用的波特率:</string>
+    <string name="baud_rate">波特率:</string>
 
 
 </resources>

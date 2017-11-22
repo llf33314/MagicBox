@@ -1,8 +1,11 @@
 package com.gt.magicbox.main;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
@@ -109,9 +112,19 @@ public class MainActivity extends BaseActivity {
         startService(intent);
     }
     private void bindCustomerDisplayService(){
-        if (Hawk.get("hadMatchCustomerDisplay",true)){
+        if (Hawk.get("hadMatchCustomerDisplay",false)){
             Intent intent=new Intent(MainActivity.this, CustomerDisplayService.class);
-            startService(intent);
+            bindService(intent, new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+
+                }
+            },BIND_AUTO_CREATE);
         }
     }
     private void initView() {

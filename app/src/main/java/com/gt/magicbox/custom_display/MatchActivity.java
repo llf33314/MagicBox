@@ -15,7 +15,7 @@ import com.gt.magicbox.base.BaseActivity;
  */
 
 public class MatchActivity extends BaseActivity {
-    private ViewPager mViewPager;
+    private NoScrollViewPager mViewPager;
     private MyFragmentPagerAdapter myFragmentPagerAdapter;
     private IndicatorLayout indicatorLayout;
 
@@ -28,8 +28,9 @@ public class MatchActivity extends BaseActivity {
     private void initViews() {
         indicatorLayout=(IndicatorLayout)findViewById(R.id.indicatorLayout);
         //使用适配器将ViewPager与Fragment绑定在一起
-        mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        mViewPager = (NoScrollViewPager) findViewById(R.id.viewPager);
         myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        myFragmentPagerAdapter.setViewPager(mViewPager);
         mViewPager.setAdapter(myFragmentPagerAdapter);
         mViewPager.setOnPageChangeListener(pageChangeListener);
         //将TabLayout与ViewPager绑定在一起

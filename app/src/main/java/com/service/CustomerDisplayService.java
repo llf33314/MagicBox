@@ -2,6 +2,7 @@ package com.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -14,6 +15,7 @@ import android.view.View;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.SerialPortDataBean;
+import com.gt.magicbox.custom_display.CustomerDisplayDataListener;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
@@ -44,12 +46,14 @@ import android_serialport_api.SerialPort;
  */
 
 public class CustomerDisplayService extends Service {
-    private static final int SHOW_DIALOG=0;
-    private Handler handler=new Handler(){
+    private static final int SHOW_DIALOG = 0;
+    private CustomerDisplayBinder binder = new CustomerDisplayBinder();
+    private CustomerDisplayDataListener customerDisplayDataListener;
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
-                case  SHOW_DIALOG:
+            switch (msg.what) {
+                case SHOW_DIALOG:
                     if (dialog == null) {
                         dialog = new MoreFunctionDialog(AppManager.getInstance().currentActivity(), "没有网络，请连接后重试", R.style.HttpRequestDialogStyle);
                         dialog.getConfirmButton().setOnClickListener(new View.OnClickListener() {
@@ -78,15 +82,16 @@ public class CustomerDisplayService extends Service {
     private String port = "ttyS0";
     private final String TAG = "SerialPort";
     MoreFunctionDialog dialog;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return binder;
     }
 
     @Override
     public void onCreate() {
-        openSerialPort();
+        openSerialPort(Hawk.get("baud", 2400));
         super.onCreate();
     }
 
@@ -95,9 +100,9 @@ public class CustomerDisplayService extends Service {
         super.onDestroy();
     }
 
-    private void openSerialPort() {
+    private void openSerialPort(int baudRate) {
         try {
-            mSerialPort = new SerialPort(new File("/dev/" + port), Hawk.get("baud", 2400),
+            mSerialPort = new SerialPort(new File("/dev/" + port), baudRate,
                     0);
             mInputStream = mSerialPort.getInputStream();
             mOutputStream = mSerialPort.getOutputStream();
@@ -126,6 +131,9 @@ public class CustomerDisplayService extends Service {
                         if (size > 0) {
                             String info = new String(buffer, 0,
                                     size);
+                            if (customerDisplayDataListener != null) {
+                                customerDisplayDataListener.onDataReceive(info);
+                            }
                             if (!TextUtils.isEmpty(info) && info.contains("QA")) {
                                 String qaStr = info.substring(info.indexOf("A") + 1);
                                 Log.e(TAG, "接收到串口信息: qaStr" + qaStr);
@@ -138,7 +146,7 @@ public class CustomerDisplayService extends Service {
                                 SerialPortDataBean last = listQA.get(sizeQA - 1);
                                 if (last.time - lastButOne.time < 500 && last.data.equals(lastButOne.data)) {
                                     Log.e(TAG, "生成订单 last=" + last.data);
-                                    startERCodePay(BaseConstant.PAY_ON_WECHAT,Double.parseDouble(last.data));
+                                    startERCodePay(BaseConstant.PAY_ON_WECHAT, Double.parseDouble(last.data));
                                     listQA.clear();
                                 }
                             }
@@ -152,20 +160,57 @@ public class CustomerDisplayService extends Service {
         };
         receiveThread.start();
     }
+
     /**
      * @param type 0-微信，1-支付宝
      */
-    private void startERCodePay(int type,double money) {
+    private void startERCodePay(int type, double money) {
         if (NetworkUtils.isConnected()) {
             Hawk.put("payType", type);
             Intent intent = new Intent(CustomerDisplayService.this, QRCodePayActivity.class);
-                intent.putExtra("type", QRCodePayActivity.TYPE_PAY);
+            intent.putExtra("type", QRCodePayActivity.TYPE_PAY);
             intent.putExtra("money", money);
             intent.putExtra("payMode", type);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         } else {
             handler.sendEmptyMessage(SHOW_DIALOG);
+        }
+    }
+
+    /**
+     * 关闭串口
+     */
+    public void closeSerialPort() {
+
+        if (mSerialPort != null) {
+            mSerialPort.close();
+        }
+        if (mInputStream != null) {
+            try {
+                mInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (mOutputStream != null) {
+            try {
+                mOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public class CustomerDisplayBinder extends Binder {
+        public void openPort(int baudRate, CustomerDisplayDataListener listener) {
+            customerDisplayDataListener = listener;
+            openSerialPort(baudRate);
+        }
+
+        public void closePort(int baudRate) {
+            closeSerialPort();
         }
     }
 }
