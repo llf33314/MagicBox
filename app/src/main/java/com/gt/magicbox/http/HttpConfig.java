@@ -11,8 +11,8 @@ public class HttpConfig {
 
     //正式
   //  public static final String BASE_URL="http://duofriend.com/magicBoxMobile/";
-  //  public static final String BASE_URL="https://yj.deeptel.com.cn/";
-    public static final String BASE_URL="http://nb.yj.deeptel.com.cn/";
+     public static final String BASE_URL="https://yj.deeptel.com.cn/";
+    //public static final String BASE_URL="http://nb.yj.deeptel.com.cn/";
 
     public static final String APP_ID="MagicBox";
 
@@ -58,5 +58,7 @@ public class HttpConfig {
     public static final String GET_NOW_SR="magicBoxMobile/79B4DE7C/getNowSR";
     public static final String MEMBER_PAY="magicBoxMember/paySuccess";
     public static final String POS_ORDER="magicBoxMobile/79B4DE7C/cpOrder";
+    public static final String FINDDUOFENBYMAINFEI="magicBoxMember/findDuofenByMianfei";
+    public static final String FINDCARDBYRECEIVEID="magicBoxMember/findCardByReceiveId";
 
 }

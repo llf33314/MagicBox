@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
-    >
+    android:orientation="vertical"
+    android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,22 +11,22 @@
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical"
-        android:rotation="180"
-        >
+        android:rotation="180">
 
         <TextView
+            android:id="@+id/distribute_coupon_qr_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="10元代金券"
+            android:maxLines="1"
             android:textColor="@color/black"
-            android:textSize="24sp" />
+            android:textSize="22sp" />
 
         <ImageView
-            android:layout_width="@dimen/dp_200"
-            android:layout_height="@dimen/dp_200"
-            android:layout_marginBottom="10dp"
-            android:src="@drawable/icon_duofen" />
+            android:id="@+id/distribute_coupon_qrcode_iv"
+            android:layout_width="@dimen/dp_250"
+            android:layout_height="@dimen/dp_250"
+            android:layout_marginBottom="10dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -44,7 +44,6 @@
         android:layout_height="@dimen/dp_45"
         android:background="@drawable/selector_red_button"
         android:text="确认"
-        android:textSize="20sp"
-        />
+        android:textSize="20sp" />
 
 </LinearLayout>

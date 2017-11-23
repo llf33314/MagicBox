@@ -5,6 +5,8 @@ import com.gt.magicbox.bean.CardGradeInfoBean;
 import com.gt.magicbox.bean.CardTypeInfoBean;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.CreatedOrderBean;
+import com.gt.magicbox.bean.DistributeCouponMainBean;
+import com.gt.magicbox.bean.DuofenCards;
 import com.gt.magicbox.bean.LoginBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.MemberCountMoneyBean;
@@ -19,11 +21,14 @@ import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.bean.StartWorkBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 
+import java.util.List;
+
 import io.reactivex.Observable;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -166,5 +171,11 @@ public interface ApiService {
 
     @POST("magicBoxMobile/{orderNo}/{shiftId}/callBack")
     Observable<BaseResponse> posPayCallBack(@Path("orderNo") String orderNo, @Path("shiftId") int shiftId, @Body PosRequestBean posRequestBean);
+
+    @POST(HttpConfig.FINDDUOFENBYMAINFEI)
+    Observable<BaseResponse<List<DistributeCouponMainBean>>> getDistributeCouponMain(@Query("busId") int busId);
+
+    @POST(HttpConfig.FINDCARDBYRECEIVEID)
+    Observable<BaseResponse<DuofenCards>> getDistributeCoupon(@Query("receiveId") int receiveId);
 
 }

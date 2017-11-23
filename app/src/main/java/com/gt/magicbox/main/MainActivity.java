@@ -22,6 +22,7 @@ import com.gt.magicbox.bean.OrderPushBean;
 import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 import com.gt.magicbox.bean.UpdateMainBadgeBean;
+import com.gt.magicbox.coupon.CouponChoseActivity;
 import com.gt.magicbox.exchange.ExchangeWorkActivity;
 import com.gt.magicbox.exchange.ShiftExchangeActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -142,7 +143,9 @@ public class MainActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 3:
-                        showMoreDialog();
+                        //showMoreDialog();
+                        intent = new Intent(MainActivity.this,CouponChoseActivity.class);
+                        startActivity(intent);
                         break;
                     case 4:
                         HttpCall.getApiService()

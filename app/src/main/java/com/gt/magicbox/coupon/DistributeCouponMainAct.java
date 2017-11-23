@@ -11,9 +11,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.SpaceItemDecoration;
-import com.gt.magicbox.bean.DistributeCouponBean;
-import com.gt.magicbox.bean.DuofenCards;
-import com.gt.magicbox.http.BaseResponse;
+import com.gt.magicbox.bean.DistributeCouponMainBean;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
@@ -21,23 +19,17 @@ import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.orhanobut.hawk.Hawk;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 /**
- * Created by wzb on 2017/8/24 0024.
+ * Created by wzb on 2017/11/21 0021.
  */
 
-public class DistributeCouponActivity extends BaseActivity {
+public class DistributeCouponMainAct extends BaseActivity {
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,45 +38,33 @@ public class DistributeCouponActivity extends BaseActivity {
         init();
     }
     private void init(){
-        int receiveId=getIntent().getIntExtra("receiveId",-1);
 
-        /*mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setHasFixedSize(true);*/
-
-
-
-        HttpCall.getApiService().getDistributeCoupon(receiveId)
-                .compose(ResultTransformer.<DuofenCards>rxActivityTransformer(this))
-                .compose(new DialogTransformer().<DuofenCards>transformer())
-                .subscribe(new BaseObserver<DuofenCards>() {
+        HttpCall.getApiService().getDistributeCouponMain((int)Hawk.get("busId"))
+                .compose(ResultTransformer.<List<DistributeCouponMainBean>>rxActivityTransformer(this))
+                .compose(new DialogTransformer().<List<DistributeCouponMainBean>>transformer())
+                .subscribe(new BaseObserver<List<DistributeCouponMainBean>>(){
                     @Override
-                    protected void onSuccess(final DuofenCards duofenCards) {
-
-                        LinearLayoutManager layoutManager = new LinearLayoutManager(DistributeCouponActivity.this);
+                    protected void onSuccess(List<DistributeCouponMainBean> distributeCouponMainBeen) {
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(DistributeCouponMainAct.this);
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         mRecyclerView.setLayoutManager(layoutManager);
 
-                        DistributeCouponAdapter adapter=new DistributeCouponAdapter(DistributeCouponActivity.this,duofenCards.getDuofencards());
+                        DistributeCouponMainAdapter adapter=new DistributeCouponMainAdapter(DistributeCouponMainAct.this,distributeCouponMainBeen);
                         mRecyclerView.setAdapter(adapter);
-                        mRecyclerView.addItemDecoration(new SpaceItemDecoration(ConvertUtils.dp2px(10),SpaceItemDecoration.SPACE_BOTTOM));
+                        mRecyclerView.addItemDecoration(new SpaceItemDecoration(ConvertUtils.dp2px(5),SpaceItemDecoration.SPACE_BOTTOM));
+
                         adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
                             @Override
                             public void onClick(View view, Object item, int position) {
                                 //获取点击Object 传到二维码页面
-                                Intent intent=new Intent(DistributeCouponActivity.this,CouponQRActivity.class);
-                                intent.putExtra("code",duofenCards.getReceives().getCode());
-                                intent.putExtra("brandName",((DuofenCards.DuofencardsBean)item).getBrandName());
+                                Intent intent=new Intent(DistributeCouponMainAct.this,DistributeCouponActivity.class);
+                                DistributeCouponMainBean bean= (DistributeCouponMainBean) item;
+                                int receiveId=bean.getId();
+                                intent.putExtra("receiveId",receiveId);
                                 startActivity(intent);
                             }
                         });
                     }
                 });
-
-
-
-
-
-
-
     }
 }

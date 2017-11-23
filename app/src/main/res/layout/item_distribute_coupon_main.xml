@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_150"
+    android:orientation="horizontal"
+    >
+
+<LinearLayout
+    android:id="@+id/distribute_coupon_main_ll"
+    android:orientation="vertical"
+    android:layout_width="0dp"
+    android:layout_weight="2.9"
+    android:layout_height="wrap_content"
+    android:background="@drawable/distribute_has_left"
+    android:gravity="center_vertical"
+    android:paddingLeft="@dimen/dp_30"
+    >
+    <TextView
+        android:id="@+id/distribute_coupon_main_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="26sp"
+        android:maxLines="1"
+        android:textColor="@color/red_member"
+        />
+    <TextView
+        android:id="@+id/distribute_coupon_main_contain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="内含多张优惠券"
+        android:maxLines="1"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        />
+    <TextView
+        android:id="@+id/distribute_coupon_main_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:textColor="@color/wifi_connection_tv_color"
+        />
+    <TextView
+        android:id="@+id/distribute_coupon_main_surplus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="剩余100份"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:textColor="@color/wifi_connection_tv_color"
+        android:visibility="gone"
+        />
+
+</LinearLayout>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="派\t\t\t发"
+        android:textColor="@color/red_member"
+        android:textSize="22sp"
+        android:ems="1"
+        android:gravity="center"
+        android:background="@drawable/distribute_has_right"
+        />
+</LinearLayout>

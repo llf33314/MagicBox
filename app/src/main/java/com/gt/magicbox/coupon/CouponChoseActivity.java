@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ListView;
 
 import com.gt.magicbox.R;
@@ -13,8 +12,6 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.main.GridItem;
 import com.gt.magicbox.main.HomeGridViewAdapter;
 import com.gt.magicbox.pay.PaymentActivity;
-import com.gt.magicbox.setting.DeviceInfoActivity;
-import com.gt.magicbox.setting.VolumeSettingActivity;
 
 import java.util.ArrayList;
 
@@ -57,7 +54,7 @@ public class CouponChoseActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 1:
-                        intent=new Intent(CouponChoseActivity.this,DistributeCouponActivity.class);
+                        intent=new Intent(CouponChoseActivity.this,DistributeCouponMainAct.class);
                         startActivity(intent);
                         break;
                 }
