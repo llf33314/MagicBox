@@ -17,11 +17,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
+import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.BaudRateItemBean;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.SpannableStringUtils;
+import com.gt.magicbox.utils.commonutil.ActivityUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.StringUtils;
@@ -84,7 +86,7 @@ public class Step03Fragment extends Fragment {
                     }
                     break;
                 case NOT_MATCH_DIALOG_DISMISS:
-                    if (dialog.isShowing()) {
+                    if (dialog != null && dialog.isShowing()) {
                         dialog.dismiss();
                     }
                     break;
@@ -104,6 +106,9 @@ public class Step03Fragment extends Fragment {
         RxBus.get().toObservable(BaudRateItemBean.class).subscribe(new Consumer<BaudRateItemBean>() {
             @Override
             public void accept(final BaudRateItemBean baudRateItemBean) throws Exception {
+                if (getActivity() == null) {
+                    return;
+                }
                 if (step03Tip != null) {
                     step03Tip.setText("当前模式:" + baudRateItemBean.baudRate + "波特率");
                 }
@@ -124,7 +129,8 @@ public class Step03Fragment extends Fragment {
                                 }
                             }, 5000);
                         } else {
-                            if (StringUtils.isContainNumber(data) && baudRateItemBean != null) {
+                            if (StringUtils.isContainNumber(data) && baudRateItemBean != null
+                                    && getActivity() != null && ActivityUtils.getTopActivity(getActivity()).contains("MatchActivity")) {
                                 Hawk.put("baud", baudRateItemBean.baudRate);
                                 Hawk.put("hadMatchCustomerDisplay", true);
                                 Intent intent = new Intent(getActivity(), MatchSuccessActivity.class);

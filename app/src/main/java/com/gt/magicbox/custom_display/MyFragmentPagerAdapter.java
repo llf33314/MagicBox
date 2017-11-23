@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
     private NoScrollViewPager viewPager;
-    private String[] mTitles = new String[]{"第一步", "第二步", "第三步","第四步"};
+    private String[] mTitles = new String[]{"第一步", "第二步", "第三步"};
 
     public MyFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -21,8 +21,6 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
             return new Step02Fragment(viewPager);
         } else if (position == 2) {
             return new Step03Fragment(viewPager);
-        }else if (position==3){
-            return new Step04Fragment();
         }
         return new Step01Fragment(viewPager);
     }

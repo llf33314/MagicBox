@@ -9,9 +9,11 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.custom_display.MatchActivity;
+import com.gt.magicbox.main.MainActivity;
 import com.gt.magicbox.setting.printersetting.bluetooth.BluetoothSettingActivity;
 import com.gt.magicbox.setting.printersetting.usb.RxBusUsbMsg;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.AppManager;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -40,19 +42,19 @@ public class PrinterSettingActivity extends BaseActivity {
         Intent intent;
         switch (view.getId()) {
             case R.id.tv_config_bt:
-                intent=new Intent(PrinterSettingActivity.this, BluetoothSettingActivity.class);
+                intent = new Intent(PrinterSettingActivity.this, BluetoothSettingActivity.class);
                 startActivity(intent);
                 break;
             case R.id.tv_config_usb:
                 RxBus.get().post(new RxBusUsbMsg());
                 break;
             case R.id.tv_config_show:
-                intent =new Intent(PrinterSettingActivity.this, MatchActivity.class);
+                AppManager.getInstance().finishActivity(MainActivity.class);
+                intent = new Intent(PrinterSettingActivity.this, MatchActivity.class);
                 startActivity(intent);
                 break;
         }
     }
-
 
 
 }

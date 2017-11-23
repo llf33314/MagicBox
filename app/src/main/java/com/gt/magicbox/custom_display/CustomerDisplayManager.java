@@ -23,6 +23,7 @@ import android_serialport_api.SerialPort;
  */
 
 public class CustomerDisplayManager {
+    private boolean isExit=false;
     private Context context;
     private CustomerDisplayDataListener displayDataListener;
     private ArrayList<SerialPortDataBean> listQA = new ArrayList<>();
@@ -52,7 +53,7 @@ public class CustomerDisplayManager {
         receiveThread = new Thread() {
             @Override
             public void run() {
-                while (true) {
+                while (!isExit) {
                     int size;
                     try {
                         byte[] buffer = new byte[1024];
@@ -85,7 +86,7 @@ public class CustomerDisplayManager {
      * 关闭串口
      */
     public void closeSerialPort() {
-
+        isExit=true;
         if (mSerialPort != null) {
             mSerialPort.close();
         }

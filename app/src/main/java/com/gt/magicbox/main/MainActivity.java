@@ -115,17 +115,7 @@ public class MainActivity extends BaseActivity {
     private void bindCustomerDisplayService(){
         if (Hawk.get("hadMatchCustomerDisplay",false)){
             Intent intent=new Intent(MainActivity.this, CustomerDisplayService.class);
-            bindService(intent, new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName name, IBinder service) {
-
-                }
-
-                @Override
-                public void onServiceDisconnected(ComponentName name) {
-
-                }
-            },BIND_AUTO_CREATE);
+            startService(intent);
         }
     }
     private void initView() {

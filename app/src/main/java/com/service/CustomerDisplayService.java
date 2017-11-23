@@ -22,6 +22,7 @@ import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.orhanobut.hawk.Hawk;
 
@@ -46,6 +47,7 @@ import android_serialport_api.SerialPort;
  */
 
 public class CustomerDisplayService extends Service {
+    private boolean isExit;
     private static final int SHOW_DIALOG = 0;
     private CustomerDisplayBinder binder = new CustomerDisplayBinder();
     private CustomerDisplayDataListener customerDisplayDataListener;
@@ -91,12 +93,16 @@ public class CustomerDisplayService extends Service {
 
     @Override
     public void onCreate() {
+        LogUtils.d("service","CustomerDisplayService onCreate");
+
         openSerialPort(Hawk.get("baud", 2400));
         super.onCreate();
     }
 
     @Override
     public void onDestroy() {
+        LogUtils.d("service","CustomerDisplayService onDestroy");
+        closeSerialPort();
         super.onDestroy();
     }
 
@@ -107,7 +113,7 @@ public class CustomerDisplayService extends Service {
             mInputStream = mSerialPort.getInputStream();
             mOutputStream = mSerialPort.getOutputStream();
             receiveThread();
-            ToastUtil.getInstance().showToast("打开串口成功 " + port);
+            ToastUtil.getInstance().showToast("打开串口成功 " + port+" baudRate="+baudRate);
         } catch (SecurityException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -121,7 +127,7 @@ public class CustomerDisplayService extends Service {
         receiveThread = new Thread() {
             @Override
             public void run() {
-                while (true) {
+                while (!isExit) {
                     int size;
                     try {
                         byte[] buffer = new byte[1024];
@@ -160,7 +166,6 @@ public class CustomerDisplayService extends Service {
         };
         receiveThread.start();
     }
-
     /**
      * @param type 0-微信，1-支付宝
      */
@@ -182,7 +187,7 @@ public class CustomerDisplayService extends Service {
      * 关闭串口
      */
     public void closeSerialPort() {
-
+        isExit = true;
         if (mSerialPort != null) {
             mSerialPort.close();
         }
@@ -213,4 +218,5 @@ public class CustomerDisplayService extends Service {
             closeSerialPort();
         }
     }
+
 }
