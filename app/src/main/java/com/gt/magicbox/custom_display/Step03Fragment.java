@@ -2,6 +2,7 @@ package com.gt.magicbox.custom_display;
 
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -17,9 +18,15 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.bean.BaudRateItemBean;
+import com.gt.magicbox.main.MoreFunctionDialog;
+import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.SpannableStringUtils;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.LogUtils;
+import com.gt.magicbox.utils.commonutil.StringUtils;
+import com.orhanobut.hawk.Hawk;
+import com.service.CustomerDisplayService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,10 +48,15 @@ public class Step03Fragment extends Fragment {
     Unbinder unbinder;
     @BindView(R.id.countTimer)
     TextView countTimer;
+    CustomerDisplayManager customerDisplayManager;
+    private MoreFunctionDialog dialog;
     private NoScrollViewPager viewPager;
     private Button nextButton;
     private static final int COUNTING_TIME = 1;
     private static final int COUNTING_TIME_END = 2;
+    private static final int NOT_MATCH_DIALOG_SHOW = 3;
+    private static final int NOT_MATCH_DIALOG_DISMISS = 4;
+
     private CountDownTimer timer;
     private Handler handler = new Handler() {
         @Override
@@ -57,6 +69,24 @@ public class Step03Fragment extends Fragment {
                     }
                     break;
                 case COUNTING_TIME_END:
+                    if (getActivity() != null && viewPager != null) {
+                        viewPager.setCurrentItem(1);
+                    }
+                    break;
+                case NOT_MATCH_DIALOG_SHOW:
+                    if (getActivity() == null) return;
+                    if (dialog == null) {
+                        dialog = new MoreFunctionDialog(AppManager.getInstance().currentActivity(),
+                                getResources().getString(R.string.mess_code), R.style.HttpRequestDialogStyle);
+                    }
+                    if (!dialog.isShowing()) {
+                        dialog.show();
+                    }
+                    break;
+                case NOT_MATCH_DIALOG_DISMISS:
+                    if (dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
                     break;
             }
         }
@@ -73,11 +103,38 @@ public class Step03Fragment extends Fragment {
         LogUtils.d("fragment", "Step01Fragment onCreate");
         RxBus.get().toObservable(BaudRateItemBean.class).subscribe(new Consumer<BaudRateItemBean>() {
             @Override
-            public void accept(BaudRateItemBean baudRateItemBean) throws Exception {
+            public void accept(final BaudRateItemBean baudRateItemBean) throws Exception {
                 if (step03Tip != null) {
                     step03Tip.setText("当前模式:" + baudRateItemBean.baudRate + "波特率");
                 }
                 startCountDownTime(120);
+                customerDisplayManager = new CustomerDisplayManager();
+                customerDisplayManager.openSerialPort(baudRateItemBean.baudRate);
+                customerDisplayManager.setDisplayDataListener(new CustomerDisplayDataListener() {
+                    @Override
+                    public void onDataReceive(String data) {
+                        LogUtils.d("data", "data=" + data + "----乱码=" + StringUtils.isMessyCode(data));
+                        if (StringUtils.isMessyCode(data)) {
+                            handler.sendEmptyMessage(NOT_MATCH_DIALOG_SHOW);
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    handler.sendEmptyMessage(NOT_MATCH_DIALOG_DISMISS);
+                                    viewPager.setCurrentItem(1);
+                                }
+                            }, 5000);
+                        } else {
+                            if (StringUtils.isContainNumber(data) && baudRateItemBean != null) {
+                                Hawk.put("baud", baudRateItemBean.baudRate);
+                                Hawk.put("hadMatchCustomerDisplay", true);
+                                Intent intent = new Intent(getActivity(), MatchSuccessActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        }
+                    }
+                });
             }
         });
 
@@ -100,6 +157,9 @@ public class Step03Fragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        if (customerDisplayManager != null) {
+            customerDisplayManager.closeSerialPort();
+        }
     }
 
     private void startCountDownTime(long time) {
@@ -115,9 +175,13 @@ public class Step03Fragment extends Fragment {
                 Message msg = new Message();
                 msg.what = COUNTING_TIME;
                 msg.arg1 = (int) millisUntilFinished / 1000;
-                if (getActivity() != null) {
+                if (getActivity() != null && viewPager.getCurrentIndex() == 2) {
                     handler.sendMessage(msg);
+                } else {
+                    LogUtils.d("onTick  cancel() viewPager.getCurrentIndex()=" + viewPager.getCurrentIndex());
+                    cancel();
                 }
+
             }
 
             @Override
@@ -127,6 +191,7 @@ public class Step03Fragment extends Fragment {
                 }
             }
         };
+
         timer.start();// 开始计时
     }
 
@@ -134,4 +199,6 @@ public class Step03Fragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
     }
+
+
 }

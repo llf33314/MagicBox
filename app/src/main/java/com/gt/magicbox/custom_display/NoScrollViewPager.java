@@ -12,6 +12,7 @@ import android.view.MotionEvent;
  */
 
 public class NoScrollViewPager extends ViewPager {
+    private int currentIndex;
     private boolean isScroll;
     public NoScrollViewPager(Context context, AttributeSet attrs){
         super(context, attrs);
@@ -63,5 +64,12 @@ public class NoScrollViewPager extends ViewPager {
     }
     public void setScroll(boolean scroll) {
         isScroll = scroll;
+    }
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
     }
 }

@@ -2,6 +2,7 @@ package com.gt.magicbox.custom_display;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -52,7 +53,7 @@ public class Step02Fragment extends Fragment {
     private RelativeLayout layout2400;
     private RelativeLayout layoutOther;
     private int currentBaudRate = 0;
-    private int[] baudRates = new int[]{1200, 4800, 9600, 19200, 38400, 43000};
+    private int[] baudRates = new int[]{1200, 2400, 4800, 9600, 19200, 38400};
 
     @SuppressLint("ValidFragment")
     public Step02Fragment(NoScrollViewPager viewPager) {
@@ -151,4 +152,5 @@ public class Step02Fragment extends Fragment {
         }
         return baudRateItemBeans;
     }
+
 }

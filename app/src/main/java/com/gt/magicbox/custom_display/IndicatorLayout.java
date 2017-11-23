@@ -14,7 +14,7 @@ import com.gt.magicbox.R;
  */
 
 public class IndicatorLayout extends LinearLayout {
-    private int itemSize = 4;
+    private int itemSize = 3;
 
     public IndicatorLayout(Context context) {
         super(context);

@@ -43,6 +43,7 @@ public class MatchActivity extends BaseActivity {
 
         @Override
         public void onPageSelected(int position) {
+            mViewPager.setCurrentIndex(position);
             indicatorLayout.updateView(position);
         }
 

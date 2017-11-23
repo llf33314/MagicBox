@@ -98,6 +98,7 @@
         <activity
             android:name=".member.MemberChooseActivity"
             android:launchMode="singleTask" />
+
         <activity
             android:name=".member.VerificationChoseActivity"
             android:launchMode="singleTask" />
@@ -126,6 +127,9 @@
         </activity>
         <activity
             android:name=".custom_display.MatchActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".custom_display.MatchSuccessActivity"
             android:launchMode="singleTask" />
         <activity android:name=".exchange.ShiftExchangeActivity">
         </activity>
