@@ -1,6 +1,5 @@
 package com.gt.magicbox.pay;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,12 +13,12 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -34,7 +33,6 @@ import com.gt.magicbox.bean.QRCodeBitmapBean;
 import com.gt.magicbox.bean.ScanCodePayResultBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpConfig;
-import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
@@ -44,7 +42,6 @@ import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
-import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.lidroid.xutils.BitmapUtils;
@@ -89,14 +86,30 @@ public class QRCodePayActivity extends BaseActivity {
     FrameLayout scanPreview;
     @BindView(R.id.reChosePay)
     Button reChosePay;
+    @BindView(R.id.wechatPay)
+    ImageView wechatPay;
+    @BindView(R.id.aliPay)
+    ImageView aliPay;
+    @BindView(R.id.normalPayLayout)
+    LinearLayout normalPayLayout;
+    @BindView(R.id.qrCodeBg)
+    ImageView qrCodeBg;
+    @BindView(R.id.push_customer_money)
+    TextView pushCustomerMoney;
+    @BindView(R.id.push_qrCode)
+    ImageView pushQrCode;
+    @BindView(R.id.push_cashier_money)
+    TextView pushCashierMoney;
+    @BindView(R.id.pushLayout)
+    RelativeLayout pushLayout;
     private String url;
     private double money;
     private int type;
     public final static int TYPE_PAY = 0;
     public final static int TYPE_SERVER_PUSH = 1;
     public final static int TYPE_CREATED_PAY = 2;//已生成的订单并且未支付
-    public final static int TYPE_MEMBER_RECHARGE =3;//会员充值使用支付宝或者微信支付
-
+    public final static int TYPE_MEMBER_RECHARGE = 3;//会员充值使用支付宝或者微信支付
+    public final static int TYPE_CUSTOMER_DISPLAY_PAY = 4;//客显
     private LoadingProgressDialog dialog;
     private SocketIOManager socketIOManager;
 
@@ -112,6 +125,7 @@ public class QRCodePayActivity extends BaseActivity {
     private Integer shiftId;
     private boolean isCodePayRequesting = false;
     private MemberCardBean memberCardBean;
+
     static {
         System.loadLibrary("iconv");
     }
@@ -120,7 +134,6 @@ public class QRCodePayActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_code_pay);
-        ButterKnife.bind(this);
         dialog = new LoadingProgressDialog(QRCodePayActivity.this);
         dialog.show();
         init();
@@ -131,22 +144,31 @@ public class QRCodePayActivity extends BaseActivity {
     private void init() {
         if (this.getIntent() != null) {
             type = this.getIntent().getIntExtra("type", 0);
-            LogUtils.d(TAG,"type="+type);
+            LogUtils.d(TAG, "type=" + type);
 
             switch (type) {
+                case TYPE_CUSTOMER_DISPLAY_PAY:
                 case TYPE_MEMBER_RECHARGE:
                 case TYPE_PAY:
                     money = this.getIntent().getDoubleExtra("money", 0);
                     payMode = this.getIntent().getIntExtra("payMode", 0);
-                    if (type==TYPE_MEMBER_RECHARGE){
+                    if (type == TYPE_MEMBER_RECHARGE) {
                         memberCardBean = (MemberCardBean) this.getIntent().getSerializableExtra("MemberCardBean");
-                        LogUtils.d(TAG,"memberCardBean="+memberCardBean.ctName);
+                        LogUtils.d(TAG, "memberCardBean=" + memberCardBean.ctName);
 
                     }
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
-                    showMoney(cashierMoney, "" + money);
-                    showMoney(customerMoney, "" + money);
+
+                    if (type == TYPE_CUSTOMER_DISPLAY_PAY
+                            ||type==TYPE_SERVER_PUSH) {
+                        pushLayout.setVisibility(View.VISIBLE);
+                        showMoney(pushCashierMoney, "" + money);
+                        showMoney(pushCustomerMoney, "" + money);
+                    } else {
+                        showMoney(cashierMoney, "" + money);
+                        showMoney(customerMoney, "" + money);
+                    }
                     getQRCodeURL(money, payMode, shiftId);
                     break;
                 case TYPE_SERVER_PUSH:
@@ -159,7 +181,7 @@ public class QRCodePayActivity extends BaseActivity {
                     showMoney(cashierMoney, "" + money);
                     showMoney(customerMoney, "" + money);
                     reChosePay.setVisibility(View.GONE);
-                    getCreatedQRCodeURL(orderId,shiftId);
+                    getCreatedQRCodeURL(orderId, shiftId);
                     break;
                 case TYPE_CREATED_PAY:
                     orderId = this.getIntent().getIntExtra("orderId", 0);
@@ -168,10 +190,10 @@ public class QRCodePayActivity extends BaseActivity {
 
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
-                    showMoney(cashierMoney, "" + money);
-                    showMoney(customerMoney, "" + money);
-                    reChosePay.setVisibility(View.GONE);
-                    getCreatedQRCodeURL(orderId,shiftId);
+                    pushLayout.setVisibility(View.VISIBLE);
+                    showMoney(pushCashierMoney, "" + money);
+                    showMoney(pushCustomerMoney, "" + money);
+                    getCreatedQRCodeURL(orderId, shiftId);
                     break;
             }
             LogUtils.i(TAG, "Url=" + url);
@@ -223,8 +245,8 @@ public class QRCodePayActivity extends BaseActivity {
                         if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
                             LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
                             showQRCodeView(data.qrUrl);
-                            if (type!=TYPE_SERVER_PUSH)
-                            orderNo = data.orderNo;
+                            if (type != TYPE_SERVER_PUSH)
+                                orderNo = data.orderNo;
                         }
                     }
 
@@ -288,6 +310,7 @@ public class QRCodePayActivity extends BaseActivity {
                     });
         }
     }
+
     private void getCodeAliPayResult(String qrCode, String orderNo) {
         if (!TextUtils.isEmpty(orderNo)) {
             isCodePayRequesting = true;
@@ -299,9 +322,9 @@ public class QRCodePayActivity extends BaseActivity {
                         public void onSuccess(PayCodeResultBean data) {
                             LogUtils.i(TAG, "onSuccess");
                             if (data != null && data.code == 1) {
-                                isCodePayRequesting=true;
+                                isCodePayRequesting = true;
 
-                            }else if(data != null && data.code == -1){
+                            } else if (data != null && data.code == -1) {
                                 showCodePayFailDialog(data.msg);
 
                             }
@@ -316,7 +339,7 @@ public class QRCodePayActivity extends BaseActivity {
 
                         @Override
                         public void onFailure(int code, String msg) {
-                            if (code==1) {
+                            if (code == 1) {
                                 showCodePayFailDialog(msg);
                             }
                             super.onFailure(code, msg);
@@ -324,7 +347,8 @@ public class QRCodePayActivity extends BaseActivity {
                     });
         }
     }
-    private void showCodePayFailDialog(String msg){
+
+    private void showCodePayFailDialog(String msg) {
         HintDismissDialog dismissDialog = new HintDismissDialog(QRCodePayActivity.this, msg);
         dismissDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -334,11 +358,20 @@ public class QRCodePayActivity extends BaseActivity {
         });
         dismissDialog.show();
     }
+
     private void showQRCodeView(String url) {
         // TODO Auto-generated method stub
         BitmapUtils bitmapUtils = new BitmapUtils(this);
         // 加载网络图片
-        bitmapUtils.display(qrCode,
+        ImageView imageView;
+        if (type == TYPE_CUSTOMER_DISPLAY_PAY
+                || type==TYPE_CREATED_PAY
+                ||type==TYPE_SERVER_PUSH) {
+            imageView = pushQrCode;
+        } else {
+            imageView = qrCode;
+        }
+        bitmapUtils.display(imageView,
                 url, new BitmapLoadCallBack<ImageView>() {
                     @Override
                     public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
@@ -409,7 +442,7 @@ public class QRCodePayActivity extends BaseActivity {
     public void payResult(boolean success, String message) {
         if (success) {
             if (type == TYPE_MEMBER_RECHARGE) {
-               memberRecharge();
+                memberRecharge();
             } else {
                 Intent intent = new Intent(getApplicationContext(), PayResultActivity.class);
                 intent.putExtra("success", success);
@@ -504,9 +537,9 @@ public class QRCodePayActivity extends BaseActivity {
 
             if (!TextUtils.isEmpty(resultStr)) {
                 if (!isCodePayRequesting) {
-                    if (payMode== BaseConstant.PAY_ON_WECHAT) {
+                    if (payMode == BaseConstant.PAY_ON_WECHAT) {
                         getCodePayResult(resultStr, orderNo);
-                    }else if (payMode==BaseConstant.PAY_ON_ALIPAY){
+                    } else if (payMode == BaseConstant.PAY_ON_ALIPAY) {
                         getCodeAliPayResult(resultStr, orderNo);
                     }
                 }
@@ -522,23 +555,23 @@ public class QRCodePayActivity extends BaseActivity {
     };
 
     private void memberRecharge() {
-        LogUtils.d(TAG,"memberRecharge type="+type);
+        LogUtils.d(TAG, "memberRecharge type=" + type);
 
         if (memberCardBean != null) {
-            LogUtils.d(TAG,"memberRecharge");
+            LogUtils.d(TAG, "memberRecharge");
             HttpCall.getApiService()
                     .memberRecharge(memberCardBean.memberId, money, payMode, (Integer) Hawk.get("shopId"))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                     .subscribe(new BaseObserver<BaseResponse>() {
                         @Override
                         public void onSuccess(BaseResponse data) {
-                            LogUtils.d(TAG, "memberRecharge onSuccess " );
-                            Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
-                            intent.putExtra("rechargeMoney",money);
-                            intent.putExtra("MemberCardBean",memberCardBean);
-                            intent.putExtra("orderNo","123");
-                            intent.putExtra("payType",payMode);
-                            intent.putExtra("balance",memberCardBean.money+money);
+                            LogUtils.d(TAG, "memberRecharge onSuccess ");
+                            Intent intent = new Intent(getApplicationContext(), MemberDoResultActivity.class);
+                            intent.putExtra("rechargeMoney", money);
+                            intent.putExtra("MemberCardBean", memberCardBean);
+                            intent.putExtra("orderNo", "123");
+                            intent.putExtra("payType", payMode);
+                            intent.putExtra("balance", memberCardBean.money + money);
                             startActivity(intent);
                         }
 
@@ -558,4 +591,19 @@ public class QRCodePayActivity extends BaseActivity {
         }
     }
 
+    @OnClick({R.id.wechatPay, R.id.aliPay})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.wechatPay:
+                wechatPay.setImageResource(R.drawable.wechat_selected);
+                aliPay.setImageResource(R.drawable.alipay_unselected);
+                payMode=0;
+                break;
+            case R.id.aliPay:
+                wechatPay.setImageResource(R.drawable.wechat_unselected);
+                aliPay.setImageResource(R.drawable.alipay_selected);
+                payMode=1;
+                break;
+        }
+    }
 }

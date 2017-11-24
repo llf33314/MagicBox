@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="@string/debug_success"
+        android:text="@string/connect_success_and_open_customer_display"
         android:textColor="#333333"
         android:textSize="@dimen/dp_20" />
     <Button

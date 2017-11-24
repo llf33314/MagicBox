@@ -102,7 +102,6 @@
     <string name="often_baud_rate">常用的波特率:</string>
     <string name="baud_rate">波特率:</string>
     <string name="mess_code">数据不匹配，5秒后自动返回上一步</string>
-    <string name="debug_success">调试成功! /n开启客显收银模式</string>
 
 
 </resources>

@@ -39,7 +39,7 @@ public class DistributeCouponMainAct extends BaseActivity {
     }
     private void init(){
 
-        HttpCall.getApiService().getDistributeCouponMain((int)Hawk.get("busId"))
+        HttpCall.getApiService().getDistributeCouponMain(Hawk.get("busId",0))
                 .compose(ResultTransformer.<List<DistributeCouponMainBean>>rxActivityTransformer(this))
                 .compose(new DialogTransformer().<List<DistributeCouponMainBean>>transformer())
                 .subscribe(new BaseObserver<List<DistributeCouponMainBean>>(){

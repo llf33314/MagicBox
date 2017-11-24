@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pushLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f04a4a">
+
+    <ImageView
+        android:id="@+id/qrCodeBg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_388"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/dp_14"
+        android:layout_marginRight="@dimen/dp_14"
+        android:layout_marginTop="@dimen/dp_20"
+        android:src="@drawable/shape_match_bg" />
+
+    <TextView
+        android:id="@+id/push_customer_money"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_45"
+        android:gravity="center"
+        android:rotation="180"
+        android:text="¥168"
+        android:textColor="#000000"
+        android:textSize="@dimen/dp_25" />
+
+    <ImageView
+        android:id="@+id/push_qrCode"
+        android:layout_width="@dimen/dp_226"
+        android:layout_height="@dimen/dp_226"
+        android:layout_below="@id/push_customer_money"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_20"
+        android:rotation="180" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/push_qrCode"
+        android:gravity="center"
+        android:rotation="180"
+        android:text="@string/pay_code_aim_tip"
+        android:textColor="#333333"
+        android:textSize="@dimen/dp_17" />
+
+    <TextView
+        android:id="@+id/push_cashier_money"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/push_qrCode"
+        android:layout_marginTop="@dimen/dp_50"
+        android:gravity="center"
+        android:text="¥168"
+        android:textColor="#000000"
+        android:textSize="@dimen/dp_25" />
+
+    <ImageView
+        android:id="@+id/wechatPay"
+        android:layout_width="@dimen/dp_51"
+        android:layout_height="@dimen/dp_62"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_25"
+        android:layout_marginLeft="@dimen/dp_75"
+        android:src="@drawable/wechat_selected" />
+    <ImageView
+        android:layout_marginRight="@dimen/dp_70"
+        android:layout_alignParentRight="true"
+        android:id="@+id/aliPay"
+        android:layout_width="@dimen/dp_61"
+        android:layout_height="@dimen/dp_56"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_25"
+        android:src="@drawable/alipay_unselected" />
+</RelativeLayout>

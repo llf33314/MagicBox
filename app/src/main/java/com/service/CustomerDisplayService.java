@@ -173,7 +173,7 @@ public class CustomerDisplayService extends Service {
         if (NetworkUtils.isConnected()) {
             Hawk.put("payType", type);
             Intent intent = new Intent(CustomerDisplayService.this, QRCodePayActivity.class);
-            intent.putExtra("type", QRCodePayActivity.TYPE_PAY);
+            intent.putExtra("type", QRCodePayActivity.TYPE_CUSTOMER_DISPLAY_PAY);
             intent.putExtra("money", money);
             intent.putExtra("payMode", type);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

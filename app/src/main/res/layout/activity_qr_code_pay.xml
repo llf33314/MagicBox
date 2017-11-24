@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/normalPayLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -79,9 +80,14 @@
                 android:textColor="@color/white" />
         </RelativeLayout>
     </LinearLayout>
+
+    <include
+        layout="@layout/activity_push_pay"
+        android:visibility="gone" />
+
     <FrameLayout
-        android:visibility="invisible"
         android:id="@+id/capture_preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
 </RelativeLayout>
