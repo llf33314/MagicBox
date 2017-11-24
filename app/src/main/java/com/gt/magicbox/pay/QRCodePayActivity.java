@@ -163,6 +163,7 @@ public class QRCodePayActivity extends BaseActivity {
                     if (type == TYPE_CUSTOMER_DISPLAY_PAY
                             ||type==TYPE_SERVER_PUSH) {
                         pushLayout.setVisibility(View.VISIBLE);
+                        normalPayLayout.setVisibility(View.GONE);
                         showMoney(pushCashierMoney, "" + money);
                         showMoney(pushCustomerMoney, "" + money);
                     } else {
@@ -191,6 +192,7 @@ public class QRCodePayActivity extends BaseActivity {
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
                     pushLayout.setVisibility(View.VISIBLE);
+                    normalPayLayout.setVisibility(View.GONE);
                     showMoney(pushCashierMoney, "" + money);
                     showMoney(pushCustomerMoney, "" + money);
                     getCreatedQRCodeURL(orderId, shiftId);

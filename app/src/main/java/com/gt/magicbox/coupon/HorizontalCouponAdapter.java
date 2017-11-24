@@ -6,6 +6,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.BaseViewHolder;
 import com.gt.magicbox.bean.DistributeCouponBean;
+import com.gt.magicbox.bean.MemberCouponBean;
 
 import java.util.List;
 
@@ -13,12 +14,12 @@ import java.util.List;
  * Created by wzb on 2017/8/24 0024.
  */
 
-public class HorizontalCouponAdapter extends BaseRecyclerAdapter<DistributeCouponBean> {
+public class HorizontalCouponAdapter extends BaseRecyclerAdapter<MemberCouponBean> {
     private int type;
     public static final int TYPE_COUPON=0;
     public static final int TYPE_FEN_COIN=1;
 
-    public HorizontalCouponAdapter(Context context, List<DistributeCouponBean> listBean,int type) {
+    public HorizontalCouponAdapter(Context context, List<MemberCouponBean> listBean,int type) {
         super(context, listBean);
         this.type=type;
     }
@@ -37,9 +38,9 @@ public class HorizontalCouponAdapter extends BaseRecyclerAdapter<DistributeCoupo
     }
 
     @Override
-    public void onBindViewHolder(BaseViewHolder holder, DistributeCouponBean bean, int position) {
+    public void onBindViewHolder(BaseViewHolder holder, MemberCouponBean bean, int position) {
         if (type==TYPE_COUPON) {
-            holder.setText(R.id.item_name, "满¥100减¥20");
+            holder.setText(R.id.item_name, ""+bean.getTitle());
         }
         else if (type==TYPE_FEN_COIN){
             holder.setText(R.id.item_name,"100 粉币");

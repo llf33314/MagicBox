@@ -58,7 +58,8 @@ public class HttpConfig {
     public static final String GET_NOW_SR="magicBoxMobile/79B4DE7C/getNowSR";
     public static final String MEMBER_PAY="magicBoxMember/paySuccess";
     public static final String POS_ORDER="magicBoxMobile/79B4DE7C/cpOrder";
-    public static final String FINDDUOFENBYMAINFEI="magicBoxMember/findDuofenByMianfei";
-    public static final String FINDCARDBYRECEIVEID="magicBoxMember/findCardByReceiveId";
-
+    public static final String FIND_DUOFEN_BY_MAINFEI ="magicBoxMember/findDuofenByMianfei";
+    public static final String FIND_CARD_BY_RECEIVE_ID ="magicBoxMember/findCardByReceiveId";
+    public static final String VERIFICATION_CARD_RETURN_NAME="magicBoxMember/verificationCardReturnName";
+    public static final String FIND_DUOFEN_CARD_BY_MEMBER_ID_AND_MONEY ="magicBoxMember/findDuofenCardByMemberIdAndMoney";
 }

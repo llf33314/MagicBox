@@ -16,22 +16,24 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.SpaceItemDecoration;
-import com.gt.magicbox.bean.DistributeCouponBean;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.bean.MemberCouponBean;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
-import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.utils.commonutil.LogUtils;
+import com.orhanobut.hawk.Hawk;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 /**
  * Description:
@@ -39,6 +41,7 @@ import io.reactivex.functions.Consumer;
  */
 
 public class VerificationActivity extends BaseActivity {
+    private static final String TAG = VerificationActivity.class.getSimpleName();
     @BindView(R.id.image_head)
     ImageView imageHead;
     @BindView(R.id.name)
@@ -65,10 +68,12 @@ public class VerificationActivity extends BaseActivity {
     Button cancel;
     @BindView(R.id.money)
     TextView money;
+    @BindView(R.id.discountInfo)
+    TextView discountInfo;
     private MemberCardBean memberCardBean;
     private double orderMoney;
     private double paidInAmountMoney = 0;//实付金额
-
+    private double discountMoney=0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,10 +82,10 @@ public class VerificationActivity extends BaseActivity {
         if (this.getIntent() != null) {
             memberCardBean = (MemberCardBean) this.getIntent().getSerializableExtra("MemberCardBean");
             orderMoney = getIntent().getDoubleExtra("orderMoney", 0);
+            getMemberAvailableCouponData();
         }
         initView();
-        initRecyclerView(couponView, HorizontalCouponAdapter.TYPE_COUPON);
-        initRecyclerView(fenCoinView, HorizontalCouponAdapter.TYPE_FEN_COIN);
+        //initRecyclerView(fenCoinView, HorizontalCouponAdapter.TYPE_FEN_COIN);
         calculateMoneyInAmount();
     }
 
@@ -105,32 +110,25 @@ public class VerificationActivity extends BaseActivity {
 
     private void calculateMoneyInAmount() {
         if (memberCardBean != null) {
-                paidInAmountMoney = orderMoney;
-                textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
+            paidInAmountMoney = orderMoney;
+            textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
         }
     }
 
-    private void initRecyclerView(RecyclerView recyclerView, int type) {
+    private void initCouponRecyclerView(RecyclerView recyclerView, int type, final List<MemberCouponBean> data) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(layoutManager);
-        final List<DistributeCouponBean> lists = new ArrayList<DistributeCouponBean>();
-        Observable.range(0, 9).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(@NonNull Integer integer) throws Exception {
-                lists.add(new DistributeCouponBean("name:" + integer));
-            }
-        });
-        final HorizontalCouponAdapter adapter = new HorizontalCouponAdapter(this, lists, type);
+        final HorizontalCouponAdapter adapter = new HorizontalCouponAdapter(this, data, type);
         adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, Object item, int position) {
-                ToastUtil.getInstance().showToast("position=" + position);
-                for (DistributeCouponBean bean : lists) {
+                for (MemberCouponBean bean : data) {
                     bean.setSelected(false);
                 }
-                lists.get(position).setSelected(true);
+                data.get(position).setSelected(true);
                 adapter.notifyDataSetChanged();
+                calculateCoupon(data.get(position));
             }
         });
         recyclerView.setAdapter(adapter);
@@ -138,6 +136,42 @@ public class VerificationActivity extends BaseActivity {
 
     }
 
+    private void calculateCoupon(MemberCouponBean memberCouponBean) {
+        if (memberCouponBean.getDiscount() > 0) {
+            discountMoney=multiply(orderMoney/10,memberCouponBean.getDiscount());
+            discountInfo.setText("抵扣金额: 优惠券-"+subtract(orderMoney,discountMoney)+"元");
+            textPaidInAmount.setText("实收金额:¥" + discountMoney + "元");
+            paidInAmountMoney=discountMoney;
+        } else if (memberCouponBean.getReduce_cost() > 0) {
+          if (orderMoney>=memberCouponBean.getReduce_cost()){
+              discountInfo.setText("抵扣金额: 优惠券-"+memberCouponBean.getCash_least_cost()+"元");
+              paidInAmountMoney=subtract(orderMoney,memberCouponBean.getCash_least_cost());
+              textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
+
+          }
+        }else {
+            discountInfo.setText("抵扣金额: 优惠券-0元");
+            paidInAmountMoney=orderMoney;
+        }
+    }
+    public double subtract(double d1,double d2){
+
+        BigDecimal bd1 = new BigDecimal(Double.toString(d1));
+
+        BigDecimal bd2 = new BigDecimal(Double.toString(d2));
+
+        return bd1.subtract(bd2).doubleValue();
+
+    }
+    public double multiply(double d1,double d2){
+
+        BigDecimal bd1 = new BigDecimal(Double.toString(d1));
+
+        BigDecimal bd2 = new BigDecimal(Double.toString(d2));
+
+        return bd1.multiply(bd2).doubleValue();
+
+    }
     @OnClick({R.id.chose_pay, R.id.cancel})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -145,13 +179,43 @@ public class VerificationActivity extends BaseActivity {
                 Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
                 intent.putExtra("customerType", ChosePayModeActivity.TYPE_MEMBER_PAY);
                 intent.putExtra("money", paidInAmountMoney);
-                intent.putExtra("memberCardBean",memberCardBean);
+                intent.putExtra("memberCardBean", memberCardBean);
                 startActivity(intent);
                 AppManager.getInstance().finishActivity();
                 break;
             case R.id.cancel:
                 AppManager.getInstance().finishActivity();
                 break;
+        }
+    }
+
+    private void getMemberAvailableCouponData() {
+        if (null != memberCardBean) {
+            HttpCall.getApiService()
+                    .getMemberAvailableCoupon(memberCardBean.memberId, orderMoney, Hawk.get("shopId", 0))
+                    .compose(ResultTransformer.<List<MemberCouponBean>>transformer())//线程处理 预处理
+                    .compose(new DialogTransformer().<List<MemberCouponBean>>transformer())
+                    .subscribe(new BaseObserver<List<MemberCouponBean>>() {
+                        @Override
+                        public void onSuccess(List<MemberCouponBean> data) {
+                            LogUtils.i(TAG, "onSuccess");
+                            if (data != null) {
+                                LogUtils.i(TAG, "onSuccess size=" + data.size());
+                                initCouponRecyclerView(couponView, HorizontalCouponAdapter.TYPE_COUPON, data);
+
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            super.onError(e);
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            super.onFailure(code, msg);
+                        }
+                    });
         }
     }
 }
