@@ -70,10 +70,13 @@ public class VerificationActivity extends BaseActivity {
     TextView money;
     @BindView(R.id.discountInfo)
     TextView discountInfo;
+    @BindView(R.id.couponInfo)
+    TextView couponInfo;
     private MemberCardBean memberCardBean;
     private double orderMoney;
     private double paidInAmountMoney = 0;//实付金额
-    private double discountMoney=0;
+    private double discountMoney = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,40 +141,48 @@ public class VerificationActivity extends BaseActivity {
 
     private void calculateCoupon(MemberCouponBean memberCouponBean) {
         if (memberCouponBean.getDiscount() > 0) {
-            discountMoney=multiply(orderMoney/10,memberCouponBean.getDiscount());
-            discountInfo.setText("抵扣金额: 优惠券-"+subtract(orderMoney,discountMoney)+"元");
+            discountMoney = multiply(orderMoney / 10, memberCouponBean.getDiscount());
+            discountInfo.setText("抵扣金额: 优惠券-" + subtract(orderMoney, discountMoney) + "元");
             textPaidInAmount.setText("实收金额:¥" + discountMoney + "元");
-            paidInAmountMoney=discountMoney;
-        } else if (memberCouponBean.getReduce_cost() > 0) {
-          if (orderMoney>=memberCouponBean.getReduce_cost()){
-              discountInfo.setText("抵扣金额: 优惠券-"+memberCouponBean.getCash_least_cost()+"元");
-              paidInAmountMoney=subtract(orderMoney,memberCouponBean.getCash_least_cost());
-              textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
+            couponInfo.setText("优惠券信息:"+memberCouponBean.getDiscount()+"折券");
+            paidInAmountMoney = discountMoney;
+        } else if (memberCouponBean.getReduce_cost() > 0 && orderMoney >= memberCouponBean.getReduce_cost()) {
+            discountInfo.setText("抵扣金额: 优惠券-" + memberCouponBean.getCash_least_cost() + "元");
+            paidInAmountMoney = subtract(orderMoney, memberCouponBean.getCash_least_cost());
+            textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
+            couponInfo.setText("优惠券信息:满"+memberCouponBean.getReduce_cost()
+                    +"元减"+ memberCouponBean.getCash_least_cost()
+                    +"代金券");
 
-          }
-        }else {
+        } else {
+            couponInfo.setText("不满足使用该优惠券的条件");
             discountInfo.setText("抵扣金额: 优惠券-0元");
-            paidInAmountMoney=orderMoney;
+            paidInAmountMoney = orderMoney;
+            textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
+
         }
     }
-    public double subtract(double d1,double d2){
+
+    public double subtract(double d1, double d2) {
 
         BigDecimal bd1 = new BigDecimal(Double.toString(d1));
 
         BigDecimal bd2 = new BigDecimal(Double.toString(d2));
 
-        return bd1.subtract(bd2).doubleValue();
+        return bd1.subtract(bd2).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
     }
-    public double multiply(double d1,double d2){
+
+    public double multiply(double d1, double d2) {
 
         BigDecimal bd1 = new BigDecimal(Double.toString(d1));
 
         BigDecimal bd2 = new BigDecimal(Double.toString(d2));
 
-        return bd1.multiply(bd2).doubleValue();
+        return bd1.multiply(bd2).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
     }
+
     @OnClick({R.id.chose_pay, R.id.cancel})
     public void onViewClicked(View view) {
         switch (view.getId()) {

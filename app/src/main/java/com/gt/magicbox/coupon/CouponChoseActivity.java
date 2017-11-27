@@ -21,7 +21,7 @@ import java.util.ArrayList;
  */
 
 public class CouponChoseActivity extends BaseActivity {
-    private String[] itemNameArray = {"优惠券核销", "派发优惠券"};
+    private String[] itemNameArray = {"兑换券核销", "派发优惠券"};
     private Integer[] imageResArray = {R.drawable.coupon_verification, R.drawable.coupon_distribute};
     private int[] colorNormalArray = {0xff47d09c, 0xfffc7473};
     private int[] colorFocusedArray = {0x9947d09c, 0x99fc7473};

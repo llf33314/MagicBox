@@ -150,7 +150,7 @@ public interface ApiService {
     Observable<BaseResponse<ShiftRecordsAllBean>> getNowSR(@Query("shiftId") int shiftId);
 
     @POST(HttpConfig.MEMBER_PAY)
-    Observable<BaseResponse> memberPay(@Query("discountMoney") double discountMoney,
+    Observable<BaseResponse> memberPayWithoutCoupon(@Query("discountMoney") double discountMoney,
                                        @Query("memberId") int memberId,
                                        @Query("orderCode") String orderCode,
                                        @Query("pay") double pay,
@@ -159,7 +159,20 @@ public interface ApiService {
                                        @Query("storeId") int storeId,
                                        @Query("totalMoney") double totalMoney,
                                        @Query("type") int type,
-                                       @Query("ucType") int ucType);
+                                       @Query("ucType") int ucType,
+                                       @Query("useCoupon") int useCoupon );
+    @POST(HttpConfig.MEMBER_PAY)
+    Observable<BaseResponse> memberPayWithCoupon(@Query("discountMoney") double discountMoney,
+                                                    @Query("memberId") int memberId,
+                                                    @Query("orderCode") String orderCode,
+                                                    @Query("pay") double pay,
+                                                    @Query("payType") int payType,
+                                                    @Query("shiftId") int shiftId,
+                                                    @Query("storeId") int storeId,
+                                                    @Query("totalMoney") double totalMoney,
+                                                    @Query("type") int type,
+                                                    @Query("ucType") int ucType,
+                                                    @Query("useCoupon") int useCoupon );
     @FormUrlEncoded
     @POST(HttpConfig.POS_ORDER)
     Observable<BaseResponse> posOrder(@Field("eqCode") String eqCode,

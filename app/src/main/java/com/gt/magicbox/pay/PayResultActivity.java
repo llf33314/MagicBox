@@ -66,7 +66,7 @@ public class PayResultActivity extends BaseActivity {
     private int fromType=0;
     public static final int TYPE_FROM_DEFAULT=0;
     public static final int TYPE_FROM_ORDER_LIST=1;
-
+    private Integer[] tipVoices={R.raw.wechat_h,R.raw.ali_h,R.raw.success};
     private MediaPlayer mp = new MediaPlayer();
     private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
@@ -74,9 +74,9 @@ public class PayResultActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay_result);
-        playSound();
         setToolBarTitle("");
         initView();
+        playSound();
         if (payType == TYPE_CASH) {
             createCashOrder(message);
         }
@@ -160,8 +160,17 @@ public class PayResultActivity extends BaseActivity {
 
     private void playSound() {
         try {
-            mp = MediaPlayer.create(getApplicationContext(), R.raw.success);
-            mp.start();
+            Integer res;
+            if (payType < tipVoices.length) {
+                res = tipVoices[payType];
+            } else {
+                res = tipVoices[tipVoices.length - 1];
+
+            }
+            mp = MediaPlayer.create(getApplicationContext(),res);
+            if (mp!=null) {
+                mp.start();
+            }
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (IllegalStateException e) {

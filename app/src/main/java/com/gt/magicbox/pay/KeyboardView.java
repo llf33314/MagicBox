@@ -149,7 +149,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         if (onInputListener!=null)onInputListener.onInput();
         if (keyboardType==TYPE_INPUT_MONEY||keyboardType==TYPE_CHARGE
                 ||keyboardType==TYPE_MEMBER_RECHARGE_CASH){
-            if (numberString.toString().contains("."))maxLength=7;
+            if (numberString.toString().contains(".")||position==11)maxLength=7;
             else maxLength=4;
         }
         if (numberString.length() <maxLength) {

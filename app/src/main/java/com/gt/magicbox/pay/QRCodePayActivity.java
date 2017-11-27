@@ -449,7 +449,7 @@ public class QRCodePayActivity extends BaseActivity {
                 Intent intent = new Intent(getApplicationContext(), PayResultActivity.class);
                 intent.putExtra("success", success);
                 intent.putExtra("message", message);
-                intent.putExtra("payType", (int) Hawk.get("payType"));
+                intent.putExtra("payType", payMode);
                 intent.putExtra("orderNo", orderNo);
                 if (type == TYPE_CREATED_PAY) {
                     intent.putExtra("fromType", PayResultActivity.TYPE_FROM_ORDER_LIST);

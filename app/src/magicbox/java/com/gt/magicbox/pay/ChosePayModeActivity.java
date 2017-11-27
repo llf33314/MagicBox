@@ -61,6 +61,7 @@ public class ChosePayModeActivity extends BaseActivity {
     private MemberCardBean memberCardBean;
     private LoadingProgressDialog loadingProgressDialog;
     private CashOrderBean cashOrderBean;
+    private int useCoupon=0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +69,7 @@ public class ChosePayModeActivity extends BaseActivity {
         setToolBarTitle("选择支付方式");
         if (this.getIntent() != null) {
             money = this.getIntent().getDoubleExtra("money", 0);
+            useCoupon =this.getIntent().getIntExtra("useCoupon", 0);
             customerType = this.getIntent().getIntExtra("customerType", 0);
             memberCardBean= (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
         }
@@ -186,8 +188,8 @@ public class ChosePayModeActivity extends BaseActivity {
     private void memberPay(double discountMoney, final double realMoney , double originMoney, int payType){
       //  String orderCode="MB"+Hawk.get("shopId",0)+System.currentTimeMillis();
         HttpCall.getApiService()
-                .memberPay(discountMoney,memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney,payType
-                        , Hawk.get("shiftId",0), Hawk.get("shopId",0),originMoney,3,113)
+                .memberPayWithoutCoupon(discountMoney,memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney,payType
+                        , Hawk.get("shiftId",0), Hawk.get("shopId",0),originMoney,3,113,0)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
