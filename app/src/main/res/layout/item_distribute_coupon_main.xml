@@ -12,7 +12,7 @@
     android:layout_width="0dp"
     android:layout_weight="2.9"
     android:layout_height="wrap_content"
-    android:background="@drawable/distribute_has_left"
+    android:background="@drawable/btn_distribute_main_left"
     android:gravity="center_vertical"
     android:paddingLeft="@dimen/dp_30"
     >
@@ -54,6 +54,7 @@
 
 </LinearLayout>
     <TextView
+        android:id="@+id/distribute_coupon_main_distribute"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -62,6 +63,6 @@
         android:textSize="22sp"
         android:ems="1"
         android:gravity="center"
-        android:background="@drawable/distribute_has_right"
+        android:background="@drawable/btn_distribute_main_right"
         />
 </LinearLayout>

@@ -1,10 +1,12 @@
 package com.gt.magicbox.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by wzb on 2017/11/21 0021.
  */
 
-public class DistributeCouponMainBean {
+public class DistributeCouponMainBean implements Serializable{
 
     /**
      * id : 456

@@ -12,6 +12,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.SpaceItemDecoration;
 import com.gt.magicbox.bean.DistributeCouponBean;
+import com.gt.magicbox.bean.DistributeCouponMainBean;
 import com.gt.magicbox.bean.DuofenCards;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -37,6 +38,7 @@ import io.reactivex.functions.Consumer;
 public class DistributeCouponActivity extends BaseActivity {
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
+    private DistributeCouponMainBean distributeCouponMainBean;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +48,8 @@ public class DistributeCouponActivity extends BaseActivity {
         init();
     }
     private void init(){
-        int receiveId=getIntent().getIntExtra("receiveId",-1);
+        distributeCouponMainBean= (DistributeCouponMainBean)getIntent().getSerializableExtra("distributeCouponMainBean");
+        int receiveId=distributeCouponMainBean.getId();
 
         /*mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);*/
@@ -73,18 +76,11 @@ public class DistributeCouponActivity extends BaseActivity {
                                 //获取点击Object 传到二维码页面
                                 Intent intent=new Intent(DistributeCouponActivity.this,CouponQRActivity.class);
                                 intent.putExtra("code",duofenCards.getReceives().getCode());
-                                intent.putExtra("brandName",((DuofenCards.DuofencardsBean)item).getBrandName());
+                                intent.putExtra("brandName",distributeCouponMainBean.getCardsName());
                                 startActivity(intent);
                             }
                         });
                     }
                 });
-
-
-
-
-
-
-
     }
 }

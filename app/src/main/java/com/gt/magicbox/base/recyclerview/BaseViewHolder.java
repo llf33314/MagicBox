@@ -89,4 +89,11 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         view.setTag(tag);
         return this;
     }
+
+    public BaseViewHolder setClickListener(int viewId , View.OnClickListener l){
+        View view = findView(viewId);
+        view.setOnClickListener(l);
+        return this;
+    }
+
 }
