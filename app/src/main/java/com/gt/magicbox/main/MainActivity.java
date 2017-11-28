@@ -46,6 +46,9 @@ import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 import com.service.CustomerDisplayService;
 import com.service.OrderPushService;
+import com.synodata.codelib.decoder.CodeID;
+import com.synodata.codelib.decoder.CodeUtils;
+import com.synodata.codelib.decoder.CodeUtils$IActivateListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,6 +66,8 @@ public class MainActivity extends BaseActivity {
             R.drawable.home_member, R.drawable.home_card_verification, R.drawable.home_shift_exchange, R.drawable.home_more};
     private int[] colorNormalArray = {0xfffdd451, 0xffb177f2, 0xffff9a54, 0xff47d09c, 0xfffc7473, 0xff4db3ff};
     private int[] colorFocusedArray = {0x99fdd451, 0x99b177f2, 0x99ff9a54, 0x9947d09c, 0x99fc7473, 0x994db3ff};
+    private int[] mBarcodeList = {CodeID.CODEEAN13,CodeID.CODEEAN8,CodeID.CODE128,CodeID.CODE93,CodeID.QR};
+
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private GridView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
@@ -71,7 +76,9 @@ public class MainActivity extends BaseActivity {
     private Intent intent;
 
     private final int MSG_UPDATE_UI=0;
-
+    private static final int MSG_ACTIVE = 5;
+    private static final int BUZZER_ON=11;
+    private static final int BUZZER_OFF=22;
     //打印机连接
     public static Intent portIntent;
 
@@ -85,6 +92,15 @@ public class MainActivity extends BaseActivity {
 
                     homeData.get(msg.arg1).setMessageCount(msg.arg2);
                     gridViewAdapter.setGridData(homeData);
+                    break;
+                case MSG_ACTIVE:
+                    LogUtils.d("quck",(String)msg.obj);
+                    break;
+
+                case BUZZER_OFF:
+                    //	HdxUtil.EnableBuzze(0);
+                    LogUtils.d("quck","BUZZER_OFF1");
+                case BUZZER_ON:
                     break;
             }
         }
@@ -288,6 +304,7 @@ public class MainActivity extends BaseActivity {
        getUnpaidOrderCount();
         LogUtils.d(TAG,"onResume  shopId="+ Hawk.get("shopId")+" eqId="+Hawk.get("eqId")+"  shiftId="+Hawk.get("shiftId")
         + "  product="+Constant.product);
+        activeBarcode();
         super.onResume();
     }
     private void requestUpdate() {
@@ -301,35 +318,66 @@ public class MainActivity extends BaseActivity {
             updateManager.requestUpdate();
         }
     }
-    private void handlerOrderData(){
-        //String retData= "{\"busId\":36,\"businessUtilName\":\"shop.deeptel.com.cn/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f629703015f6abdceaa006c\",\"eqCode\":\"865067034465453\",\"model\":53,\"money\":0.01,\"orderId\":1069,\"orderNo\":\"YD1509324344993\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-30 08:45:47\",\"type\":1}";
-        String retData=getResources().getString(R.string.order_push_data);
-        if (!TextUtils.isEmpty(retData) && retData.startsWith("\"") && retData.endsWith("\"")) {
-            retData = retData.trim().substring(1, retData.length() - 1);
-        }
-            LogUtils.d(TAG, "socketEvent retData="+retData);
-            OrderPushBean orderPushBean=new Gson().fromJson(retData,OrderPushBean.class);
-            //JSONObject orderObject= new JSONObject(retData);
-            if (orderPushBean!=null) {
-                int orderId = orderPushBean.getOrderId();
-                double money =  orderPushBean.getMoney();
-                String orderNo=orderPushBean.getOrderNo();
-                LogUtils.d(TAG," money="+money);
-                if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
-                    Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
-                    intent.putExtra("type", QRCodePayActivity.TYPE_SERVER_PUSH);
-                    intent.putExtra("orderId",orderId);
-                    intent.putExtra("money", money);
-                    intent.putExtra("orderNo",orderNo);
-                    startActivity(intent);
-                }else if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
-                    Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
-                    intent.putExtra("customerType", ChosePayModeActivity.TYPE_ORDER_PUSH);
-                    intent.putExtra("orderNo",orderNo);
-                    intent.putExtra("money", money);
-                    startActivity(intent);
-                }
+    //Active the Barcode before use it to scan and decode.
+    //Decode can only return correct result when it's activated.
 
+    private void activeBarcode()
+    {
+        CodeUtils mUtils = new CodeUtils(getApplicationContext());
+
+        mUtils.tryActivateBarcode(new CodeUtils$IActivateListener(){
+            //this function will be called during active process, and return the process messages
+            @Override
+            public void onActivateProcess(String msg) {
+                // post the processing message
+                LogUtils.d("quck","onActivateProcess ="+msg);
+
+                handler.obtainMessage(MSG_ACTIVE, msg).sendToTarget();
             }
+            // this function will be called after the active process.
+            //result_code: CodeUtils.RESULT_SUCCESS means active success, others means fail
+            // error: return the fail cause message.
+            @Override
+            public void onActivateResult(int result_code, String error) {
+                // TODO Auto-generated method stub
+                // post the result message
+                LogUtils.d("quck","onActivateResult ="+result_code);
+
+                handler.obtainMessage(MSG_ACTIVE, error).sendToTarget();
+            }
+            //Current Active state when calling active function.
+            //if it's unactive state, this function will be returned when active process is done.
+            @Override
+            public void onActivateState(boolean bActivated) {
+                // TODO Auto-generated method stub
+                LogUtils.d("quck","onActivateState ="+bActivated);
+
+                if(bActivated) // barcode is in activated state
+                {
+                    //config the barcode
+                    configBarcode();
+                    // show the jump button
+                }
+            }
+
+        });
     }
+
+    // config the supporting barcode types.
+    //all the supported types are listed in CodeID.
+    private void configBarcode()
+    {
+        CodeUtils mUtils = new CodeUtils(getApplicationContext());
+
+        //clear old configs
+        mUtils.enableAllFormats(false);
+        //set new config, just enable the type in the list
+		/*for(int i=0;i<mBarcodeList.length;i++)
+			mUtils.enableCodeFormat(mBarcodeList[i]);
+		*/
+        //to set all the format enabled, open below code
+        mUtils.enableAllFormats(true);
+
+    }
+
 }

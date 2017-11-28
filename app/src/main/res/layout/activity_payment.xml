@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <com.synodata.scanview.view.CodePreview
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:id="@+id/preview" />
     <com.gt.magicbox.pay.KeyboardView
         android:id="@+id/keyboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    <FrameLayout
-        android:visibility="invisible"
-        android:id="@+id/capture_preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+   
 </RelativeLayout>

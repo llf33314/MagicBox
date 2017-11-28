@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 
 import com.gt.magicbox.Constant;
@@ -15,6 +14,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.camera.CodeCameraManager;
 import com.gt.magicbox.camera.ZBarCameraManager;
 import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.http.BaseResponse;
@@ -31,8 +31,11 @@ import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
+import com.synodata.scanview.view.CodePreview;
+import com.synodata.scanview.view.Preview$IDecodeListener;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Description:
@@ -41,10 +44,10 @@ import butterknife.BindView;
  * @date 2017/7/18 0018
  */
 
-public class PaymentActivity extends BaseActivity {
+public class PaymentActivity extends BaseActivity implements Preview$IDecodeListener {
     private final String TAG = PaymentActivity.class.getSimpleName();
-    @BindView(R.id.capture_preview)
-    FrameLayout capturePreview;
+    @BindView(R.id.preview)
+    CodePreview preview;
     private GridView gridView;
     private KeyboardView keyboardView;
     private int type = 0;
@@ -57,11 +60,13 @@ public class PaymentActivity extends BaseActivity {
     public static final int TYPE_COUPON_VERIFICATION = 3;
     public static final int TYPE_MEMBER_RECHARGE = 4;
     public static final int TYPE_MEMBER_CALC = 5;
-    private Handler handler=new Handler();
+    private Handler handler = new Handler();
     private MoreFunctionDialog dialog;
     private int code;
-    private boolean isRequestingData=false;
+    private boolean isRequestingData = false;
     private Runnable handlerRunnable;
+    private CodeCameraManager codeCameraManager;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,13 +88,13 @@ public class PaymentActivity extends BaseActivity {
         } else if (type == TYPE_MEMBER_PAY) {
             setToolBarTitle("会员收银");
             if (Constant.product == BaseConstant.PRODUCTS[0])
-                initZBar();
+                initCodeCamera();
         } else if (type == TYPE_COUPON_VERIFICATION) {
             setToolBarTitle("优惠券核销");
         } else if (type == TYPE_MEMBER_RECHARGE) {
             setToolBarTitle("会员卡充值");
             if (Constant.product == BaseConstant.PRODUCTS[0]) {
-                initZBar();
+                initCodeCamera();
             }
         }
         keyboardView = (KeyboardView) findViewById(R.id.keyboard);
@@ -98,15 +103,15 @@ public class PaymentActivity extends BaseActivity {
         keyboardView.setOnInputListener(new KeyboardView.OnInputListener() {
             @Override
             public void onInput() {
-                if (zBarCameraManager != null) {
+                if (codeCameraManager != null) {
                     if (handlerRunnable != null) {
                         handler.removeCallbacks(handlerRunnable);
                     }
-                    zBarCameraManager.setHandleData(false);
+                    codeCameraManager.stopScanningCamera();
                     handlerRunnable = new Runnable() {
                         @Override
                         public void run() {
-                            zBarCameraManager.setHandleData(true);
+                            codeCameraManager.startScanningCamera();
                         }
                     };
                     handler.postDelayed(handlerRunnable, 10000);
@@ -163,8 +168,8 @@ public class PaymentActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        if (zBarCameraManager!=null) {
-            zBarCameraManager.releaseCamera();
+        if (codeCameraManager != null) {
+            codeCameraManager.releaseCamera();
         }
         super.onPause();
     }
@@ -193,25 +198,9 @@ public class PaymentActivity extends BaseActivity {
         super.onResume();
     }
 
-    private void initZBar() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                zBarCameraManager = new ZBarCameraManager(getApplicationContext(),capturePreview );
-                zBarCameraManager.setOnScanCodeCallBack(new ZBarCameraManager.OnScanCodeCallBack() {
-                    @Override
-                    public void scanResult(String result) {
-                        LogUtils.d("scanResult","result="+result);
-                        if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY || type == TYPE_COUPON_VERIFICATION) {
-                            if (!isRequestingData) {
-                                isRequestingData=true;
-                                findMemberCardByPhone(result);
-                            }
-                        }
-                    }
-                });
-            }
-        });
+    private void initCodeCamera() {
+        codeCameraManager = new CodeCameraManager(getApplicationContext(), preview, PaymentActivity.this);
+        codeCameraManager.initCamera();
     }
 
     private void findMemberCardByPhone(final String numberString) {
@@ -220,7 +209,7 @@ public class PaymentActivity extends BaseActivity {
             return;
         }
         HttpCall.getApiService()
-                .findMemberCardByPhone( Hawk.get("busId",0), numberString)
+                .findMemberCardByPhone(Hawk.get("busId", 0), numberString)
                 .compose(ResultTransformer.<MemberCardBean>transformer())//线程处理 预处理
                 .compose(new DialogTransformer().<MemberCardBean>transformer())
                 .subscribe(new BaseObserver<MemberCardBean>() {
@@ -228,8 +217,8 @@ public class PaymentActivity extends BaseActivity {
                     @Override
                     protected void onSuccess(MemberCardBean bean) {
                         if (bean != null) {
-                            if ((bean.ctName.equals("折扣卡")||bean.ctName.equals("积分卡"))
-                            && type == TYPE_MEMBER_RECHARGE) {
+                            if ((bean.ctName.equals("折扣卡") || bean.ctName.equals("积分卡"))
+                                    && type == TYPE_MEMBER_RECHARGE) {
                                 dialog = new MoreFunctionDialog(PaymentActivity.this, "此类型的卡暂不支持充值", R.style.HttpRequestDialogStyle);
                                 dialog.show();
                             } else {
@@ -273,7 +262,7 @@ public class PaymentActivity extends BaseActivity {
         if (memberCardBean != null && type == TYPE_MEMBER_CALC) {
             LogUtils.d(TAG, "memberRecharge");
             HttpCall.getApiService()
-                    .memberRecharge(memberCardBean.memberId, orderMoney, 10, Hawk.get("shopId",0))
+                    .memberRecharge(memberCardBean.memberId, orderMoney, 10, Hawk.get("shopId", 0))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                     .compose(new DialogTransformer().<BaseResponse>transformer())
                     .subscribe(new BaseObserver<BaseResponse>() {
@@ -292,7 +281,7 @@ public class PaymentActivity extends BaseActivity {
                         @Override
                         public void onError(Throwable e) {
                             LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage());
-                            new HintDismissDialog(PaymentActivity.this,"会员卡充值失败").show();
+                            new HintDismissDialog(PaymentActivity.this, "会员卡充值失败").show();
                             super.onError(e);
                         }
 
@@ -307,8 +296,23 @@ public class PaymentActivity extends BaseActivity {
 
     @Override
     protected void onStop() {
-        if (zBarCameraManager!=null)
-            zBarCameraManager.releaseCamera();
+        if (codeCameraManager != null) {
+            codeCameraManager.releaseCamera();
+        }
         super.onStop();
+    }
+
+    @Override
+    public void onDecodeResult(boolean bDecoded, String result, String typeInfo) {
+
+        if (bDecoded && !TextUtils.isEmpty(result)) {
+            LogUtils.d("scanResult", "result=" + result);
+            if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY || type == TYPE_COUPON_VERIFICATION) {
+                if (!isRequestingData) {
+                    isRequestingData = true;
+                    findMemberCardByPhone(result);
+                }
+            }
+        }
     }
 }

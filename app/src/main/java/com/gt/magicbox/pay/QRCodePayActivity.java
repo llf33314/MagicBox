@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -31,6 +30,7 @@ import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
 import com.gt.magicbox.bean.ScanCodePayResultBean;
+import com.gt.magicbox.camera.CodeCameraManager;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -51,6 +51,8 @@ import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
 import com.obsessive.zbar.CameraManager;
 import com.obsessive.zbar.CameraPreview;
 import com.orhanobut.hawk.Hawk;
+import com.synodata.scanview.view.CodePreview;
+import com.synodata.scanview.view.Preview$IDecodeListener;
 
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
@@ -74,7 +76,7 @@ import io.socket.emitter.Emitter;
  * Buddha bless, never BUG!
  */
 
-public class QRCodePayActivity extends BaseActivity {
+public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeListener {
     public static final String TAG = QRCodePayActivity.class.getSimpleName();
     @BindView(R.id.qrCode)
     ImageView qrCode;
@@ -82,8 +84,6 @@ public class QRCodePayActivity extends BaseActivity {
     TextView customerMoney;
     @BindView(R.id.cashier_money)
     TextView cashierMoney;
-    @BindView(R.id.capture_preview)
-    FrameLayout scanPreview;
     @BindView(R.id.reChosePay)
     Button reChosePay;
     @BindView(R.id.wechatPay)
@@ -102,6 +102,8 @@ public class QRCodePayActivity extends BaseActivity {
     TextView pushCashierMoney;
     @BindView(R.id.pushLayout)
     RelativeLayout pushLayout;
+    @BindView(R.id.preview)
+    CodePreview preview;
     private String url;
     private double money;
     private int type;
@@ -110,9 +112,17 @@ public class QRCodePayActivity extends BaseActivity {
     public final static int TYPE_CREATED_PAY = 2;//已生成的订单并且未支付
     public final static int TYPE_MEMBER_RECHARGE = 3;//会员充值使用支付宝或者微信支付
     public final static int TYPE_CUSTOMER_DISPLAY_PAY = 4;//客显
+
+
+    private static final int MSG_RESULT = 1;
+    private static final int MSG_SCENE = 4;
+    private static final int BUZZER_ON = 166661;
+    private static final int BUZZER_OFF = 2266666;
+
     private LoadingProgressDialog dialog;
     private SocketIOManager socketIOManager;
 
+    private CodeCameraManager codeCameraManager;
     private Camera mCamera;
     private CameraPreview mPreview;
     private Handler autoFocusHandler;
@@ -161,7 +171,7 @@ public class QRCodePayActivity extends BaseActivity {
                     if (shiftId == null || shiftId < 0) shiftId = 0;
 
                     if (type == TYPE_CUSTOMER_DISPLAY_PAY
-                            ||type==TYPE_SERVER_PUSH) {
+                            || type == TYPE_SERVER_PUSH) {
                         pushLayout.setVisibility(View.VISIBLE);
                         normalPayLayout.setVisibility(View.GONE);
                         showMoney(pushCashierMoney, "" + money);
@@ -302,7 +312,7 @@ public class QRCodePayActivity extends BaseActivity {
                                 dismissDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                     @Override
                                     public void onDismiss(DialogInterface dialog) {
-                                        isCodePayRequesting = true;
+                                        isCodePayRequesting = false;
                                     }
                                 });
                                 dismissDialog.show();
@@ -367,8 +377,8 @@ public class QRCodePayActivity extends BaseActivity {
         // 加载网络图片
         ImageView imageView;
         if (type == TYPE_CUSTOMER_DISPLAY_PAY
-                || type==TYPE_CREATED_PAY
-                ||type==TYPE_SERVER_PUSH) {
+                || type == TYPE_CREATED_PAY
+                || type == TYPE_SERVER_PUSH) {
             imageView = pushQrCode;
         } else {
             imageView = qrCode;
@@ -378,7 +388,9 @@ public class QRCodePayActivity extends BaseActivity {
                     @Override
                     public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
                         imageView.setImageBitmap(bitmap);
-                        initCameraViews();
+                        //initCameraViews();
+                        codeCameraManager =new CodeCameraManager(getApplicationContext(),preview,QRCodePayActivity.this);
+                        codeCameraManager.initCamera();
                         dialog.dismiss();
                     }
 
@@ -467,7 +479,9 @@ public class QRCodePayActivity extends BaseActivity {
     protected void onStop() {
         super.onStop();
         LogUtils.d(SocketIOManager.TAG, "disSocket");
-        releaseCamera();
+        if (codeCameraManager!=null) {
+            codeCameraManager.releaseCamera();
+        }
         socketIOManager.disSocket();
     }
 
@@ -498,7 +512,7 @@ public class QRCodePayActivity extends BaseActivity {
         mCamera = mCameraManager.getCamera();
 
         mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
-        scanPreview.addView(mPreview);
+        //scanPreview.addView(mPreview);
 
     }
 
@@ -599,13 +613,27 @@ public class QRCodePayActivity extends BaseActivity {
             case R.id.wechatPay:
                 wechatPay.setImageResource(R.drawable.wechat_selected);
                 aliPay.setImageResource(R.drawable.alipay_unselected);
-                payMode=0;
+                payMode = 0;
                 break;
             case R.id.aliPay:
                 wechatPay.setImageResource(R.drawable.wechat_unselected);
                 aliPay.setImageResource(R.drawable.alipay_selected);
-                payMode=1;
+                payMode = 1;
                 break;
+        }
+    }
+
+    @Override
+    public void onDecodeResult(boolean bDecoded,String result, String type) {
+        if (bDecoded&&!TextUtils.isEmpty(result)){
+            LogUtils.e("quck","onDecodeResult"+type+"    "+result);
+                if (!isCodePayRequesting) {
+                    if (payMode == BaseConstant.PAY_ON_WECHAT) {
+                        getCodePayResult(result, orderNo);
+                    } else if (payMode == BaseConstant.PAY_ON_ALIPAY) {
+                        getCodeAliPayResult(result, orderNo);
+                    }
+                }
         }
     }
 }

@@ -2,7 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <com.synodata.scanview.view.CodePreview
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:id="@+id/preview" />
+    <View
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     <LinearLayout
         android:id="@+id/normalPayLayout"
         android:layout_width="match_parent"
@@ -85,9 +93,5 @@
         layout="@layout/activity_push_pay"
         android:visibility="gone" />
 
-    <FrameLayout
-        android:id="@+id/capture_preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible" />
+
 </RelativeLayout>

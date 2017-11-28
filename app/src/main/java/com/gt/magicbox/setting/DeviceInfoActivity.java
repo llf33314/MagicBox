@@ -2,6 +2,7 @@ package com.gt.magicbox.setting;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -61,9 +62,9 @@ public class DeviceInfoActivity extends BaseActivity {
     }
 
 
-    @OnClick(R.id.camera_layout)
+    @OnClick(R.id.tv_device_network)
     public void onViewClicked() {
-//        Intent intent = new Intent(this, ScanCodeTest.class);
-//        startActivity(intent);
+        Intent intent=new Intent(Settings.ACTION_SETTINGS);
+        startActivity(intent);
     }
 }

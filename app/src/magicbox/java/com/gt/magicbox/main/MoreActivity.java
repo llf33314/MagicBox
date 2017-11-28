@@ -82,8 +82,6 @@ public class MoreActivity extends BaseActivity {
                         new ManualDialog(MoreActivity.this).show();
                         break;
                     case 4:
-                        //intent=new Intent(Settings.ACTION_SETTINGS);
-                        //startActivity(intent);
                         checkUpdate();
                         break;
                     case 5:
