@@ -12,6 +12,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.MemberCountMoneyBean;
+import com.gt.magicbox.bean.MemberCouponBean;
 import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpRequestDialog;
@@ -61,7 +62,12 @@ public class ChosePayModeActivity extends BaseActivity {
     private MemberCardBean memberCardBean;
     private LoadingProgressDialog loadingProgressDialog;
     private CashOrderBean cashOrderBean;
-    private int useCoupon=0;
+    private MemberCouponBean memberCouponBean;
+    private double discountAfterMoney;
+    private double discountMoney;
+
+    private int useCoupon = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,12 +75,16 @@ public class ChosePayModeActivity extends BaseActivity {
         setToolBarTitle("选择支付方式");
         if (this.getIntent() != null) {
             money = this.getIntent().getDoubleExtra("money", 0);
-            useCoupon =this.getIntent().getIntExtra("useCoupon", 0);
+            useCoupon = this.getIntent().getIntExtra("useCoupon", 0);
             customerType = this.getIntent().getIntExtra("customerType", 0);
-            memberCardBean= (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
+            memberCardBean = (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
+            memberCouponBean = (MemberCouponBean) this.getIntent().getSerializableExtra("memberCouponBean");
+            discountAfterMoney = this.getIntent().getDoubleExtra("discountAfterMoney", 0);
+            discountMoney = this.getIntent().getDoubleExtra("discountMoney", 0);
+
         }
-        if (customerType == TYPE_MEMBER_PAY&&
-                memberCardBean!=null&&memberCardBean.ctName.equals("储值卡")) {
+        if (customerType == TYPE_MEMBER_PAY &&
+                memberCardBean != null && memberCardBean.ctName.equals("储值卡")) {
             payMember.setVisibility(View.VISIBLE);
         }
     }
@@ -89,8 +99,8 @@ public class ChosePayModeActivity extends BaseActivity {
                 startERCodePay(1);
                 break;
             case R.id.pay_member:
-                if (memberCardBean!=null){
-                    if (memberCardBean.money<money) {
+                if (memberCardBean != null) {
+                    if (memberCardBean.money < money) {
                         if (dialog == null) {
                             dialog = new MoreFunctionDialog(ChosePayModeActivity.this, "您的会员卡余额不足，支付失败", R.style.HttpRequestDialogStyle);
                             dialog.getConfirmButton().setText("确认");
@@ -102,19 +112,19 @@ public class ChosePayModeActivity extends BaseActivity {
                             });
                         }
                         dialog.show();
-                    }else {
-                        createCashOrder(""+money);
+                    } else {
+                        createCashOrder("" + money);
                     }
                 }
                 break;
             case R.id.pay_cash:
                 Intent intent = new Intent(ChosePayModeActivity.this, PaymentActivity.class);
 
-                if (customerType==TYPE_MEMBER_RECHARGE){
+                if (customerType == TYPE_MEMBER_RECHARGE) {
                     intent.putExtra("type", PaymentActivity.TYPE_MEMBER_CALC);
-                    intent.putExtra("MemberCardBean",memberCardBean);
+                    intent.putExtra("MemberCardBean", memberCardBean);
                     intent.putExtra("orderMoney", money);
-                }else {
+                } else {
                     intent.putExtra("type", 1);
                     intent.putExtra("orderMoney", money);
                 }
@@ -129,13 +139,12 @@ public class ChosePayModeActivity extends BaseActivity {
      */
     private void startERCodePay(int type) {
         if (NetworkUtils.isConnected()) {
-
             Hawk.put("payType", type);
             Intent intent = new Intent(ChosePayModeActivity.this, QRCodePayActivity.class);
-            if (customerType==TYPE_MEMBER_RECHARGE){
+            if (customerType == TYPE_MEMBER_RECHARGE) {
                 intent.putExtra("type", QRCodePayActivity.TYPE_MEMBER_RECHARGE);
-                intent.putExtra("MemberCardBean",memberCardBean);
-            }else {
+                intent.putExtra("MemberCardBean", memberCardBean);
+            } else {
                 intent.putExtra("type", QRCodePayActivity.TYPE_PAY);
             }
             intent.putExtra("money", money);
@@ -156,6 +165,7 @@ public class ChosePayModeActivity extends BaseActivity {
             dialog.show();
         }
     }
+
     private void postMemberSettlement() {
         if (memberCardBean != null) {
             HttpCall.getApiService()
@@ -166,8 +176,13 @@ public class ChosePayModeActivity extends BaseActivity {
                         @Override
                         public void onSuccess(MemberCountMoneyBean data) {
                             LogUtils.d(TAG, "postMemberSettlement onSuccess data=");
-                            if (data != null)
-                                memberPay(data.getBalanceMoney(), data.getBalanceMoney(), data.getTotalMoney(), 5);
+                            if (data != null) {
+                                if (memberCouponBean != null) {
+                                    memberPayWithCoupon(discountAfterMoney,discountMoney,discountAfterMoney, data.getTotalMoney(), 5);
+                                } else {
+                                     memberPayWithoutCoupon(data.getBalanceMoney(),0, data.getBalanceMoney(), data.getTotalMoney(), 5);
+                                }
+                            }
                         }
 
                         @Override
@@ -185,22 +200,21 @@ public class ChosePayModeActivity extends BaseActivity {
         }
     }
 
-    private void memberPay(double discountMoney, final double realMoney , double originMoney, int payType){
-      //  String orderCode="MB"+Hawk.get("shopId",0)+System.currentTimeMillis();
+    private void memberPayWithoutCoupon(double discountAfterMoney,double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithoutCoupon(discountMoney,memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney,payType
-                        , Hawk.get("shiftId",0), Hawk.get("shopId",0),originMoney,3,113,0)
+                .memberPayWithoutCoupon(discountAfterMoney,discountMoney, memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                        , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 0)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        LogUtils.d(TAG, "memberPay onSuccess " );
-                        if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
+                        LogUtils.d(TAG, "memberPay onSuccess ");
+                        if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
                         AppManager.getInstance().finishActivity(VerificationActivity.class);
-                        Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
-                        intent.putExtra("type",MemberDoResultActivity.TYPE_MEMBER_PAY);
-                        intent.putExtra("balance",memberCardBean.money-realMoney);
-                        intent.putExtra("realMoney",realMoney);
+                        Intent intent = new Intent(getApplicationContext(), MemberDoResultActivity.class);
+                        intent.putExtra("type", MemberDoResultActivity.TYPE_MEMBER_PAY);
+                        intent.putExtra("balance", memberCardBean.money - realMoney);
+                        intent.putExtra("realMoney", realMoney);
 
                         startActivity(intent);
 
@@ -221,12 +235,50 @@ public class ChosePayModeActivity extends BaseActivity {
                     }
                 });
     }
-    private void memberPayFailed(){
-        if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
-        new HintDismissDialog(ChosePayModeActivity.this,"会员卡支付失败!").show();
+
+    private void memberPayWithCoupon(double discountAfterMoney,double discountMoney, final double realMoney, double originMoney, int payType) {
+        HttpCall.getApiService()
+                .memberPayWithCoupon(memberCouponBean.getGId(),discountAfterMoney ,discountMoney, memberCardBean.memberId, 1, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                        , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 1)
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse data) {
+                        LogUtils.d(TAG, "memberPay onSuccess ");
+                        if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
+                        AppManager.getInstance().finishActivity(VerificationActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), MemberDoResultActivity.class);
+                        intent.putExtra("type", MemberDoResultActivity.TYPE_MEMBER_PAY);
+                        intent.putExtra("balance", memberCardBean.money - realMoney);
+                        intent.putExtra("realMoney", realMoney);
+
+                        startActivity(intent);
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.d(TAG, "memberPay onError e" + e.getMessage());
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        LogUtils.d(TAG, "memberPay" +
+                                " onFailure msg=" + msg);
+                        memberPayFailed();
+                        super.onFailure(code, msg);
+                    }
+                });
     }
+
+    private void memberPayFailed() {
+        if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
+        new HintDismissDialog(ChosePayModeActivity.this, "会员卡支付失败!").show();
+    }
+
     private void createCashOrder(String money) {
-        loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");
+        loadingProgressDialog = new LoadingProgressDialog(ChosePayModeActivity.this, "付款中...");
         loadingProgressDialog.show();
         HttpCall.getApiService()
                 .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0))
@@ -235,7 +287,7 @@ public class ChosePayModeActivity extends BaseActivity {
                     @Override
                     protected void onSuccess(CashOrderBean bean) {
                         LogUtils.d(TAG, "createCashOrder Success");
-                        cashOrderBean=bean;
+                        cashOrderBean = bean;
                         postMemberSettlement();
 
                     }

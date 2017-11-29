@@ -17,6 +17,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.CashOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.MemberCountMoneyBean;
+import com.gt.magicbox.bean.MemberCouponBean;
 import com.gt.magicbox.bean.PosRequestBean;
 import com.gt.magicbox.bean.UpdateOrderListUIBean;
 import com.gt.magicbox.coupon.VerificationActivity;
@@ -51,6 +52,7 @@ import com.gt.magicbox.utils.commonutil.FileHelper;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.orhanobut.hawk.Hawk;
 import com.ums.AppHelper;
@@ -97,6 +99,7 @@ public class ChosePayModeActivity extends BaseActivity {
     private MemberCardBean memberCardBean;
     private LoadingProgressDialog loadingProgressDialog;
     private CashOrderBean cashOrderBean;
+    private  MemberCouponBean memberCouponBean;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +110,8 @@ public class ChosePayModeActivity extends BaseActivity {
             customerType = this.getIntent().getIntExtra("customerType", 0);
             memberCardBean= (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
             orderNo=this.getIntent().getStringExtra("orderNo");
+            memberCouponBean = (MemberCouponBean) this.getIntent().getSerializableExtra("memberCouponBean");
+
         }
         initView();
     }
@@ -212,8 +217,11 @@ public class ChosePayModeActivity extends BaseActivity {
                         @Override
                         public void onSuccess(MemberCountMoneyBean data) {
                             LogUtils.d(TAG, "postMemberSettlement onSuccess data=");
-                            if (data != null)
-                                memberPay(data.getBalanceMoney(), data.getBalanceMoney(), data.getTotalMoney(), 5);
+                            if (memberCouponBean != null) {
+                                memberPayWithCoupon(data.getBalanceMoney(), data.getBalanceMoney(), data.getTotalMoney(), 5);
+                            } else {
+                                memberPayWithoutCoupon(data.getBalanceMoney(), data.getBalanceMoney(), data.getTotalMoney(), 5);
+                            }
                         }
 
                         @Override
@@ -231,22 +239,21 @@ public class ChosePayModeActivity extends BaseActivity {
         }
     }
 
-    private void memberPay(double discountMoney, final double realMoney , double originMoney, int payType){
-      //  String orderCode="MB"+Hawk.get("shopId",0)+System.currentTimeMillis();
+    private void memberPayWithoutCoupon(double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithoutCoupon(discountMoney,memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney,payType
-                , Hawk.get("shiftId",0), Hawk.get("shopId",0),originMoney,3,113,0)
+                .memberPayWithoutCoupon(discountMoney, memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                        , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 0)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        LogUtils.d(TAG, "memberPay onSuccess " );
-                        if (loadingProgressDialog!=null)loadingProgressDialog.dismiss();
+                        LogUtils.d(TAG, "memberPay onSuccess ");
+                        if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
                         AppManager.getInstance().finishActivity(VerificationActivity.class);
-                        Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
-                        intent.putExtra("type",MemberDoResultActivity.TYPE_MEMBER_PAY);
-                        intent.putExtra("balance",memberCardBean.money-realMoney);
-                        intent.putExtra("realMoney",realMoney);
+                        Intent intent = new Intent(getApplicationContext(), MemberDoResultActivity.class);
+                        intent.putExtra("type", MemberDoResultActivity.TYPE_MEMBER_PAY);
+                        intent.putExtra("balance", memberCardBean.money - realMoney);
+                        intent.putExtra("realMoney", realMoney);
 
                         startActivity(intent);
 
@@ -262,10 +269,52 @@ public class ChosePayModeActivity extends BaseActivity {
                     public void onFailure(int code, String msg) {
                         LogUtils.d(TAG, "memberPay" +
                                 " onFailure msg=" + msg);
+                        memberPayFailed();
                         super.onFailure(code, msg);
                     }
                 });
     }
+
+    private void memberPayWithCoupon(double discountMoney, final double realMoney, double originMoney, int payType) {
+        HttpCall.getApiService()
+                .memberPayWithCoupon(memberCouponBean.getGId(), discountMoney, memberCardBean.memberId, 1, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                        , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 1)
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse data) {
+                        LogUtils.d(TAG, "memberPay onSuccess ");
+                        if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
+                        AppManager.getInstance().finishActivity(VerificationActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), MemberDoResultActivity.class);
+                        intent.putExtra("type", MemberDoResultActivity.TYPE_MEMBER_PAY);
+                        intent.putExtra("balance", memberCardBean.money - realMoney);
+                        intent.putExtra("realMoney", realMoney);
+
+                        startActivity(intent);
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.d(TAG, "memberPay onError e" + e.getMessage());
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        LogUtils.d(TAG, "memberPay" +
+                                " onFailure msg=" + msg);
+                        memberPayFailed();
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
+    private void memberPayFailed() {
+        if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
+        new HintDismissDialog(ChosePayModeActivity.this, "会员卡支付失败!").show();
+    }
+
     private void posOrder(String orderNo,  double money , int payType){
         if (customerType==TYPE_MEMBER_RECHARGE){//充值不生成订单
             memberRecharge(payType);

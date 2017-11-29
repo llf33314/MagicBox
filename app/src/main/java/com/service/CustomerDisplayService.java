@@ -113,7 +113,7 @@ public class CustomerDisplayService extends Service {
             mInputStream = mSerialPort.getInputStream();
             mOutputStream = mSerialPort.getOutputStream();
             receiveThread();
-            ToastUtil.getInstance().showToast("打开串口成功 " + port+" baudRate="+baudRate);
+            LogUtils.d("SerialPort","打开串口成功 " + port+" baudRate="+baudRate);
         } catch (SecurityException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -487,7 +487,9 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
     @Override
     protected void onPause() {
-        releaseCamera();
+        if (codeCameraManager!=null) {
+            codeCameraManager.releaseCamera();
+        }
         super.onPause();
     }
 
@@ -496,25 +498,6 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
     }
 
-    private void initCameraViews() {
-        mImageScanner = new ImageScanner();
-        mImageScanner.setConfig(0, Config.X_DENSITY, 3);
-        mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
-
-        autoFocusHandler = new Handler();
-        mCameraManager = new CameraManager(this);
-        try {
-            mCameraManager.openDriver();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mCameraManager.openFlashLight();
-        mCamera = mCameraManager.getCamera();
-
-        mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
-        //scanPreview.addView(mPreview);
-
-    }
 
     private void releaseCamera() {
         if (mCamera != null) {

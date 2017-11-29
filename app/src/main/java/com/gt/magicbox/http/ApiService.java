@@ -150,19 +150,8 @@ public interface ApiService {
     Observable<BaseResponse<ShiftRecordsAllBean>> getNowSR(@Query("shiftId") int shiftId);
 
     @POST(HttpConfig.MEMBER_PAY)
-    Observable<BaseResponse> memberPayWithoutCoupon(@Query("discountMoney") double discountMoney,
-                                       @Query("memberId") int memberId,
-                                       @Query("orderCode") String orderCode,
-                                       @Query("pay") double pay,
-                                       @Query("payType") int payType,
-                                       @Query("shiftId") int shiftId,
-                                       @Query("storeId") int storeId,
-                                       @Query("totalMoney") double totalMoney,
-                                       @Query("type") int type,
-                                       @Query("ucType") int ucType,
-                                       @Query("useCoupon") int useCoupon );
-    @POST(HttpConfig.MEMBER_PAY)
-    Observable<BaseResponse> memberPayWithCoupon(@Query("discountMoney") double discountMoney,
+    Observable<BaseResponse> memberPayWithoutCoupon(@Query("discountAfterMoney") double discountAfterMoney,
+                                                    @Query("discountMoney") double discountMoney,
                                                     @Query("memberId") int memberId,
                                                     @Query("orderCode") String orderCode,
                                                     @Query("pay") double pay,
@@ -172,7 +161,23 @@ public interface ApiService {
                                                     @Query("totalMoney") double totalMoney,
                                                     @Query("type") int type,
                                                     @Query("ucType") int ucType,
-                                                    @Query("useCoupon") int useCoupon );
+                                                    @Query("useCoupon") int useCoupon);
+
+    @POST(HttpConfig.MEMBER_PAY)
+    Observable<BaseResponse> memberPayWithCoupon(@Query("cardId") int cardId,
+                                                 @Query("discountAfterMoney") double discountAfterMoney,
+                                                 @Query("discountMoney") double discountMoney,
+                                                 @Query("memberId") int memberId,
+                                                 @Query("number") int number,
+                                                 @Query("orderCode") String orderCode,
+                                                 @Query("pay") double pay,
+                                                 @Query("payType") int payType,
+                                                 @Query("shiftId") int shiftId,
+                                                 @Query("storeId") int storeId,
+                                                 @Query("totalMoney") double totalMoney,
+                                                 @Query("type") int type,
+                                                 @Query("ucType") int ucType,
+                                                 @Query("useCoupon") int useCoupon);
     @FormUrlEncoded
     @POST(HttpConfig.POS_ORDER)
     Observable<BaseResponse> posOrder(@Field("eqCode") String eqCode,
@@ -191,7 +196,7 @@ public interface ApiService {
     Observable<BaseResponse<DuofenCards>> getDistributeCoupon(@Query("receiveId") int receiveId);
 
     @POST(HttpConfig.VERIFICATION_CARD_RETURN_NAME)
-    Observable<BaseResponse<DuofenCards>> verificationCoupon(@Query("cardCode") String cardCode,@Query("shopId") int shopId);
+    Observable<BaseResponse> verificationCoupon(@Query("cardCode") String cardCode,@Query("shopId") int shopId);
     @POST(HttpConfig.FIND_DUOFEN_CARD_BY_MEMBER_ID_AND_MONEY)
     Observable<BaseResponse<List<MemberCouponBean>>> getMemberAvailableCoupon(@Query("memberId") int  memberId
             , @Query("money") double money, @Query("wxshopId") int shopId);

@@ -76,7 +76,8 @@ public class VerificationActivity extends BaseActivity {
     private double orderMoney;
     private double paidInAmountMoney = 0;//实付金额
     private double discountMoney = 0;
-
+    private MemberCouponBean memberCouponBean;
+    private int lastPosition=-1;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +89,6 @@ public class VerificationActivity extends BaseActivity {
             getMemberAvailableCouponData();
         }
         initView();
-        //initRecyclerView(fenCoinView, HorizontalCouponAdapter.TYPE_FEN_COIN);
         calculateMoneyInAmount();
     }
 
@@ -126,12 +126,20 @@ public class VerificationActivity extends BaseActivity {
         adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, Object item, int position) {
-                for (MemberCouponBean bean : data) {
-                    bean.setSelected(false);
+                LogUtils.d("lastPosition="+lastPosition+"  position="+position);
+                if (lastPosition!=position) {
+                    memberCouponBean = data.get(position);
+                    calculateCoupon(data.get(position));
+                    adapter.setCurrentItem(position);
+                    adapter.notifyDataSetChanged();
+                    lastPosition=position;
+                }else {
+                    lastPosition=-1;
+                    adapter.setCurrentItem(-1);
+                    adapter.notifyDataSetChanged();
+                    memberCouponBean=null;
+                    calculateCoupon(null);
                 }
-                data.get(position).setSelected(true);
-                adapter.notifyDataSetChanged();
-                calculateCoupon(data.get(position));
             }
         });
         recyclerView.setAdapter(adapter);
@@ -140,27 +148,32 @@ public class VerificationActivity extends BaseActivity {
     }
 
     private void calculateCoupon(MemberCouponBean memberCouponBean) {
-        if (memberCouponBean.getDiscount() > 0) {
-            discountMoney = multiply(orderMoney / 10, memberCouponBean.getDiscount());
-            discountInfo.setText("抵扣金额: 优惠券-" + subtract(orderMoney, discountMoney) + "元");
-            textPaidInAmount.setText("实收金额:¥" + discountMoney + "元");
-            couponInfo.setText("优惠券信息:"+memberCouponBean.getDiscount()+"折券");
-            paidInAmountMoney = discountMoney;
-        } else if (memberCouponBean.getReduce_cost() > 0 && orderMoney >= memberCouponBean.getReduce_cost()) {
-            discountInfo.setText("抵扣金额: 优惠券-" + memberCouponBean.getCash_least_cost() + "元");
-            paidInAmountMoney = subtract(orderMoney, memberCouponBean.getCash_least_cost());
-            textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
-            couponInfo.setText("优惠券信息:满"+memberCouponBean.getReduce_cost()
-                    +"元减"+ memberCouponBean.getCash_least_cost()
-                    +"代金券");
-
-        } else {
-            couponInfo.setText("不满足使用该优惠券的条件");
-            discountInfo.setText("抵扣金额: 优惠券-0元");
+        if (memberCouponBean != null) {
+            if (memberCouponBean.getDiscount() > 0) {
+                paidInAmountMoney = multiply(orderMoney / 10, memberCouponBean.getDiscount());
+                discountMoney = subtract(orderMoney, discountMoney);
+                discountInfo.setText("抵扣金额: 优惠券-" +discountMoney + "元");
+                textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
+            } else if (memberCouponBean.getReduce_cost() > 0 && orderMoney >= memberCouponBean.getReduce_cost()) {
+                discountInfo.setText("抵扣金额: 优惠券-" + memberCouponBean.getCash_least_cost() + "元");
+                paidInAmountMoney = subtract(orderMoney, memberCouponBean.getCash_least_cost());
+                textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
+                discountMoney =memberCouponBean.getReduce_cost();
+            } else {
+                discountInfo.setText("抵扣金额: 优惠券-0元");
+                paidInAmountMoney = orderMoney;
+                textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
+                discountMoney=0;
+            }
+            couponInfo.setText(memberCouponBean.getTitle());
+        }else {
             paidInAmountMoney = orderMoney;
             textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
-
+            discountMoney=0;
+            couponInfo.setText("");
+            discountInfo.setText("");
         }
+
     }
 
     public double subtract(double d1, double d2) {
@@ -190,7 +203,13 @@ public class VerificationActivity extends BaseActivity {
                 Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
                 intent.putExtra("customerType", ChosePayModeActivity.TYPE_MEMBER_PAY);
                 intent.putExtra("money", paidInAmountMoney);
+                intent.putExtra("discountAfterMoney", paidInAmountMoney);
+                intent.putExtra("discountMoney", discountMoney);
+
                 intent.putExtra("memberCardBean", memberCardBean);
+                if (memberCouponBean != null) {
+                    intent.putExtra("memberCouponBean", memberCouponBean);
+                }
                 startActivity(intent);
                 AppManager.getInstance().finishActivity();
                 break;
@@ -199,7 +218,6 @@ public class VerificationActivity extends BaseActivity {
                 break;
         }
     }
-
     private void getMemberAvailableCouponData() {
         if (null != memberCardBean) {
             HttpCall.getApiService()

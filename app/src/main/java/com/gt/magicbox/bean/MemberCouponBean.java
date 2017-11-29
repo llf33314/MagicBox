@@ -1,12 +1,14 @@
 package com.gt.magicbox.bean;
 
+import java.io.Serializable;
+
 /**
  * Description:
  * Created by jack-lin on 2017/11/24 0024.
  * Buddha bless, never BUG!
  */
 
-public class MemberCouponBean {
+public class MemberCouponBean implements Serializable{
 
     /**
      * cash_least_cost : 0

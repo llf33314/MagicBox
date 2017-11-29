@@ -7,6 +7,7 @@ import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.BaseViewHolder;
 import com.gt.magicbox.bean.DistributeCouponBean;
 import com.gt.magicbox.bean.MemberCouponBean;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 
 import java.util.List;
 
@@ -16,12 +17,12 @@ import java.util.List;
 
 public class HorizontalCouponAdapter extends BaseRecyclerAdapter<MemberCouponBean> {
     private int type;
-    public static final int TYPE_COUPON=0;
-    public static final int TYPE_FEN_COIN=1;
-
-    public HorizontalCouponAdapter(Context context, List<MemberCouponBean> listBean,int type) {
+    public static final int TYPE_COUPON = 0;
+    public static final int TYPE_FEN_COIN = 1;
+    private int currentItem=-1;
+    public HorizontalCouponAdapter(Context context, List<MemberCouponBean> listBean, int type) {
         super(context, listBean);
-        this.type=type;
+        this.type = type;
     }
 
     @Override
@@ -39,16 +40,36 @@ public class HorizontalCouponAdapter extends BaseRecyclerAdapter<MemberCouponBea
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, MemberCouponBean bean, int position) {
-        if (type==TYPE_COUPON) {
-            holder.setText(R.id.item_name, ""+bean.getTitle());
+        LogUtils.d("onBindViewHolder position="+position+"  currentItem="+currentItem);
+        if (type == TYPE_COUPON) {
+            if (bean != null) {
+                holder.setText(R.id.item_name, "" + getCouponName(bean));
+            }
+        } else if (type == TYPE_FEN_COIN) {
+            holder.setText(R.id.item_name, "100 粉币");
         }
-        else if (type==TYPE_FEN_COIN){
-            holder.setText(R.id.item_name,"100 粉币");
-        }
-        holder.findView(R.id.item_name).setPressed(bean.isSelected());
+        if (currentItem>-1&&currentItem==position){
+            holder.findView(R.id.item_name).setPressed(true);
 
+        }
     }
+
     public void setType(int type) {
         this.type = type;
     }
+
+    private String getCouponName(MemberCouponBean memberCouponBean) {
+        if (memberCouponBean.getDiscount() > 0) {
+            return memberCouponBean.getDiscount() + " 折券";
+        } else if (memberCouponBean.getReduce_cost() > 0) {
+            return "满" + memberCouponBean.getReduce_cost()
+                    + "元减" + memberCouponBean.getCash_least_cost();
+        } else {
+            return "其他优惠券";
+        }
+    }
+    public void setCurrentItem(int currentItem) {
+        this.currentItem = currentItem;
+    }
+
 }

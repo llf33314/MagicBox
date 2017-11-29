@@ -91,6 +91,9 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                 initCodeCamera();
         } else if (type == TYPE_COUPON_VERIFICATION) {
             setToolBarTitle("优惠券核销");
+            if (Constant.product == BaseConstant.PRODUCTS[0]) {
+                initCodeCamera();
+            }
         } else if (type == TYPE_MEMBER_RECHARGE) {
             setToolBarTitle("会员卡充值");
             if (Constant.product == BaseConstant.PRODUCTS[0]) {
@@ -157,13 +160,14 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
 
             @Override
             public void onNumberInput(String num) {
-                if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY || type == TYPE_COUPON_VERIFICATION) {
+                if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY ) {
                     findMemberCardByPhone(num);
+                } else if (type == TYPE_COUPON_VERIFICATION) {
+                    couponVerification(num);
                 }
             }
         });
         if (code > 0) onKeyDown(code, null);
-
     }
 
     @Override
@@ -243,6 +247,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                         if (!TextUtils.isEmpty(msg) && getString(R.string.data_is_not_exit).equals(msg)) {
                             new HintDismissDialog(PaymentActivity.this, "该卡号不存在")
                                     .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
+                                        @Override
                                         public void onDismiss(DialogInterface dialog) {
                                             isRequestingData = false;
                                         }
@@ -254,6 +259,42 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                     }
 
                 });
+    }
+
+    private void couponVerification(final String numberString) {
+        if (!TextUtils.isEmpty(numberString)) {
+            HttpCall.getApiService()
+                    .verificationCoupon(numberString, Hawk.get("shopId", 0))
+                    .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                    .compose(new DialogTransformer().<BaseResponse>transformer())
+                    .subscribe(new BaseObserver<BaseResponse>() {
+                        @Override
+                        public void onSuccess(BaseResponse data) {
+                            LogUtils.d(TAG, "couponVerification onSuccess ");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage());
+                            new HintDismissDialog(PaymentActivity.this, "优惠券读取失败")
+                                    .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
+                                        @Override
+                                        public void onDismiss(DialogInterface dialog) {
+                                            isRequestingData = false;
+                                        }
+                                    })
+                                    .setCancelText("确认")
+                                    .show();
+                            super.onError(e);
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            LogUtils.d(TAG, "memberRecharge onFailure msg=" + msg);
+                            super.onFailure(code, msg);
+                        }
+                    });
+        }
     }
 
     private void memberRecharge(final int payType) {
@@ -307,10 +348,12 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
 
         if (bDecoded && !TextUtils.isEmpty(result)) {
             LogUtils.d("scanResult", "result=" + result);
-            if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY || type == TYPE_COUPON_VERIFICATION) {
-                if (!isRequestingData) {
-                    isRequestingData = true;
+            if (!isRequestingData) {
+                isRequestingData = true;
+                if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY) {
                     findMemberCardByPhone(result);
+                } else if (type == TYPE_COUPON_VERIFICATION) {
+                    couponVerification(result);
                 }
             }
         }
