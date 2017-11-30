@@ -127,6 +127,7 @@ public class ChosePayModeActivity extends BaseActivity {
                 } else {
                     intent.putExtra("type", 1);
                     intent.putExtra("orderMoney", money);
+                    intent.putExtra("memberCouponBean",memberCouponBean);
                 }
                 startActivity(intent);
 
@@ -146,6 +147,9 @@ public class ChosePayModeActivity extends BaseActivity {
                 intent.putExtra("MemberCardBean", memberCardBean);
             } else {
                 intent.putExtra("type", QRCodePayActivity.TYPE_PAY);
+            }
+            if (memberCouponBean != null) {
+                intent.putExtra("memberCouponBean", memberCouponBean);
             }
             intent.putExtra("money", money);
             intent.putExtra("payMode", type);
@@ -178,9 +182,9 @@ public class ChosePayModeActivity extends BaseActivity {
                             LogUtils.d(TAG, "postMemberSettlement onSuccess data=");
                             if (data != null) {
                                 if (memberCouponBean != null) {
-                                    memberPayWithCoupon(discountAfterMoney,discountMoney,discountAfterMoney, data.getTotalMoney(), 5);
+                                    memberPayWithCoupon(discountAfterMoney, discountMoney, discountAfterMoney, data.getTotalMoney(), 5);
                                 } else {
-                                     memberPayWithoutCoupon(data.getBalanceMoney(),0, data.getBalanceMoney(), data.getTotalMoney(), 5);
+                                    memberPayWithoutCoupon(data.getBalanceMoney(), 0, data.getBalanceMoney(), data.getTotalMoney(), 5);
                                 }
                             }
                         }
@@ -200,9 +204,9 @@ public class ChosePayModeActivity extends BaseActivity {
         }
     }
 
-    private void memberPayWithoutCoupon(double discountAfterMoney,double discountMoney, final double realMoney, double originMoney, int payType) {
+    private void memberPayWithoutCoupon(double discountAfterMoney, double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithoutCoupon(discountAfterMoney,discountMoney, memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                .memberPayWithoutCoupon(discountAfterMoney, discountMoney, memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
                         , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 0)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
@@ -236,9 +240,9 @@ public class ChosePayModeActivity extends BaseActivity {
                 });
     }
 
-    private void memberPayWithCoupon(double discountAfterMoney,double discountMoney, final double realMoney, double originMoney, int payType) {
+    private void memberPayWithCoupon(double discountAfterMoney, double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithCoupon(memberCouponBean.getGId(),discountAfterMoney ,discountMoney, memberCardBean.memberId, 1, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                .memberPayWithCoupon(memberCouponBean.getGId(), discountAfterMoney, discountMoney, memberCardBean.memberId, 1, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
                         , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 1)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {

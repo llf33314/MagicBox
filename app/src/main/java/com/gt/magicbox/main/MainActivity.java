@@ -214,25 +214,19 @@ public class MainActivity extends BaseActivity {
             }
         });
        // new ShortcutMenuDialog(this,R.style.ShortcutMenuDialog).show();
-//        RxBus.get().toObservable(UnpaidOrderBean.class).subscribe(new Consumer<UnpaidOrderBean>() {
-//            @Override
-//            public void accept(@io.reactivex.annotations.NonNull UnpaidOrderBean unpaidOrderBean) throws Exception {
-//                if (unpaidOrderBean.count==-1){//没有获取网络数据 用于多出发送UnpaidOrderBean消息
-//                    getUnpaidOrderCount();
-//                }else{
-//                    updateUnpaid(unpaidOrderBean);
-//                }
-//
-//            }
-//        });
-//
-//
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                getUnpaidOrderCount();
-//            }
-//        });
+        RxBus.get().toObservable(UnpaidOrderBean.class).subscribe(new Consumer<UnpaidOrderBean>() {
+            @Override
+            public void accept(@io.reactivex.annotations.NonNull UnpaidOrderBean unpaidOrderBean) throws Exception {
+                if (unpaidOrderBean.count==-1){//没有获取网络数据 用于多出发送UnpaidOrderBean消息
+                    getUnpaidOrderCount();
+                }else{
+                    updateUnpaid(unpaidOrderBean);
+                }
+
+            }
+        });
+
+
 
 
         portIntent=new Intent(this, PrinterConnectService.class);

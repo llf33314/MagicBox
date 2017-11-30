@@ -13,9 +13,12 @@ import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
+import com.gt.magicbox.bean.CouponVerificationBean;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.bean.MemberCouponBean;
 import com.gt.magicbox.camera.CodeCameraManager;
 import com.gt.magicbox.camera.ZBarCameraManager;
+import com.gt.magicbox.coupon.CouponVerificationSuccess;
 import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -66,6 +69,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
     private boolean isRequestingData = false;
     private Runnable handlerRunnable;
     private CodeCameraManager codeCameraManager;
+    private MemberCouponBean memberCouponBean;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,6 +84,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
             orderMoney = getIntent().getDoubleExtra("orderMoney", 0);
             code = getIntent().getIntExtra("keyCode", 0);
             memberCardBean = (MemberCardBean) getIntent().getSerializableExtra("MemberCardBean");
+            memberCouponBean = (MemberCouponBean) getIntent().getSerializableExtra("memberCouponBean");
         }
         if (type == TYPE_CALC || type == TYPE_MEMBER_CALC) {
             setToolBarTitle("现金支付");
@@ -90,7 +95,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
             if (Constant.product == BaseConstant.PRODUCTS[0])
                 initCodeCamera();
         } else if (type == TYPE_COUPON_VERIFICATION) {
-            setToolBarTitle("优惠券核销");
+            setToolBarTitle("兑换券核销");
             if (Constant.product == BaseConstant.PRODUCTS[0]) {
                 initCodeCamera();
             }
@@ -134,6 +139,9 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                     intent.putExtra("success", true);
                     intent.putExtra("message", "" + money);
                     intent.putExtra("payType", PayResultActivity.TYPE_CASH);
+                    if (memberCouponBean != null) {
+                        intent.putExtra("memberCouponBean", memberCouponBean);
+                    }
                     startActivity(intent);
                     AppManager.getInstance().finishActivity(PaymentActivity.class);
                     AppManager.getInstance().finishActivity(ChosePayModeActivity.class);
@@ -160,7 +168,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
 
             @Override
             public void onNumberInput(String num) {
-                if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY ) {
+                if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY) {
                     findMemberCardByPhone(num);
                 } else if (type == TYPE_COUPON_VERIFICATION) {
                     couponVerification(num);
@@ -265,18 +273,24 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
         if (!TextUtils.isEmpty(numberString)) {
             HttpCall.getApiService()
                     .verificationCoupon(numberString, Hawk.get("shopId", 0))
-                    .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
-                    .compose(new DialogTransformer().<BaseResponse>transformer())
-                    .subscribe(new BaseObserver<BaseResponse>() {
+                    .compose(ResultTransformer.<CouponVerificationBean>transformer())
+                    .compose(new DialogTransformer().<CouponVerificationBean>transformer())
+                    .subscribe(new BaseObserver<CouponVerificationBean>() {
                         @Override
-                        public void onSuccess(BaseResponse data) {
+                        public void onSuccess(CouponVerificationBean data) {
                             LogUtils.d(TAG, "couponVerification onSuccess ");
+                            if (data != null) {
+                                Intent intent = new Intent(PaymentActivity.this, CouponVerificationSuccess.class);
+                                intent.putExtra("couponVerificationBean", data);
+                                startActivity(intent);
+                                AppManager.getInstance().finishActivity();
+                            }
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage());
-                            new HintDismissDialog(PaymentActivity.this, "优惠券读取失败")
+                            new HintDismissDialog(PaymentActivity.this, "兑换券核销失败")
                                     .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
                                         @Override
                                         public void onDismiss(DialogInterface dialog) {
@@ -353,7 +367,14 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                 if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY) {
                     findMemberCardByPhone(result);
                 } else if (type == TYPE_COUPON_VERIFICATION) {
-                    couponVerification(result);
+                    String start = "code=";
+                    if (result.contains(start)) {
+                        String number = result.substring((result.indexOf(start) + start.length()), result.length());
+                        LogUtils.d("scanResult", "number=" + number);
+                        couponVerification(number);
+                    } else {
+                        couponVerification(result);
+                    }
                 }
             }
         }

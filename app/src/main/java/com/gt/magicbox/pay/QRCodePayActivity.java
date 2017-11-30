@@ -27,6 +27,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.bean.MemberCouponBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
 import com.gt.magicbox.bean.ScanCodePayResultBean;
@@ -135,6 +136,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     private Integer shiftId;
     private boolean isCodePayRequesting = false;
     private MemberCardBean memberCardBean;
+    private MemberCouponBean memberCouponBean;
 
     static {
         System.loadLibrary("iconv");
@@ -162,6 +164,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 case TYPE_PAY:
                     money = this.getIntent().getDoubleExtra("money", 0);
                     payMode = this.getIntent().getIntExtra("payMode", 0);
+                    memberCouponBean= (MemberCouponBean) this.getIntent().getSerializableExtra("memberCouponBean");
                     if (type == TYPE_MEMBER_RECHARGE) {
                         memberCardBean = (MemberCardBean) this.getIntent().getSerializableExtra("MemberCardBean");
                         LogUtils.d(TAG, "memberCardBean=" + memberCardBean.ctName);
@@ -466,7 +469,9 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 if (type == TYPE_CREATED_PAY) {
                     intent.putExtra("fromType", PayResultActivity.TYPE_FROM_ORDER_LIST);
                 }
-
+                if (memberCouponBean!=null){
+                    intent.putExtra("memberCouponBean", memberCouponBean);
+                }
                 startActivity(intent);
             }
             AppManager.getInstance().finishActivity(QRCodePayActivity.class);

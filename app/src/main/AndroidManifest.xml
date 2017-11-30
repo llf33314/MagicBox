@@ -91,6 +91,9 @@
             android:name=".coupon.VerificationActivity"
             android:launchMode="singleTask" />
         <activity
+            android:name=".coupon.CouponVerificationSuccess"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".coupon.CouponChoseActivity"
             android:launchMode="singleTask" />
         <activity

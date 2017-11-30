@@ -4,6 +4,7 @@ package com.gt.magicbox.http;
 import com.gt.magicbox.bean.CardGradeInfoBean;
 import com.gt.magicbox.bean.CardTypeInfoBean;
 import com.gt.magicbox.bean.CashOrderBean;
+import com.gt.magicbox.bean.CouponVerificationBean;
 import com.gt.magicbox.bean.CreatedOrderBean;
 import com.gt.magicbox.bean.DistributeCouponMainBean;
 import com.gt.magicbox.bean.DuofenCards;
@@ -196,7 +197,7 @@ public interface ApiService {
     Observable<BaseResponse<DuofenCards>> getDistributeCoupon(@Query("receiveId") int receiveId);
 
     @POST(HttpConfig.VERIFICATION_CARD_RETURN_NAME)
-    Observable<BaseResponse> verificationCoupon(@Query("cardCode") String cardCode,@Query("shopId") int shopId);
+    Observable<BaseResponse<CouponVerificationBean>> verificationCoupon(@Query("codes") String cardCode, @Query("storeId") int shopId);
     @POST(HttpConfig.FIND_DUOFEN_CARD_BY_MEMBER_ID_AND_MONEY)
     Observable<BaseResponse<List<MemberCouponBean>>> getMemberAvailableCoupon(@Query("memberId") int  memberId
             , @Query("money") double money, @Query("wxshopId") int shopId);

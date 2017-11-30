@@ -151,7 +151,7 @@ public class VerificationActivity extends BaseActivity {
         if (memberCouponBean != null) {
             if (memberCouponBean.getDiscount() > 0) {
                 paidInAmountMoney = multiply(orderMoney / 10, memberCouponBean.getDiscount());
-                discountMoney = subtract(orderMoney, discountMoney);
+                discountMoney = subtract(orderMoney, paidInAmountMoney);
                 discountInfo.setText("抵扣金额: 优惠券-" +discountMoney + "元");
                 textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
             } else if (memberCouponBean.getReduce_cost() > 0 && orderMoney >= memberCouponBean.getReduce_cost()) {
