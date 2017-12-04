@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.http.BaseResponse;
@@ -19,6 +20,7 @@ import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.utils.GlideUtils;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.orhanobut.hawk.Hawk;
 
 import butterknife.BindView;
@@ -50,7 +52,8 @@ public class CouponQRActivity extends BaseActivity {
         int busId= Hawk.get("busId");
         String code=intent.getStringExtra("code");
         qrName.setText(intent.getStringExtra("brandName"));
-        String imageUrl= HttpConfig.BASE_URL+"magicBoxMember/"+busId+"/"+code+"/getQRCode";
+        String imageUrl= Constant.BASE_URL+"magicBoxMember/"+busId+"/"+code+"/getQRCode";
+        LogUtils.d("imageUrl="+imageUrl);
         //默认是有缓存
         Glide.with(this).load(imageUrl).apply(GlideUtils.getInstance().noneCacheOpt()).into(qrCodeIv);
 

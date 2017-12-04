@@ -104,7 +104,7 @@ public class AddMemberActivity extends BaseActivity {
     private SocketIOManager socketIOManager;
     private boolean isPhoneRegistered;
     private MoreFunctionDialog mMoreFunctionDialog;
-    private int bit = 1;
+    private int bit = 0;
     private int memberId;
     private CardTypeInfoBean cardTypeInfoBean;
     private Handler handler = new Handler() {
@@ -123,7 +123,7 @@ public class AddMemberActivity extends BaseActivity {
                     getIdentifyingCode.setEnabled(true);
                     break;
                 case MSG_SHOW_FOLLOW_SUCCESS:
-                    new HintDismissDialog(AddMemberActivity.this,"粉丝关注成功").show();
+                    new HintDismissDialog(AddMemberActivity.this, "粉丝关注成功").show();
                     break;
             }
             super.handleMessage(msg);
@@ -147,7 +147,7 @@ public class AddMemberActivity extends BaseActivity {
 
     private void getMemberCardType() {
         HttpCall.getApiService()
-                .findMemberCardType( Hawk.get("busId",0))
+                .findMemberCardType(Hawk.get("busId", 0))
                 .compose(ResultTransformer.<CardTypeInfoBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CardTypeInfoBean>() {
 
@@ -185,7 +185,7 @@ public class AddMemberActivity extends BaseActivity {
 
     private void senSMS(String content, String mobiles) {
         HttpCall.getApiService()
-                .sendSMS(Hawk.get("busId",0),
+                .sendSMS(Hawk.get("busId", 0),
                         content, mobiles)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
@@ -212,8 +212,8 @@ public class AddMemberActivity extends BaseActivity {
 
     private void getWeChatSubscriptionQRCode() {
         HttpCall.getApiService()
-                .getWeChatSubscriptionQRCode( Hawk.get("busId",0),
-                      Hawk.get("eqId",0))
+                .getWeChatSubscriptionQRCode(Hawk.get("busId", 0),
+                        Hawk.get("eqId", 0))
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -241,9 +241,9 @@ public class AddMemberActivity extends BaseActivity {
 
     private void receiveMemberCard(int bit, int ctId, int gtId, int memberId, String phone) {
         HttpCall.getApiService()
-                .receiveMemberCard(bit,  Hawk.get("busId",0),
+                .receiveMemberCard(bit, Hawk.get("busId", 0),
                         ctId, gtId, memberId, phone,
-                        Hawk.get("shopId",0))
+                        Hawk.get("shopId", 0))
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -271,9 +271,9 @@ public class AddMemberActivity extends BaseActivity {
 
     private void receiveMemberCardWithoutMemberId(int bit, int ctId, int gtId, String phone) {
         HttpCall.getApiService()
-                .receiveMemberCardWithoutMemberId(bit, Hawk.get("busId",0),
+                .receiveMemberCardWithoutMemberId(bit, Hawk.get("busId", 0),
                         ctId, gtId, phone,
-                        Hawk.get("shopId",0))
+                        Hawk.get("shopId", 0))
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -309,7 +309,7 @@ public class AddMemberActivity extends BaseActivity {
 
     private void getMemberGradeType(int ctId) {
         HttpCall.getApiService()
-                .findMemberGradeType(Hawk.get("busId",0), ctId)
+                .findMemberGradeType(Hawk.get("busId", 0), ctId)
                 .compose(ResultTransformer.<CardGradeInfoBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CardGradeInfoBean>() {
 
@@ -342,7 +342,7 @@ public class AddMemberActivity extends BaseActivity {
 
     private void findMemberCardByPhone(final String phone) {
         HttpCall.getApiService()
-                .findMemberCardByPhone(Hawk.get("busId",0), phone)
+                .findMemberCardByPhone(Hawk.get("busId", 0), phone)
                 .compose(ResultTransformer.<MemberCardBean>transformer())//线程处理 预处理
                 .compose(new DialogTransformer().<MemberCardBean>transformer())
                 .subscribe(new BaseObserver<MemberCardBean>() {
@@ -361,11 +361,12 @@ public class AddMemberActivity extends BaseActivity {
                         LogUtils.d(TAG, "findMemberCardByPhone onFailure msg=" + msg.toString());
                         if (!TextUtils.isEmpty(msg) && msg.equals("非会员")) {
                             if (bit == 0) {
-                                if (memberId > 0) {
-                                    receiveMemberCard(bit, ct_id, gt_id, memberId, phone);
-                                } else ToastUtil.getInstance().showToast("请先关注微信号");
+                                    receiveMemberCardWithoutMemberId(bit, ct_id, gt_id, phone);
                             } else if (bit == 1) {
-                                receiveMemberCardWithoutMemberId(bit, ct_id, gt_id, phone);
+                            if (memberId > 0) {
+                                receiveMemberCard(bit, ct_id, gt_id, memberId, phone);
+                            } else ToastUtil.getInstance().showToast("请先关注微信号");
+
                             }
                         }
 
@@ -375,17 +376,17 @@ public class AddMemberActivity extends BaseActivity {
     }
 
     private void initView() {
-        dialog = new LoadingProgressDialog(AddMemberActivity.this );
+        dialog = new LoadingProgressDialog(AddMemberActivity.this);
         dialog.show();
         switchButton.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {
                 if (isChecked) {
-                    bit = 0;
+                    bit = 1;
                     imgQRCode.setVisibility(View.VISIBLE);
                     textTip.setVisibility(View.VISIBLE);
                 } else {
-                    bit = 1;
+                    bit = 0;
                     imgQRCode.setVisibility(View.GONE);
                     textTip.setVisibility(View.GONE);
                 }
@@ -539,8 +540,8 @@ public class AddMemberActivity extends BaseActivity {
             @Override
             public void call(Object... args) {
                 String UUID = PhoneUtils.getIMEI();
-                LogUtils.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId",0));
-                socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId",0));
+                LogUtils.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId", 0));
+                socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId", 0));
                 LogUtils.d(SocketIOManager.TAG, "call: send android auth over");
             }
         });

@@ -26,6 +26,7 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/couponLayout"
         android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -72,12 +73,15 @@ public class VerificationActivity extends BaseActivity {
     TextView discountInfo;
     @BindView(R.id.couponInfo)
     TextView couponInfo;
+    @BindView(R.id.couponLayout)
+    LinearLayout couponLayout;
     private MemberCardBean memberCardBean;
     private double orderMoney;
     private double paidInAmountMoney = 0;//实付金额
     private double discountMoney = 0;
     private MemberCouponBean memberCouponBean;
-    private int lastPosition=-1;
+    private int lastPosition = -1;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,18 +130,18 @@ public class VerificationActivity extends BaseActivity {
         adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, Object item, int position) {
-                LogUtils.d("lastPosition="+lastPosition+"  position="+position);
-                if (lastPosition!=position) {
+                LogUtils.d("lastPosition=" + lastPosition + "  position=" + position);
+                if (lastPosition != position) {
                     memberCouponBean = data.get(position);
                     calculateCoupon(data.get(position));
                     adapter.setCurrentItem(position);
                     adapter.notifyDataSetChanged();
-                    lastPosition=position;
-                }else {
-                    lastPosition=-1;
+                    lastPosition = position;
+                } else {
+                    lastPosition = -1;
                     adapter.setCurrentItem(-1);
                     adapter.notifyDataSetChanged();
-                    memberCouponBean=null;
+                    memberCouponBean = null;
                     calculateCoupon(null);
                 }
             }
@@ -152,24 +156,24 @@ public class VerificationActivity extends BaseActivity {
             if (memberCouponBean.getDiscount() > 0) {
                 paidInAmountMoney = multiply(orderMoney / 10, memberCouponBean.getDiscount());
                 discountMoney = subtract(orderMoney, paidInAmountMoney);
-                discountInfo.setText("抵扣金额: 优惠券-" +discountMoney + "元");
+                discountInfo.setText("抵扣金额: 优惠券-" + discountMoney + "元");
                 textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
             } else if (memberCouponBean.getReduce_cost() > 0 && orderMoney >= memberCouponBean.getReduce_cost()) {
                 discountInfo.setText("抵扣金额: 优惠券-" + memberCouponBean.getCash_least_cost() + "元");
                 paidInAmountMoney = subtract(orderMoney, memberCouponBean.getCash_least_cost());
                 textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
-                discountMoney =memberCouponBean.getReduce_cost();
+                discountMoney = memberCouponBean.getReduce_cost();
             } else {
                 discountInfo.setText("抵扣金额: 优惠券-0元");
                 paidInAmountMoney = orderMoney;
                 textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
-                discountMoney=0;
+                discountMoney = 0;
             }
             couponInfo.setText(memberCouponBean.getTitle());
-        }else {
+        } else {
             paidInAmountMoney = orderMoney;
             textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
-            discountMoney=0;
+            discountMoney = 0;
             couponInfo.setText("");
             discountInfo.setText("");
         }
@@ -218,6 +222,7 @@ public class VerificationActivity extends BaseActivity {
                 break;
         }
     }
+
     private void getMemberAvailableCouponData() {
         if (null != memberCardBean) {
             HttpCall.getApiService()
@@ -230,7 +235,11 @@ public class VerificationActivity extends BaseActivity {
                             LogUtils.i(TAG, "onSuccess");
                             if (data != null) {
                                 LogUtils.i(TAG, "onSuccess size=" + data.size());
-                                initCouponRecyclerView(couponView, HorizontalCouponAdapter.TYPE_COUPON, data);
+                                if (data.size() > 0) {
+                                    initCouponRecyclerView(couponView, HorizontalCouponAdapter.TYPE_COUPON, data);
+                                } else if (data.size() == 0) {
+                                    couponLayout.setVisibility(View.GONE);
+                                }
 
                             }
                         }
@@ -238,11 +247,13 @@ public class VerificationActivity extends BaseActivity {
                         @Override
                         public void onError(Throwable e) {
                             super.onError(e);
+                            couponLayout.setVisibility(View.GONE);
                         }
 
                         @Override
                         public void onFailure(int code, String msg) {
                             super.onFailure(code, msg);
+                            couponLayout.setVisibility(View.GONE);
                         }
                     });
         }

@@ -3,6 +3,7 @@ package com.gt.magicbox.pay;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -127,7 +128,7 @@ public class ChosePayModeActivity extends BaseActivity {
                 } else {
                     intent.putExtra("type", 1);
                     intent.putExtra("orderMoney", money);
-                    intent.putExtra("memberCouponBean",memberCouponBean);
+                    intent.putExtra("memberCouponBean", memberCouponBean);
                 }
                 startActivity(intent);
 
@@ -219,7 +220,10 @@ public class ChosePayModeActivity extends BaseActivity {
                         intent.putExtra("type", MemberDoResultActivity.TYPE_MEMBER_PAY);
                         intent.putExtra("balance", memberCardBean.money - realMoney);
                         intent.putExtra("realMoney", realMoney);
-
+                        if (cashOrderBean != null && cashOrderBean.getMagicBoxOrder() != null
+                                && !TextUtils.isEmpty(cashOrderBean.getMagicBoxOrder().getOrderNo())) {
+                            intent.putExtra("orderNo", cashOrderBean.getMagicBoxOrder().getOrderNo());
+                        }
                         startActivity(intent);
 
                     }
@@ -252,6 +256,10 @@ public class ChosePayModeActivity extends BaseActivity {
                         if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
                         AppManager.getInstance().finishActivity(VerificationActivity.class);
                         Intent intent = new Intent(getApplicationContext(), MemberDoResultActivity.class);
+                        if (cashOrderBean != null && cashOrderBean.getMagicBoxOrder() != null
+                                && !TextUtils.isEmpty(cashOrderBean.getMagicBoxOrder().getOrderNo())) {
+                            intent.putExtra("orderNo", cashOrderBean.getMagicBoxOrder().getOrderNo());
+                        }
                         intent.putExtra("type", MemberDoResultActivity.TYPE_MEMBER_PAY);
                         intent.putExtra("balance", memberCardBean.money - realMoney);
                         intent.putExtra("realMoney", realMoney);

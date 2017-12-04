@@ -1,24 +1,18 @@
 package com.gt.magicbox.main;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.google.gson.Gson;
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.base.MyApplication;
-import com.gt.magicbox.bean.OrderPushBean;
 import com.gt.magicbox.bean.StaffBean;
 import com.gt.magicbox.bean.UnpaidOrderBean;
 import com.gt.magicbox.bean.UpdateMainBadgeBean;
@@ -31,9 +25,7 @@ import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.order.OrderListActivity;
-import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.PaymentActivity;
-import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
 import com.gt.magicbox.update.UpdateManager;
@@ -49,9 +41,6 @@ import com.service.OrderPushService;
 import com.synodata.codelib.decoder.CodeID;
 import com.synodata.codelib.decoder.CodeUtils;
 import com.synodata.codelib.decoder.CodeUtils$IActivateListener;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -154,32 +143,11 @@ public class MainActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 4:
-                        HttpCall.getApiService()
-                                .getStaffInfoFromShopId(1,100,(int)Hawk.get("shopId"))
-                                .compose(ResultTransformer.<StaffBean>transformer())
-                                .compose(new DialogTransformer().<StaffBean>transformer())
-                                .subscribe(new BaseObserver<StaffBean>() {
-                                    @Override
-                                    protected void onSuccess(StaffBean staffBean) {
-
-                                        if (staffBean.getCount()<=0){//没有员工
-                                            new HintDismissDialog(MainActivity.this,"您还没创建自己的员工\n请先登录多粉后台进行创建")
-                                                    .setOnCancelClickListener(null)
-                                                    .setCancelText("确认")
-                                                    .show();
-                                        }else{
-                                            Integer shiftId=Hawk.get("shiftId");
-                                            if (shiftId==null)shiftId=0;
-                                            if (shiftId!=0){
-                                                intent = new Intent(MainActivity.this, ShiftExchangeActivity.class);
-                                            }else {
-                                                intent = new Intent(MainActivity.this, ExchangeWorkActivity.class);
-                                                intent.putExtra(STAFF,staffBean);
-                                            }
-                                            startActivity(intent);
-                                        }
-                                    }
-                                });
+                        if (NetworkUtils.isConnected()) {
+                            getStaffInfoFromShopId();
+                        }else {
+                            showNetworkDisconnect();
+                        }
                         break;
                     case 0:
                         intent = new Intent(MainActivity.this, PaymentActivity.class);
@@ -191,18 +159,7 @@ public class MainActivity extends BaseActivity {
                             intent=new Intent(MainActivity.this, OrderListActivity.class);
                             startActivity(intent);
                         }else {
-                            if (networkDialog==null){
-                                networkDialog=new MoreFunctionDialog(MainActivity.this,"没有网络，请连接后重试",R.style.HttpRequestDialogStyle);
-                                networkDialog.getConfirmButton().setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        networkDialog.dismiss();
-                                        intent=new Intent(MainActivity.this,WifiConnectionActivity.class);
-                                        startActivity(intent);
-                                    }
-                                });
-                            }
-                            networkDialog.show();
+                          showNetworkDisconnect();
                         }
                         break;
                     case 5:
@@ -274,9 +231,23 @@ public class MainActivity extends BaseActivity {
         }
         mMoreFunctionDialog.show();
     }
+    private void showNetworkDisconnect(){
+        if (networkDialog==null){
+            networkDialog=new MoreFunctionDialog(MainActivity.this,"没有网络，请连接后重试",R.style.HttpRequestDialogStyle);
+            networkDialog.getConfirmButton().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    networkDialog.dismiss();
+                    intent=new Intent(MainActivity.this,WifiConnectionActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
+        networkDialog.show();
+    }
     private void getUnpaidOrderCount(){
         HttpCall.getApiService()
-                .getUnpaidOrderCount(PhoneUtils.getIMEI())
+                .getUnpaidOrderCount(Hawk.get("busId", 0),PhoneUtils.getIMEI())
                 .compose(ResultTransformer.<UnpaidOrderBean>transformer())
                 .subscribe(new BaseObserver<UnpaidOrderBean>() {
                     @Override
@@ -292,7 +263,33 @@ public class MainActivity extends BaseActivity {
                     }
                 });
     }
+    private void getStaffInfoFromShopId(){
+        HttpCall.getApiService()
+                .getStaffInfoFromShopId(1,100,Hawk.get("shopId",0))
+                .compose(ResultTransformer.<StaffBean>transformer())
+                .compose(new DialogTransformer().<StaffBean>transformer())
+                .subscribe(new BaseObserver<StaffBean>() {
+                    @Override
+                    protected void onSuccess(StaffBean staffBean) {
 
+                        if (staffBean.getCount()<=0){//没有员工
+                            new HintDismissDialog(MainActivity.this,"您还没创建自己的员工\n请先登录多粉后台进行创建")
+                                    .setOnCancelClickListener(null)
+                                    .setCancelText("确认")
+                                    .show();
+                        }else{
+                            Integer shiftId=Hawk.get("shiftId",0);
+                            if (shiftId!=0){
+                                intent = new Intent(MainActivity.this, ShiftExchangeActivity.class);
+                            }else {
+                                intent = new Intent(MainActivity.this, ExchangeWorkActivity.class);
+                                intent.putExtra(STAFF,staffBean);
+                            }
+                            startActivity(intent);
+                        }
+                    }
+                });
+    }
     @Override
     protected void onResume() {
        getUnpaidOrderCount();
