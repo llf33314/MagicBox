@@ -104,5 +104,5 @@
     <string name="mess_code">数据不匹配，5秒后自动返回上一步</string>
     <string name="verification_success">核销成功</string>
 
-    <string name="test_number">5+6+7+8+9+10+11+12++32312++31212+21312+212+2+2.22+122+225+1221+12+321+122+1421+12321+1244+2112+1212+4123+11+22</string>
+    <string name="test_number">5+6+2</string>
 </resources>

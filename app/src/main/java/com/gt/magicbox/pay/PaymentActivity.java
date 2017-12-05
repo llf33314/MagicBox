@@ -196,10 +196,22 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                 keyboardView.input(".");
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-                keyboardView.backspace();
+                keyboardView.externalKeyboardDelete();
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
                 keyboardView.enter();
+                return true;
+            }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_MULTIPLY){
+                keyboardView.input("×");
+                return true;
+            }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_ADD){
+                keyboardView.input("+");
+                return true;
+            }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_SUBTRACT){
+                keyboardView.input("-");
+                return true;
+            }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_DIVIDE){
+                keyboardView.input("÷");
                 return true;
             }
         return super.onKeyDown(keyCode, event);

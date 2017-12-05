@@ -17,4 +17,6 @@ public class BaseConstant {
     public static final int PAY_ON_ALIPAY=1;
     public static final int PAY_ON_CASH=2;
     public static long clickTime;
+    public static final int DEAFULT_LIMIT_MONEY=10000;
+
 }

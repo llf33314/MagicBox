@@ -25,12 +25,17 @@ import android.widget.Toast;
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseConstant;
+import com.gt.magicbox.utils.ExpressionHandler.ExpressionHandler;
 import com.gt.magicbox.utils.SpannableStringUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
+import com.gt.magicbox.utils.commonutil.StringUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.orhanobut.hawk.Hawk;
 
 import java.math.BigDecimal;
+
+import me.grantland.widget.AutofitTextView;
 
 /**
  * Description:
@@ -49,6 +54,12 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private OnInputListener onInputListener;
     private TextView showNumber;
     private StringBuffer numberString = new StringBuffer();
+    private StringBuffer calcStringBuffer=new StringBuffer();
+    private String endString ="";
+    private String endNumberString="";
+    private String endDot="";
+    private String endOperator="";
+    private double resultMoney;
     private OnKeyboardDoListener onKeyboardDoListener;
     private RelativeLayout chargeLayout;
     private RelativeLayout tipLayout;
@@ -61,6 +72,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private double chargeMoney;
     private double realPay;
     private View inputBg;
+    private AutofitTextView calcTextView;
     private String tipContent = "";
     private double orderMoney;
     public static final int TYPE_INPUT_MONEY = 0;
@@ -70,6 +82,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     public static final int TYPE_MEMBER_RECHARGE = 4;
     public static final int TYPE_MEMBER_RECHARGE_CASH = 5;
     private int afterPointLent = 0;
+    private static final String[] OPERATOR = {"÷", "×", "-", "+"};
 
     public KeyboardView(Context context) {
         this(context, null);
@@ -87,6 +100,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         fit_pay = (Button) view.findViewById(R.id.keyboard_fit_pay);
         inputCursor = (ImageView) view.findViewById(R.id.inputCursor);
         inputBg = view.findViewById(R.id.inputBg);
+        calcTextView= (AutofitTextView) view.findViewById(R.id.calcTextView);
         showNumber = (TextView) view.findViewById(R.id.showNumber);
         should_pay = (TextView) view.findViewById(R.id.should_pay);
         charge = (TextView) view.findViewById(R.id.charge);
@@ -104,7 +118,6 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         gridView.setAdapter(keyboardAdapter);
         addView(view);
         setFlickerAnimation(inputCursor);
-
     }
 
     public KeyboardView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -283,23 +296,82 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     }
 
     public void input(String str) {
-        LogUtils.i("keycode", "input numberString=" + numberString.toString());
-
-        if (numberString.length() <= maxLength) {
-            if (numberString.toString().equals("0") && !str.equals(".")) {
-                LogUtils.i("keycode", "input numberString.deleteCharAt(0)=" + numberString.toString());
-                numberString.deleteCharAt(0);
-            }
-            if (str.equals(".") && (numberString.toString().contains(".") && numberString.length() == 0))//已经有小数点了或者小数点不能作为开头
-                return;
-            if (numberString.toString().contains(".")
-                    && numberString.toString().substring(numberString.toString().indexOf("."), numberString.toString().length()).length() > 2)
-                return;
-            numberString.append(str);
-            showMoney();
+        LogUtils.d("endString", "input str=" + str.toString());
+        if (resultMoney>= Hawk.get("limitMoney",BaseConstant.DEAFULT_LIMIT_MONEY)) {
+            return;
         }
-    }
+        if (calcStringBuffer.length() > 0){
+            endString=String.valueOf(calcStringBuffer.charAt(calcStringBuffer.length() - 1));
+            if (endString.equals("÷")&&str.equals("0")) {
+                return;
+            }
+            //输入是运算符或点号时
+            if (!StringUtils.isContainNumber(str)) {
+                LogUtils.d("endString", "!StringUtils.isContainNumber(str)" );
 
+                if (!StringUtils.isContainNumber(endString)||(endNumberString.contains(".")&&str.equals(".")))
+                {
+                    LogUtils.d("endString", "if (!StringUtils.isContainNumber(endString))" );
+
+                    //运算符或者点号不能连着输入或者最后一组数字已经有小数点
+                    return;
+                }
+
+            }else{
+                //输入是数字时
+                LogUtils.d("endString", "ggggg endNumberString="+endNumberString );
+                if (str.equals("0")&&endNumberString.endsWith("0")) {
+                    return;
+                }
+                if (endNumberString.contains(".")
+                        && endNumberString.substring(endNumberString.toString().indexOf("."), endNumberString.toString().length()).length() > 2) {
+                    //保留小数点后两位
+                    if (!TextUtils.isEmpty(endOperator)) {
+                        if ((calcStringBuffer.toString().length()-1)!=calcStringBuffer.toString().lastIndexOf(endOperator)) {
+                            LogUtils.d("endString", "333" );
+                            return;
+                        }
+                    }else {
+                        LogUtils.d("endString", "444" );
+
+                        return;
+                    }
+                }
+
+            }
+
+        }else if (calcStringBuffer.length() ==0){
+            //首位不能是非数字
+            if (!StringUtils.isContainNumber(str)) {
+                return;
+            }
+        }
+
+        calcStringBuffer.append(str);
+        if (!StringUtils.isContainNumber(str)) {
+            if (str.equals(".")) {
+                endDot = ".";
+            } else {
+                endOperator = str;
+            }
+        }
+        if (!TextUtils.isEmpty(endOperator)){
+            int endOperatorIndex=calcStringBuffer.toString().lastIndexOf(endOperator);
+            if (endOperatorIndex!=(calcStringBuffer.length()-1)){
+                endNumberString=calcStringBuffer.toString().substring(endOperatorIndex+1,calcStringBuffer.toString().length());
+            }
+        }else {
+            endNumberString=calcStringBuffer.toString();
+        }
+        calcTextView.setText(calcStringBuffer);
+        externalKeyboardCalc();
+        showMoney();
+
+        //showMoney();
+    }
+    private void showCalcResult(){
+
+    }
     public void clearAll() {
         numberString.setLength(0);
         showMoney();
@@ -317,7 +389,19 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             showMoney();
         }
     }
-
+    public void externalKeyboardDelete() {
+        if (calcStringBuffer.length() > 0) {
+            calcStringBuffer.deleteCharAt(calcStringBuffer.length() - 1);
+            calcTextView.setText(calcStringBuffer);
+            externalKeyboardCalc();
+            showMoney();
+        }
+    }
+    public void externalKeyboardCalc(){
+        String resultString=calcStringBuffer.toString().replaceAll("×","*").replaceAll("÷","/");
+        final String[] value = ExpressionHandler.calculation(resultString);
+        numberString = new StringBuffer(value[0]);
+    }
     public void enter() {
         if (onKeyboardDoListener != null) {
             if (keyboardType == TYPE_INPUT_MONEY) {
