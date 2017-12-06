@@ -29,11 +29,13 @@ import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.member.MemberDoResultActivity;
 import com.gt.magicbox.member.MemberRechargeActivity;
 import com.gt.magicbox.member.VerificationChoseActivity;
+import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
+import com.service.CustomerDisplayService;
 import com.synodata.scanview.view.CodePreview;
 import com.synodata.scanview.view.Preview$IDecodeListener;
 
@@ -151,6 +153,21 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
             }
 
             @Override
+            public void quickPay(double money) {
+                if (NetworkUtils.isConnected()) {
+                    Hawk.put("payType", 0);
+                    Intent intent = new Intent(PaymentActivity.this, QRCodePayActivity.class);
+                    intent.putExtra("type", QRCodePayActivity.TYPE_CUSTOMER_DISPLAY_PAY);
+                    intent.putExtra("money", money);
+                    intent.putExtra("payMode", 0);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+                    startActivity(intent);
+                } else {
+                    ToastUtil.getInstance().showToast(getString(R.string.network_disconnect_please_check));
+                }
+            }
+
+            @Override
             public void onMemberPay(double money) {
                 if (Constant.product == BaseConstant.PRODUCTS[0]) {
                     Intent intent = new Intent(PaymentActivity.this, PaymentActivity.class);
@@ -190,28 +207,44 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyboardView != null)
             if (keyCode >= KeyEvent.KEYCODE_NUMPAD_0 && keyCode <= KeyEvent.KEYCODE_NUMPAD_9) {
-                keyboardView.input("" + (keyCode - 144));
+                if (type == TYPE_INPUT) {
+                    keyboardView.inputWithCalc("" + (keyCode - 144));
+                } else {
+                    keyboardView.inputWithoutCalc("" + (keyCode - 144));
+                }
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_DOT) {
-                keyboardView.input(".");
+                if (type == TYPE_INPUT) {
+                    keyboardView.inputWithCalc(".");
+                } else if (type == TYPE_MEMBER_CALC || type == TYPE_CALC) {
+                    keyboardView.inputWithoutCalc(".");
+                }
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-                keyboardView.externalKeyboardDelete();
+                if (type == TYPE_INPUT) {
+                    keyboardView.externalKeyboardDelete();
+                } else {
+                    keyboardView.backspace();
+                }
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
-                keyboardView.enter();
+                if (type == TYPE_INPUT) {
+                    keyboardView.quickPay();
+                } else {
+                    keyboardView.enter();
+                }
                 return true;
-            }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_MULTIPLY){
-                keyboardView.input("×");
+            } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_MULTIPLY && type == TYPE_INPUT) {
+                keyboardView.inputWithCalc("×");
                 return true;
-            }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_ADD){
-                keyboardView.input("+");
+            } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_ADD && type == TYPE_INPUT) {
+                keyboardView.inputWithCalc("+");
                 return true;
-            }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_SUBTRACT){
-                keyboardView.input("-");
+            } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_SUBTRACT && type == TYPE_INPUT) {
+                keyboardView.inputWithCalc("-");
                 return true;
-            }else if (keyCode==KeyEvent.KEYCODE_NUMPAD_DIVIDE){
-                keyboardView.input("÷");
+            } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_DIVIDE && type == TYPE_INPUT) {
+                keyboardView.inputWithCalc("÷");
                 return true;
             }
         return super.onKeyDown(keyCode, event);

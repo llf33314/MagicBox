@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseConstant;
+import com.gt.magicbox.utils.DoubleCalcUtils;
 import com.gt.magicbox.utils.ExpressionHandler.ExpressionHandler;
 import com.gt.magicbox.utils.SpannableStringUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
@@ -241,6 +242,11 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
     public void setKeyboardType(int keyboardType) {
         this.keyboardType = keyboardType;
+        if (keyboardType==TYPE_INPUT_MONEY) {
+            calcTextView.setVisibility(VISIBLE);
+        } else {
+            calcTextView.setVisibility(GONE);
+        }
         if (keyboardType == TYPE_CHARGE || keyboardType == TYPE_MEMBER_RECHARGE_CASH) {
             chargeLayout.setVisibility(VISIBLE);
             text_paid_in_amount.setVisibility(VISIBLE);
@@ -295,7 +301,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         this.orderMoney = orderMoney;
     }
 
-    public void input(String str) {
+    public void inputWithCalc(String str) {
         LogUtils.d("endString", "input str=" + str.toString());
         if (resultMoney>= Hawk.get("limitMoney",BaseConstant.DEAFULT_LIMIT_MONEY)) {
             return;
@@ -319,21 +325,18 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
             }else{
                 //输入是数字时
-                LogUtils.d("endString", "ggggg endNumberString="+endNumberString );
-                if (str.equals("0")&&endNumberString.endsWith("0")) {
-                    return;
+                if (endNumberString.equals("0")) {
+                    //最后一组数字是0的时候
+                    if (str.equals("0")) {
+                        return;
+                    } else if (calcStringBuffer.lastIndexOf("0") > -1) {
+                        calcStringBuffer.deleteCharAt(calcStringBuffer.lastIndexOf("0"));
+                    }
                 }
                 if (endNumberString.contains(".")
                         && endNumberString.substring(endNumberString.toString().indexOf("."), endNumberString.toString().length()).length() > 2) {
                     //保留小数点后两位
-                    if (!TextUtils.isEmpty(endOperator)) {
-                        if ((calcStringBuffer.toString().length()-1)!=calcStringBuffer.toString().lastIndexOf(endOperator)) {
-                            LogUtils.d("endString", "333" );
-                            return;
-                        }
-                    }else {
-                        LogUtils.d("endString", "444" );
-
+                    if (StringUtils.isNumeric(endString)) {
                         return;
                     }
                 }
@@ -348,29 +351,31 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         }
 
         calcStringBuffer.append(str);
-        if (!StringUtils.isContainNumber(str)) {
-            if (str.equals(".")) {
-                endDot = ".";
-            } else {
-                endOperator = str;
-            }
-        }
-        if (!TextUtils.isEmpty(endOperator)){
-            int endOperatorIndex=calcStringBuffer.toString().lastIndexOf(endOperator);
-            if (endOperatorIndex!=(calcStringBuffer.length()-1)){
-                endNumberString=calcStringBuffer.toString().substring(endOperatorIndex+1,calcStringBuffer.toString().length());
-            }
-        }else {
-            endNumberString=calcStringBuffer.toString();
-        }
+        endNumberString=getEndNumberString(calcStringBuffer.toString());
+        LogUtils.d("endString", "getEndNumberString="+endNumberString );
+
         calcTextView.setText(calcStringBuffer);
         externalKeyboardCalc();
         showMoney();
 
         //showMoney();
     }
-    private void showCalcResult(){
+    public void inputWithoutCalc(String str) {
+        LogUtils.i("keycode", "input numberString=" + numberString.toString());
 
+        if (numberString.length() <= maxLength) {
+            if (numberString.toString().equals("0") && !str.equals(".")) {
+                LogUtils.i("keycode", "input numberString.deleteCharAt(0)=" + numberString.toString());
+                numberString.deleteCharAt(0);
+            }
+            if (str.equals(".") && (numberString.toString().contains(".") && numberString.length() == 0))//已经有小数点了或者小数点不能作为开头
+                return;
+            if (numberString.toString().contains(".")
+                    && numberString.toString().substring(numberString.toString().indexOf("."), numberString.toString().length()).length() > 2)
+                return;
+            numberString.append(str);
+            showMoney();
+        }
     }
     public void clearAll() {
         numberString.setLength(0);
@@ -389,18 +394,49 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             showMoney();
         }
     }
+
     public void externalKeyboardDelete() {
         if (calcStringBuffer.length() > 0) {
             calcStringBuffer.deleteCharAt(calcStringBuffer.length() - 1);
             calcTextView.setText(calcStringBuffer);
-            externalKeyboardCalc();
-            showMoney();
         }
+        externalKeyboardCalc();
+        showMoney();
     }
     public void externalKeyboardCalc(){
+        if (TextUtils.isEmpty(calcStringBuffer.toString())) {
+            numberString = new StringBuffer("" + 0);
+            return;
+        }
         String resultString=calcStringBuffer.toString().replaceAll("×","*").replaceAll("÷","/");
-        final String[] value = ExpressionHandler.calculation(resultString);
+        String[] value = ExpressionHandler.calculation(resultString);
         numberString = new StringBuffer(value[0]);
+        if(StringUtils.isNumeric(numberString.toString())){
+            resultMoney=Double.parseDouble(numberString.toString());
+        }else {
+            StringBuffer tempBuffer=new StringBuffer(calcStringBuffer);
+            if (numberString.length() > 0) {
+                String tempResultString = tempBuffer.deleteCharAt(tempBuffer.length() - 1).
+                        toString().replaceAll("×", "*").replaceAll("÷", "/");
+                String[] tempValue = ExpressionHandler.calculation(tempResultString);
+                try {
+                    resultMoney = Double.parseDouble(tempValue[0]);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                    LogUtils.d("resultMoney=" + resultMoney + "  numberString.toString()=" + numberString.toString());
+
+                }
+            }
+        }
+        if (resultMoney>=Hawk.get("limitMoney",BaseConstant.DEAFULT_LIMIT_MONEY)) {
+            resultMoney = Hawk.get("limitMoney",BaseConstant.DEAFULT_LIMIT_MONEY);
+        }
+        if (resultMoney<=0) {
+            resultMoney = 0;
+        }
+        resultMoney= DoubleCalcUtils.keepDecimalPoint(2,resultMoney);
+        numberString=new StringBuffer(""+resultMoney);
     }
     public void enter() {
         if (onKeyboardDoListener != null) {
@@ -427,7 +463,16 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             }
         }
     }
-
+    public void quickPay(){
+        if (keyboardType == TYPE_INPUT_MONEY) {
+            if (!TextUtils.isEmpty(numberString)) {
+                double money = Double.parseDouble(numberString.toString());
+                if (money != 0) {
+                    onKeyboardDoListener.quickPay(money);
+                }
+            }
+        }
+    }
     public void memberPay() {
         if (onKeyboardDoListener != null) {
             if (keyboardType == TYPE_INPUT_MONEY) {
@@ -470,5 +515,19 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         layoutParams.setMargins(0, 0,
                 (int) getResources().getDimension(R.dimen.dp_14), (int) getResources().getDimension(R.dimen.dp_20));
         textView.setLayoutParams(layoutParams);
+    }
+    private String getEndNumberString(String exp){
+     String spiltString=   exp.toString().replaceAll("×","+").replaceAll("÷","+")
+                .replaceAll("-","+");
+       String[] ary= spiltString.split("\\+");
+       if (ary!=null){
+           if (ary.length==0) {
+               return "";
+           }else {
+               return ary[ary.length-1];
+           }
+       }else {
+           return "";
+       }
     }
 }

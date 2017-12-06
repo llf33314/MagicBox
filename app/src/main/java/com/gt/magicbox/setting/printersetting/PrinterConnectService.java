@@ -36,6 +36,7 @@ import com.gt.magicbox.setting.printersetting.bluetooth.BluetoothUtil;
 import com.gt.magicbox.setting.printersetting.bluetooth.OpenPrinterPortMsg;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.AppManager;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 
@@ -57,6 +58,9 @@ public class PrinterConnectService extends Service {
 
     private static final String ACTION_USB_PERMISSION =
             "com.android.example.USB_PERMISSION";
+    //不干胶打印机 ID 1280   名称 GP-58   其他打印机不知道是不是都是这样
+    private static final int GP_PRODUCT_ID_BGJ=1280;
+    private static final int GP_PRODUCT_ID_RM=512;
 
     public static final String CONNECTION_ACTION="action.connect.status";
 
@@ -178,11 +182,21 @@ public class PrinterConnectService extends Service {
     private boolean isHasUsbDevice(){
         HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
+        LogUtils.d("usbTest","deviceList="+deviceList.size());
+
         while(deviceIterator.hasNext()){
-            mUsbDevice  = deviceIterator.next();
-            break;
+            UsbDevice temp=deviceIterator.next();
+            LogUtils.d("usbTest","temp id="+temp.getProductId()+"  name="+temp.getDeviceName());
+
+            if (temp.getProductId()==GP_PRODUCT_ID_RM) {
+                LogUtils.d("usbTest","GP_PRODUCT_ID_RM="+temp.getProductId()+"  name="+temp.getDeviceName());
+
+                mUsbDevice = temp;
+                break;
+            }
         }
         return  mUsbDevice!=null;
+
     }
 
 
@@ -236,7 +250,7 @@ public class PrinterConnectService extends Service {
         }
     }
 
-    private static int openUsbProt( ){
+    private static int openUsbProt(){
         if (mUsbDevice==null){
             ToastUtil.getInstance().showToast("请连接USB打印机");
             return -1;
@@ -248,7 +262,7 @@ public class PrinterConnectService extends Service {
             if (state==GpDevice.STATE_NONE ||state==GpDevice.STATE_LISTEN ){
                 rel = mGpService.openPort(mPrinterIndex, PortParameters.USB, mUsbDevice.getDeviceName(), 0);
                 GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
-               // ToastUtil.getInstance().showToast("result :" + String.valueOf(r));
+               ToastUtil.getInstance().showToast("result :" + String.valueOf(r));
             }
             return rel;
 
@@ -704,6 +718,9 @@ public class PrinterConnectService extends Service {
             }else if (action.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)){
                     if (!isConnceted()){//如果打印机状态是蓝牙已经连接中 则什么都不干
                         UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        if (usbDevice.getProductId()!=GP_PRODUCT_ID_RM) {
+                            return;
+                        }
                         mUsbDevice=usbDevice;
                         openUsbProt();
                     }

@@ -154,11 +154,11 @@ public class AddMemberActivity extends BaseActivity {
                     @Override
                     protected void onSuccess(CardTypeInfoBean bean) {
                         isMemberCardInit = true;
-                        if (isMemberCardInit && isQRCodeInit)
-                            dialog.dismiss();
                         if (bean != null) {
                             createArrays(bean);
                             cardTypeInfoBean = bean;
+                            dialog.dismiss();
+
                         }
 
                         LogUtils.d(TAG, "onSuccess");
@@ -211,6 +211,12 @@ public class AddMemberActivity extends BaseActivity {
     }
 
     private void getWeChatSubscriptionQRCode() {
+        if (imgQRCode.getDrawable()!=null) {
+            if (dialog!=null) {
+                dialog.dismiss();
+            }
+            return;
+        }
         HttpCall.getApiService()
                 .getWeChatSubscriptionQRCode(Hawk.get("busId", 0),
                         Hawk.get("eqId", 0))
@@ -382,6 +388,8 @@ public class AddMemberActivity extends BaseActivity {
             @Override
             public void onCheckedChanged(SwitchButton view, boolean isChecked) {
                 if (isChecked) {
+                    dialog.show();
+                    getWeChatSubscriptionQRCode();
                     bit = 1;
                     imgQRCode.setVisibility(View.VISIBLE);
                     textTip.setVisibility(View.VISIBLE);

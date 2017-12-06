@@ -80,4 +80,9 @@ public class DoubleCalcUtils {
         return bd1.divide(bd2).setScale(scaleLength, BigDecimal.ROUND_HALF_UP).doubleValue();
 
     }
+
+    public static double keepDecimalPoint(int scaleLength, double d1) {
+        BigDecimal bd1 = new BigDecimal(Double.toString(d1));
+        return bd1.setScale(scaleLength, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
 }
