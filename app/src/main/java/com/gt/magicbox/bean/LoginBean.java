@@ -9,4 +9,5 @@ package com.gt.magicbox.bean;
 public class LoginBean {
     public int checkType;
     public int eqId;
+    public int bindId;
 }

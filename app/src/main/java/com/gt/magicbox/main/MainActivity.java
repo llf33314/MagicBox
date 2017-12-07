@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -238,7 +239,7 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     networkDialog.dismiss();
-                    intent=new Intent(MainActivity.this,WifiConnectionActivity.class);
+                    Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                     startActivity(intent);
                 }
             });

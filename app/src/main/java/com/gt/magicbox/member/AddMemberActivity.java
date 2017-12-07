@@ -548,8 +548,8 @@ public class AddMemberActivity extends BaseActivity {
             @Override
             public void call(Object... args) {
                 String UUID = PhoneUtils.getIMEI();
-                LogUtils.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId", 0));
-                socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("eqId", 0));
+                LogUtils.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("bindId", 0));
+                socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_FOLLOW_AUTH_KEY + Hawk.get("bindId", 0));
                 LogUtils.d(SocketIOManager.TAG, "call: send android auth over");
             }
         });

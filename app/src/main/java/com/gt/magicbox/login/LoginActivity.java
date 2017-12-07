@@ -2,6 +2,7 @@ package com.gt.magicbox.login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -110,6 +111,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                             if (data.checkType == 0) {
                                 Hawk.put("userName", userName);
                                 Hawk.put("eqId", data.eqId);
+                                Hawk.put("bindId",data.bindId);
                                 memberQuery(userName, password);
                             } else if (data.checkType == 1) {
                                 final NormalDialog dialog = new NormalDialog(LoginActivity.this,
@@ -216,7 +218,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                 login(userName, password);
                 break;
             case R.id.netSettingButton:
-                Intent intent = new Intent(LoginActivity.this, WifiConnectionActivity.class);
+                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                 startActivity(intent);
                 break;
             case R.id.manual:

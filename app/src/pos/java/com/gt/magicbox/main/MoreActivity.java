@@ -3,6 +3,7 @@ package com.gt.magicbox.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
@@ -64,7 +65,7 @@ public class MoreActivity extends BaseActivity {
                 Intent intent;
                 switch (i) {
                     case 0:
-                        intent=new Intent(MoreActivity.this,WifiConnectionActivity.class);
+                        intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                         startActivity(intent);
                         break;
                     case 1:

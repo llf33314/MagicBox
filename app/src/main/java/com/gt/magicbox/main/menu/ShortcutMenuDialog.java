@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
 import android.util.Log;
@@ -75,7 +76,7 @@ public class ShortcutMenuDialog extends Dialog {
         Intent intent=null;
         switch (view.getId()) {
             case R.id.ll_shortcut_wifi:
-                intent=new Intent(ShortcutMenuDialog.this.getContext(), WifiConnectionActivity.class);
+                intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                 break;
             case R.id.ll_shortcut_printer:
                 intent=new Intent(ShortcutMenuDialog.this.getContext(), PrinterSettingActivity.class);

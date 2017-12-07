@@ -1,14 +1,8 @@
 package com.gt.magicbox.pay;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.style.AbsoluteSizeSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -20,7 +14,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
@@ -31,7 +24,6 @@ import com.gt.magicbox.utils.SpannableStringUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.StringUtils;
-import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.orhanobut.hawk.Hawk;
 
 import java.math.BigDecimal;
@@ -303,7 +295,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
     public void inputWithCalc(String str) {
         LogUtils.d("endString", "input str=" + str.toString());
-        if (resultMoney>= Hawk.get("limitMoney",BaseConstant.DEAFULT_LIMIT_MONEY)) {
+        if (resultMoney>= Hawk.get("limitMoney",BaseConstant.DEFAULT_LIMIT_MONEY)) {
             return;
         }
         if (calcStringBuffer.length() > 0){
@@ -429,8 +421,8 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                 }
             }
         }
-        if (resultMoney>=Hawk.get("limitMoney",BaseConstant.DEAFULT_LIMIT_MONEY)) {
-            resultMoney = Hawk.get("limitMoney",BaseConstant.DEAFULT_LIMIT_MONEY);
+        if (resultMoney>=Hawk.get("limitMoney",BaseConstant.DEFAULT_LIMIT_MONEY)) {
+            resultMoney = Hawk.get("limitMoney",BaseConstant.DEFAULT_LIMIT_MONEY);
         }
         if (resultMoney<=0) {
             resultMoney = 0;

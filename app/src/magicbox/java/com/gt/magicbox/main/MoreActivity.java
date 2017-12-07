@@ -71,7 +71,7 @@ public class MoreActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 1:
-                        intent=new Intent(MoreActivity.this,WifiConnectionActivity.class);
+                        intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                         startActivity(intent);
                         break;
                     case 2:

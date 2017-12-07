@@ -218,7 +218,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
     private void getQRCodeURL(double money, int type, int shiftId) {
         HttpCall.getApiService()
-                .getQRCodeUrl(PhoneUtils.getIMEI(), money, type, shiftId)
+                .getQRCodeUrl(PhoneUtils.getIMEI(), money, type, shiftId,Hawk.get("shopId",0)
+                ,Hawk.get("shopName",""))
                 .compose(ResultTransformer.<QRCodeBitmapBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<QRCodeBitmapBean>() {
                     @Override

@@ -100,6 +100,8 @@ public class ChosePayModeActivity extends BaseActivity {
     private LoadingProgressDialog loadingProgressDialog;
     private CashOrderBean cashOrderBean;
     private  MemberCouponBean memberCouponBean;
+    private double discountAfterMoney;
+    private double discountMoney;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +113,8 @@ public class ChosePayModeActivity extends BaseActivity {
             memberCardBean= (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
             orderNo=this.getIntent().getStringExtra("orderNo");
             memberCouponBean = (MemberCouponBean) this.getIntent().getSerializableExtra("memberCouponBean");
-
+            discountAfterMoney = this.getIntent().getDoubleExtra("discountAfterMoney", 0);
+            discountMoney = this.getIntent().getDoubleExtra("discountMoney", 0);
         }
         initView();
     }
@@ -218,9 +221,9 @@ public class ChosePayModeActivity extends BaseActivity {
                         public void onSuccess(MemberCountMoneyBean data) {
                             LogUtils.d(TAG, "postMemberSettlement onSuccess data=");
                             if (memberCouponBean != null) {
-                                memberPayWithCoupon(data.getBalanceMoney(), data.getBalanceMoney(), data.getTotalMoney(), 5);
+                                memberPayWithCoupon(discountAfterMoney, discountMoney, discountAfterMoney, data.getTotalMoney(), 5);
                             } else {
-                                memberPayWithoutCoupon(data.getBalanceMoney(), data.getBalanceMoney(), data.getTotalMoney(), 5);
+                                memberPayWithoutCoupon(data.getBalanceMoney(), 0,data.getBalanceMoney(), data.getTotalMoney(), 5);
                             }
                         }
 
@@ -239,9 +242,10 @@ public class ChosePayModeActivity extends BaseActivity {
         }
     }
 
-    private void memberPayWithoutCoupon(double discountMoney, final double realMoney, double originMoney, int payType) {
+    private void memberPayWithoutCoupon(double discountAfterMoney, double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithoutCoupon(discountMoney, memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                .memberPayWithoutCoupon(discountAfterMoney,discountMoney,  memberCardBean.memberId, memberCardBean.nickName,memberCardBean.cardNo,
+                        cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
                         , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 0)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
@@ -275,9 +279,10 @@ public class ChosePayModeActivity extends BaseActivity {
                 });
     }
 
-    private void memberPayWithCoupon(double discountMoney, final double realMoney, double originMoney, int payType) {
+    private void memberPayWithCoupon(double discountAfterMoney,double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithCoupon(memberCouponBean.getGId(), discountMoney, memberCardBean.memberId, 1, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                .memberPayWithCoupon(memberCouponBean.getGId(),discountAfterMoney, discountMoney, memberCardBean.memberId, memberCardBean.nickName,memberCardBean.cardNo,
+                        1, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
                         , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 1)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
@@ -328,8 +333,9 @@ public class ChosePayModeActivity extends BaseActivity {
         final LoadingProgressDialog dialog =new LoadingProgressDialog(ChosePayModeActivity.this,"付款成功，生成订单中...");
         dialog.show();
         HttpCall.getApiService()
-                .posOrder(PhoneUtils.getIMEI(),orderNo, money,payType
-                        ,Hawk.get("shiftId",0))
+                .posOrder(PhoneUtils.getIMEI(), orderNo, money, payType
+                        , Hawk.get("shiftId", 0), Hawk.get("shopId", 0)
+                        , Hawk.get("shopName", ""))
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -407,7 +413,8 @@ public class ChosePayModeActivity extends BaseActivity {
         loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");
         loadingProgressDialog.show();
         HttpCall.getApiService()
-                .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0))
+                .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0)
+                ,Hawk.get("shopId",0),Hawk.get("shopName",""))
                 .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CashOrderBean>() {
                     @Override

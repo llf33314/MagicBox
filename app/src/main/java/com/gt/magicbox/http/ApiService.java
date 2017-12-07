@@ -53,7 +53,9 @@ public interface ApiService {
     Observable<BaseResponse<CashOrderBean>> createCashOrder(@Query("eqCode") String eqCode,
                                                             @Query("money") String money,
                                                             @Query("type") int type,
-                                                            @Query("shiftId") int shiftId);
+                                                            @Query("shiftId") int shiftId,
+                                                            @Query("shopId") int shopId,
+                                                            @Query("shopName") String shopName);
 
     @POST(HttpConfig.GET_UNPAID_ORDER_URL)
     Observable<BaseResponse<UnpaidOrderBean>> getUnpaidOrderCount( @Query("busId") int busId,@Query("eqCode") String eqCode);
@@ -63,9 +65,10 @@ public interface ApiService {
                                         @Query("login_name") String user,
                                         @Query("password") String pwd);
 
-    @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/79B4DE7C/payQR")
+    @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/{shopId}/79B4DE7C/payQR")
     Observable<BaseResponse<QRCodeBitmapBean>> getQRCodeUrl(@Path("eqCode") String eqCode, @Path("money") double money,
-                                                            @Path("type") int type, @Path("shiftId") int shiftId);
+                                                            @Path("type") int type, @Path("shiftId") int shiftId
+            , @Path("shopId") int shopId, @Query("shopName") String shopName);
 
     @POST(HttpConfig.SCAN_CODE_PAY)
     Observable<BaseResponse<PayCodeResultBean>> scanCodePay(@Query("auth_code") String auth_code, @Query("busId") int busId,
@@ -154,6 +157,8 @@ public interface ApiService {
     Observable<BaseResponse> memberPayWithoutCoupon(@Query("discountAfterMoney") double discountAfterMoney,
                                                     @Query("discountMoney") double discountMoney,
                                                     @Query("memberId") int memberId,
+                                                    @Query("memberName") String memberName,
+                                                    @Query("memberPhone") String memberPhone,
                                                     @Query("orderCode") String orderCode,
                                                     @Query("pay") double pay,
                                                     @Query("payType") int payType,
@@ -169,6 +174,8 @@ public interface ApiService {
                                                  @Query("discountAfterMoney") double discountAfterMoney,
                                                  @Query("discountMoney") double discountMoney,
                                                  @Query("memberId") int memberId,
+                                                 @Query("memberName") String memberName,
+                                                 @Query("memberPhone") String memberPhone,
                                                  @Query("number") int number,
                                                  @Query("orderCode") String orderCode,
                                                  @Query("pay") double pay,
@@ -179,13 +186,16 @@ public interface ApiService {
                                                  @Query("type") int type,
                                                  @Query("ucType") int ucType,
                                                  @Query("useCoupon") int useCoupon);
+
     @FormUrlEncoded
     @POST(HttpConfig.POS_ORDER)
     Observable<BaseResponse> posOrder(@Field("eqCode") String eqCode,
                                       @Field("orderNo") String orderNo,
                                       @Field("money") double money,
                                       @Field("type") int type,
-                                      @Field("shiftId") int shiftId);
+                                      @Field("shiftId") int shiftId,
+                                      @Field("shopId") int shopId,
+                                      @Field("shopName") String shopName);
 
     @POST("magicBoxMobile/{orderNo}/{shiftId}/callBack")
     Observable<BaseResponse> posPayCallBack(@Path("orderNo") String orderNo, @Path("shiftId") int shiftId, @Body PosRequestBean posRequestBean);

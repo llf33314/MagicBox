@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -62,7 +63,7 @@ public class CustomerDisplayService extends Service {
                             @Override
                             public void onClick(View view) {
                                 dialog.dismiss();
-                                Intent intent = new Intent(CustomerDisplayService.this, WifiConnectionActivity.class);
+                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                             }

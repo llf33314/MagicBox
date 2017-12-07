@@ -2,6 +2,7 @@ package com.gt.magicbox.pay;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -162,7 +163,7 @@ public class ChosePayModeActivity extends BaseActivity {
                     @Override
                     public void onClick(View view) {
                         dialog.dismiss();
-                        Intent intent = new Intent(ChosePayModeActivity.this, WifiConnectionActivity.class);
+                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                         startActivity(intent);
                     }
                 });
@@ -207,7 +208,8 @@ public class ChosePayModeActivity extends BaseActivity {
 
     private void memberPayWithoutCoupon(double discountAfterMoney, double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithoutCoupon(discountAfterMoney, discountMoney, memberCardBean.memberId, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                .memberPayWithoutCoupon(discountAfterMoney, discountMoney, memberCardBean.memberId, memberCardBean.nickName,memberCardBean.cardNo,
+                        cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
                         , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 0)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
@@ -246,7 +248,8 @@ public class ChosePayModeActivity extends BaseActivity {
 
     private void memberPayWithCoupon(double discountAfterMoney, double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithCoupon(memberCouponBean.getGId(), discountAfterMoney, discountMoney, memberCardBean.memberId, 1, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
+                .memberPayWithCoupon(memberCouponBean.getGId(), discountAfterMoney, discountMoney,  memberCardBean.memberId, memberCardBean.nickName,memberCardBean.cardNo,
+                        1, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
                         , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 1)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
@@ -293,7 +296,8 @@ public class ChosePayModeActivity extends BaseActivity {
         loadingProgressDialog = new LoadingProgressDialog(ChosePayModeActivity.this, "付款中...");
         loadingProgressDialog.show();
         HttpCall.getApiService()
-                .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0))
+                .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0)
+                ,Hawk.get("shopId",0),Hawk.get("shopName",""))
                 .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CashOrderBean>() {
                     @Override
