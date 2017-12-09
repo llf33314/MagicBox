@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.IBinder;
@@ -476,6 +477,43 @@ public class PrinterConnectService extends Service {
             int printType = mGpService.getPrinterCommandType(mPrinterIndex);
             if (printType == GpCom.ESC_COMMAND) {
                 EscCommand esc = PrintESCOrTSCUtil.getPrintMemberRecharge(memberCardBean,orderNo,money,type,balance);
+                return sendEscDataToPrinter(esc);
+            } else {
+                ToastUtil.getInstance().showToast("请连接正确类型打印机");
+            }
+        } catch (RemoteException e1) {
+            e1.printStackTrace();
+        }
+        return -1;
+    }
+    /**
+     * 打印付款二维码
+     * @return
+     */
+    public static int printQrCode(String orderNo ,String money, String time, String url) {
+        if (mGpService == null) {
+            showHintNotConnectDialog();
+            return PRINTER_NOT_INTI;
+        }
+        try {//拔插的时候这个sdk有毒  要这么处理
+            int state = mGpService.getPrinterConnectStatus(mPrinterIndex);
+            // ToastUtil.getInstance().showToast("state："+state);
+            if (state == GpDevice.STATE_CONNECTING) {
+                ToastUtil.getInstance().showToast("打印机正在连接请稍后再试");
+                return PRINTER_CONNECTING;
+            }
+            if (state == GpDevice.STATE_NONE) {
+                //mGpService.closePort(mPrinterIndex);
+                if (mUsbDevice != null) {
+                    openUsbProt();
+                } else {//蓝牙跟USB都没连接
+                    showHintNotConnectDialog();
+                }
+            }
+            //这里很关键   打印机类型是ESC 还是TSC 暂时测试这么用
+            int printType = mGpService.getPrinterCommandType(mPrinterIndex);
+            if (printType == GpCom.ESC_COMMAND) {
+                EscCommand esc = PrintESCOrTSCUtil.getQrCodeEsc(orderNo , money,  time, url);
                 return sendEscDataToPrinter(esc);
             } else {
                 ToastUtil.getInstance().showToast("请连接正确类型打印机");

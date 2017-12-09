@@ -10,4 +10,7 @@ public class LoginBean {
     public int checkType;
     public int eqId;
     public int bindId;
+    public int zhuBusId;
+    /* 主账号busId */
+
 }

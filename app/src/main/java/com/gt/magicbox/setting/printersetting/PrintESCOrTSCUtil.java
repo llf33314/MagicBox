@@ -1,5 +1,6 @@
 package com.gt.magicbox.setting.printersetting;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import com.gprinter.command.EscCommand;
@@ -9,6 +10,8 @@ import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.bean.ShopInfoBean;
 import com.gt.magicbox.bean.StaffBean;
+import com.gt.magicbox.utils.commonutil.DrawableUtils;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.orhanobut.hawk.Hawk;
 
@@ -184,6 +187,46 @@ public class PrintESCOrTSCUtil {
         esc.addText("");
         esc.addText("--------------------------------\n\n");
         esc.addText("当前卡内余额：          "+balance+"元\n\n\n");
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
+        esc.addText("技术支持·多粉 400-889-4522");
+        esc.addPrintAndFeedLines((byte)5);
+        return esc;
+    }
+    public static EscCommand getQrCodeEsc(String orderNo ,String money, String time, String url){
+        ShopInfoBean shopInfoBean= Hawk.get("ShopInfoBean");
+
+        EscCommand esc = new EscCommand();
+        esc.addPrintAndFeedLines((byte) 1);
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
+        esc.addText(shopInfoBean.getShopName()+"\n"); // 打印文字
+        esc.addPrintAndLineFeed();
+
+        // 打印文字 *//*
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印左对齐
+        esc.addText("付款二维码\n");// 打印文字
+        //esc.addText("订单号："+orderNo+"\n\n\n"); // 打印文字
+        esc.addText("--------------------------------\n\n");
+        if (!TextUtils.isEmpty(url)) {
+            esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
+            //esc.addSelectErrorCorrectionLevelForQRCode((byte) 0x45); //设置纠错等级
+           // esc.addSelectSizeOfModuleForQRCode((byte) 7);//设置qrcode模块大小
+            esc.addStoreQRCodeData("https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=1&tn=baidu&wd=utf-8&oq=utg-8&rsv_pq=f6f81e730000c1b8&rsv_t=e55e%2BOPz%2FC9CB4YRfxyquTMrxM5rOzSW3oDlwP7amExOdboHHCnk9BN9DcE&rqlang=cn&rsv_enter=1&inputT=1033&rsv_sug3=8&rsv_sug1=6&rsv_sug7=100&rsv_sug2=0&rsv_sug4=1865");//设置qrcode内容
+            esc.addPrintQRCode();
+            LogUtils.d("qrCodeUrl","url="+url);
+            //bitmap=DrawableUtils.zoomImage(bitmap,bitmap.getWidth()*0.6,bitmap.getHeight()*0.6);
+            //esc.addRastBitImage(bitmap, bitmap.getWidth(), 0); // 打印图片
+        }
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
+        esc.addText("--------------------------------\n\n");
+
+        esc.addText("消费金额："+ money+"元"+"\n");
+        if (!TextUtils.isEmpty(time)) {
+            esc.addText("订单时间:" + time + "\n\n");
+        }
+        esc.addText("");
+        esc.addText("--------------------------------\n\n");
         esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
         esc.addText("技术支持·多粉 400-889-4522");
         esc.addPrintAndFeedLines((byte)5);

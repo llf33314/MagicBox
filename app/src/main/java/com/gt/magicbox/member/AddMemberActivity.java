@@ -136,7 +136,6 @@ public class AddMemberActivity extends BaseActivity {
         setContentView(R.layout.activity_member_add);
         ButterKnife.bind(this);
         initData();
-        getWeChatSubscriptionQRCode();
         initView();
     }
 
@@ -219,7 +218,7 @@ public class AddMemberActivity extends BaseActivity {
         }
         HttpCall.getApiService()
                 .getWeChatSubscriptionQRCode(Hawk.get("busId", 0),
-                        Hawk.get("eqId", 0))
+                        Hawk.get("bindId", 0))
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -233,13 +232,18 @@ public class AddMemberActivity extends BaseActivity {
                     @Override
                     public void onError(Throwable e) {
                         LogUtils.d(TAG, "getWeChatSubscriptionQRCode onError");
+                        if (dialog!=null) {
+                            dialog.dismiss();
+                        }
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
                         LogUtils.d(TAG, "getWeChatSubscriptionQRCode onFailure");
-
+                        if (dialog!=null) {
+                            dialog.dismiss();
+                        }
                         super.onFailure(code, msg);
                     }
                 });
@@ -503,13 +507,17 @@ public class AddMemberActivity extends BaseActivity {
 
                         imageView.setImageBitmap(bitmap);
                         isQRCodeInit = true;
-                        if (isMemberCardInit && isQRCodeInit)
+                        LogUtils.d("onLoadCompleted");
+                        if (dialog!=null) {
                             dialog.dismiss();
+                        }
                     }
 
                     @Override
                     public void onLoadFailed(ImageView imageView, String s, Drawable drawable) {
-                        dialog.dismiss();
+                        if (dialog!=null) {
+                            dialog.dismiss();
+                        }
                     }
                 });
     }

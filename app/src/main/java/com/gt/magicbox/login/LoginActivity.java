@@ -112,6 +112,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                                 Hawk.put("userName", userName);
                                 Hawk.put("eqId", data.eqId);
                                 Hawk.put("bindId",data.bindId);
+                                Hawk.put("busId", data.zhuBusId);
                                 memberQuery(userName, password);
                             } else if (data.checkType == 1) {
                                 final NormalDialog dialog = new NormalDialog(LoginActivity.this,
@@ -181,8 +182,9 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                     public void onSuccess(ShopInfoBean data) {
                         if (data != null) {
                             Hawk.put("ShopInfoBean", data);
-                            Hawk.put("busId", data.getBusId());
                             Hawk.put("shopName", data.getShopName());
+                            Hawk.put("childBusId", data.getBusId());//子账号busId
+
                             Hawk.put("shopId", data.getShops().getId());
                             ShopInfoBean bean = (ShopInfoBean) Hawk.get("ShopInfoBean");
                             LogUtils.i(TAG, "data name=" + bean.getShopName());

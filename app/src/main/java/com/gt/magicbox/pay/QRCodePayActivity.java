@@ -39,10 +39,13 @@ import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.http.socket.SocketIOManager;
 import com.gt.magicbox.member.MemberDoResultActivity;
+import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.utils.commonutil.TimeUtils;
+import com.gt.magicbox.utils.qr_code_util.QrCodeUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.lidroid.xutils.BitmapUtils;
@@ -65,6 +68,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -113,6 +119,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     public final static int TYPE_CREATED_PAY = 2;//已生成的订单并且未支付
     public final static int TYPE_MEMBER_RECHARGE = 3;//会员充值使用支付宝或者微信支付
     public final static int TYPE_CUSTOMER_DISPLAY_PAY = 4;//客显
+    private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
 
     private static final int MSG_RESULT = 1;
@@ -141,6 +148,10 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     static {
         System.loadLibrary("iconv");
     }
+
+    private Bitmap qrCodeBitmap;
+    private String qrCodeUrl;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -218,7 +229,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
     private void getQRCodeURL(double money, int type, int shiftId) {
         HttpCall.getApiService()
-                .getQRCodeUrl(PhoneUtils.getIMEI(), money, type, shiftId,Hawk.get("shopId",0)
+                .getQRCodeUrl(PhoneUtils.getIMEI(), money, type, shiftId,Hawk.get("shopId",0),Hawk.get("busId",0)
                 ,Hawk.get("shopName",""))
                 .compose(ResultTransformer.<QRCodeBitmapBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<QRCodeBitmapBean>() {
@@ -251,7 +262,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
     private void getCreatedQRCodeURL(int orderId, int shiftId) {
         HttpCall.getApiService()
-                .getCreatedQRCodeUrl(orderId, shiftId)
+                .getCreatedQRCodeUrl(orderId, shiftId,Hawk.get("busId",0))
                 .compose(ResultTransformer.<CreatedOrderBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CreatedOrderBean>() {
                     @Override
@@ -392,6 +403,9 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     @Override
                     public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
                         imageView.setImageBitmap(bitmap);
+                        qrCodeBitmap=bitmap;
+                        //qrCodeUrl= QrCodeUtils.scanningImage(qrCodeBitmap);
+                        // LogUtils.d("qrCodeUrl="+qrCodeUrl);
                         //initCameraViews();
                         codeCameraManager =new CodeCameraManager(getApplicationContext(),preview,QRCodePayActivity.this);
                         codeCameraManager.initCamera();
@@ -596,7 +610,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         }
     }
 
-    @OnClick({R.id.wechatPay, R.id.aliPay})
+    @OnClick({R.id.wechatPay, R.id.aliPay,R.id.printQrCode})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.wechatPay:
@@ -608,6 +622,10 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 wechatPay.setImageResource(R.drawable.wechat_unselected);
                 aliPay.setImageResource(R.drawable.alipay_selected);
                 payMode = 1;
+                break;
+            case R.id.printQrCode:
+
+                //PrinterConnectService.printQrCode(orderNo, ""+money, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT), qrCodeUrl);
                 break;
         }
     }
@@ -625,4 +643,5 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 }
         }
     }
+
 }

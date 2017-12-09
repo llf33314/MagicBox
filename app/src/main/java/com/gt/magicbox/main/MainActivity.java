@@ -248,7 +248,7 @@ public class MainActivity extends BaseActivity {
     }
     private void getUnpaidOrderCount(){
         HttpCall.getApiService()
-                .getUnpaidOrderCount(Hawk.get("busId", 0),PhoneUtils.getIMEI())
+                .getUnpaidOrderCount(Hawk.get("childBusId", 0),PhoneUtils.getIMEI())
                 .compose(ResultTransformer.<UnpaidOrderBean>transformer())
                 .subscribe(new BaseObserver<UnpaidOrderBean>() {
                     @Override

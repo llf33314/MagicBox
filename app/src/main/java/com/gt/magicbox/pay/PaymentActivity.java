@@ -160,7 +160,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                     intent.putExtra("type", QRCodePayActivity.TYPE_CUSTOMER_DISPLAY_PAY);
                     intent.putExtra("money", money);
                     intent.putExtra("payMode", 0);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 } else {
                     ToastUtil.getInstance().showToast(getString(R.string.network_disconnect_please_check));

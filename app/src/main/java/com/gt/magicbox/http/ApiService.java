@@ -65,10 +65,10 @@ public interface ApiService {
                                         @Query("login_name") String user,
                                         @Query("password") String pwd);
 
-    @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/{shopId}/79B4DE7C/payQR")
+    @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/{shopId}/{busId}/79B4DE7C/payQR")
     Observable<BaseResponse<QRCodeBitmapBean>> getQRCodeUrl(@Path("eqCode") String eqCode, @Path("money") double money,
                                                             @Path("type") int type, @Path("shiftId") int shiftId
-            , @Path("shopId") int shopId, @Query("shopName") String shopName);
+            , @Path("shopId") int shopId,@Path("busId") int busId, @Query("shopName") String shopName);
 
     @POST(HttpConfig.SCAN_CODE_PAY)
     Observable<BaseResponse<PayCodeResultBean>> scanCodePay(@Query("auth_code") String auth_code, @Query("busId") int busId,
@@ -85,8 +85,9 @@ public interface ApiService {
     @POST(HttpConfig.DELETE_NOT_PAY_ORDER)
     Observable<BaseResponse> deleteNotPayOrder(@Query("eqId") int eqId, @Query("orderId") int orderId);
 
-    @GET("magicBoxMobile/{orderId}/{shiftId}/79B4DE7C/payQR")
-    Observable<BaseResponse<CreatedOrderBean>> getCreatedQRCodeUrl(@Path("orderId") int orderId, @Path("shiftId") int shiftId);
+    @GET("magicBoxMobile/{orderId}/{shiftId}/{busId}//79B4DE7C/payQR")
+    Observable<BaseResponse<CreatedOrderBean>> getCreatedQRCodeUrl(@Path("orderId") int orderId, @Path("shiftId") int shiftId,
+                                                                   @Path("busId") int busId);
 
     @POST(HttpConfig.SEND_SMS)
     Observable<BaseResponse> sendSMS(@Query("busId") int busId,
@@ -104,7 +105,7 @@ public interface ApiService {
 
     @POST(HttpConfig.GET_WECHAT_SUBSCRIPTION_QR_CODE)
     Observable<BaseResponse> getWeChatSubscriptionQRCode(@Query("busId") int busId,
-                                                         @Query("eqId") int eqId);
+                                                         @Query("bindId") int bindId);
 
     @POST(HttpConfig.FIND_MEMBER_CARD)
     Observable<BaseResponse<MemberCardBean>> findMemberCardByPhone(

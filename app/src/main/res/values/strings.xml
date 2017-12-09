@@ -40,6 +40,7 @@
 
     <string name="chose_pay">选择支付方式</string>
     <string name="re_chose_pay">重新选择支付方式</string>
+    <string name="print_qr_code">打印付款码</string>
 
     <string name="cancel">取消</string>
     <string name="logout_query">是否退出登录</string>
