@@ -184,7 +184,7 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                             Hawk.put("ShopInfoBean", data);
                             Hawk.put("shopName", data.getShopName());
                             Hawk.put("childBusId", data.getBusId());//子账号busId
-
+                            Hawk.put("oldVersion", AppUtils.getAppVersionCode());
                             Hawk.put("shopId", data.getShops().getId());
                             ShopInfoBean bean = (ShopInfoBean) Hawk.get("ShopInfoBean");
                             LogUtils.i(TAG, "data name=" + bean.getShopName());

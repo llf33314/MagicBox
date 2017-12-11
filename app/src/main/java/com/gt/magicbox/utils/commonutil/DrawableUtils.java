@@ -66,8 +66,9 @@ public class DrawableUtils {
         float scaleHeight = ((float) newHeight) / height;
         // 缩放图片动作
         matrix.postScale(scaleWidth, scaleHeight);
-        Bitmap bitmap = Bitmap.createBitmap(bgimage, 0, 0, (int) width,
-                (int) height, matrix, true);
+
+        Bitmap bitmap = Bitmap.createBitmap(bgimage, 30, 30, (int) width-30,
+                (int) height-30, matrix, true);
         return bitmap;
     }
 }

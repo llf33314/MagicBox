@@ -192,7 +192,7 @@ public class PrintESCOrTSCUtil {
         esc.addPrintAndFeedLines((byte)5);
         return esc;
     }
-    public static EscCommand getQrCodeEsc(String orderNo ,String money, String time, String url){
+    public static EscCommand getQrCodeEsc(String orderNo ,String money, String time, Bitmap bitmap){
         ShopInfoBean shopInfoBean= Hawk.get("ShopInfoBean");
 
         EscCommand esc = new EscCommand();
@@ -208,15 +208,16 @@ public class PrintESCOrTSCUtil {
         esc.addText("付款二维码\n");// 打印文字
         //esc.addText("订单号："+orderNo+"\n\n\n"); // 打印文字
         esc.addText("--------------------------------\n\n");
-        if (!TextUtils.isEmpty(url)) {
-            esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
+        if (null!=bitmap) {
             //esc.addSelectErrorCorrectionLevelForQRCode((byte) 0x45); //设置纠错等级
-           // esc.addSelectSizeOfModuleForQRCode((byte) 7);//设置qrcode模块大小
-            esc.addStoreQRCodeData("https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=1&tn=baidu&wd=utf-8&oq=utg-8&rsv_pq=f6f81e730000c1b8&rsv_t=e55e%2BOPz%2FC9CB4YRfxyquTMrxM5rOzSW3oDlwP7amExOdboHHCnk9BN9DcE&rqlang=cn&rsv_enter=1&inputT=1033&rsv_sug3=8&rsv_sug1=6&rsv_sug7=100&rsv_sug2=0&rsv_sug4=1865");//设置qrcode内容
-            esc.addPrintQRCode();
-            LogUtils.d("qrCodeUrl","url="+url);
-            //bitmap=DrawableUtils.zoomImage(bitmap,bitmap.getWidth()*0.6,bitmap.getHeight()*0.6);
-            //esc.addRastBitImage(bitmap, bitmap.getWidth(), 0); // 打印图片
+            // esc.addSelectSizeOfModuleForQRCode((byte) 7);//设置qrcode模块大小
+            //esc.addStoreQRCodeData("https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=1&tn=baidu&wd=utf-8&oq=utg-8&rsv_pq=f6f81e730000c1b8&rsv_t=e55e%2BOPz%2FC9CB4YRfxyquTMrxM5rOzSW3oDlwP7amExOdboHHCnk9BN9DcE&rqlang=cn&rsv_enter=1&inputT=1033&rsv_sug3=8&rsv_sug1=6&rsv_sug7=100&rsv_sug2=0&rsv_sug4=1865");//设置qrcode内容
+            // esc.addPrintQRCode();
+            //LogUtils.d("qrCodeUrl","url="+url);
+
+            esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);
+            bitmap = DrawableUtils.zoomImage(bitmap, bitmap.getWidth() * 0.8, bitmap.getHeight() * 0.8);
+            esc.addRastBitImage(bitmap, bitmap.getWidth(), 0); // 打印图片
         }
         esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
         esc.addText("--------------------------------\n\n");

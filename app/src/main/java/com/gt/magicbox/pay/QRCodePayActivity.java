@@ -160,7 +160,6 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         dialog = new LoadingProgressDialog(QRCodePayActivity.this);
         dialog.show();
         init();
-        payResultSocket();
     }
 
 
@@ -200,7 +199,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     int orderId = this.getIntent().getIntExtra("orderId", 0);
                     money = this.getIntent().getDoubleExtra("money", 0);
                     orderNo = this.getIntent().getStringExtra("orderNo");
-
+                    payResultSocket(orderNo);
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
                     showMoney(cashierMoney, "" + money);
@@ -241,6 +240,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                             LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
                             showQRCodeView(data.qrUrl);
                             orderNo = data.orderNo;
+                            payResultSocket(orderNo);
                         }
                     }
 
@@ -272,9 +272,13 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                         if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
                             LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
                             showQRCodeView(data.qrUrl);
-                            if (type != TYPE_SERVER_PUSH)
+                            if (type != TYPE_SERVER_PUSH) {
                                 orderNo = data.orderNo;
+                                payResultSocket(orderNo);
+                            }
+
                         }
+
                     }
 
                     @Override
@@ -430,12 +434,13 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
     }
 
-    private void payResultSocket() {
+    private void payResultSocket(final String orderNo) {
         socketIOManager = new SocketIOManager(Constant.SOCKET_SERVER_URL);
         socketIOManager.setOnConnect(new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                String UUID = PhoneUtils.getIMEI();
+                //String UUID = PhoneUtils.getIMEI();
+                String UUID = orderNo;
                 LogUtils.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
                 socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
                 LogUtils.d(SocketIOManager.TAG, "call: send android auth over");
@@ -502,7 +507,9 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         if (codeCameraManager!=null) {
             codeCameraManager.releaseCamera();
         }
-        socketIOManager.disSocket();
+        if (socketIOManager!=null) {
+            socketIOManager.disSocket();
+        }
     }
 
     @Override
@@ -625,7 +632,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 break;
             case R.id.printQrCode:
 
-                //PrinterConnectService.printQrCode(orderNo, ""+money, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT), qrCodeUrl);
+                //PrinterConnectService.printQrCode(orderNo, ""+money, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT), qrCodeBitmap);
                 break;
         }
     }

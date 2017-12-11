@@ -189,7 +189,12 @@ public class UpdateManager {
             AppUpdateBean updateBean = new Gson().fromJson(str, AppUpdateBean.class);
             if (updateBean != null&&!TextUtils.isEmpty(updateBean.appVersionCode)) {
                 appUpdateBean = updateBean;
-                isNeedUpdate = compareVersion(Integer.parseInt(updateBean.appVersionCode));
+                try {
+                    isNeedUpdate = compareVersion(Integer.parseInt(updateBean.appVersionCode));
+                    Hawk.put("isNeedReLogin",Integer.parseInt(updateBean.remarks));
+                }catch (NumberFormatException e){
+                    e.printStackTrace();
+                }
                 Hawk.put("newestVersion",updateBean.appVersionCode);
             }
             return null;
@@ -211,7 +216,8 @@ public class UpdateManager {
         dialogContentTextView = (TextView) v.findViewById(R.id.update_content);
         if (appUpdateBean == null) return;
         String strVersion = TextUtils.isEmpty(appUpdateBean.appVersionName) ? "最新版本" : appUpdateBean.appVersionName + "版";
-        dialogContentTextView.setText(strVersion + "更新内容 :  " + appUpdateBean.remarks);
+        //dialogContentTextView.setText(strVersion + "更新内容 :  " + appUpdateBean.remarks);
+
         v.findViewById(R.id.start).setOnClickListener(onClickListener);
         v.findViewById(R.id.pause).setOnClickListener(onClickListener);
         v.findViewById(R.id.cancel).setOnClickListener(onClickListener);

@@ -12,6 +12,6 @@ public class AppUpdateBean implements Serializable{
     public String appVersionName="";
     public String resultFlag="";
     public String apkUrl="";
-    public String remarks="";
+    public String remarks="0";//0-不需要重新登录，1-需要重新登录
 
 }
