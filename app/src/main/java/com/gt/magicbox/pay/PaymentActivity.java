@@ -156,12 +156,14 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
             public void quickPay(double money) {
                 if (NetworkUtils.isConnected()) {
                     Hawk.put("payType", 0);
+                    AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                     Intent intent = new Intent(PaymentActivity.this, QRCodePayActivity.class);
                     intent.putExtra("type", QRCodePayActivity.TYPE_CUSTOMER_DISPLAY_PAY);
                     intent.putExtra("money", money);
                     intent.putExtra("payMode", 0);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
+                    AppManager.getInstance().finishActivity();
                 } else {
                     ToastUtil.getInstance().showToast(getString(R.string.network_disconnect_please_check));
                 }

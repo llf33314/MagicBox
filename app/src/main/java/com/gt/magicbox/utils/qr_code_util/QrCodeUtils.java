@@ -28,7 +28,7 @@ import java.io.ByteArrayOutputStream;
  */
 
 public class QrCodeUtils {
-    public static String scanningImage(Bitmap obmp) {
+    public static String scagnningImage(Bitmap obmp) {
         String message="";
         int width = obmp.getWidth();
         int height = obmp.getHeight();

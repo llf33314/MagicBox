@@ -370,6 +370,18 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         }
     }
     public void clearAll() {
+        if (!TextUtils.isEmpty(endNumberString)) {
+            endNumberString="";
+        }
+        if (!TextUtils.isEmpty(endString)) {
+            endString="";
+        }
+        if (!TextUtils.isEmpty(endOperator)) {
+            endOperator="";
+        }
+        resultMoney=0;
+        calcStringBuffer.setLength(0);
+        calcTextView.setText("");
         numberString.setLength(0);
         showMoney();
         charge.setText("");

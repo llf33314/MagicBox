@@ -43,8 +43,8 @@ android {
         magicbox {
             manifestPlaceholders = [categoryName: "HOME",DEVICES: "magicbox"]
 
-            versionCode 4
-            versionName "1.0.3"
+            versionCode 5
+            versionName "1.0.4"
             resValue "string", "app_name", "多粉魔盒"
             signingConfig signingConfigs.release
 
@@ -64,9 +64,17 @@ android {
         variant.outputs.each { output ->
             if (output.outputFile != null && output.outputFile.name.endsWith('.apk')) {
                 def flavorName = variant.flavorName.startsWith("_") ? variant.flavorName.substring(1) : variant.flavorName
-                def apkFile = new File(
-                        output.outputFile.getParent(),
-                        "MagicBoxApp_${flavorName}_${variant.buildType.name}_v${variant.versionName}_${buildTime()}.apk")
+                def apkFile
+                if (flavorName.equals('magicbox')){
+                     apkFile = new File(
+                            output.outputFile.getParent(),
+                            "MagicBoxApp_v${variant.versionName}.apk")
+                }else {
+                    apkFile = new File(
+                            output.outputFile.getParent(),
+                            "MagicBoxApp_${flavorName}_${variant.buildType.name}_v${variant.versionName}_${buildTime()}.apk")
+                }
+
                 output.outputFile = apkFile
             }
         }
