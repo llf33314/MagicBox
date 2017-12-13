@@ -60,7 +60,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     private TextView should_pay;
     private TextView charge;
     private TextView text_paid_in_amount;
-    private int maxLength = 4;
+    private int maxLength = 8;
     private int keyboardType = 0;
     private double chargeMoney;
     private double realPay;
@@ -153,11 +153,18 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        if (onInputListener != null) onInputListener.onInput();
+        if (onInputListener != null) {
+            onInputListener.onInput();
+        }
         if (keyboardType == TYPE_INPUT_MONEY || keyboardType == TYPE_CHARGE
                 || keyboardType == TYPE_MEMBER_RECHARGE_CASH) {
-            if (numberString.toString().contains(".") || position == 11) maxLength = 7;
-            else maxLength = 4;
+            if (!TextUtils.isEmpty(numberString)){
+                double number=Double.parseDouble(numberString.toString());
+                if (number>Hawk.get("limitMoney",BaseConstant.DEFAULT_LIMIT_MONEY)) {
+                    LogUtils.d("limitMoney","number="+number);
+                    return;
+                }
+            }
         }
         if (numberString.length() < maxLength) {
             if (numberString.toString().contains(".")) {
@@ -194,6 +201,16 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                     && keyboardType != TYPE_MEMBER_RECHARGE) {
                 if (!numberString.toString().contains(".") && numberString.length() > 0)
                     numberString.append(".");
+            }
+            if (keyboardType == TYPE_INPUT_MONEY || keyboardType == TYPE_CHARGE
+                    || keyboardType == TYPE_MEMBER_RECHARGE_CASH) {
+                if (!TextUtils.isEmpty(numberString)) {
+                    double number = Double.parseDouble(numberString.toString());
+                    if (number > Hawk.get("limitMoney", BaseConstant.DEFAULT_LIMIT_MONEY)) {
+                        LogUtils.d("limitMoney", "number=" + number);
+                        numberString = new StringBuffer("" + Hawk.get("limitMoney", BaseConstant.DEFAULT_LIMIT_MONEY));
+                    }
+                }
             }
             showMoney();
         }
