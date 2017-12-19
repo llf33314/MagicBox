@@ -36,6 +36,7 @@ import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
+import com.gt.magicbox.utils.voice.VoiceUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 
@@ -83,7 +84,8 @@ public class PayResultActivity extends BaseActivity {
         setContentView(R.layout.activity_pay_result);
         setToolBarTitle("");
         initView();
-        playSound();
+        VoiceUtils.with(getApplicationContext()).Play(""+message,true,payType);
+        //playSound();
 
         if (payType == TYPE_CASH) {
             createCashOrder(message);

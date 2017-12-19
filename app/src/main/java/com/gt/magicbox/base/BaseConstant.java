@@ -16,6 +16,8 @@ public class BaseConstant {
     public static final int PAY_ON_WECHAT=0;
     public static final int PAY_ON_ALIPAY=1;
     public static final int PAY_ON_CASH=2;
+    public static final int PAY_ON_MEMBER_CARD=3;
+    public static final int PAY_ON_BANK_CARD=4;
     public static long clickTime;
     public static final int DEFAULT_LIMIT_MONEY =50000;
 

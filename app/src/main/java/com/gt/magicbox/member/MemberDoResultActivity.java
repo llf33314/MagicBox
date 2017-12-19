@@ -27,6 +27,7 @@ import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
+import com.gt.magicbox.utils.voice.VoiceUtils;
 import com.orhanobut.hawk.Hawk;
 
 import java.math.BigDecimal;
@@ -98,7 +99,7 @@ public class MemberDoResultActivity extends BaseActivity {
             memberCardBean = (MemberCardBean) getIntent().getSerializableExtra("MemberCardBean");
             rechargeMoney = getIntent().getDoubleExtra("rechargeMoney", 0);
             balance = getIntent().getDoubleExtra("balance", 0);
-            realMoney= getIntent().getDoubleExtra("realMoney", 0);
+            realMoney = getIntent().getDoubleExtra("realMoney", 0);
             BigDecimal bg = new BigDecimal(rechargeMoney);
             rechargeMoney = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             bg = new BigDecimal(balance);
@@ -116,8 +117,34 @@ public class MemberDoResultActivity extends BaseActivity {
             customRecharge.setVisibility(View.GONE);
             customerSuccessTip.setText("支付成功");
             cashierSuccessTip.setText("支付成功");
+            playMemberPayVoice();
+        } else if (type == TYPE_MEMBER_RECHARGE) {
+            playMemberRechargeVoice();
         }
 
+    }
+
+    private void playMemberPayVoice() {
+        VoiceUtils.with(getApplicationContext()).Play("" + realMoney, true, 5)
+                .setAppendListener(new VoiceUtils.AppendListener() {
+                    @Override
+                    public void append() {
+                        VoiceUtils.with(getApplicationContext()).Play("" + balance, true, 7)
+                                .setAppendListener(null);
+
+                    }
+                });
+    }
+
+    private void playMemberRechargeVoice() {
+        VoiceUtils.with(getApplicationContext()).Play("" + rechargeMoney, true, 6)
+                .setAppendListener(new VoiceUtils.AppendListener() {
+                    @Override
+                    public void append() {
+                        VoiceUtils.with(getApplicationContext()).Play("" + balance, true, 7)
+                                .setAppendListener(null);
+                    }
+                });
     }
 
     @OnClick(R.id.confirmButton)

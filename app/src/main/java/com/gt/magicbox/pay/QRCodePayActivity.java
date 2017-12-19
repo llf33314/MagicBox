@@ -174,7 +174,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 case TYPE_PAY:
                     money = this.getIntent().getDoubleExtra("money", 0);
                     payMode = this.getIntent().getIntExtra("payMode", 0);
-                    memberCouponBean= (MemberCouponBean) this.getIntent().getSerializableExtra("memberCouponBean");
+                    memberCouponBean = (MemberCouponBean) this.getIntent().getSerializableExtra("memberCouponBean");
                     if (type == TYPE_MEMBER_RECHARGE) {
                         memberCardBean = (MemberCardBean) this.getIntent().getSerializableExtra("MemberCardBean");
                         LogUtils.d(TAG, "memberCardBean=" + memberCardBean.ctName);
@@ -196,9 +196,14 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     getQRCodeURL(money, payMode, shiftId);
                     break;
                 case TYPE_SERVER_PUSH:
+
                     int orderId = this.getIntent().getIntExtra("orderId", 0);
                     money = this.getIntent().getDoubleExtra("money", 0);
                     orderNo = this.getIntent().getStringExtra("orderNo");
+                    pushLayout.setVisibility(View.VISIBLE);
+                    normalPayLayout.setVisibility(View.GONE);
+                    showMoney(pushCashierMoney, "" + money);
+                    showMoney(pushCustomerMoney, "" + money);
                     payResultSocket(orderNo);
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
@@ -228,8 +233,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
     private void getQRCodeURL(double money, int type, int shiftId) {
         HttpCall.getApiService()
-                .getQRCodeUrl(PhoneUtils.getIMEI(), money, type, shiftId,Hawk.get("shopId",0),Hawk.get("busId",0)
-                ,Hawk.get("shopName",""))
+                .getQRCodeUrl(PhoneUtils.getIMEI(), money, type, shiftId, Hawk.get("shopId", 0), Hawk.get("busId", 0)
+                        , Hawk.get("shopName", ""))
                 .compose(ResultTransformer.<QRCodeBitmapBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<QRCodeBitmapBean>() {
                     @Override
@@ -262,7 +267,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
     private void getCreatedQRCodeURL(int orderId, int shiftId) {
         HttpCall.getApiService()
-                .getCreatedQRCodeUrl(orderId, shiftId,Hawk.get("busId",0))
+                .getCreatedQRCodeUrl(orderId, shiftId, Hawk.get("busId", 0))
                 .compose(ResultTransformer.<CreatedOrderBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CreatedOrderBean>() {
                     @Override
@@ -407,11 +412,11 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     @Override
                     public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
                         imageView.setImageBitmap(bitmap);
-                        qrCodeBitmap=bitmap;
+                        qrCodeBitmap = bitmap;
                         //qrCodeUrl= QrCodeUtils.scanningImage(qrCodeBitmap);
                         // LogUtils.d("qrCodeUrl="+qrCodeUrl);
                         //initCameraViews();
-                        codeCameraManager =new CodeCameraManager(getApplicationContext(),preview,QRCodePayActivity.this);
+                        codeCameraManager = new CodeCameraManager(getApplicationContext(), preview, QRCodePayActivity.this);
                         codeCameraManager.initCamera();
                         dialog.dismiss();
                     }
@@ -489,7 +494,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 if (type == TYPE_CREATED_PAY) {
                     intent.putExtra("fromType", PayResultActivity.TYPE_FROM_ORDER_LIST);
                 }
-                if (memberCouponBean!=null){
+                if (memberCouponBean != null) {
                     intent.putExtra("memberCouponBean", memberCouponBean);
                 }
                 startActivity(intent);
@@ -504,17 +509,17 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     protected void onStop() {
         super.onStop();
         LogUtils.d(SocketIOManager.TAG, "disSocket");
-        if (codeCameraManager!=null) {
+        if (codeCameraManager != null) {
             codeCameraManager.releaseCamera();
         }
-        if (socketIOManager!=null) {
+        if (socketIOManager != null) {
             socketIOManager.disSocket();
         }
     }
 
     @Override
     protected void onPause() {
-        if (codeCameraManager!=null) {
+        if (codeCameraManager != null) {
             codeCameraManager.releaseCamera();
         }
         super.onPause();
@@ -617,7 +622,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         }
     }
 
-    @OnClick({R.id.wechatPay, R.id.aliPay,R.id.printQrCode})
+    @OnClick({R.id.wechatPay, R.id.aliPay, R.id.printQrCode})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.wechatPay:
@@ -638,16 +643,16 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     }
 
     @Override
-    public void onDecodeResult(boolean bDecoded,String result, String type) {
-        if (bDecoded&&!TextUtils.isEmpty(result)){
-            LogUtils.e("quck","onDecodeResult"+type+"    "+result);
-                if (!isCodePayRequesting) {
-                    if (payMode == BaseConstant.PAY_ON_WECHAT) {
-                        getCodePayResult(result, orderNo);
-                    } else if (payMode == BaseConstant.PAY_ON_ALIPAY) {
-                        getCodeAliPayResult(result, orderNo);
-                    }
+    public void onDecodeResult(boolean bDecoded, String result, String type) {
+        if (bDecoded && !TextUtils.isEmpty(result)) {
+            LogUtils.e("quck", "onDecodeResult" + type + "    " + result);
+            if (!isCodePayRequesting) {
+                if (payMode == BaseConstant.PAY_ON_WECHAT) {
+                    getCodePayResult(result, orderNo);
+                } else if (payMode == BaseConstant.PAY_ON_ALIPAY) {
+                    getCodeAliPayResult(result, orderNo);
                 }
+            }
         }
     }
 
