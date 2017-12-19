@@ -129,7 +129,7 @@ public class ShiftExchangeActivity extends BaseActivity {
                         .setOnOkClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Hawk.put("shiftId",0);
+                                Hawk.delete("shiftId");
                                 if (shiftRecordsBean != null) {
                                     if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
                                         PrintManager printManager=new PrintManager(ShiftExchangeActivity.this);

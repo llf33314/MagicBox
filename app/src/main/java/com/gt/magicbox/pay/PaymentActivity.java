@@ -337,7 +337,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                         @Override
                         public void onError(Throwable e) {
                             LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage());
-                            new HintDismissDialog(PaymentActivity.this, "兑换券核销失败")
+                            new HintDismissDialog(PaymentActivity.this, "核销失败:"+e.getMessage())
                                     .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
                                         @Override
                                         public void onDismiss(DialogInterface dialog) {

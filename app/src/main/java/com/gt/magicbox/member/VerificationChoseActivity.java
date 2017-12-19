@@ -12,7 +12,9 @@ import android.widget.ListView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
+import com.gt.magicbox.bean.CouponVerificationBean;
 import com.gt.magicbox.bean.MemberCardBean;
+import com.gt.magicbox.coupon.CouponVerificationSuccess;
 import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
@@ -94,6 +96,10 @@ public class VerificationChoseActivity extends BaseActivity {
                             intent.putExtra("type", TYPE_MEMBER_PAY);
                             intent.putExtra("orderMoney",orderMoney);
                             startActivity(intent);
+                        }else if (type==TYPE_COUPON_VERIFICATION){
+                            intent=new Intent(VerificationChoseActivity.this,PaymentActivity.class);
+                            intent.putExtra("type", TYPE_COUPON_VERIFICATION);
+                            startActivity(intent);
                         }
                         break;
                 }
@@ -142,7 +148,19 @@ public class VerificationChoseActivity extends BaseActivity {
                     //防止用户未扫描直接返回，导致bytes为空
                     if (bytes != null && !bytes.equals("")) {
                         //ToastUtil.getInstance().showToast(""+new String(bytes));
-                        findMemberCardByPhone(new String(bytes));
+                        if (type==TYPE_MEMBER_PAY||type==TYPE_MEMBER_RECHARGE) {
+                            findMemberCardByPhone(new String(bytes));
+                        }else if (type==TYPE_COUPON_VERIFICATION){
+                                String start = "code=";
+                                String result = new String(bytes);
+                                if (result.contains(start)) {
+                                    String number = result.substring((result.indexOf(start) + start.length()), result.length());
+                                    LogUtils.d("scanResult", "number=" + number);
+                                    couponVerification(number);
+                                } else {
+                                    couponVerification(result);
+                                }
+                        }
                     }
                     logoutDevices();
                 }
@@ -214,5 +232,45 @@ public class VerificationChoseActivity extends BaseActivity {
                     }
 
                 });
+    }
+    private void couponVerification(final String numberString) {
+        if (!TextUtils.isEmpty(numberString)) {
+            HttpCall.getApiService()
+                    .verificationCoupon(numberString, Hawk.get("shopId", 0))
+                    .compose(ResultTransformer.<CouponVerificationBean>transformer())
+                    .compose(new DialogTransformer().<CouponVerificationBean>transformer())
+                    .subscribe(new BaseObserver<CouponVerificationBean>() {
+                        @Override
+                        public void onSuccess(CouponVerificationBean data) {
+                            LogUtils.d(TAG, "couponVerification onSuccess ");
+                            if (data != null) {
+                                Intent intent = new Intent(VerificationChoseActivity.this, CouponVerificationSuccess.class);
+                                intent.putExtra("couponVerificationBean", data);
+                                startActivity(intent);
+                                AppManager.getInstance().finishActivity();
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage());
+                            new HintDismissDialog(VerificationChoseActivity.this, "核销失败:"+e.getMessage())
+                                    .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
+                                        @Override
+                                        public void onDismiss(DialogInterface dialog) {
+                                        }
+                                    })
+                                    .setCancelText("确认")
+                                    .show();
+                            super.onError(e);
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            LogUtils.d(TAG, "memberRecharge onFailure msg=" + msg);
+                            super.onFailure(code, msg);
+                        }
+                    });
+        }
     }
 }

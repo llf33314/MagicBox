@@ -84,6 +84,7 @@ public class PayResultActivity extends BaseActivity {
         setToolBarTitle("");
         initView();
         playSound();
+
         if (payType == TYPE_CASH) {
             createCashOrder(message);
         }
@@ -220,6 +221,7 @@ public class PayResultActivity extends BaseActivity {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mp.release();
+
             }
         });
     }

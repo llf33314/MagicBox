@@ -149,8 +149,9 @@ public class MainActivity extends BaseActivity {
                         startActivity(intent);
                         break;
                     case 4:
+                        getStaffInfoFromShopId();
+
                         if (NetworkUtils.isConnected()) {
-                            getStaffInfoFromShopId();
                         } else {
                             showNetworkDisconnect();
                         }

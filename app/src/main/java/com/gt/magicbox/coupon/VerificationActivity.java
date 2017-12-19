@@ -159,8 +159,8 @@ public class VerificationActivity extends BaseActivity {
                 discountInfo.setText("抵扣金额: 优惠券-" + discountMoney + "元");
                 textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
             } else if (memberCouponBean.getReduce_cost() > 0 && orderMoney >= memberCouponBean.getReduce_cost()) {
-                discountInfo.setText("抵扣金额: 优惠券-" + memberCouponBean.getCash_least_cost() + "元");
-                paidInAmountMoney = subtract(orderMoney, memberCouponBean.getCash_least_cost());
+                discountInfo.setText("抵扣金额: 优惠券-" + memberCouponBean.getReduce_cost() + "元");
+                paidInAmountMoney = subtract(orderMoney, memberCouponBean.getReduce_cost());
                 textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney + "元");
                 discountMoney = memberCouponBean.getReduce_cost();
             } else {

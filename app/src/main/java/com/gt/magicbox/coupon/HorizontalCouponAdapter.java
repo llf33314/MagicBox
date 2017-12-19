@@ -61,9 +61,9 @@ public class HorizontalCouponAdapter extends BaseRecyclerAdapter<MemberCouponBea
     private String getCouponName(MemberCouponBean memberCouponBean) {
         if (memberCouponBean.getDiscount() > 0) {
             return memberCouponBean.getDiscount() + " 折券";
-        } else if (memberCouponBean.getReduce_cost() > 0) {
-            return "满" + memberCouponBean.getReduce_cost()
-                    + "元减" + memberCouponBean.getCash_least_cost();
+        } else if (memberCouponBean.getCash_least_cost() > 0) {
+            return "满" + memberCouponBean.getCash_least_cost()
+                    + "元减" + memberCouponBean.getReduce_cost();
         } else {
             return "其他优惠券";
         }
