@@ -474,6 +474,9 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 if (scanCodePayResultBean != null) {
                     boolean success = (!TextUtils.isEmpty(scanCodePayResultBean.status)
                             && scanCodePayResultBean.status.equals("success")) ? true : false;
+                    if (scanCodePayResultBean.payType != -1) {
+                        payMode = scanCodePayResultBean.payType;
+                    }
                     payResult(success, "" + money);
                 }
             }

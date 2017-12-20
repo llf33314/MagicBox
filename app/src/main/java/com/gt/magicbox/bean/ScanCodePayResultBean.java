@@ -13,4 +13,6 @@ public class ScanCodePayResultBean {
     public int id;
     public String status="";
     public int type;
+    public int payType;
+
 }

@@ -196,25 +196,26 @@ public class PlaySound {
         return upperStr;
     }
 
-
-    public static void main(String[] args) {
-
-        //capitalValueOf(Double.valueOf(String.format("%.2f", Double.parseDouble("100"))));
-
-        double num = 2669;
-        String[] digit = {"零", "壹", "貳", "叁", "肆", "伍", "陆", "柒", "扒", "玖", "点"};
-        String[] unit = {"", "", "拾", "百", "仟", "万", "拾", "百", "仟", "亿",
-                "拾", "百", "仟", "万"};
-        String numberString=Double.toString(num);
+    public static String getCapitalValueOf(double d) {
+        String[] digit = {"零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "点"};
+        String[] unit = {"", "", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿",
+                "拾", "佰", "仟", "万"};
+        String numberString = Double.toString(d);
         char[] chArr = numberString.toCharArray();
         StringBuilder sb = new StringBuilder("");
         String s, s2 = null;
         String indexString;
         int lengthDotLeft;
-        if (numberString.contains(".")){
-            lengthDotLeft=numberString.substring(0,(numberString.indexOf("."))).length();
-        }else {
-            lengthDotLeft=numberString.length();
+        if (numberString.contains(".")) {
+            String leftNumber = numberString.substring(0, (numberString.indexOf(".")));
+            String rightNumber = numberString.substring((numberString.indexOf(".") + 1), numberString.length());
+
+            if (rightNumber.equals("00") || rightNumber.equals("0")) {
+                chArr = leftNumber.toCharArray();
+            }
+            lengthDotLeft = leftNumber.length();
+        } else {
+            lengthDotLeft = numberString.length();
         }
         for (int i = 0; i < chArr.length; i++) {
             indexString = "" + chArr[i];
@@ -223,25 +224,59 @@ public class PlaySound {
             } else {
                 s = digit[Integer.parseInt(String.valueOf(chArr[i]))];
             }
-            if (lengthDotLeft>=i) {
+            if (lengthDotLeft >= i) {
                 s2 = unit[lengthDotLeft - i];
-            }else {
-                s2="";
+            } else {
+                s2 = "";
             }
             sb.append(s).append(s2);
         }
         sb.append(unit[0]);
+        sb.append("元");
         String str = sb.toString();
         str = change(str);
-        System.out.println(str);
+        return str;
+    }
+
+    public static void main(String[] args) {
+
+        printTest(100.5);
+        printTest(1000);
+        printTest(1000.5);
+        printTest(10000.5);
+        printTest(40000);
+        printTest(4000);
+        printTest(400);
+        printTest(40);
+        printTest(4);
+
+        printTest(0.05);
+        printTest(0.10);
+        printTest(1.10);
+        printTest(10.10);
+        printTest(11.10);
+
+
+
 
 
     }
+    private static void printTest(double num){
+        System.out.print(num +"---");
+        System.out.println(getCapitalValueOf(num));
 
+    }
     private static String change(String str) {
-        String s = str.replaceAll("零[仟百拾]", "零");
+        String s = str.replaceAll("零[仟佰拾]", "零");
         s = s.replaceAll("零+", "零").replaceAll("零亿", "亿").replaceAll("零万", "万");
-        s = s.replaceAll("零圆", "圆").replace("亿万", "亿");
+        if (s.startsWith("壹拾")) {
+            s = s.replace("壹拾", "拾");
+        }
+        if (!s.startsWith("零点")) {
+            s = s.replace("零点", "点");
+        }
+        s = s.replaceAll("零圆", "圆").replace("亿万", "亿").
+                replace("拾零", "拾").replace("零元","元");
         return s;
     }
 

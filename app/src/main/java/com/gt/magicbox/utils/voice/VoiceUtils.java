@@ -1,13 +1,20 @@
 package com.gt.magicbox.utils.voice;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Message;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.utils.DeferredHandler;
+import com.gt.magicbox.utils.DoubleCalcUtils;
+import com.gt.magicbox.utils.commonutil.DrawableUtils;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Administrator on 2017/7/28.
@@ -18,18 +25,28 @@ public class VoiceUtils {
     public boolean IsPlaying;
     private int soundType = 2;
     MediaPlayer mediaPlayer = null;
+    private boolean finishFlag = false;
+
+    private Runnable runnable;
     private Context mContext;
     private Integer[] successVoice = {R.raw.wechat_pay, R.raw.ali_pay, R.raw.cash,
             R.raw.member_pay, R.raw.bank_card, R.raw.member_pay,
             R.raw.member_recharge, R.raw.balance};
 
     private AppendListener appendListener;
+    private static final int MSG_PROGRESS = 0x01;
 
     public VoiceUtils(Context context) {
         this.mContext = context.getApplicationContext();
     }
 
-    private Handler handler = new Handler();
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            super.handleMessage(msg);
+        }
+    };
 
     /**
      * 单例
@@ -63,9 +80,9 @@ public class VoiceUtils {
         String str = null;
         //如果是TRUE  就播放“收款成功”这句话
         if (strsuccess) {
-            str = "$" + PlaySound.capitalValueOf(Double.valueOf(String.format("%.2f", Double.parseDouble(stramount))));
+            str = "$" + PlaySound.getCapitalValueOf(Double.valueOf(String.format("%.2f", Double.parseDouble(stramount))));
         } else {
-            str = PlaySound.capitalValueOf(Double.valueOf(String.format("%.2f", Double.parseDouble(stramount))));
+            str = PlaySound.getCapitalValueOf(Double.valueOf(String.format("%.2f", Double.parseDouble(stramount))));
 
         }
         System.out.println("金额的长度 " + str);
@@ -94,32 +111,88 @@ public class VoiceUtils {
             System.out.println("加载音频成功[" + soundindex + "]");
         else
             System.out.println("加载音频失败[" + soundindex + "]");
-
-        //播放完成触发此事件
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        if (mediaPlayer == null) {
+            return;
+        }
+        finishFlag = false;
+        final int duration = mediaPlayer.getDuration();
+        final int amoungToUpdate = duration / 10;
+        if (runnable != null) {
+            handler.removeCallbacks(runnable);
+        }
+        runnable = new Runnable() {
             @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.release();//释放音频资源
-                int newsoundindex = soundindex;
-                System.out.println("释放资源[" + soundindex + "]");
-                if (soundindex < soundcount) {
-                    newsoundindex = newsoundindex + 1;
-                    PlaySoundList(newsoundindex, soundString, soundcount);
-                    if (soundindex == soundcount - 1 && appendListener != null) {
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                appendListener.append();
+            public void run() {
+                try {
+                    if (mediaPlayer != null) {
+                        double currentPosition = mediaPlayer.getCurrentPosition();
+                        double doubleDuration = duration;
+                        LogUtils.d("result currentPosition=" + currentPosition + "  duration=" + doubleDuration);
+                        if (duration > 0) {
+                            double result = DoubleCalcUtils.divide(2, currentPosition, doubleDuration);
+                            if (result >= 0.6f && !finishFlag) {
+                                finishFlag = true;
+                                LogUtils.d("result=" + result);
+
+                                mediaPlayer.release();//释放音频资源
+                                int newsoundindex = soundindex;
+                                System.out.println("释放资源[" + soundindex + "]");
+                                if (soundindex < soundcount) {
+                                    newsoundindex = newsoundindex + 1;
+                                    PlaySoundList(newsoundindex, soundString, soundcount);
+                                    if (soundindex == soundcount - 1 && appendListener != null) {
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                appendListener.append();
+
+                                            }
+                                        }, 1000);
+                                    }
+                                } else {
+                                    singleton.SetIsPlay(false);
+                                }
 
                             }
-                        }, 500);
-                    }
-                } else {
-                    singleton.SetIsPlay(false);
-                }
+                        }
 
+                    }
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
+                handler.postDelayed(this, amoungToUpdate);
             }
-        });
+
+        };
+        handler.postDelayed(runnable, 0);
+
+        //播放完成触发此事件
+//        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(MediaPlayer mp) {
+//                LogUtils.d("mediaPlayer.getDuration()=" + mediaPlayer.getDuration());
+//
+//                mp.release();//释放音频资源
+//                int newsoundindex = soundindex;
+//                System.out.println("释放资源[" + soundindex + "]");
+//                if (soundindex < soundcount) {
+//                    newsoundindex = newsoundindex + 1;
+//                    PlaySoundList(newsoundindex, soundString, soundcount);
+//                    if (soundindex == soundcount - 1 && appendListener != null) {
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                appendListener.append();
+//
+//                            }
+//                        }, 1000);
+//                    }
+//                } else {
+//                    singleton.SetIsPlay(false);
+//                }
+//
+//            }
+//        });
         try {
             //在播放音频资源之前，必须调用Prepare方法完成些准备工作
             if (createState)
@@ -141,7 +214,7 @@ public class VoiceUtils {
         MediaPlayer mp = null;
 
         String soundChar = soundString.substring(soundIndex - 1, soundIndex);
-
+        LogUtils.d("soundChar=" + soundChar);
         switch (soundChar) {
             case "零":
                 mp = MediaPlayer.create(mContext, R.raw.sound0);
@@ -197,6 +270,10 @@ public class VoiceUtils {
             case "万":
                 mp = MediaPlayer.create(mContext, R.raw.soundwan);
                 break;
+            case "点":
+                mp = MediaPlayer.create(mContext, R.raw.sounddot);
+
+                break;
             case "$":
                 if (soundType >= 0 && soundType < successVoice.length) {
                     mp = MediaPlayer.create(mContext, successVoice[soundType]);
@@ -208,7 +285,9 @@ public class VoiceUtils {
 //        PlaybackParams pbp = new PlaybackParams();
 //        pbp.setSpeed(1.5F);
 //        mp.setPlaybackParams(pbp);
-        mp.stop();
+        if (mp != null) {
+            mp.stop();
+        }
         return mp;
     }
 

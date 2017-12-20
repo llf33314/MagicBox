@@ -52,6 +52,7 @@ import com.gt.magicbox.utils.commonutil.FileHelper;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.utils.voice.VoiceUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.orhanobut.hawk.Hawk;
@@ -75,11 +76,11 @@ import butterknife.OnClick;
  */
 
 public class ChosePayModeActivity extends BaseActivity {
-    private String[] itemNameArray = {"会员卡","扫一扫", "码上收","银行卡","现金"};
-    private Integer[] imageResArray = {R.drawable.home_member,R.drawable.chose_scan, R.drawable.chose_code,
-            R.drawable.chose_bank_card,R.drawable.chose_cash};
-    private int[] colorNormalArray = {0xfff04a4a,0xfffdd451, 0xffa871e6,0xfffc7473,0xff4db3ff};
-    private int[] colorFocusedArray = {0x99f04a4a,0x99fdd451, 0x99a871e6,0x99fc7473,0x994db3ff};
+    private String[] itemNameArray = {"会员卡", "扫一扫", "码上收", "银行卡", "现金"};
+    private Integer[] imageResArray = {R.drawable.home_member, R.drawable.chose_scan, R.drawable.chose_code,
+            R.drawable.chose_bank_card, R.drawable.chose_cash};
+    private int[] colorNormalArray = {0xfff04a4a, 0xfffdd451, 0xffa871e6, 0xfffc7473, 0xff4db3ff};
+    private int[] colorFocusedArray = {0x99f04a4a, 0x99fdd451, 0x99a871e6, 0x99fc7473, 0x994db3ff};
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private ListView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
@@ -93,15 +94,16 @@ public class ChosePayModeActivity extends BaseActivity {
     public static final int TYPE_ORDER_PUSH = 3;
 
     private double money;
-    private String orderNo="";
+    private String orderNo = "";
     private MoreFunctionDialog dialog;
     private HttpRequestDialog httpRequestDialog;
     private MemberCardBean memberCardBean;
     private LoadingProgressDialog loadingProgressDialog;
     private CashOrderBean cashOrderBean;
-    private  MemberCouponBean memberCouponBean;
+    private MemberCouponBean memberCouponBean;
     private double discountAfterMoney;
     private double discountMoney;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,25 +112,26 @@ public class ChosePayModeActivity extends BaseActivity {
         if (this.getIntent() != null) {
             money = this.getIntent().getDoubleExtra("money", 0);
             customerType = this.getIntent().getIntExtra("customerType", 0);
-            memberCardBean= (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
-            orderNo=this.getIntent().getStringExtra("orderNo");
+            memberCardBean = (MemberCardBean) this.getIntent().getSerializableExtra("memberCardBean");
+            orderNo = this.getIntent().getStringExtra("orderNo");
             memberCouponBean = (MemberCouponBean) this.getIntent().getSerializableExtra("memberCouponBean");
             discountAfterMoney = this.getIntent().getDoubleExtra("discountAfterMoney", 0);
             discountMoney = this.getIntent().getDoubleExtra("discountMoney", 0);
         }
         initView();
     }
+
     private void initView() {
         initViewData();
         home_grid = (ListView) findViewById(R.id.listView);
-        int itemCount=4;
-        if (haveMemberPay()){
-            itemCount=5;
+        int itemCount = 4;
+        if (haveMemberPay()) {
+            itemCount = 5;
         }
         gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData, itemCount);
-        if (haveMemberPay()){
-            gridViewAdapter.setLogoSize(ConvertUtils.dp2px(30),ConvertUtils.dp2px(30));
-        }else gridViewAdapter.setLogoSize(ConvertUtils.dp2px(40),ConvertUtils.dp2px(40));
+        if (haveMemberPay()) {
+            gridViewAdapter.setLogoSize(ConvertUtils.dp2px(30), ConvertUtils.dp2px(30));
+        } else gridViewAdapter.setLogoSize(ConvertUtils.dp2px(40), ConvertUtils.dp2px(40));
         home_grid.setAdapter(gridViewAdapter);
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -199,10 +202,11 @@ public class ChosePayModeActivity extends BaseActivity {
         if (!haveMemberPay()) {
             homeData.remove(0);
         }
-        if (customerType==TYPE_ORDER_PUSH){
+        if (customerType == TYPE_ORDER_PUSH) {
             homeData.remove(3);
         }
     }
+
     private boolean haveMemberPay() {
         if ((customerType == TYPE_MEMBER_PAY &&
                 memberCardBean != null && memberCardBean.ctName.equals("储值卡"))) {
@@ -223,7 +227,7 @@ public class ChosePayModeActivity extends BaseActivity {
                             if (memberCouponBean != null) {
                                 memberPayWithCoupon(discountAfterMoney, discountMoney, discountAfterMoney, data.getTotalMoney(), 5);
                             } else {
-                                memberPayWithoutCoupon(data.getBalanceMoney(), 0,data.getBalanceMoney(), data.getTotalMoney(), 5);
+                                memberPayWithoutCoupon(data.getBalanceMoney(), 0, data.getBalanceMoney(), data.getTotalMoney(), 5);
                             }
                         }
 
@@ -244,7 +248,7 @@ public class ChosePayModeActivity extends BaseActivity {
 
     private void memberPayWithoutCoupon(double discountAfterMoney, double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithoutCoupon(discountAfterMoney,discountMoney,  memberCardBean.memberId, memberCardBean.nickName,memberCardBean.cardNo,
+                .memberPayWithoutCoupon(discountAfterMoney, discountMoney, memberCardBean.memberId, memberCardBean.nickName, memberCardBean.cardNo,
                         cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
                         , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 0)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
@@ -279,9 +283,9 @@ public class ChosePayModeActivity extends BaseActivity {
                 });
     }
 
-    private void memberPayWithCoupon(double discountAfterMoney,double discountMoney, final double realMoney, double originMoney, int payType) {
+    private void memberPayWithCoupon(double discountAfterMoney, double discountMoney, final double realMoney, double originMoney, int payType) {
         HttpCall.getApiService()
-                .memberPayWithCoupon(memberCouponBean.getGId(),discountAfterMoney, discountMoney, memberCardBean.memberId, memberCardBean.nickName,memberCardBean.cardNo,
+                .memberPayWithCoupon(memberCouponBean.getGId(), discountAfterMoney, discountMoney, memberCardBean.memberId, memberCardBean.nickName, memberCardBean.cardNo,
                         1, cashOrderBean.getMagicBoxOrder().getOrderNo(), realMoney, payType
                         , Hawk.get("shiftId", 0), Hawk.get("shopId", 0), originMoney, 3, 113, 1)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
@@ -315,22 +319,26 @@ public class ChosePayModeActivity extends BaseActivity {
                     }
                 });
     }
+
     private void memberPayFailed() {
         if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
         new HintDismissDialog(ChosePayModeActivity.this, "会员卡支付失败!").show();
     }
 
-    private void posOrder(String orderNo,  double money , int payType){
-        if (customerType==TYPE_MEMBER_RECHARGE){//充值不生成订单
+    private void posOrder(String orderNo, double money, int payType) {
+
+        if (customerType == TYPE_MEMBER_RECHARGE) {//充值不生成订单
             memberRecharge(payType);
             payFinish();
             return;
         }
-        if (customerType==TYPE_ORDER_PUSH){
+        if (customerType == TYPE_ORDER_PUSH) {
             orderPushPayCallBack(payType);
             return;
         }
-        final LoadingProgressDialog dialog =new LoadingProgressDialog(ChosePayModeActivity.this,"付款成功，生成订单中...");
+        VoiceUtils.with(getApplicationContext()).Play(""+money,true,payType);
+
+        final LoadingProgressDialog dialog = new LoadingProgressDialog(ChosePayModeActivity.this, "付款成功，生成订单中...");
         dialog.show();
         HttpCall.getApiService()
                 .posOrder(PhoneUtils.getIMEI(), orderNo, money, payType
@@ -340,15 +348,15 @@ public class ChosePayModeActivity extends BaseActivity {
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse data) {
-                        LogUtils.d(TAG, "posOrder onSuccess data=" );
-                        if (dialog!=null)dialog.dismiss();
+                        LogUtils.d(TAG, "posOrder onSuccess data=");
+                        if (dialog != null) dialog.dismiss();
                         payFinish();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         LogUtils.d(TAG, "posOrder onError e" + e.getMessage());
-                        if (dialog!=null)dialog.dismiss();
+                        if (dialog != null) dialog.dismiss();
                         payFinish();
                         super.onError(e);
                     }
@@ -361,6 +369,7 @@ public class ChosePayModeActivity extends BaseActivity {
                     }
                 });
     }
+
     private void payFinish() {
         AppManager.getInstance().finishActivity();
         AppManager.getInstance().finishActivity(PaymentActivity.class);
@@ -373,12 +382,13 @@ public class ChosePayModeActivity extends BaseActivity {
         }
 
     }
-    private void orderPushPayCallBack(int payType){
-        final LoadingProgressDialog dialog =new LoadingProgressDialog(ChosePayModeActivity.this,"付款成功，生成订单中...");
-        PosRequestBean posRequestBean= new PosRequestBean();
-        posRequestBean.payType=payType;
+
+    private void orderPushPayCallBack(int payType) {
+        final LoadingProgressDialog dialog = new LoadingProgressDialog(ChosePayModeActivity.this, "付款成功，生成订单中...");
+        PosRequestBean posRequestBean = new PosRequestBean();
+        posRequestBean.payType = payType;
         HttpCall.getApiService()
-                .posPayCallBack(orderNo,Hawk.get("shiftId",0),posRequestBean)
+                .posPayCallBack(orderNo, Hawk.get("shiftId", 0), posRequestBean)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -402,25 +412,27 @@ public class ChosePayModeActivity extends BaseActivity {
                     }
                 });
     }
-    private void orderPushPayFinish(){
+
+    private void orderPushPayFinish() {
         RxBus.get().post(new UpdateOrderListUIBean());
         payFinish();
-        if (dialog!=null) {
+        if (dialog != null) {
             dialog.dismiss();
         }
     }
+
     private void createCashOrder(String money) {
-        loadingProgressDialog=new LoadingProgressDialog(ChosePayModeActivity.this,"付款中...");
+        loadingProgressDialog = new LoadingProgressDialog(ChosePayModeActivity.this, "付款中...");
         loadingProgressDialog.show();
         HttpCall.getApiService()
                 .createCashOrder(PhoneUtils.getIMEI(), money, 3, Hawk.get("shiftId", 0)
-                ,Hawk.get("shopId",0),Hawk.get("shopName",""))
+                        , Hawk.get("shopId", 0), Hawk.get("shopName", ""))
                 .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
                 .subscribe(new BaseObserver<CashOrderBean>() {
                     @Override
                     protected void onSuccess(CashOrderBean bean) {
                         LogUtils.d(TAG, "createCashOrder Success");
-                        cashOrderBean=bean;
+                        cashOrderBean = bean;
                         postMemberSettlement();
 
                     }
@@ -431,18 +443,19 @@ public class ChosePayModeActivity extends BaseActivity {
                     }
                 });
     }
-    public boolean scanner(){
+
+    public boolean scanner() {
         LogUtils.d(TAG, "scanner");
         ScannerManager scannerManager = new ScannerManager();
         Bundle bundle = new Bundle();
         bundle.putInt(ScannerConfig.COMM_SCANNER_TYPE, 1);
         bundle.putBoolean(ScannerConfig.COMM_ISCONTINUOUS_SCAN, false);
-        try{
+        try {
             scannerManager.initScanner(bundle);
             scannerManager.startScan(600, new OnScanListener() {
                 @Override
                 public void onScanResult(int i, byte[] bytes) {
-                    if(i == -2001){
+                    if (i == -2001) {
                         ToastUtil.getInstance().showToast("操作取消");
                     }
                     LogUtils.d(TAG, "scanner result : " + i);
@@ -452,12 +465,13 @@ public class ChosePayModeActivity extends BaseActivity {
                     }
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
         return true;
     }
+
     public boolean codePay(String amt, String extOrderNo) {
         LogUtils.d(TAG, "codePay");
         try {
@@ -465,19 +479,20 @@ public class ChosePayModeActivity extends BaseActivity {
             String transId = "码上收";
             CodePayBean codePayBean = new CodePayBean();
             codePayBean.setAmt(amt);
-            if (ObjectUtils.isNotEmpty(extOrderNo)){
+            if (ObjectUtils.isNotEmpty(extOrderNo)) {
                 codePayBean.setExtOrderNo(extOrderNo);
             }
             LogUtils.d(TAG, "codePay: " + codePayBean.toJsonString());
             JSONObject transData = new JSONObject(codePayBean.toJsonString());
             AppHelper.callTrans(ChosePayModeActivity.this, appName, transId, transData);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             PromptUtils.getInstance(getApplicationContext()).showSysErrorLong();
             e.printStackTrace();
         }
         return false;
     }
+
     public boolean sanPay(String amt, String extOrderNo) {
         LogUtils.d(TAG, "sanPay");
         try {
@@ -485,19 +500,20 @@ public class ChosePayModeActivity extends BaseActivity {
             String appName = AppNameEnum.SWEEPCOLLECTION.getValue();
             ScanBean scanPayBean = new ScanBean();
             scanPayBean.setAmt(amt);
-            if (ObjectUtils.isNotEmpty(extOrderNo)){
+            if (ObjectUtils.isNotEmpty(extOrderNo)) {
                 scanPayBean.setExtOrderNo(extOrderNo);
             }
             LogUtils.d(TAG, "sanPay: " + scanPayBean.toJsonString());
             JSONObject transData = new JSONObject(scanPayBean.toJsonString());
             AppHelper.callTrans(ChosePayModeActivity.this, appName, transId, transData);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             PromptUtils.getInstance(getApplicationContext()).showSysErrorLong();
             e.printStackTrace();
         }
         return false;
     }
+
     public boolean bankCardPay(String amt, String extOrderNo) {
         LogUtils.d(TAG, "pay");
         try {
@@ -505,20 +521,21 @@ public class ChosePayModeActivity extends BaseActivity {
             String transId = "消费";
             PayBean payBean = new PayBean();
             payBean.setAmt(amt);
-            if(ObjectUtils.isNotEmpty(extOrderNo)){
+            if (ObjectUtils.isNotEmpty(extOrderNo)) {
                 payBean.setExtOrderNo(extOrderNo);
             }
             JSONObject transData = new JSONObject(payBean.toJsonString());
             LogUtils.d(TAG, "pay: " + payBean.toJsonString());
             AppHelper.callTrans(ChosePayModeActivity.this, appName, transId, transData);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             PromptUtils.getInstance(getApplicationContext()).showSysErrorLong();
             e.printStackTrace();
         }
         return false;
     }
-    public boolean returnMoney(String amt, String refNo,String date) {
+
+    public boolean returnMoney(String amt, String refNo, String date) {
         LogUtils.d(TAG, "pay");
         try {
             String appName = AppNameEnum.SWEEPCOLLECTION.getValue();
@@ -531,19 +548,20 @@ public class ChosePayModeActivity extends BaseActivity {
             LogUtils.d(TAG, "pay: " + cancelBean.toJsonString());
             AppHelper.callTrans(ChosePayModeActivity.this, appName, transId, transData);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             PromptUtils.getInstance(getApplicationContext()).showSysErrorLong();
             e.printStackTrace();
         }
         return false;
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
             LogUtils.d(TAG, "requestCode --> " + requestCode + "  resultCode --> " + requestCode + "  data --> " + data);
-            if(AppHelper.TRANS_REQUEST_CODE == requestCode){
-                if(Activity.RESULT_OK == resultCode && ObjectUtils.isNotEmpty(data)){
-                    Map<String,String> map = AppHelper.filterTransResult(data);
+            if (AppHelper.TRANS_REQUEST_CODE == requestCode) {
+                if (Activity.RESULT_OK == resultCode && ObjectUtils.isNotEmpty(data)) {
+                    Map<String, String> map = AppHelper.filterTransResult(data);
                     JSONObject transData = new JSONObject(map.get(AppHelper.TRANS_DATA));
                     // 不同的transId调用不同的回调方法
                     String appName = map.get(AppHelper.TRANS_APP_NAME);
@@ -566,7 +584,7 @@ public class ChosePayModeActivity extends BaseActivity {
                             if (!TextUtils.isEmpty(amt))
                                 posOrder(refNo, Double.parseDouble(amt), payType);
                         }
-                    }else  if (appName.equals("POS通码上收")) {
+                    } else if (appName.equals("POS通码上收")) {
                         String resDesc = transData.getString("resDesc");
                         if (!TextUtils.isEmpty(resDesc) && resDesc.equals("交易成功")) {
                             String memInfo = transData.getString("memInfo");
@@ -584,7 +602,7 @@ public class ChosePayModeActivity extends BaseActivity {
                             if (!TextUtils.isEmpty(amt))
                                 posOrder(refNo, Double.parseDouble(amt), payType);
                         }
-                    }else  if (appName.equals("银行卡收款")){
+                    } else if (appName.equals("银行卡收款")) {
                         String resDesc = transData.getString("resDesc");
                         LogUtils.d(TAG, "银行卡收款 resDesc=" + resDesc.toString());
                         if (!TextUtils.isEmpty(resDesc) && resDesc.equals("交易成功")) {
@@ -595,36 +613,37 @@ public class ChosePayModeActivity extends BaseActivity {
                                 posOrder(refNo, Double.parseDouble(amt), payType);
                         }
                     }
-                   // String callBackFn = DuofenPayCallBackJSFactory.getInstance().callBackJS(appName, transId, transData.toString());
-                    LogUtils.d(TAG, "transData="+transData.toString());
-                    LogUtils.d(TAG, "map="+map.toString());
+                    // String callBackFn = DuofenPayCallBackJSFactory.getInstance().callBackJS(appName, transId, transData.toString());
+                    LogUtils.d(TAG, "transData=" + transData.toString());
+                    LogUtils.d(TAG, "map=" + map.toString());
 
-                }else if (Activity.RESULT_CANCELED == resultCode){
+                } else if (Activity.RESULT_CANCELED == resultCode) {
                     PromptUtils.getInstance(this).showToastShort("取消操作");
-                }else if (Activity.RESULT_FIRST_USER == resultCode){
+                } else if (Activity.RESULT_FIRST_USER == resultCode) {
                     PromptUtils.getInstance(this).showToastShort("操作错误");
-                }else {
+                } else {
                     PromptUtils.getInstance(this).showToastLong("其他错误，请尝试再次操作！错误码：resultCode");
                 }
-            }else if (AppHelper.PRINT_REQUEST_CODE == requestCode){
+            } else if (AppHelper.PRINT_REQUEST_CODE == requestCode) {
                 LogUtils.d(TAG, "in print");
-                Map<String,String> map = AppHelper.filterTransResult(data);
-                for (String key : map.keySet()){
+                Map<String, String> map = AppHelper.filterTransResult(data);
+                for (String key : map.keySet()) {
                     System.out.println(key + " : " + map.get(key));
                 }
                 LogUtils.d(TAG, ObjectUtils.map2String(map));
-            }else {
+            } else {
                 PromptUtils.getInstance(this).showCallBackErrorLong();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             PromptUtils.getInstance(this).showSysErrorLong();
         }
     }
+
     private void memberRecharge(final int payType) {
-        LogUtils.d(TAG,"memberRecharge type="+payType);
+        LogUtils.d(TAG, "memberRecharge type=" + payType);
 
         if (memberCardBean != null) {
-            LogUtils.d(TAG,"memberRecharge");
+            LogUtils.d(TAG, "memberRecharge");
             HttpCall.getApiService()
                     .memberRecharge(memberCardBean.memberId, money, payType, (Integer) Hawk.get("shopId"))
                     .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
@@ -632,13 +651,13 @@ public class ChosePayModeActivity extends BaseActivity {
                     .subscribe(new BaseObserver<BaseResponse>() {
                         @Override
                         public void onSuccess(BaseResponse data) {
-                            LogUtils.d(TAG, "memberRecharge onSuccess " );
-                            Intent intent=new Intent(getApplicationContext(), MemberDoResultActivity.class);
-                            intent.putExtra("rechargeMoney",money);
-                            intent.putExtra("MemberCardBean",memberCardBean);
-                            intent.putExtra("orderNo","123");
-                            intent.putExtra("payType",payType);
-                            intent.putExtra("balance",memberCardBean.money+money);
+                            LogUtils.d(TAG, "memberRecharge onSuccess ");
+                            Intent intent = new Intent(getApplicationContext(), MemberDoResultActivity.class);
+                            intent.putExtra("rechargeMoney", money);
+                            intent.putExtra("MemberCardBean", memberCardBean);
+                            intent.putExtra("orderNo", "123");
+                            intent.putExtra("payType", payType);
+                            intent.putExtra("balance", memberCardBean.money + money);
                             startActivity(intent);
                         }
 

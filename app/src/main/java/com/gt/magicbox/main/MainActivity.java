@@ -390,6 +390,7 @@ public class MainActivity extends BaseActivity {
             Hawk.put("isLogin", false);
             Hawk.delete("busId");
             Hawk.delete("shiftId");
+            Hawk.delete("ShopInfoBean");
             Intent intent = new Intent(MainActivity.this, LoadingActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

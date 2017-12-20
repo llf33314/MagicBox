@@ -103,6 +103,7 @@ public class MoreActivity extends BaseActivity {
                         Hawk.put("isLogin",false);
                         Hawk.delete("busId");
                         Hawk.delete("shiftId");
+                        Hawk.delete("ShopInfoBean");
                         Intent  intent=new Intent(MoreActivity.this,LoadingActivity.class);
                         startActivity(intent);
                     }
