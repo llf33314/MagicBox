@@ -27,6 +27,7 @@ import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
+import com.gt.magicbox.utils.voice.PlaySound;
 import com.gt.magicbox.utils.voice.VoiceUtils;
 import com.orhanobut.hawk.Hawk;
 
@@ -125,23 +126,23 @@ public class MemberDoResultActivity extends BaseActivity {
     }
 
     private void playMemberPayVoice() {
-        VoiceUtils.with(getApplicationContext()).Play("" + realMoney, true, 5)
+        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(realMoney), 5)
                 .setAppendListener(new VoiceUtils.AppendListener() {
                     @Override
                     public void append() {
-                        VoiceUtils.with(getApplicationContext()).Play("" + balance, true, 7)
+                        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(balance), 7)
                                 .setAppendListener(null);
-
                     }
                 });
+
     }
 
     private void playMemberRechargeVoice() {
-        VoiceUtils.with(getApplicationContext()).Play("" + rechargeMoney, true, 6)
+        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(rechargeMoney), 6)
                 .setAppendListener(new VoiceUtils.AppendListener() {
                     @Override
                     public void append() {
-                        VoiceUtils.with(getApplicationContext()).Play("" + balance, true, 7)
+                        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(balance), 7)
                                 .setAppendListener(null);
                     }
                 });

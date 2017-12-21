@@ -36,6 +36,7 @@ import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
+import com.gt.magicbox.utils.voice.PlaySound;
 import com.gt.magicbox.utils.voice.VoiceUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
@@ -84,7 +85,10 @@ public class PayResultActivity extends BaseActivity {
         setContentView(R.layout.activity_pay_result);
         setToolBarTitle("");
         initView();
-        VoiceUtils.with(getApplicationContext()).Play(""+message,true,payType);
+        double money=Double.valueOf(String.format("%.2f", Double.parseDouble(message)));
+        LogUtils.d("PayResultActivity onCreate payType="+payType);
+        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$"+ PlaySound.getCapitalValueOf(money),payType);
+
         //playSound();
 
         if (payType == TYPE_CASH) {
@@ -96,6 +100,8 @@ public class PayResultActivity extends BaseActivity {
         if (this.getIntent() != null) {
             boolean success = getIntent().getBooleanExtra("success", true);
             payType = getIntent().getIntExtra("payType", 0);
+            LogUtils.d("PayResultActivity initView payType="+payType);
+
             message = getIntent().getStringExtra("message");
             orderNo = getIntent().getStringExtra("orderNo");
             fromType = getIntent().getIntExtra("fromType", 0);

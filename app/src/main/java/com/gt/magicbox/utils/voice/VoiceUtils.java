@@ -1,20 +1,23 @@
 package com.gt.magicbox.utils.voice;
 
-import android.app.Activity;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 
 import com.gt.magicbox.R;
-import com.gt.magicbox.utils.DeferredHandler;
 import com.gt.magicbox.utils.DoubleCalcUtils;
-import com.gt.magicbox.utils.commonutil.DrawableUtils;
+import com.gt.magicbox.utils.WavMergeUtil;
+import com.gt.magicbox.utils.commonutil.FileUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/7/28.
@@ -74,138 +77,145 @@ public class VoiceUtils {
         return IsPlaying;
     }
 
-    public VoiceUtils Play(String stramount, boolean strsuccess, int soundType) {
 
-        this.soundType = soundType;
-        String str = null;
-        //如果是TRUE  就播放“收款成功”这句话
-        if (strsuccess) {
-            str = "$" + PlaySound.getCapitalValueOf(Double.valueOf(String.format("%.2f", Double.parseDouble(stramount))));
-        } else {
-            str = PlaySound.getCapitalValueOf(Double.valueOf(String.format("%.2f", Double.parseDouble(stramount))));
+    public List<File> getStreamList(String soundString) {
+        List<File> streamList = new ArrayList<>();
+        char[] chars = soundString.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            InputStream wavStream = null;
+            switch ("" + chars[i]) {
+                case "零":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound0);
+                    break;
+                case "壹":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound1);
 
+                    break;
+                case "贰":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound2);
+
+                    break;
+                case "叁":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound3);
+
+                    break;
+                case "肆":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound4);
+
+                    break;
+                case "伍":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound5);
+
+                    break;
+                case "陆":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound6);
+
+                    break;
+                case "柒":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound7);
+
+                    break;
+                case "捌":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound8);
+
+                    break;
+                case "玖":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sound9);
+
+                    break;
+                case "拾":
+                    wavStream = mContext.getResources().openRawResource(R.raw.soundshi);
+
+                    break;
+                case "佰":
+                    wavStream = mContext.getResources().openRawResource(R.raw.soundbai);
+
+                    break;
+                case "仟":
+                    wavStream = mContext.getResources().openRawResource(R.raw.soundqian);
+
+                    break;
+                case "角":
+                    wavStream = mContext.getResources().openRawResource(R.raw.soundjiao);
+
+                    break;
+                case "分":
+                    wavStream = mContext.getResources().openRawResource(R.raw.soundfen);
+
+                    break;
+                case "元":
+                    wavStream = mContext.getResources().openRawResource(R.raw.soundyuan);
+
+                    break;
+                case "整":
+                    wavStream = mContext.getResources().openRawResource(R.raw.soundzheng);
+
+                    break;
+                case "万":
+                    wavStream = mContext.getResources().openRawResource(R.raw.soundwan);
+
+                    break;
+                case "点":
+                    wavStream = mContext.getResources().openRawResource(R.raw.sounddot);
+
+
+                    break;
+                case "$":
+                    if (soundType >= 0 && soundType < successVoice.length) {
+                        wavStream = mContext.getResources().openRawResource(successVoice[soundType]);
+                    }
+                    break;
+            }
+            if (wavStream != null) {
+                LogUtils.d("wavStream--i=" + i);
+                File file = FileUtils.createAppDataFile("" + i);
+                inputstreamtofile(wavStream, file);
+                if (file.exists()) {
+                    streamList.add(file);
+                }
+            }
         }
-        System.out.println("金额的长度 " + str);
-        String temp = "";
-
-        final String finalStr = str;
-        final String finalStr1 = str;
-        PlaySoundList(1, finalStr, finalStr1.length());
-
-        return singleton;
-
+        return streamList;
     }
 
-
-    public void PlaySoundList(final int soundindex, final String soundString, final int soundcount) {
-        singleton.SetIsPlay(true);
-        boolean createState = false;
-        if (mediaPlayer == null) {
-            mediaPlayer = null;
-        }
-        System.out.println("加载音频[" + soundindex + "]");
-        mediaPlayer = createSound(soundindex, soundString);
-        createState = true;
-
-        if (createState == true)
-            System.out.println("加载音频成功[" + soundindex + "]");
-        else
-            System.out.println("加载音频失败[" + soundindex + "]");
-        if (mediaPlayer == null) {
-            return;
-        }
-        finishFlag = false;
-        final int duration = mediaPlayer.getDuration();
-        final int amoungToUpdate = duration / 10;
-        if (runnable != null) {
-            handler.removeCallbacks(runnable);
-        }
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (mediaPlayer != null) {
-                        double currentPosition = mediaPlayer.getCurrentPosition();
-                        double doubleDuration = duration;
-                        LogUtils.d("result currentPosition=" + currentPosition + "  duration=" + doubleDuration);
-                        if (duration > 0) {
-                            double result = DoubleCalcUtils.divide(2, currentPosition, doubleDuration);
-                            if (result >= 0.6f && !finishFlag) {
-                                finishFlag = true;
-                                LogUtils.d("result=" + result);
-
-                                mediaPlayer.release();//释放音频资源
-                                int newsoundindex = soundindex;
-                                System.out.println("释放资源[" + soundindex + "]");
-                                if (soundindex < soundcount) {
-                                    newsoundindex = newsoundindex + 1;
-                                    PlaySoundList(newsoundindex, soundString, soundcount);
-                                    if (soundindex == soundcount - 1 && appendListener != null) {
-                                        handler.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                appendListener.append();
-
-                                            }
-                                        }, 1000);
-                                    }
-                                } else {
-                                    singleton.SetIsPlay(false);
-                                }
-
-                            }
+    public VoiceUtils playMergeWavFile(String str, int soundType) {
+        this.soundType = soundType;
+        List<File> fileList = getStreamList(str);
+        File mix = FileUtils.createAppDataFile("mix");
+        WavMergeUtil.mergeWavResources(fileList, mix);
+        if (mix.exists()) {
+            mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource(mix.getAbsolutePath());
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        if (appendListener != null) {
+                            appendListener.append();
                         }
-
                     }
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                }
-                handler.postDelayed(this, amoungToUpdate);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            mix.delete();
+        }
+        return singleton;
+    }
 
-        };
-        handler.postDelayed(runnable, 0);
-
-        //播放完成触发此事件
-//        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mp) {
-//                LogUtils.d("mediaPlayer.getDuration()=" + mediaPlayer.getDuration());
-//
-//                mp.release();//释放音频资源
-//                int newsoundindex = soundindex;
-//                System.out.println("释放资源[" + soundindex + "]");
-//                if (soundindex < soundcount) {
-//                    newsoundindex = newsoundindex + 1;
-//                    PlaySoundList(newsoundindex, soundString, soundcount);
-//                    if (soundindex == soundcount - 1 && appendListener != null) {
-//                        handler.postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                appendListener.append();
-//
-//                            }
-//                        }, 1000);
-//                    }
-//                } else {
-//                    singleton.SetIsPlay(false);
-//                }
-//
-//            }
-//        });
+    public static void inputstreamtofile(InputStream ins, File file) {
         try {
-            //在播放音频资源之前，必须调用Prepare方法完成些准备工作
-            if (createState)
-                mediaPlayer.prepare();
-            else
-                mediaPlayer.prepare();
-            //开始播放音频
-            mediaPlayer.start();
-
-            System.out.println("播放音频[" + soundindex + "]");
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            OutputStream os = new FileOutputStream(file);
+            int bytesRead = 0;
+            byte[] buffer = new byte[8192];
+            while ((bytesRead = ins.read(buffer, 0, 8192)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.close();
+            ins.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -214,7 +224,7 @@ public class VoiceUtils {
         MediaPlayer mp = null;
 
         String soundChar = soundString.substring(soundIndex - 1, soundIndex);
-        LogUtils.d("soundChar=" + soundChar);
+        LogUtils.d("soundChar=" + soundChar + " payType=" + soundType);
         switch (soundChar) {
             case "零":
                 mp = MediaPlayer.create(mContext, R.raw.sound0);

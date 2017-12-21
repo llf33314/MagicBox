@@ -1,6 +1,7 @@
 package com.gt.magicbox.utils.commonutil;
 
 import android.annotation.SuppressLint;
+import android.os.Environment;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -1129,5 +1130,19 @@ public final class FileUtils {
             }
         }
         return true;
+    }
+
+    public static  File createAppDataFile(String name) {
+        File path = Utils.getContext().getExternalCacheDir();
+        File file = new File(path, name);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return file;
     }
 }
