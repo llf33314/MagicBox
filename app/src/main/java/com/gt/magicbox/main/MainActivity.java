@@ -1,10 +1,13 @@
 package com.gt.magicbox.main;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -28,15 +31,16 @@ import com.gt.magicbox.member.MemberChooseActivity;
 import com.gt.magicbox.order.OrderListActivity;
 import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
-import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
+import com.gt.magicbox.setting.printersetting.bluetooth.OpenPrinterPortMsg;
 import com.gt.magicbox.update.UpdateManager;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.RxBus;
-import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.AppUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
+import com.gt.magicbox.utils.commonutil.ServiceUtils;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 import com.service.CustomerDisplayService;
@@ -46,6 +50,7 @@ import com.synodata.codelib.decoder.CodeUtils;
 import com.synodata.codelib.decoder.CodeUtils$IActivateListener;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import io.reactivex.functions.Consumer;
 
@@ -108,7 +113,7 @@ public class MainActivity extends BaseActivity {
         bindOrderService();
         bindCustomerDisplayService();
         checkIsUpdatedAndLogout();
-
+        //autoConnectBluetoothPrinter();
         if (Constant.product.equals(BaseConstant.PRODUCTS[0])) {
             ScreenUtils.setScreenBrightness(MainActivity.this, 255);
         }
@@ -190,9 +195,16 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!ServiceUtils.isServiceRunning("PrinterConnectService")) {
+                    portIntent = new Intent(getApplicationContext(), PrinterConnectService.class);
+                    startService(portIntent);
+                }
+            }
+        },5000);
 
-        portIntent = new Intent(this, PrinterConnectService.class);
-        startService(portIntent);
 
 
         RxBus.get().toObservable(UpdateMainBadgeBean.class).subscribe(new Consumer<UpdateMainBadgeBean>() {
@@ -254,7 +266,35 @@ public class MainActivity extends BaseActivity {
         }
         networkDialog.show();
     }
+    public void autoConnectBluetoothPrinter() {
+        BluetoothAdapter   mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!mBluetoothAdapter.isEnabled()) {
+            ToastUtil.getInstance().showToast("请开启蓝牙后再扫描");
+            return;
+        }
+        BluetoothDevice device = null;
+        String deviceAddress = Hawk.get("deviceAddress");
+        if (!TextUtils.isEmpty(deviceAddress)) {
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter
+                    .getBondedDevices();// 获取本机已配对设备
+            if (pairedDevices.size() > 0) {
+                for (BluetoothDevice device1 : pairedDevices) {
+                    if (device1.getAddress().equals(deviceAddress)) {
+                        device = device1;
+                    }
+                    break;
+                }
+            }
+            LogUtils.d("device="+device==null);
 
+            if (device!=null) {
+                LogUtils.d("device addr="+device.getAddress());
+            }
+            OpenPrinterPortMsg rxMsg=new OpenPrinterPortMsg(OpenPrinterPortMsg.OPEN_PROT);
+            rxMsg.setBluetoothDevice(device);
+            RxBus.get().post(rxMsg);
+        }
+    }
     private void getUnpaidOrderCount() {
         HttpCall.getApiService()
                 .getUnpaidOrderCount(Hawk.get("childBusId", 0), PhoneUtils.getIMEI())

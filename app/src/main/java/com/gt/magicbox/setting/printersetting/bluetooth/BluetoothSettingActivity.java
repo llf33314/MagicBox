@@ -32,7 +32,9 @@ import com.gt.magicbox.base.OnRecyclerViewItemClickListener;
 import com.gt.magicbox.setting.printersetting.PrinterConnectService;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.BluetoothUtil;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.orhanobut.hawk.Hawk;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -475,12 +477,12 @@ public class BluetoothSettingActivity extends BaseActivity {
                         //打开端口
                         OpenPrinterPortMsg rxMsg=new OpenPrinterPortMsg(OpenPrinterPortMsg.OPEN_PROT);
                         rxMsg.setBluetoothDevice(device);
+                        Hawk.put("deviceAddress",device.getAddress());
                         RxBus.get().post(rxMsg);
                         break;
                 }
             }
         }
     }
-
 
 }
