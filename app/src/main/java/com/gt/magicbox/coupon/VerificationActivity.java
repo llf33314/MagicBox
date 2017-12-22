@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,7 +16,6 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
-import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.SpaceItemDecoration;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.MemberCouponBean;
@@ -33,7 +33,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -122,28 +121,33 @@ public class VerificationActivity extends BaseActivity {
         }
     }
 
-    private void initCouponRecyclerView(RecyclerView recyclerView, int type, final List<MemberCouponBean> data) {
+    private void initCouponRecyclerView(RecyclerView recyclerView, final List<MemberCouponBean> data) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(layoutManager);
-        final HorizontalCouponAdapter adapter = new HorizontalCouponAdapter(this, data, type);
-        adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        final CheckStateAdapter adapter = new CheckStateAdapter(getApplicationContext(), data);
+        adapter.setOnItemClickListener(new CheckStateAdapter.OnItemClickListener() {
             @Override
-            public void onClick(View view, Object item, int position) {
+            public void OnItemClick(View view, CheckStateAdapter.StateHolder holder, int position) {
                 LogUtils.d("lastPosition=" + lastPosition + "  position=" + position);
                 if (lastPosition != position) {
                     memberCouponBean = data.get(position);
                     calculateCoupon(data.get(position));
-                    adapter.setCurrentItem(position);
-                    adapter.notifyDataSetChanged();
                     lastPosition = position;
                 } else {
                     lastPosition = -1;
-                    adapter.setCurrentItem(-1);
-                    adapter.notifyDataSetChanged();
                     memberCouponBean = null;
                     calculateCoupon(null);
                 }
+            }
+        });
+        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (adapter != null) {
+                    adapter.updateCurrentHolder();
+                }
+                return false;
             }
         });
         recyclerView.setAdapter(adapter);
@@ -236,7 +240,7 @@ public class VerificationActivity extends BaseActivity {
                             if (data != null) {
                                 LogUtils.i(TAG, "onSuccess size=" + data.size());
                                 if (data.size() > 0) {
-                                    initCouponRecyclerView(couponView, HorizontalCouponAdapter.TYPE_COUPON, data);
+                                    initCouponRecyclerView(couponView, data);
                                 } else if (data.size() == 0) {
                                     couponLayout.setVisibility(View.GONE);
                                 }

@@ -207,8 +207,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                 if (!TextUtils.isEmpty(numberString)) {
                     double number = Double.parseDouble(numberString.toString());
                     if (number > Hawk.get("limitMoney", BaseConstant.DEFAULT_LIMIT_MONEY)) {
-                        LogUtils.d("limitMoney", "number=" + number);
-                        numberString = new StringBuffer("" + Hawk.get("limitMoney", BaseConstant.DEFAULT_LIMIT_MONEY));
+                        numberString.deleteCharAt(numberString.length() - 1);
                     }
                 }
             }
@@ -352,7 +351,6 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
         externalKeyboardCalc();
         showMoney();
 
-        //showMoney();
     }
 
     public void inputWithoutCalc(String str) {

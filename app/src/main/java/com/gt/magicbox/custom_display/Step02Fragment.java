@@ -2,12 +2,10 @@ package com.gt.magicbox.custom_display;
 
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,8 +19,6 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.recyclerview.BaseRecyclerAdapter;
 import com.gt.magicbox.base.recyclerview.SpaceItemDecoration;
 import com.gt.magicbox.bean.BaudRateItemBean;
-import com.gt.magicbox.bean.DistributeCouponBean;
-import com.gt.magicbox.coupon.HorizontalCouponAdapter;
 import com.gt.magicbox.utils.RxBus;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
@@ -30,11 +26,6 @@ import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 /**
  * Description:
