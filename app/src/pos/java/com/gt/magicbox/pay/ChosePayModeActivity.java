@@ -336,7 +336,7 @@ public class ChosePayModeActivity extends BaseActivity {
             orderPushPayCallBack(payType);
             return;
         }
-
+        VoiceUtils.with(getApplicationContext()).playMergeWavFile(""+money,payType);
         final LoadingProgressDialog dialog = new LoadingProgressDialog(ChosePayModeActivity.this, "付款成功，生成订单中...");
         dialog.show();
         HttpCall.getApiService()
@@ -379,7 +379,6 @@ public class ChosePayModeActivity extends BaseActivity {
             Intent intent = new Intent(ChosePayModeActivity.this, PaymentActivity.class);
             startActivity(intent);
         }
-        VoiceUtils.with(getApplicationContext()).playMergeWavFile(""+money,payType);
 
     }
 
