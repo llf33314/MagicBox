@@ -212,4 +212,8 @@ public interface ApiService {
     @POST(HttpConfig.FIND_DUOFEN_CARD_BY_MEMBER_ID_AND_MONEY)
     Observable<BaseResponse<List<MemberCouponBean>>> getMemberAvailableCoupon(@Query("memberId") int  memberId
             , @Query("money") double money, @Query("wxshopId") int shopId);
+
+    @POST(HttpConfig.GET_ORDER_STATUS)
+    Observable<BaseResponse> getOrderStatus(@Query("orderNo") String orderNo,
+                                            @Query("shiftId") int shiftId);
 }

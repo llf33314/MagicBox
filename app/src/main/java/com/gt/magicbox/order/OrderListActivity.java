@@ -113,6 +113,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                             intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
                             intent.putExtra("orderId", orderItemBean.id);
                             intent.putExtra("money", orderItemBean.money);
+                            intent.putExtra("payMode", orderItemBean.type);
                             startActivityForResult(intent,RESULT_FROM_PAY);
                         }
 
@@ -178,7 +179,9 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                                 orderItemBeanList.addAll(data.orders);
                                 orderListAdapter.setData(orderItemBeanList);
                                 if (page == 1) {
-                                    dialog.dismiss();
+                                    if (dialog!=null) {
+                                        dialog.dismiss();
+                                    }
                                     if (status == 0)
                                         setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
                                 } else if (page > 1)
@@ -187,7 +190,9 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                                 if (page == 1) {
                                     if (status == 0)
                                     setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
-                                    dialog.dismiss();
+                                    if (dialog!=null) {
+                                        dialog.dismiss();
+                                    }
                                 }
                                 else if (page > 1) {
                                     pullToRefreshSwipeListView.onPullUpRefreshComplete();
@@ -199,13 +204,18 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                     @Override
                     public void onError(Throwable e) {
                         LogUtils.d(TAG, "onError");
+                        if (dialog!=null) {
+                            dialog.dismiss();
+                        }
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
                         LogUtils.d(TAG, "onFailure");
-
+                        if (dialog!=null) {
+                            dialog.dismiss();
+                        }
                         super.onFailure(code, msg);
                     }
                 });

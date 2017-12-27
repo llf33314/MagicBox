@@ -35,6 +35,7 @@ import com.gt.magicbox.camera.CodeCameraManager;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.http.socket.SocketIOManager;
@@ -182,17 +183,11 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     }
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
-
-                    if (type == TYPE_CUSTOMER_DISPLAY_PAY
-                            || type == TYPE_SERVER_PUSH) {
-                        pushLayout.setVisibility(View.VISIBLE);
-                        normalPayLayout.setVisibility(View.GONE);
-                        showMoney(pushCashierMoney, "" + money);
-                        showMoney(pushCustomerMoney, "" + money);
-                    } else {
-                        showMoney(cashierMoney, "" + money);
-                        showMoney(customerMoney, "" + money);
-                    }
+                    showPayMode(payMode);
+                    pushLayout.setVisibility(View.VISIBLE);
+                    normalPayLayout.setVisibility(View.GONE);
+                    showMoney(pushCashierMoney, "" + money);
+                    showMoney(pushCustomerMoney, "" + money);
                     getQRCodeURL(money, payMode, shiftId);
                     break;
                 case TYPE_SERVER_PUSH:
@@ -216,9 +211,11 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     orderId = this.getIntent().getIntExtra("orderId", 0);
                     money = this.getIntent().getDoubleExtra("money", 0);
                     orderNo = this.getIntent().getStringExtra("orderNo");
+                    payMode = this.getIntent().getIntExtra("payMode", 0);
 
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
+                    showPayMode(payMode);
                     pushLayout.setVisibility(View.VISIBLE);
                     normalPayLayout.setVisibility(View.GONE);
                     showMoney(pushCashierMoney, "" + money);
@@ -400,13 +397,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         BitmapUtils bitmapUtils = new BitmapUtils(this);
         // 加载网络图片
         ImageView imageView;
-        if (type == TYPE_CUSTOMER_DISPLAY_PAY
-                || type == TYPE_CREATED_PAY
-                || type == TYPE_SERVER_PUSH) {
-            imageView = pushQrCode;
-        } else {
-            imageView = qrCode;
-        }
+        imageView = pushQrCode;
+
         bitmapUtils.display(imageView,
                 url, new BitmapLoadCallBack<ImageView>() {
                     @Override
@@ -625,7 +617,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         }
     }
 
-    @OnClick({R.id.wechatPay, R.id.aliPay, R.id.printQrCode})
+    @OnClick({R.id.wechatPay, R.id.aliPay, R.id.printQrCode,R.id.confirmOrder})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.wechatPay:
@@ -641,6 +633,67 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
             case R.id.printQrCode:
 
                 //PrinterConnectService.printQrCode(orderNo, ""+money, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT), qrCodeBitmap);
+                break;
+            case R.id.confirmOrder:
+                getOrderStatus();
+                break;
+        }
+    }
+    private void getOrderStatus() {
+        final LoadingProgressDialog dialog = new LoadingProgressDialog(QRCodePayActivity.this, "查询中...");
+        dialog.show();
+        HttpCall.getApiService()
+                .getOrderStatus(orderNo, Hawk.get("shiftId", 0))
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse data) {
+                        LogUtils.d(TAG, "getOrderStatus onSuccess ");
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.d(TAG, "getOrderStatus onError e" + e.getMessage());
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        //该接口因没有data,所以调到这个位置
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                        if (code == 0) {
+                            payResult(true, "" + money);
+                        } else if (code == 1) {
+                            if (!TextUtils.isEmpty(msg)) {
+                                new HintDismissDialog(QRCodePayActivity.this, "该订单未支付").show();
+                            } else {
+                                new HintDismissDialog(QRCodePayActivity.this, "该订单未支付").show();
+                            }
+                        } else {
+                            new HintDismissDialog(QRCodePayActivity.this, "查询失败").show();
+                        }
+                        LogUtils.d(TAG, "getOrderStatus onFailure msg=" + msg);
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
+    private void showPayMode(int payMode) {
+        switch (payMode) {
+            case 0:
+                wechatPay.setImageResource(R.drawable.wechat_selected);
+                aliPay.setImageResource(R.drawable.alipay_unselected);
+                break;
+            case 1:
+                wechatPay.setImageResource(R.drawable.wechat_unselected);
+                aliPay.setImageResource(R.drawable.alipay_selected);
                 break;
         }
     }

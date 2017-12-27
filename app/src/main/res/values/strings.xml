@@ -17,6 +17,9 @@
     <string name="charge">找零:</string>
     <string name="print_receipt">打印小票</string>
     <string name="confirm">确认</string>
+    <string name="confirm_pay">收款确认</string>
+    <string name="confirm_pay_tip">支付成功，页面未刷新时请点击</string>
+
     <string name="pay_success">支付成功</string>
     <string name="cash_success">收银成功</string>
     <string name="recharge_success">充值成功</string>

@@ -266,35 +266,6 @@ public class MainActivity extends BaseActivity {
         }
         networkDialog.show();
     }
-    public void autoConnectBluetoothPrinter() {
-        BluetoothAdapter   mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (!mBluetoothAdapter.isEnabled()) {
-            ToastUtil.getInstance().showToast("请开启蓝牙后再扫描");
-            return;
-        }
-        BluetoothDevice device = null;
-        String deviceAddress = Hawk.get("deviceAddress");
-        if (!TextUtils.isEmpty(deviceAddress)) {
-            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter
-                    .getBondedDevices();// 获取本机已配对设备
-            if (pairedDevices.size() > 0) {
-                for (BluetoothDevice device1 : pairedDevices) {
-                    if (device1.getAddress().equals(deviceAddress)) {
-                        device = device1;
-                    }
-                    break;
-                }
-            }
-            LogUtils.d("device="+device==null);
-
-            if (device!=null) {
-                LogUtils.d("device addr="+device.getAddress());
-            }
-            OpenPrinterPortMsg rxMsg=new OpenPrinterPortMsg(OpenPrinterPortMsg.OPEN_PROT);
-            rxMsg.setBluetoothDevice(device);
-            RxBus.get().post(rxMsg);
-        }
-    }
     private void getUnpaidOrderCount() {
         HttpCall.getApiService()
                 .getUnpaidOrderCount(Hawk.get("childBusId", 0), PhoneUtils.getIMEI())
