@@ -1,13 +1,18 @@
 package com.gt.magicbox.pay;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -56,6 +61,7 @@ import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
 import com.obsessive.zbar.CameraManager;
 import com.obsessive.zbar.CameraPreview;
 import com.orhanobut.hawk.Hawk;
+import com.service.CustomerDisplayService;
 import com.synodata.scanview.view.CodePreview;
 import com.synodata.scanview.view.Preview$IDecodeListener;
 
@@ -121,8 +127,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     public final static int TYPE_MEMBER_RECHARGE = 3;//会员充值使用支付宝或者微信支付
     public final static int TYPE_CUSTOMER_DISPLAY_PAY = 4;//客显
     private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-
-
+    private ServiceConnection customerDisplaySC;
+    private CustomerDisplayService displayService;
     private static final int MSG_RESULT = 1;
     private static final int MSG_SCENE = 4;
     private static final int BUZZER_ON = 166661;
@@ -140,19 +146,20 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     private ImageScanner mImageScanner = null;
     private Rect fillRect = null;
     private String orderNo = "";
+    private long orderId;
     private int payMode;
     private Integer shiftId;
     private boolean isCodePayRequesting = false;
     private MemberCardBean memberCardBean;
     private MemberCouponBean memberCouponBean;
-
+    private boolean isSuccessPay=false;
     static {
         System.loadLibrary("iconv");
     }
 
     private Bitmap qrCodeBitmap;
     private String qrCodeUrl;
-
+    private long clickTime=0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -161,8 +168,25 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         dialog = new LoadingProgressDialog(QRCodePayActivity.this);
         dialog.show();
         init();
+        initBindService();
     }
 
+    private void initBindService() {
+        customerDisplaySC = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                displayService = ((CustomerDisplayService.CustomerDisplayBinder) service).getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                displayService=null;
+            }
+        };
+        Intent intent =new Intent(getApplicationContext(),CustomerDisplayService.class);
+        bindService(intent,customerDisplaySC, Context.BIND_AUTO_CREATE);
+
+    }
 
     private void init() {
         if (this.getIntent() != null) {
@@ -239,10 +263,12 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                         LogUtils.i(TAG, "onSuccess");
 
                         if (data != null && !TextUtils.isEmpty(data.qrUrl)) {
-                            LogUtils.i(TAG, "data qrUrl=" + data.qrUrl);
                             showQRCodeView(data.qrUrl);
                             orderNo = data.orderNo;
+                            orderId = data.orderId;
                             payResultSocket(orderNo);
+                            LogUtils.i(TAG, "data qrUrl=" + data.qrUrl + "  orderId=" + orderId);
+
                         }
                     }
 
@@ -470,6 +496,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                         payMode = scanCodePayResultBean.payType;
                     }
                     payResult(success, "" + money);
+                    isSuccessPay=true;
                 }
             }
         });
@@ -509,6 +536,11 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         }
         if (socketIOManager != null) {
             socketIOManager.disSocket();
+        }
+        if (type==TYPE_CUSTOMER_DISPLAY_PAY){
+            if (displayService!=null&&!isSuccessPay) {
+                displayService.deleteUnPaidOrderTask(orderId);
+            }
         }
     }
 
@@ -617,7 +649,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         }
     }
 
-    @OnClick({R.id.wechatPay, R.id.aliPay, R.id.printQrCode,R.id.confirmOrder})
+    @OnClick({R.id.wechatPay, R.id.aliPay, R.id.printQrCode, R.id.confirmOrder})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.wechatPay:
@@ -635,10 +667,13 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 //PrinterConnectService.printQrCode(orderNo, ""+money, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT), qrCodeBitmap);
                 break;
             case R.id.confirmOrder:
+                if (SystemClock.uptimeMillis()-clickTime<1500)return;
+                clickTime= SystemClock.uptimeMillis();
                 getOrderStatus();
                 break;
         }
     }
+
     private void getOrderStatus() {
         final LoadingProgressDialog dialog = new LoadingProgressDialog(QRCodePayActivity.this, "查询中...");
         dialog.show();
@@ -685,6 +720,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     }
                 });
     }
+
     private void showPayMode(int payMode) {
         switch (payMode) {
             case 0:

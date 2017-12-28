@@ -17,10 +17,15 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.SerialPortDataBean;
 import com.gt.magicbox.custom_display.CustomerDisplayDataListener;
+import com.gt.magicbox.http.BaseResponse;
+import com.gt.magicbox.http.retrofit.HttpCall;
+import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
+import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.main.MoreFunctionDialog;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.setting.wificonnention.WifiConnectionActivity;
+import com.gt.magicbox.utils.DeferredHandler;
 import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.LogUtils;
@@ -77,6 +82,7 @@ public class CustomerDisplayService extends Service {
             super.handleMessage(msg);
         }
     };
+    private DeferredHandler deferredHandler=new DeferredHandler();
     private ArrayList<SerialPortDataBean> listQA = new ArrayList<>();
     protected SerialPort mSerialPort;
     protected InputStream mInputStream;
@@ -147,15 +153,15 @@ public class CustomerDisplayService extends Service {
                                 listQA.add(new SerialPortDataBean(System.currentTimeMillis(),
                                         qaStr));
                             }
-                            if (listQA.size() >= 2) {
+                            if (listQA.size() >= 1) {
                                 int sizeQA = listQA.size();
-                                SerialPortDataBean lastButOne = listQA.get(sizeQA - 2);
                                 SerialPortDataBean last = listQA.get(sizeQA - 1);
-                                if (last.time - lastButOne.time < 500 && last.data.equals(lastButOne.data)) {
-                                    Log.e(TAG, "生成订单 last=" + last.data);
-                                    startERCodePay(BaseConstant.PAY_ON_WECHAT, Double.parseDouble(last.data));
-                                    listQA.clear();
+                                Log.e(TAG, "生成订单 last=" + last.data);
+                                double money=Double.parseDouble(last.data);
+                                if (money>0) {
+                                    startERCodePay(BaseConstant.PAY_ON_WECHAT, money);
                                 }
+                                listQA.clear();
                             }
                             Log.e(TAG, "接收到串口信息:" + info);
                         }
@@ -208,16 +214,46 @@ public class CustomerDisplayService extends Service {
         }
 
     }
+    public boolean deleteUnPaidOrderTask(final long orderId){
+        deferredHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                deleteOrder(orderId);
+            }
+        });
+        return false;
+    }
+    private void deleteOrder(final long orderId){
+        HttpCall.getApiService()
+                .deleteNotPayOrder(Hawk.get("eqId",0), orderId)
+                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
+                .subscribe(new BaseObserver<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse data) {
+                        LogUtils.d(TAG, "deleteNotPayOrder onSuccess");
+                        if (data != null) {
+                        }
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.d(TAG, "deleteNotPayOrder onError");
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        LogUtils.d(TAG, "deleteNotPayOrder onFailure");
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
     public class CustomerDisplayBinder extends Binder {
-        public void openPort(int baudRate, CustomerDisplayDataListener listener) {
-            customerDisplayDataListener = listener;
-            openSerialPort(baudRate);
-        }
-
-        public void closePort(int baudRate) {
-            closeSerialPort();
+        public CustomerDisplayService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return CustomerDisplayService.this;
         }
     }
+
 
 }

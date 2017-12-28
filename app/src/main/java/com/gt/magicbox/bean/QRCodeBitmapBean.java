@@ -10,4 +10,5 @@ package com.gt.magicbox.bean;
 public class QRCodeBitmapBean {
     public String qrUrl="";
     public String orderNo="";
+    public long orderId;
 }
