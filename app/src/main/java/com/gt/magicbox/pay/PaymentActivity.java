@@ -158,7 +158,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                     Hawk.put("payType", 0);
                     AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                     Intent intent = new Intent(PaymentActivity.this, QRCodePayActivity.class);
-                    intent.putExtra("type", QRCodePayActivity.TYPE_CUSTOMER_DISPLAY_PAY);
+                    intent.putExtra("type", QRCodePayActivity.TYPE_PAY);
                     intent.putExtra("money", money);
                     intent.putExtra("payMode", 0);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
