@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gt.magicbox.utils.commonutil.ConvertUtils;
+
 import java.util.List;
 
 /**
@@ -43,7 +45,8 @@ public class SwipeMenuView extends LinearLayout implements OnClickListener {
 
     private void addItem(SwipeMenuItem item, int id) {
         LayoutParams params = new LayoutParams(item.getWidth(),
-                LayoutParams.MATCH_PARENT);
+                item.getHeight());
+        params.gravity=Gravity.BOTTOM;
         LinearLayout parent = new LinearLayout(getContext());
         parent.setId(id);
         parent.setGravity(Gravity.CENTER);

@@ -10,6 +10,8 @@ import android.view.animation.Interpolator;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.gt.magicbox.order.OrderListAdapter;
+
 /**
  * @author baoyz
  * @date 2014-8-18
@@ -55,7 +57,7 @@ public class SwipeMenuListView extends ListView {
 
     @Override
     public void setAdapter(ListAdapter adapter) {
-        super.setAdapter(new SwipeMenuAdapter(getContext(), adapter) {
+        super.setAdapter(new SwipeMenuAdapter(getContext(),(OrderListAdapter) adapter) {
             @Override
             public void createMenu(SwipeMenu menu) {
                 if (mMenuCreator != null) {

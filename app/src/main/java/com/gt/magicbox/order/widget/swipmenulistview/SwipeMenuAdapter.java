@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.WrapperListAdapter;
 
+import com.gt.magicbox.order.OrderListAdapter;
+
 /**
  * @author baoyz
  * @date 2014-8-24
@@ -16,11 +18,11 @@ import android.widget.WrapperListAdapter;
 public class SwipeMenuAdapter implements WrapperListAdapter,
         SwipeMenuView.OnItemClickListener {
 
-    private ListAdapter mAdapter;
+    private OrderListAdapter mAdapter;
     private Context mContext;
     private SwipeMenuListView.OnMenuItemClickListener onMenuItemClickListener;
 
-    public SwipeMenuAdapter(Context context, ListAdapter adapter) {
+    public SwipeMenuAdapter(Context context, OrderListAdapter adapter) {
         mAdapter = adapter;
         mContext = context;
     }
@@ -44,14 +46,14 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
     public View getView(int position, View convertView, ViewGroup parent) {
         SwipeMenuLayout layout = null;
         if (convertView == null) {
-            View contentView = mAdapter.getView(position, convertView, parent);
+            View contentView=mAdapter.getView(position, convertView, parent);
             SwipeMenu menu = new SwipeMenu(mContext);
             createMenu(menu);
             SwipeMenuView menuView = new SwipeMenuView(menu,
                     (SwipeMenuListView) parent);
             menuView.setOnItemClickListener(this);
             SwipeMenuListView listView = (SwipeMenuListView) parent;
-            layout = new SwipeMenuLayout(contentView, menuView,
+            layout = new SwipeMenuLayout(mAdapter,contentView, menuView,
                     listView.getCloseInterpolator(),
                     listView.getOpenInterpolator());
             layout.setPosition(position);

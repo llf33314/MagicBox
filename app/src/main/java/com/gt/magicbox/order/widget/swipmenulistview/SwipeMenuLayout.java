@@ -14,6 +14,7 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 import com.gt.magicbox.base.BaseConstant;
+import com.gt.magicbox.order.OrderListAdapter;
 
 /**
  * @author baoyz
@@ -38,6 +39,7 @@ public class SwipeMenuLayout extends FrameLayout {
     private int MAX_VELOCITYX = -dp2px(500);
     private ScrollerCompat mOpenScroller;
     private ScrollerCompat mCloseScroller;
+    private OrderListAdapter orderListAdapter;
     private int mBaseX;
     private int position;
     private Interpolator mCloseInterpolator;
@@ -49,13 +51,10 @@ public class SwipeMenuLayout extends FrameLayout {
     }
 
 
-    public SwipeMenuLayout(View contentView, SwipeMenuView menuView) {
-        this(contentView, menuView, null, null);
-    }
-
-    public SwipeMenuLayout(View contentView, SwipeMenuView menuView,
+    public SwipeMenuLayout(OrderListAdapter orderListAdapter,View contentView, SwipeMenuView menuView,
                            Interpolator closeInterpolator, Interpolator openInterpolator) {
         super(contentView.getContext());
+        this.orderListAdapter=orderListAdapter;
         mCloseInterpolator = closeInterpolator;
         mOpenInterpolator = openInterpolator;
         mContentView = contentView;
@@ -224,11 +223,21 @@ public class SwipeMenuLayout extends FrameLayout {
         if (dis < 0) {
             dis = 0;
         }
-        mContentView.layout(-dis, mContentView.getTop(), mContentView.getWidth() - dis,
-                getMeasuredHeight());
-        mMenuView.layout(mContentView.getWidth() - dis, mMenuView.getTop(),
-                mContentView.getWidth() + mMenuView.getWidth() - dis,
-                mMenuView.getBottom());
+        if (orderListAdapter!=null&&orderListAdapter.getSwipeLayoutMap()!=null
+                &&orderListAdapter.getSwipeLayoutMap().get(position)!=null){
+            View view=orderListAdapter.getSwipeLayoutMap().get(position);
+            view.layout(-dis, view.getTop(), view.getWidth() - dis,
+                    getMeasuredHeight());
+            mMenuView.layout(view.getWidth() - dis, mMenuView.getTop(),
+                    view.getWidth() + mMenuView.getWidth() - dis,
+                    mMenuView.getBottom());
+        }else {
+            mContentView.layout(-dis, mContentView.getTop(), mContentView.getWidth() - dis,
+                    getMeasuredHeight());
+            mMenuView.layout(mContentView.getWidth() - dis, mMenuView.getTop(),
+                    mContentView.getWidth() + mMenuView.getWidth() - dis,
+                    mMenuView.getBottom());
+        }
     }
 
     @Override
@@ -248,7 +257,13 @@ public class SwipeMenuLayout extends FrameLayout {
 
     public void smoothCloseMenu() {
         state = STATE_CLOSE;
-        mBaseX = -mContentView.getLeft();
+        if (orderListAdapter!=null&&orderListAdapter.getSwipeLayoutMap()!=null
+                &&orderListAdapter.getSwipeLayoutMap().get(position)!=null){
+            View view=orderListAdapter.getSwipeLayoutMap().get(position);
+            mBaseX=view.getLeft();
+        }else {
+            mBaseX = -mContentView.getLeft();
+        }
         mCloseScroller.startScroll(0, 0, mBaseX, 0, 350);
         postInvalidate();
         if (mSwipeStateListen != null) {
@@ -258,7 +273,7 @@ public class SwipeMenuLayout extends FrameLayout {
 
     public void smoothOpenMenu() {
         state = STATE_OPEN;
-        mOpenScroller.startScroll(-mContentView.getLeft(), 0,
+        mOpenScroller.startScroll(-getSwipeView().getLeft(), 0,
                 mMenuView.getWidth(), 0, 350);
         postInvalidate();
     }
@@ -269,7 +284,15 @@ public class SwipeMenuLayout extends FrameLayout {
             swipe(0);
         }
     }
-
+    public View getSwipeView(){
+        if (orderListAdapter!=null&&orderListAdapter.getSwipeLayoutMap()!=null
+                &&orderListAdapter.getSwipeLayoutMap().get(position)!=null){
+            View view=orderListAdapter.getSwipeLayoutMap().get(position);
+            return view;
+        }else {
+            return mContentView;
+        }
+    }
     public void openMenu() {
         if (state == STATE_CLOSE) {
             state = STATE_OPEN;

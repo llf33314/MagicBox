@@ -77,6 +77,8 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     private ListView listView2;
     private MenuListAdapter mMenuAdapter1;
     private MenuListAdapter mMenuAdapter2;
+    private long testTime=1515030668000L;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,6 +152,8 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
                 openItem.setBackground(new ColorDrawable(Color.rgb(0xf0, 0x4a, 0x4a)));
                 openItem.setWidth(ConvertUtils.dp2px(61));
+                openItem.setHeight(ConvertUtils.dp2px(79));
+
                 openItem.setTitle("删除");
                 openItem.setTitleSize(15);
                 openItem.setTitleColor(Color.WHITE);
@@ -184,7 +188,15 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                         if (data != null && orderListAdapter != null) {
                             if (data.orders != null && data.orders.size() > 0) {
                                 LogUtils.d(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
-                                orderItemBeanList.addAll(data.orders);
+
+                                for (int i=0;i<data.orders.size();i++){
+                                    OrderListResultBean.OrderItemBean orderItemBean=data.orders.get(i);
+                                if (JudgeTimeUtils.isSameDate(testTime,orderItemBean.time)
+                                        ||orderItemBean.time>=JudgeTimeUtils.getTimeFromCurrentToLimit(testTime,26)){
+                                    orderItemBeanList.add(orderItemBean);
+                                }
+                                }
+
                                 orderListAdapter.setData(orderItemBeanList);
                                 if (page == 1) {
                                     if (dialog != null) {

@@ -10,6 +10,7 @@ import java.util.List;
  */
 
 public class OrderListResultBean {
+
     public String eqcode = "";
     public int pageCount;
     public int status;
