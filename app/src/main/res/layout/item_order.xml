@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_70"
+    android:layout_height="@dimen/dp_100"
     android:background="@drawable/selector_order_item"
     >
-
-    <RelativeLayout
+    <TextView
+        android:visibility="gone"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:id="@+id/timeTitle"
+        android:background="@color/login_input_color"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/dp_30" />
+    <RelativeLayout
+        android:layout_below="@id/timeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_70"
         android:paddingBottom="@dimen/dp_16"
         android:paddingLeft="@dimen/dp_20"
         android:paddingTop="@dimen/dp_16">

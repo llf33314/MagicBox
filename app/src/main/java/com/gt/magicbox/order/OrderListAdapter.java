@@ -35,6 +35,7 @@ public class OrderListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private Context context;
     private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+    private static final DateFormat ONLY_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     public OrderListAdapter(Context context, List<OrderListResultBean.OrderItemBean> data) {
         this.context = context;
@@ -43,11 +44,7 @@ public class OrderListAdapter extends BaseAdapter {
     }
     @Override
     public int getItemViewType(int position) {
-        if(TextUtils.isEmpty(data.get(position).order_no)&&data.get(position).id<=0){
-            return TYPE_HEAD_BUTTON;
-        }else{
             return TYPE_ORDER_ITEM;
-        }
     }
 
     @Override
@@ -90,13 +87,33 @@ public class OrderListAdapter extends BaseAdapter {
                     viewHolder.money= (TextView) convertView.findViewById(R.id.money);
                     viewHolder.orderNo=(TextView)convertView.findViewById(R.id.valueOrderNo);
                     viewHolder.time=(TextView)convertView.findViewById(R.id.valueTime);
+                    viewHolder.timeTitle=(TextView) convertView.findViewById(R.id.timeTitle);
                     convertView.setTag(viewHolder);
                 }else {
                     viewHolder= (OrderItemViewHolder) convertView.getTag();
                 }
+                String timeTitle=TimeUtils.millis2String(orderItemBean.time,ONLY_DATE_FORMAT);
+                viewHolder.timeTitle.setText(timeTitle);
                 viewHolder.time.setText(TimeUtils.millis2String(orderItemBean.time,DEFAULT_FORMAT));
                 viewHolder.orderNo.setText(orderItemBean.order_no);
                 viewHolder.money.setText(""+orderItemBean.money);
+                if (position==0){
+                    viewHolder.timeTitle.setVisibility(View.VISIBLE);
+                }else {
+                    if (position>0) {
+                        OrderListResultBean.OrderItemBean previous = data.get(position - 1);
+                        if (previous!=null){
+                            String timeTitlePrevious = TimeUtils.millis2String(previous.time, ONLY_DATE_FORMAT);
+                            if (timeTitle.equals(timeTitlePrevious)){
+                                viewHolder.timeTitle.setVisibility(View.GONE);
+                            }else {
+                                viewHolder.timeTitle.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+
+                }
+
                 break;
         }
 
@@ -112,6 +129,8 @@ public class OrderListAdapter extends BaseAdapter {
         TextView orderNo;
         TextView time;
         TextView money;
+        TextView timeTitle;
+
     }
     class HeadButtonViewHolder {
         Button payOrder;

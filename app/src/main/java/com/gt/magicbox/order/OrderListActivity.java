@@ -6,11 +6,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
@@ -19,10 +20,11 @@ import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.UpdateOrderListUIBean;
 import com.gt.magicbox.http.BaseResponse;
-import com.gt.magicbox.http.HttpRequestDialog;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.order.widget.DropDownMenu;
+import com.gt.magicbox.order.widget.MenuListAdapter;
 import com.gt.magicbox.order.widget.pulltorefresh.PullToRefreshBase;
 import com.gt.magicbox.order.widget.pulltorefresh.PullToRefreshSwipeListView;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenu;
@@ -39,12 +41,11 @@ import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import butterknife.ButterKnife;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -54,6 +55,8 @@ import io.reactivex.functions.Consumer;
 
 public class OrderListActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = OrderListActivity.class.getSimpleName();
+    @BindView(R.id.dropDownMenu)
+    DropDownMenu dropDownMenu;
     private SwipeMenuListView swipeMenuListView;
     private OrderListAdapter orderListAdapter;
     @BindView(R.id.listView)
@@ -63,21 +66,28 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     private int updatePage;
     LoadingProgressDialog dialog;
     private int status = 0;
-    private final static int RESULT_FROM_PAY=1;
-    public final static int RESULT_FROM_PAY_SUCCESS=101;
-    private Handler handler=new Handler();
+    private final static int RESULT_FROM_PAY = 1;
+    public final static int RESULT_FROM_PAY_SUCCESS = 101;
+    private Handler handler = new Handler();
+    private String headers[] = {"全部时间", "未支付"};
+    private String timeFilter[] = {"全部时间", "今天", "最近7天", "最近15天"};
+    private String payStatus[] = {"未支付", "已支付", "已退款"};
+    private List<View> popupViews = new ArrayList<>();
+    private ListView listView1;
+    private ListView listView2;
+    private MenuListAdapter mMenuAdapter1;
+    private MenuListAdapter mMenuAdapter2;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
-        orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
         getOrderList(0, 10);
         initView();
         registerUpdateUI();
     }
 
     private void initView() {
-        BaseConstant.isCanSwipe=true;
+        BaseConstant.isCanSwipe = true;
         dialog = new LoadingProgressDialog(OrderListActivity.this);
         dialog.show();
         pullToRefreshSwipeListView.setPullLoadEnabled(true);
@@ -102,19 +112,19 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
                 if (orderItemBean != null) {
                     if (orderItemBean.id > 0 && status == 0) {
-                        if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
+                        if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
                             Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
                             intent.putExtra("customerType", ChosePayModeActivity.TYPE_ORDER_PUSH);
-                            intent.putExtra("orderNo",orderItemBean.order_no);
+                            intent.putExtra("orderNo", orderItemBean.order_no);
                             intent.putExtra("money", orderItemBean.money);
                             startActivity(intent);
-                        }else if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
+                        } else if (Constant.product.equals(BaseConstant.PRODUCTS[0])) {
                             Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
                             intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
                             intent.putExtra("orderId", orderItemBean.id);
                             intent.putExtra("money", orderItemBean.money);
                             intent.putExtra("payMode", orderItemBean.type);
-                            startActivityForResult(intent,RESULT_FROM_PAY);
+                            startActivityForResult(intent, RESULT_FROM_PAY);
                         }
 
                     } else if (status == 1) {
@@ -129,8 +139,8 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
         swipeMenuListView.setDivider(null);
         orderListAdapter = new OrderListAdapter(getApplicationContext(), orderItemBeanList);
         swipeMenuListView.setAdapter(orderListAdapter);
-
         setSwipeMenu();
+        initDropMenuView();
     }
 
     private void setSwipeMenu() {
@@ -171,30 +181,23 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                     @Override
                     public void onSuccess(OrderListResultBean data) {
                         LogUtils.d(TAG, "onSuccess");
-                        if (data != null&&orderListAdapter!=null&&orderListAdapter.getHeadButtonViewHolder()!=null) {
-                            orderListAdapter.getHeadButtonViewHolder().noPayOrder.setOnClickListener(OrderListActivity.this);
-                            orderListAdapter.getHeadButtonViewHolder().payOrder.setOnClickListener(OrderListActivity.this);
+                        if (data != null && orderListAdapter != null) {
                             if (data.orders != null && data.orders.size() > 0) {
                                 LogUtils.d(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
                                 orderItemBeanList.addAll(data.orders);
                                 orderListAdapter.setData(orderItemBeanList);
                                 if (page == 1) {
-                                    if (dialog!=null) {
+                                    if (dialog != null) {
                                         dialog.dismiss();
                                     }
-                                    if (status == 0)
-                                        setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
                                 } else if (page > 1)
                                     pullToRefreshSwipeListView.onPullUpRefreshComplete();
                             } else {
                                 if (page == 1) {
-                                    if (status == 0)
-                                    setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
-                                    if (dialog!=null) {
+                                    if (dialog != null) {
                                         dialog.dismiss();
                                     }
-                                }
-                                else if (page > 1) {
+                                } else if (page > 1) {
                                     pullToRefreshSwipeListView.onPullUpRefreshComplete();
                                 }
                             }
@@ -204,7 +207,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                     @Override
                     public void onError(Throwable e) {
                         LogUtils.d(TAG, "onError");
-                        if (dialog!=null) {
+                        if (dialog != null) {
                             dialog.dismiss();
                         }
                         super.onError(e);
@@ -213,7 +216,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                     @Override
                     public void onFailure(int code, String msg) {
                         LogUtils.d(TAG, "onFailure");
-                        if (dialog!=null) {
+                        if (dialog != null) {
                             dialog.dismiss();
                         }
                         super.onFailure(code, msg);
@@ -223,7 +226,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
 
     private void deleteNotPayOrder(int orderId, final int position) {
         HttpCall.getApiService()
-                .deleteNotPayOrder(Hawk.get("eqId",0), orderId)
+                .deleteNotPayOrder(Hawk.get("eqId", 0), orderId)
                 .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
                 .subscribe(new BaseObserver<BaseResponse>() {
                     @Override
@@ -292,7 +295,8 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
             button.setTextColor(textColor);
         }
     }
-    private void registerUpdateUI(){
+
+    private void registerUpdateUI() {
         RxBus.get().toObservable(UpdateOrderListUIBean.class).subscribe(new Consumer<UpdateOrderListUIBean>() {
             @Override
             public void accept(UpdateOrderListUIBean updateOrderListUIBean) throws Exception {
@@ -304,8 +308,52 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                     public void run() {
                         getOrderList(0, 10);
                     }
-                },500);
+                }, 500);
             }
         });
+    }
+    private void initDropMenuView() {
+
+        //这里是每个下拉菜单之后的布局,目前只是简单的listview作为展示
+        listView1 = new ListView(OrderListActivity.this);
+        listView2 = new ListView(OrderListActivity.this);
+
+        listView1.setDividerHeight(0);
+        listView2.setDividerHeight(0);
+
+        mMenuAdapter1 = new MenuListAdapter(OrderListActivity.this, Arrays.asList(timeFilter));
+        mMenuAdapter2 = new MenuListAdapter(OrderListActivity.this, Arrays.asList(payStatus));
+
+        listView1.setAdapter(mMenuAdapter1);
+        listView2.setAdapter(mMenuAdapter2);
+
+        popupViews.add(listView1);
+        popupViews.add(listView2);
+
+        listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                dropDownMenu.setTabText(timeFilter[position]);
+                dropDownMenu.closeMenu();
+            }
+        });
+
+        listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                dropDownMenu.setTabText(payStatus[position]);
+                dropDownMenu.closeMenu();
+            }
+        });
+
+
+
+        //这里添加 内容显示区域,可以是任何布局
+
+
+        dropDownMenu.setDropDownMenu(Arrays.asList(headers), popupViews,pullToRefreshSwipeListView);
+
     }
 }
