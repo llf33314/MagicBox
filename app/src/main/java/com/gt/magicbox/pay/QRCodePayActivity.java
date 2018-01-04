@@ -545,6 +545,14 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     }
 
     @Override
+    protected void onDestroy() {
+        if (customerDisplaySC!=null) {
+            unbindService(customerDisplaySC);
+        }
+        super.onDestroy();
+    }
+
+    @Override
     protected void onPause() {
         if (codeCameraManager != null) {
             codeCameraManager.releaseCamera();
@@ -687,6 +695,10 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                         if (dialog != null) {
                             dialog.dismiss();
                         }
+                        if (data!=null&&data.getCode()==0){
+                            payResult(true, "" + money);
+                        }
+
                     }
 
                     @Override
@@ -695,6 +707,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                         if (dialog != null) {
                             dialog.dismiss();
                         }
+
                         super.onError(e);
                     }
 
