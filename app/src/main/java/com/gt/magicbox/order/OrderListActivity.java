@@ -197,36 +197,39 @@ public class OrderListActivity extends BaseActivity {
                     @Override
                     public void onSuccess(OrderListResultBean data) {
                         LogUtils.d(TAG, "onSuccess");
-                        if (data != null && orderListAdapter != null) {
-                            if (data.orders != null && data.orders.size() > 0) {
-                                LogUtils.d(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
-                                if (isLimitDay) {
-                                    for (int i = 0; i < data.orders.size(); i++) {
-                                        OrderListResultBean.OrderItemBean orderItemBean = data.orders.get(i);
+                        if (orderListAdapter != null) {
+                            orderListAdapter.setData(orderItemBeanList);
+                            if (data != null) {
+                                if (data.orders != null && data.orders.size() > 0) {
+                                    LogUtils.d(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
+                                    if (isLimitDay) {
+                                        for (int i = 0; i < data.orders.size(); i++) {
+                                            OrderListResultBean.OrderItemBean orderItemBean = data.orders.get(i);
 
-                                        if (JudgeTimeUtils.isSameDate(testTime, orderItemBean.time)
-                                                || orderItemBean.time >= JudgeTimeUtils.getTimeFromCurrentToLimit(testTime, limitDay)) {
-                                            orderItemBeanList.add(orderItemBean);
+                                            if (JudgeTimeUtils.isSameDate(testTime, orderItemBean.time)
+                                                    || orderItemBean.time >= JudgeTimeUtils.getTimeFromCurrentToLimit(testTime, limitDay)) {
+                                                orderItemBeanList.add(orderItemBean);
+                                            }
+
                                         }
-
+                                    } else {
+                                        orderItemBeanList.addAll(data.orders);
                                     }
+                                    orderListAdapter.setData(orderItemBeanList);
+                                    if (page == 1) {
+                                        if (dialog != null) {
+                                            dialog.dismiss();
+                                        }
+                                    } else if (page > 1)
+                                        pullToRefreshSwipeListView.onPullUpRefreshComplete();
                                 } else {
-                                    orderItemBeanList.addAll(data.orders);
-                                }
-                                orderListAdapter.setData(orderItemBeanList);
-                                if (page == 1) {
-                                    if (dialog != null) {
-                                        dialog.dismiss();
+                                    if (page == 1) {
+                                        if (dialog != null) {
+                                            dialog.dismiss();
+                                        }
+                                    } else if (page > 1) {
+                                        pullToRefreshSwipeListView.onPullUpRefreshComplete();
                                     }
-                                } else if (page > 1)
-                                    pullToRefreshSwipeListView.onPullUpRefreshComplete();
-                            } else {
-                                if (page == 1) {
-                                    if (dialog != null) {
-                                        dialog.dismiss();
-                                    }
-                                } else if (page > 1) {
-                                    pullToRefreshSwipeListView.onPullUpRefreshComplete();
                                 }
                             }
                         }
@@ -363,6 +366,7 @@ public class OrderListActivity extends BaseActivity {
                 dropDownMenu.closeMenu();
                 page = 1;
                 orderItemBeanList.clear();
+
                 switch (position) {
                     case STATUS_UNPAID:
                         status = 0;
