@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gt.magicbox.R;
@@ -21,6 +22,7 @@ public class MenuListAdapter extends BaseAdapter {
     private ViewHolder viewHolder;
 
     private List<String> list;
+    private int selectedPosition = 0;
 
     public MenuListAdapter(Context context, List<String> list) {
         this.context = context;
@@ -52,11 +54,30 @@ public class MenuListAdapter extends BaseAdapter {
 
         viewHolder.text1 = (TextView) convertView.findViewById(R.id.textname);
         viewHolder.text1.setText(list.get(position));
+        viewHolder.selectImg = (ImageView) convertView.findViewById(R.id.selectImg);
+        if (position == selectedPosition) {
+            viewHolder.selectImg.setVisibility(View.VISIBLE);
+            viewHolder.text1.setTextColor(0xfff04a4a);
+        } else {
+            viewHolder.selectImg.setVisibility(View.GONE);
+            viewHolder.text1.setTextColor(0xff333333);
 
+        }
         return convertView;
     }
 
     private class ViewHolder {
         private TextView text1;
+        private ImageView selectImg;
     }
+
+    public int getSelectedPosition() {
+        return selectedPosition;
+    }
+
+    public void setSelectedPosition(int selectedPosition) {
+        this.selectedPosition = selectedPosition;
+        notifyDataSetChanged();
+    }
+
 }

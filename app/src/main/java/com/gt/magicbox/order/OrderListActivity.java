@@ -53,7 +53,7 @@ import io.reactivex.functions.Consumer;
  * Created by jack-lin on 2017/9/13 0013.
  */
 
-public class OrderListActivity extends BaseActivity implements View.OnClickListener {
+public class OrderListActivity extends BaseActivity {
     private static final String TAG = OrderListActivity.class.getSimpleName();
     @BindView(R.id.dropDownMenu)
     DropDownMenu dropDownMenu;
@@ -69,20 +69,32 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
     private final static int RESULT_FROM_PAY = 1;
     public final static int RESULT_FROM_PAY_SUCCESS = 101;
     private Handler handler = new Handler();
-    private String headers[] = {"全部时间", "未支付"};
-    private String timeFilter[] = {"全部时间", "今天", "最近7天", "最近15天"};
-    private String payStatus[] = {"未支付", "已支付", "已退款"};
+    private String[] headers = {"全部时间", "未支付"};
+    private String[] timeFilter = {"全部时间", "今天", "最近7天", "最近15天"};
+    private final int LIMIT_ALL_TIME = 0;
+    private final int LIMIT_TODAY = 1;
+    private final int LIMIT_SEVEN_DAY = 2;
+    private final int LIMIT_FIFTEEN_DAY = 3;
+
+    private String[] payStatus = {"未支付", "已支付", "已退款"};
+    private final int STATUS_UNPAID = 0;
+    private final int STATUS_PAID = 1;
+    private final int STATUS_RETURN = 2;
+
     private List<View> popupViews = new ArrayList<>();
     private ListView listView1;
     private ListView listView2;
     private MenuListAdapter mMenuAdapter1;
     private MenuListAdapter mMenuAdapter2;
-    private long testTime=1515030668000L;
+    private long testTime = 1515030668000L;//2018年1月4号
+    private int limitDay = 30;
+    private boolean isLimitDay = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
+        testTime = System.currentTimeMillis();
         getOrderList(0, 10);
         initView();
         registerUpdateUI();
@@ -188,15 +200,19 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                         if (data != null && orderListAdapter != null) {
                             if (data.orders != null && data.orders.size() > 0) {
                                 LogUtils.d(TAG, "onSuccess  data.orders.size()=" + data.orders.size());
+                                if (isLimitDay) {
+                                    for (int i = 0; i < data.orders.size(); i++) {
+                                        OrderListResultBean.OrderItemBean orderItemBean = data.orders.get(i);
 
-                                for (int i=0;i<data.orders.size();i++){
-                                    OrderListResultBean.OrderItemBean orderItemBean=data.orders.get(i);
-                                if (JudgeTimeUtils.isSameDate(testTime,orderItemBean.time)
-                                        ||orderItemBean.time>=JudgeTimeUtils.getTimeFromCurrentToLimit(testTime,26)){
-                                    orderItemBeanList.add(orderItemBean);
-                                }
-                                }
+                                        if (JudgeTimeUtils.isSameDate(testTime, orderItemBean.time)
+                                                || orderItemBean.time >= JudgeTimeUtils.getTimeFromCurrentToLimit(testTime, limitDay)) {
+                                            orderItemBeanList.add(orderItemBean);
+                                        }
 
+                                    }
+                                } else {
+                                    orderItemBeanList.addAll(data.orders);
+                                }
                                 orderListAdapter.setData(orderItemBeanList);
                                 if (page == 1) {
                                     if (dialog != null) {
@@ -266,39 +282,6 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
                 });
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.payButton:
-                setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, false);
-                setButtonSelected(orderListAdapter.getHeadButtonViewHolder().payOrder, true);
-                page = 1;
-                status = 1;
-                orderItemBeanList.clear();
-                orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
-                dialog = new LoadingProgressDialog(OrderListActivity.this);
-                dialog.show();
-                orderListAdapter.setData(orderItemBeanList);
-                BaseConstant.isCanSwipe = false;
-                getOrderList(1, 10);
-                break;
-            case R.id.notPayButton:
-                setButtonSelected(orderListAdapter.getHeadButtonViewHolder().noPayOrder, true);
-                setButtonSelected(orderListAdapter.getHeadButtonViewHolder().payOrder, false);
-                page = 1;
-                status = 0;
-                orderItemBeanList.clear();
-                dialog = new LoadingProgressDialog(OrderListActivity.this);
-                dialog.show();
-                orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
-                BaseConstant.isCanSwipe = true;
-                orderListAdapter.setData(orderItemBeanList);
-                getOrderList(0, 10);
-
-                break;
-        }
-
-    }
 
     private void setButtonSelected(Button button, boolean selected) {
         if (button != null) {
@@ -313,8 +296,6 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void accept(UpdateOrderListUIBean updateOrderListUIBean) throws Exception {
                 orderItemBeanList.clear();
-                orderItemBeanList.add(new OrderListResultBean.OrderItemBean());
-                initView();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -324,6 +305,7 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
             }
         });
     }
+
     private void initDropMenuView() {
 
         //这里是每个下拉菜单之后的布局,目前只是简单的listview作为展示
@@ -345,27 +327,64 @@ public class OrderListActivity extends BaseActivity implements View.OnClickListe
         listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-
+                mMenuAdapter1.setSelectedPosition(position);
                 dropDownMenu.setTabText(timeFilter[position]);
                 dropDownMenu.closeMenu();
+                page = 1;
+                orderItemBeanList.clear();
+                switch (position) {
+                    case LIMIT_ALL_TIME:
+                        isLimitDay = false;
+                        break;
+                    case LIMIT_TODAY:
+                        isLimitDay = true;
+                        limitDay = 0;
+                        break;
+                    case LIMIT_SEVEN_DAY:
+                        isLimitDay = true;
+                        limitDay = 6;
+                        break;
+                    case LIMIT_FIFTEEN_DAY:
+                        isLimitDay = true;
+                        limitDay = 14;
+                        break;
+                    default:
+                        break;
+                }
+                getOrderList(status, 10);
             }
         });
 
         listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-
+                mMenuAdapter2.setSelectedPosition(position);
                 dropDownMenu.setTabText(payStatus[position]);
                 dropDownMenu.closeMenu();
+                page = 1;
+                orderItemBeanList.clear();
+                switch (position) {
+                    case STATUS_UNPAID:
+                        status = 0;
+                        BaseConstant.isCanSwipe = true;
+                        break;
+                    case STATUS_PAID:
+                        status = 1;
+                        BaseConstant.isCanSwipe = false;
+                        break;
+                    case STATUS_RETURN:
+                        status = 2;
+                        break;
+                }
+                getOrderList(status, 10);
             }
         });
-
 
 
         //这里添加 内容显示区域,可以是任何布局
 
 
-        dropDownMenu.setDropDownMenu(Arrays.asList(headers), popupViews,pullToRefreshSwipeListView);
+        dropDownMenu.setDropDownMenu(Arrays.asList(headers), popupViews, pullToRefreshSwipeListView);
 
     }
 }

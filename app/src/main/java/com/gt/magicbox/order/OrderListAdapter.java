@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.bean.OrderListResultBean;
+import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 
 import java.text.DateFormat;
@@ -98,10 +99,14 @@ public class OrderListAdapter extends BaseAdapter {
                     viewHolder.orderStatus = (TextView) convertView.findViewById(R.id.order_status);
                     viewHolder.orderIcon = (ImageView) convertView.findViewById(R.id.item_icon);
                     viewHolder.swipeLayout=(RelativeLayout)convertView.findViewById(R.id.swipeLayout);
-                    swipeLayoutMap.put(position,viewHolder.swipeLayout);
                     convertView.setTag(viewHolder);
+                    LogUtils.d("TYPE_ORDER_ITEM position="+position+" orderItemBean.time="+orderItemBean.time);
+
                 } else {
                     viewHolder = (OrderItemViewHolder) convertView.getTag();
+                }
+                if (swipeLayoutMap.get(position)==null) {
+                    swipeLayoutMap.put(position, viewHolder.swipeLayout);
                 }
                 String timeTitle = TimeUtils.millis2String(orderItemBean.time, ONLY_DATE_FORMAT);
                 viewHolder.timeTitle.setText(timeTitle);
@@ -112,6 +117,7 @@ public class OrderListAdapter extends BaseAdapter {
                     if (orderItemBean.type >= 0 && orderItemBean.type < icons.length) {
                         viewHolder.orderIcon.setImageResource(icons[orderItemBean.type]);
                     }
+
                     viewHolder.orderNo.setText(orderItemBean.order_no + "   " + TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT));
                     viewHolder.money.setText("¥ " + orderItemBean.money);
                 }

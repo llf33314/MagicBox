@@ -13,8 +13,12 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
+import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.order.OrderListAdapter;
+import com.gt.magicbox.utils.commonutil.LogUtils;
+
+import java.util.HashMap;
 
 /**
  * @author baoyz
@@ -27,7 +31,7 @@ public class SwipeMenuLayout extends FrameLayout {
 
     private static final int STATE_CLOSE = 0;
     private static final int STATE_OPEN = 1;
-    public boolean isCanSwipe=true;
+    public boolean isCanSwipe = true;
     private View mContentView;
     private SwipeMenuView mMenuView;
     private int mDownX;
@@ -45,16 +49,17 @@ public class SwipeMenuLayout extends FrameLayout {
     private Interpolator mCloseInterpolator;
     private Interpolator mOpenInterpolator;
     private SwipeStateListen mSwipeStateListen;
+    private HashMap<Integer, View> swipeLayoutMap = new HashMap<>();
 
     public void setmSwipeStateListen(SwipeStateListen mSwipeStateListen) {
         this.mSwipeStateListen = mSwipeStateListen;
     }
 
 
-    public SwipeMenuLayout(OrderListAdapter orderListAdapter,View contentView, SwipeMenuView menuView,
+    public SwipeMenuLayout(OrderListAdapter orderListAdapter, View contentView, SwipeMenuView menuView,
                            Interpolator closeInterpolator, Interpolator openInterpolator) {
         super(contentView.getContext());
-        this.orderListAdapter=orderListAdapter;
+        this.orderListAdapter = orderListAdapter;
         mCloseInterpolator = closeInterpolator;
         mOpenInterpolator = openInterpolator;
         mContentView = contentView;
@@ -129,7 +134,6 @@ public class SwipeMenuLayout extends FrameLayout {
         if (mContentView.getId() < 1) {
             mContentView.setId(CONTENT_VIEW_ID);
         }
-
         mMenuView.setId(MENU_VIEW_ID);
         mMenuView.setVisibility(View.GONE);
         mMenuView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -213,7 +217,7 @@ public class SwipeMenuLayout extends FrameLayout {
     }
 
     private void swipe(int dis) {
-        if (!BaseConstant.isCanSwipe)return;
+        if (!BaseConstant.isCanSwipe) return;
         if (mMenuView.getVisibility() == View.GONE) {
             mMenuView.setVisibility(View.VISIBLE);
         }
@@ -223,21 +227,12 @@ public class SwipeMenuLayout extends FrameLayout {
         if (dis < 0) {
             dis = 0;
         }
-        if (orderListAdapter!=null&&orderListAdapter.getSwipeLayoutMap()!=null
-                &&orderListAdapter.getSwipeLayoutMap().get(position)!=null){
-            View view=orderListAdapter.getSwipeLayoutMap().get(position);
-            view.layout(-dis, view.getTop(), view.getWidth() - dis,
-                    getMeasuredHeight());
-            mMenuView.layout(view.getWidth() - dis, mMenuView.getTop(),
-                    view.getWidth() + mMenuView.getWidth() - dis,
-                    mMenuView.getBottom());
-        }else {
-            mContentView.layout(-dis, mContentView.getTop(), mContentView.getWidth() - dis,
-                    getMeasuredHeight());
-            mMenuView.layout(mContentView.getWidth() - dis, mMenuView.getTop(),
-                    mContentView.getWidth() + mMenuView.getWidth() - dis,
-                    mMenuView.getBottom());
-        }
+
+        getSwipeView().layout(-dis, getSwipeView().getTop(), getSwipeView().getWidth() - dis,
+                getMeasuredHeight());
+        mMenuView.layout(getSwipeView().getWidth() - dis, mMenuView.getTop(),
+                getSwipeView().getWidth() + mMenuView.getWidth() - dis,
+                mMenuView.getBottom());
     }
 
     @Override
@@ -257,13 +252,7 @@ public class SwipeMenuLayout extends FrameLayout {
 
     public void smoothCloseMenu() {
         state = STATE_CLOSE;
-        if (orderListAdapter!=null&&orderListAdapter.getSwipeLayoutMap()!=null
-                &&orderListAdapter.getSwipeLayoutMap().get(position)!=null){
-            View view=orderListAdapter.getSwipeLayoutMap().get(position);
-            mBaseX=view.getLeft();
-        }else {
-            mBaseX = -mContentView.getLeft();
-        }
+        mBaseX = -getSwipeView().getLeft();
         mCloseScroller.startScroll(0, 0, mBaseX, 0, 350);
         postInvalidate();
         if (mSwipeStateListen != null) {
@@ -284,15 +273,16 @@ public class SwipeMenuLayout extends FrameLayout {
             swipe(0);
         }
     }
-    public View getSwipeView(){
-        if (orderListAdapter!=null&&orderListAdapter.getSwipeLayoutMap()!=null
-                &&orderListAdapter.getSwipeLayoutMap().get(position)!=null){
-            View view=orderListAdapter.getSwipeLayoutMap().get(position);
+
+    public View getSwipeView() {
+        View view = mContentView.findViewById(R.id.swipeLayout);
+        if (view != null) {
             return view;
-        }else {
+        } else {
             return mContentView;
         }
     }
+
     public void openMenu() {
         if (state == STATE_CLOSE) {
             state = STATE_OPEN;
