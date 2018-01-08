@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/searchToolbar">
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/search_bg"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="@dimen/dp_13"
+            android:layout_height="@dimen/dp_12"
+            android:layout_gravity="right|center_vertical"
+            android:layout_margin="10dp"
+            android:background="@drawable/order_search_search" />
+        <!-- 输入的搜索信息 -->
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="4"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="请输入订单最后四位进行搜索"
+            android:inputType="number"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+            android:textColor="#ffffff"
+            android:textColorHint="#bbbbbb"
+            android:maxLength="4"
+            android:textSize="15sp" />
+
+
+        <Button
+            android:id="@+id/bt_clear"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_margin="10dp"
+            android:background="@drawable/order_search_delete" />
+    </LinearLayout>
+
+
+</LinearLayout>

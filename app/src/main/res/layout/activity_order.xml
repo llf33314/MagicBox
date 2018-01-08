@@ -6,8 +6,13 @@
     android:layout_height="match_parent"
     android:background="#ececec"
     >
+    <include
+        android:id="@+id/searchToolbar"
+        layout="@layout/search_toolbar"
+        android:visibility="gone"
+        />
     <com.gt.magicbox.order.widget.pulltorefresh.PullToRefreshSwipeListView
-        android:layout_marginTop="@dimen/dp_40"
+        android:layout_marginTop="@dimen/dp_50"
         android:id="@+id/listView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -17,6 +22,7 @@
         android:scrollbars="none">
     </com.gt.magicbox.order.widget.pulltorefresh.PullToRefreshSwipeListView>
     <com.gt.magicbox.order.widget.DropDownMenu xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_below="@id/searchToolbar"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/dropDownMenu"
         android:layout_width="match_parent"

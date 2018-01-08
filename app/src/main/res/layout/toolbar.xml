@@ -1,30 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/base_toolbar"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/base_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/toolbar_height"
+    android:background="@color/colorPrimary">
+
+    <TextView
+        android:id="@+id/toolbar_title"
         android:layout_width="match_parent"
-        android:background="@color/colorPrimary"
-        android:layout_height="@dimen/toolbar_height">
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:lines="1"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="22sp" />
 
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:lines="1"
-            android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="22sp" />
+    <ImageView
+        android:id="@+id/toolbar_back"
+        android:layout_width="@dimen/toolbar_height"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@drawable/btn_gray_null"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:src="@drawable/back" />
 
-        <ImageView
-            android:id="@+id/toolbar_back"
-            android:layout_width="@dimen/toolbar_height"
-            android:layout_height="@dimen/toolbar_height"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:src="@drawable/back"
-            android:background="@drawable/btn_gray_null"
-            />
-    </RelativeLayout>
+    <ImageView
+        android:id="@+id/search"
+        android:layout_width="@dimen/dp_60"
+        android:layout_height="@dimen/toolbar_height"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/btn_gray_null"
+        android:paddingBottom="@dimen/dp_14"
+        android:paddingLeft="@dimen/dp_19"
+        android:paddingRight="@dimen/dp_19"
+        android:paddingTop="@dimen/dp_14"
+        android:src="@drawable/order_title_search"
+        android:visibility="gone" />
+</RelativeLayout>

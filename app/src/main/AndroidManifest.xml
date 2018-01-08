@@ -61,7 +61,7 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".order.OrderListActivity"
-            android:launchMode="singleTask" />
+             />
         <activity
             android:name=".order.OrderInfoActivity"
             android:launchMode="singleTask" />

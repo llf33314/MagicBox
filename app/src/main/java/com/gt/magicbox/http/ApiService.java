@@ -16,6 +16,7 @@ import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.PosRequestBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
+import com.gt.magicbox.bean.SearchOrderBean;
 import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.bean.ShopInfoBean;
 import com.gt.magicbox.bean.StaffBean;
@@ -58,7 +59,7 @@ public interface ApiService {
                                                             @Query("shopName") String shopName);
 
     @POST(HttpConfig.GET_UNPAID_ORDER_URL)
-    Observable<BaseResponse<UnpaidOrderBean>> getUnpaidOrderCount( @Query("busId") int busId,@Query("eqCode") String eqCode);
+    Observable<BaseResponse<UnpaidOrderBean>> getUnpaidOrderCount(@Query("busId") int busId, @Query("eqCode") String eqCode);
 
     @POST(HttpConfig.CHANGE_BIND)
     Observable<BaseResponse> changeBind(@Query("eqCode") String eqCode,
@@ -68,16 +69,18 @@ public interface ApiService {
     @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/{shopId}/{busId}/79B4DE7C/payQR")
     Observable<BaseResponse<QRCodeBitmapBean>> getQRCodeUrl(@Path("eqCode") String eqCode, @Path("money") double money,
                                                             @Path("type") int type, @Path("shiftId") int shiftId
-            , @Path("shopId") int shopId,@Path("busId") int busId, @Query("shopName") String shopName);
+            , @Path("shopId") int shopId, @Path("busId") int busId, @Query("shopName") String shopName);
 
     @POST(HttpConfig.SCAN_CODE_PAY)
     Observable<BaseResponse<PayCodeResultBean>> scanCodePay(@Query("auth_code") String auth_code, @Query("busId") int busId,
                                                             @Query("out_trade_no") String out_trade_no, @Query("shiftId") int shiftId
             , @Query("total_fee") double total_fee);
+
     @POST(HttpConfig.SCAN_CODE_ALI_PAY)
     Observable<BaseResponse<PayCodeResultBean>> scanCodeAliPay(@Query("auth_code") String auth_code, @Query("busId") int busId,
-                                                            @Query("out_trade_no") String out_trade_no, @Query("shiftId") int shiftId
+                                                               @Query("out_trade_no") String out_trade_no, @Query("shiftId") int shiftId
             , @Query("total_fee") double total_fee);
+
     @GET("magicBoxMobile/{eqCode}/{status}/79B4DE7C/getOrderList")
     Observable<BaseResponse<OrderListResultBean>> getOrderList(@Path("eqCode") String eqCode, @Path("status") int status
             , @Query("current") int current, @Query("size") int size);
@@ -209,11 +212,15 @@ public interface ApiService {
 
     @POST(HttpConfig.VERIFICATION_CARD_RETURN_NAME)
     Observable<BaseResponse<CouponVerificationBean>> verificationCoupon(@Query("codes") String cardCode, @Query("storeId") int shopId);
+
     @POST(HttpConfig.FIND_DUOFEN_CARD_BY_MEMBER_ID_AND_MONEY)
-    Observable<BaseResponse<List<MemberCouponBean>>> getMemberAvailableCoupon(@Query("memberId") int  memberId
+    Observable<BaseResponse<List<MemberCouponBean>>> getMemberAvailableCoupon(@Query("memberId") int memberId
             , @Query("money") double money, @Query("wxshopId") int shopId);
 
     @POST(HttpConfig.GET_ORDER_STATUS)
     Observable<BaseResponse> getOrderStatus(@Query("orderNo") String orderNo,
                                             @Query("shiftId") int shiftId);
+
+    @POST(HttpConfig.SELECT_ORDER_BY_LAST_FOUR)
+    Observable<BaseResponse<SearchOrderBean>> getSearchOrderByFour(@Query("busId") int busId, @Query("orderNo") String orderNo);
 }

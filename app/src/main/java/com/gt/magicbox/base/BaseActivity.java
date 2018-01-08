@@ -41,7 +41,9 @@ public class BaseActivity extends RxAppCompatActivity {
     private RelativeLayout mToolbar;
     private TextView toolBarTitle;
     private ImageView toolBarBack;
+    private ImageView search;
     private ShortcutMenuDialog shortcutMenuDialog;
+    private View activityView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +58,7 @@ public class BaseActivity extends RxAppCompatActivity {
         mToolbar = (RelativeLayout) findViewById(R.id.base_toolbar);
         toolBarTitle = (TextView) findViewById(R.id.toolbar_title);
         toolBarBack = (ImageView) findViewById(R.id.toolbar_back);
+        search=(ImageView) findViewById(R.id.search);
         AppManager.getInstance().addActivity(this);
         toolBarBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +80,7 @@ public class BaseActivity extends RxAppCompatActivity {
     @CallSuper
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
-        View activityView = LayoutInflater.from(this).inflate(layoutResID, null, false);
+        activityView = LayoutInflater.from(this).inflate(layoutResID, null, false);
         ViewGroup viewGroup = (ViewGroup) mToolbar.getParent();
         viewGroup.addView(activityView);
         //空出边距给toolbar
@@ -101,6 +104,9 @@ public class BaseActivity extends RxAppCompatActivity {
     }
 
     public void goneToolBar() {
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) activityView.getLayoutParams();
+        lp.setMargins(0, 0, 0, 0);
+        activityView.setLayoutParams(lp);
         mToolbar.setVisibility(View.GONE);
     }
 
@@ -148,5 +154,8 @@ public class BaseActivity extends RxAppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+    public ImageView getSearch() {
+        return search;
     }
 }

@@ -166,6 +166,12 @@ public class LoginActivity extends BaseActivity implements ILoginView {
                     }
 
                     @Override
+                    public void onError(Throwable e) {
+                        if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
+                        super.onError(e);
+                    }
+
+                    @Override
                     protected void onFailure(int code, String msg) {
                         LogUtils.i(TAG, "onFailure code=" + code + "  msg=" + msg);
                         if (loadingProgressDialog != null) loadingProgressDialog.dismiss();
@@ -195,7 +201,19 @@ public class LoginActivity extends BaseActivity implements ILoginView {
 
                     @Override
                     public void onFailure(int code, String msg) {
+                        if (loadingProgressDialog != null) {
+                            loadingProgressDialog.dismiss();
+                        }
                         super.onFailure(code, msg);
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (loadingProgressDialog != null) {
+                            loadingProgressDialog.dismiss();
+                        }
+                        super.onError(e);
                     }
                 });
     }

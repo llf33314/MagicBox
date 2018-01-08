@@ -6,11 +6,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gt.magicbox.Constant;
@@ -18,6 +21,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.OrderListResultBean;
+import com.gt.magicbox.bean.SearchOrderBean;
 import com.gt.magicbox.bean.UpdateOrderListUIBean;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
@@ -38,6 +42,7 @@ import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.widget.LoadingProgressDialog;
+import com.gt.magicbox.widget.SearchView;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
@@ -46,6 +51,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -57,6 +63,12 @@ public class OrderListActivity extends BaseActivity {
     private static final String TAG = OrderListActivity.class.getSimpleName();
     @BindView(R.id.dropDownMenu)
     DropDownMenu dropDownMenu;
+    @BindView(R.id.cancel)
+    TextView cancel;
+    @BindView(R.id.searchView)
+    SearchView searchView;
+    @BindView(R.id.searchToolbar)
+    RelativeLayout searchToolbar;
     private SwipeMenuListView swipeMenuListView;
     private OrderListAdapter orderListAdapter;
     @BindView(R.id.listView)
@@ -89,24 +101,71 @@ public class OrderListActivity extends BaseActivity {
     private long testTime = 1515030668000L;//2018年1月4号
     private int limitDay = 30;
     private boolean isLimitDay = false;
+    public static final int TYPE_ORDER_LIST = 0;
+    public static final int TYPE_ORDER_SEARCH = 1;
+    private int type = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
         testTime = System.currentTimeMillis();
-        getOrderList(0, 10);
-        initView();
+        type = getIntent().getIntExtra("type", 0);
         registerUpdateUI();
+        if (type == TYPE_ORDER_LIST) {
+            initOrderListView();
+        }
+        if (type == TYPE_ORDER_SEARCH) {
+            initSearchListView();
+        }
     }
 
-    private void initView() {
+    private void initSearchListView() {
+        goneToolBar();
+        dropDownMenu.setVisibility(View.GONE);
+        searchToolbar.setVisibility(View.VISIBLE);
+        BaseConstant.isCanSwipe = true;
+        searchView.getSearchEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (searchView.getSearchEditText() != null) {
+                    String input = searchView.getSearchEditText().getEditableText().toString();
+                    if (!TextUtils.isEmpty(input) && input.length() == 4) {
+                        getSearchOrderByFour(input);
+                    }
+                }
+            }
+        });
+        initSwipeListView();
+    }
+
+    private void initOrderListView() {
+        getOrderList(0, 10);
+        if (getSearch() != null) {
+            getSearch().setVisibility(View.VISIBLE);
+            getSearch().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(OrderListActivity.this, OrderListActivity.class);
+                    intent.putExtra("type", TYPE_ORDER_SEARCH);
+                    startActivity(intent);
+                }
+            });
+        }
         BaseConstant.isCanSwipe = true;
         dialog = new LoadingProgressDialog(OrderListActivity.this);
         dialog.show();
-        pullToRefreshSwipeListView.setPullLoadEnabled(true);
-        pullToRefreshSwipeListView.setScrollLoadEnabled(true);
-        pullToRefreshSwipeListView.setPullRefreshEnabled(false);
+        initSwipeListView();
         pullToRefreshSwipeListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<SwipeMenuListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<SwipeMenuListView> refreshView) {
@@ -119,13 +178,22 @@ public class OrderListActivity extends BaseActivity {
                 getOrderList(status, 10);
             }
         });
+        setSwipeMenu();
+        initDropMenuView();
+    }
+
+    private void initSwipeListView() {
+        BaseConstant.isCanSwipe = true;
+        pullToRefreshSwipeListView.setPullLoadEnabled(true);
+        pullToRefreshSwipeListView.setScrollLoadEnabled(true);
+        pullToRefreshSwipeListView.setPullRefreshEnabled(false);
         swipeMenuListView = pullToRefreshSwipeListView.getRefreshableView();
         swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 OrderListResultBean.OrderItemBean orderItemBean = orderItemBeanList.get(position);
                 if (orderItemBean != null) {
-                    if (orderItemBean.id > 0 && status == 0) {
+                    if (orderItemBean.id > 0 && orderItemBean.status == 0) {
                         if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
                             Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
                             intent.putExtra("customerType", ChosePayModeActivity.TYPE_ORDER_PUSH);
@@ -141,7 +209,7 @@ public class OrderListActivity extends BaseActivity {
                             startActivityForResult(intent, RESULT_FROM_PAY);
                         }
 
-                    } else if (status == 1) {
+                    } else if (orderItemBean.status == 1) {
                         Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
                         intent.putExtra("OrderItemBean", orderItemBean);
                         startActivity(intent);
@@ -153,8 +221,7 @@ public class OrderListActivity extends BaseActivity {
         swipeMenuListView.setDivider(null);
         orderListAdapter = new OrderListAdapter(getApplicationContext(), orderItemBeanList);
         swipeMenuListView.setAdapter(orderListAdapter);
-        setSwipeMenu();
-        initDropMenuView();
+
     }
 
     private void setSwipeMenu() {
@@ -285,6 +352,67 @@ public class OrderListActivity extends BaseActivity {
                 });
     }
 
+    private void getSearchOrderByFour(String orderNoLastFour) {
+        HttpCall.getApiService()
+                .getSearchOrderByFour(Hawk.get("busId", 0), orderNoLastFour)
+                .compose(ResultTransformer.<SearchOrderBean>transformer())//线程处理 预处理
+                .subscribe(new BaseObserver<SearchOrderBean>() {
+                    @Override
+                    public void onSuccess(SearchOrderBean data) {
+                        LogUtils.d(TAG, "getSearchOrderByFour onSuccess getSearchOrderByFour data=" + data.getRecords().size());
+                        if (orderListAdapter != null) {
+                            orderListAdapter.setData(orderItemBeanList);
+                            if (data != null && data.getRecords() != null) {
+                                if (data.getRecords().size() > 0) {
+                                    LogUtils.d(TAG, "getSearchOrderByFour onSuccess  data.orders.size()=" + data.getRecords().size());
+                                    if (isLimitDay) {
+                                        for (int i = 0; i < data.getRecords().size(); i++) {
+                                            OrderListResultBean.OrderItemBean orderItemBean = data.getRecords().get(i);
+
+                                            if (JudgeTimeUtils.isSameDate(testTime, orderItemBean.time)
+                                                    || orderItemBean.time >= JudgeTimeUtils.getTimeFromCurrentToLimit(testTime, limitDay)) {
+                                                orderItemBeanList.add(orderItemBean);
+                                            }
+
+                                        }
+                                    } else {
+                                        orderItemBeanList.addAll(data.getRecords());
+                                    }
+                                    orderListAdapter.setData(orderItemBeanList);
+                                    if (page == 1) {
+                                        if (dialog != null) {
+                                            dialog.dismiss();
+                                        }
+                                    } else if (page > 1)
+                                        pullToRefreshSwipeListView.onPullUpRefreshComplete();
+                                } else if (data.getRecords().size() == 0) {
+                                    orderItemBeanList.clear();
+                                    orderListAdapter.setData(orderItemBeanList);
+
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.d(TAG, "onError");
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        LogUtils.d(TAG, "onFailure");
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
 
     private void setButtonSelected(Button button, boolean selected) {
         if (button != null) {
@@ -390,5 +518,16 @@ public class OrderListActivity extends BaseActivity {
 
         dropDownMenu.setDropDownMenu(Arrays.asList(headers), popupViews, pullToRefreshSwipeListView);
 
+    }
+
+    @OnClick({R.id.cancel, R.id.searchView})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.cancel:
+                finish();
+                break;
+            case R.id.searchView:
+                break;
+        }
     }
 }

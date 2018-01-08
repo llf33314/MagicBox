@@ -73,7 +73,7 @@ public abstract class BaseObserver<T> implements Observer<T> {
      */
     protected void onFailure(int code,String msg) {
         LogUtils.d("BaseObserver","code="+code+"  msg="+msg);
-       // ToastUtil.getInstance().showNewShort(msg);
+        ToastUtil.getInstance().showNewShort(msg);
     }
 
 }
