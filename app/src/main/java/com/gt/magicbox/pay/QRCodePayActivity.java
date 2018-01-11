@@ -219,11 +219,14 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     int orderId = this.getIntent().getIntExtra("orderId", 0);
                     money = this.getIntent().getDoubleExtra("money", 0);
                     orderNo = this.getIntent().getStringExtra("orderNo");
+                    payMode = this.getIntent().getIntExtra("payMode", 0);
+
                     pushLayout.setVisibility(View.VISIBLE);
                     normalPayLayout.setVisibility(View.GONE);
                     showMoney(pushCashierMoney, "" + money);
                     showMoney(pushCustomerMoney, "" + money);
                     payResultSocket(orderNo);
+                    showPayMode(payMode);
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
                     showMoney(cashierMoney, "" + money);
@@ -513,6 +516,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 intent.putExtra("message", message);
                 intent.putExtra("payType", payMode);
                 intent.putExtra("orderNo", orderNo);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 if (type == TYPE_CREATED_PAY) {
                     intent.putExtra("fromType", PayResultActivity.TYPE_FROM_ORDER_LIST);
                 }

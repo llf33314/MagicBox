@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
@@ -41,16 +43,26 @@ import butterknife.OnClick;
 public class OrderInfoActivity extends BaseActivity {
     @BindView(R.id.keyValueView)
     RecyclerView keyValueView;
+    @BindView(R.id.infoIcon)
+    ImageView infoIcon;
+    @BindView(R.id.payType)
+    TextView payType;
+    @BindView(R.id.money)
+    TextView money;
     private OrderListResultBean.OrderItemBean orderItemBean;
-    List<KeyValueStringBean> lists= new ArrayList<KeyValueStringBean>();
+    List<KeyValueStringBean> lists = new ArrayList<KeyValueStringBean>();
     private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+    private Integer[] icons = {R.drawable.order_list_wechat, R.drawable.order_list_alipay, R.drawable.order_list_cash, R.drawable.order_list_member_pay
+            , R.drawable.order_list_bank_card};
     MoreFunctionDialog dialog;
+    private String[] payStatus = {"未支付", "已支付", "已退款"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_info);
         initData();
-        initRecyclerView(keyValueView);
+        initView(keyValueView);
     }
 
     @OnClick({R.id.printPaper, R.id.refund})
@@ -59,13 +71,13 @@ public class OrderInfoActivity extends BaseActivity {
             case R.id.printPaper:
                 if (orderItemBean != null) {
                     if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
-                        PrintManager printManager=new PrintManager(OrderInfoActivity.this);
+                        PrintManager printManager = new PrintManager(OrderInfoActivity.this);
                         printManager.startPrintReceiptByText(orderItemBean.order_no, orderItemBean.money + "元",
-                                orderItemBean.type,TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT)
-                        , TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name);
+                                orderItemBean.type, TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT)
+                                , TextUtils.isEmpty(orderItemBean.staff_name) ? "空" : orderItemBean.staff_name);
                     } else {
                         PrinterConnectService.printEsc0829(orderItemBean.order_no, orderItemBean.money + "元",
-                                TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name,
+                                TextUtils.isEmpty(orderItemBean.staff_name) ? "空" : orderItemBean.staff_name,
                                 orderItemBean.type, TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT));
 
                     }
@@ -73,41 +85,51 @@ public class OrderInfoActivity extends BaseActivity {
 
                 break;
             case R.id.refund:
-                dialog = new MoreFunctionDialog(OrderInfoActivity.this, "退款功能正在开发中,敬请期待", R.style.HttpRequestDialogStyle);
-                dialog.show();
+//                dialog = new MoreFunctionDialog(OrderInfoActivity.this, "退款功能正在开发中,敬请期待", R.style.HttpRequestDialogStyle);
+//                dialog.show();
+                Intent intent = new Intent(OrderInfoActivity.this, ReturnMoneyActivity.class);
+                intent.putExtra("orderItemBean",orderItemBean);
+                startActivity(intent);
                 break;
         }
     }
-    private void initData(){
-        Intent intent=this.getIntent();
-        if (intent!=null){
-            orderItemBean= (OrderListResultBean.OrderItemBean) intent.getSerializableExtra("OrderItemBean");
-            if (orderItemBean!=null) {
+
+    private void initData() {
+        Intent intent = this.getIntent();
+        if (intent != null) {
+            orderItemBean = (OrderListResultBean.OrderItemBean) intent.getSerializableExtra("OrderItemBean");
+            if (orderItemBean != null) {
+                if (orderItemBean.status >= 0 && orderItemBean.status < payStatus.length) {
+                    lists.add(new KeyValueStringBean("订单状态", payStatus[orderItemBean.status]));
+                }
                 lists.add(new KeyValueStringBean("订单号", orderItemBean.order_no));
+
                 lists.add(new KeyValueStringBean("操作人",
-                        TextUtils.isEmpty(orderItemBean.staff_name)?"空":orderItemBean.staff_name));
+                        TextUtils.isEmpty(orderItemBean.staff_name) ? "空" : orderItemBean.staff_name));
                 lists.add(new KeyValueStringBean("创建时间", TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT)));
-                if (orderItemBean.type<BaseConstant.PAY_TYPE.length)
-                lists.add(new KeyValueStringBean("支付方式", BaseConstant.PAY_TYPE[orderItemBean.type]));
-                lists.add(new KeyValueStringBean("支付金额", "¥" + orderItemBean.money));
 
 
             }
         }
     }
-    private void initRecyclerView(RecyclerView recyclerView){
+
+    private void initView(RecyclerView recyclerView) {
+        if (orderItemBean.type >= 0 && orderItemBean.type < icons.length) {
+            infoIcon.setImageResource(icons[orderItemBean.type]);
+        }
+        if (orderItemBean.type < BaseConstant.PAY_TYPE.length) {
+            payType.setText(BaseConstant.PAY_TYPE[orderItemBean.type]);
+        }
+        money.setText("¥" + orderItemBean.money);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        final KeyValueAdapter adapter=new KeyValueAdapter(this,lists);
+        final KeyValueAdapter adapter = new KeyValueAdapter(this, lists);
         adapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onClick(View view, Object item, int position) {
             }
         });
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new SimpleDividerDecoration(this,
-                getResources().getColor(R.color.divide_gray_color),
-                new Rect(ConvertUtils.dp2px(14),0,ConvertUtils.dp2px(14),0)));
     }
 }

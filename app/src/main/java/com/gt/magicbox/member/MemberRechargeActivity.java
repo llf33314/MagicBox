@@ -90,7 +90,7 @@ public class MemberRechargeActivity extends BaseActivity {
             balanceNumber.setText("¥" + memberCardBean.money + "元");
 
         }
-        InputFilter [] filters ={new CashierInputFilter()};
+        InputFilter [] filters ={new CashierInputFilter(10000)};
         rechargeMoney.setFilters(filters);
     }
 

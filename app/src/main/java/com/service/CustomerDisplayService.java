@@ -148,7 +148,7 @@ public class CustomerDisplayService extends Service {
                                 customerDisplayDataListener.onDataReceive(info);
                             }
                             if (!TextUtils.isEmpty(info) && info.contains("QA")) {
-                                String qaStr = info.substring(info.indexOf("A") + 1);
+                                String qaStr = info.substring(info.lastIndexOf("QA") + 2);
                                 Log.e(TAG, "接收到串口信息: qaStr" + qaStr);
                                 listQA.add(new SerialPortDataBean(System.currentTimeMillis(),
                                         qaStr));
@@ -254,6 +254,16 @@ public class CustomerDisplayService extends Service {
             return CustomerDisplayService.this;
         }
     }
+    public static void main(String[] args) {
+        String testData="QA0.10";
 
+        if (testData.contains("QA")){
+            String str=testData.substring(testData.lastIndexOf("QA")+2);
+            System.out.println("str="+str);
+            double money=Double.parseDouble(str);
+            System.out.println("money="+money);
+
+        }
+    }
 
 }

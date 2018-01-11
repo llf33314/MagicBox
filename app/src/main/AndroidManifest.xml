@@ -66,6 +66,9 @@
             android:name=".order.OrderInfoActivity"
             android:launchMode="singleTask" />
         <activity
+            android:name=".order.ReturnMoneyActivity"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".main.MoreActivity"
             android:launchMode="singleTask" />
         <activity

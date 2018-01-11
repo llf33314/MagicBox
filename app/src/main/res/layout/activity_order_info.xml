@@ -2,15 +2,77 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#ececec">
+    android:background="#ececec"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:background="#fff"
-        android:id="@+id/keyValueView"
-        android:overScrollMode="never"
+    <RelativeLayout
+        android:id="@+id/titleLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+        android:layout_height="@dimen/dp_42"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/infoIcon"
+            android:layout_width="@dimen/dp_25"
+            android:layout_height="@dimen/dp_25"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_16" />
+
+        <TextView
+            android:id="@+id/payType"
+            android:layout_toRightOf="@id/infoIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_8"
+            android:gravity="center_vertical"
+            android:text=""
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_16" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_marginTop="@dimen/dp_16"
+        android:id="@+id/moneyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_42"
+        android:background="@color/white">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp_18"
+            android:gravity="center_vertical"
+            android:text="@string/pay_money"
+            android:textColor="#bdbdbd"
+            android:textSize="@dimen/dp_16" />
+        <TextView
+            android:id="@+id/money"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_16"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_19" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="1dp">
+    <View
+        android:layout_marginLeft="@dimen/dp_18"
+        android:background="#bdbdbd"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+    </RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/keyValueView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:overScrollMode="never"></android.support.v7.widget.RecyclerView>
 
     <Button
         android:id="@+id/printPaper"
@@ -23,6 +85,7 @@
         android:text="@string/fill_the_small_ticket"
         android:textColor="#fff"
         android:textSize="15sp" />
+
     <Button
         android:id="@+id/refund"
         android:layout_width="match_parent"

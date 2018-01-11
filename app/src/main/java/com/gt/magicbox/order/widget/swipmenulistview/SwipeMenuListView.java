@@ -163,7 +163,11 @@ public class SwipeMenuListView extends ListView {
                 }
                 break;
         }
-        return super.onTouchEvent(ev);
+        try {
+            return super.onTouchEvent(ev);
+        }catch (IndexOutOfBoundsException e){
+            return false;
+        }
     }
 
     private int dp2px(int dp) {

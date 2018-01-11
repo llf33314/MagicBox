@@ -164,14 +164,21 @@ public class OrderPushService extends Service {
                 int orderId = orderObject.getInt("orderId");
                 double money =  orderObject.getDouble("money");
                 String orderNo=orderObject.getString("orderNo");
+                int type=orderObject.getInt("pay_type");
+                if (type<0||type>1) {
+                    //暂时支持微信或支付宝
+                    type = 0;
+                }
                 LogUtils.d(TAG," money="+money);
                 if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
                     Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    LogUtils.d("payMode="+type);
                     intent.putExtra("type", QRCodePayActivity.TYPE_SERVER_PUSH);
                     intent.putExtra("orderId",orderId);
                     intent.putExtra("money", money);
                     intent.putExtra("orderNo",orderNo);
+                    intent.putExtra("payMode",type);
                     startActivity(intent);
                 }else if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
                     Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
@@ -179,6 +186,7 @@ public class OrderPushService extends Service {
                     intent.putExtra("customerType", ChosePayModeActivity.TYPE_ORDER_PUSH);
                     intent.putExtra("orderNo",orderNo);
                     intent.putExtra("money", money);
+                    intent.putExtra("payMode",type);
                     startActivity(intent);
                 }
 
