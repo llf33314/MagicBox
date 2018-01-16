@@ -9,6 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -52,6 +55,7 @@ import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.gt.magicbox.utils.qr_code_util.QrCodeUtils;
+import com.gt.magicbox.utils.voice.PlaySound;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.lidroid.xutils.BitmapUtils;
@@ -160,6 +164,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     private Bitmap qrCodeBitmap;
     private String qrCodeUrl;
     private long clickTime=0;
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -676,7 +682,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 break;
             case R.id.printQrCode:
 
-                //PrinterConnectService.printQrCode(orderNo, ""+money, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT), qrCodeBitmap);
+                PrinterConnectService.printQrCode(orderNo, ""+money, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT), qrCodeBitmap);
                 break;
             case R.id.confirmOrder:
                 if (SystemClock.uptimeMillis()-clickTime<1500)return;
@@ -756,6 +762,9 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         if (bDecoded && !TextUtils.isEmpty(result)) {
             LogUtils.e("quck", "onDecodeResult" + type + "    " + result);
             if (!isCodePayRequesting) {
+                Uri notification = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.beep);
+                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                r.play();
                 if (payMode == BaseConstant.PAY_ON_WECHAT) {
                     getCodePayResult(result, orderNo);
                 } else if (payMode == BaseConstant.PAY_ON_ALIPAY) {

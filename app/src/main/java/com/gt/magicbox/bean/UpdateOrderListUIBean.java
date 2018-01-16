@@ -7,4 +7,11 @@ package com.gt.magicbox.bean;
  */
 
 public class UpdateOrderListUIBean {
+    public int status=0;
+
+    public UpdateOrderListUIBean(int status) {
+        this.status = status;
+    }
+    public UpdateOrderListUIBean(){
+    }
 }

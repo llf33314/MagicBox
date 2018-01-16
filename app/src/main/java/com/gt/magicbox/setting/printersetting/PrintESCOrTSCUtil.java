@@ -215,8 +215,8 @@ public class PrintESCOrTSCUtil {
             // esc.addPrintQRCode();
             //LogUtils.d("qrCodeUrl","url="+url);
 
-            esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);
-            bitmap = DrawableUtils.zoomImage(bitmap, bitmap.getWidth() * 0.8, bitmap.getHeight() * 0.8);
+            esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
+            bitmap = DrawableUtils.zoomImage(bitmap, bitmap.getWidth()*3 , bitmap.getHeight()*3 );
             esc.addRastBitImage(bitmap, bitmap.getWidth(), 0); // 打印图片
         }
         esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐

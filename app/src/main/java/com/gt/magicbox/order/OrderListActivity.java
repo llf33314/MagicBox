@@ -213,6 +213,10 @@ public class OrderListActivity extends BaseActivity {
                         Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
                         intent.putExtra("OrderItemBean", orderItemBean);
                         startActivity(intent);
+                    } else if (orderItemBean.status == 2) {
+                        Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
+                        intent.putExtra("OrderItemBean", orderItemBean);
+                        startActivity(intent);
                     }
 
                 }
@@ -425,12 +429,12 @@ public class OrderListActivity extends BaseActivity {
     private void registerUpdateUI() {
         RxBus.get().toObservable(UpdateOrderListUIBean.class).subscribe(new Consumer<UpdateOrderListUIBean>() {
             @Override
-            public void accept(UpdateOrderListUIBean updateOrderListUIBean) throws Exception {
+            public void accept(final UpdateOrderListUIBean updateOrderListUIBean) throws Exception {
                 orderItemBeanList.clear();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        getOrderList(0, 10);
+                        getOrderList(updateOrderListUIBean.status, 10);
                     }
                 }, 500);
             }
@@ -506,6 +510,7 @@ public class OrderListActivity extends BaseActivity {
                         break;
                     case STATUS_RETURN:
                         status = 2;
+                        BaseConstant.isCanSwipe = false;
                         break;
                 }
                 getOrderList(status, 10);

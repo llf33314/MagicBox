@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
-        <shape >
-            <solid
-                android:color="@color/red_member_select"
-                />
+        <shape>
+            <solid android:color="@color/red_member_select" />
+        </shape>
+    </item>
+    <item android:state_enabled="false">
+        <shape>
+            <solid android:color="@color/disable" />
         </shape>
     </item>
     <item>
         <shape>
-            <solid
-                android:color="@color/red_member"
-                />
+            <solid android:color="@color/red_member" />
         </shape>
     </item>
-
 </selector>

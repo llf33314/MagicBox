@@ -1,38 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_266"
+    android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical">
 
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_44"
-        android:background="@color/white"
-        android:gravity="center"
-        android:text="@string/return_money_reason"
-        android:textColor="#333333"
-        android:textSize="@dimen/dp_20" />
+        android:layout_height="@dimen/dp_45">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_45"
+            android:background="@color/white"
+            android:gravity="center"
+            android:text="@string/return_money_reason"
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_20" />
+
+        <RelativeLayout
+            android:id="@+id/addReason"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/btn_gray">
+
+            <ImageView
+                android:layout_width="@dimen/dp_23"
+                android:layout_height="@dimen/dp_23"
+                android:layout_centerInParent="true"
+                android:src="@drawable/reason_add" />
+        </RelativeLayout>
+    </RelativeLayout>
+
     <View
-        android:background="#efefef"
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp"
+        android:background="#efefef" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/reasonRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_170"
-        android:gravity="center_vertical"
-         />
+        android:gravity="center_vertical" />
+
     <View
-        android:background="#efefef"
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp"
+        android:background="#efefef" />
+
     <TextView
         android:id="@+id/close"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_44"
-        android:background="@color/white"
+        android:layout_height="@dimen/dp_52"
+        android:background="@drawable/selector_white_no_border"
         android:gravity="center"
         android:text="@string/close"
         android:textColor="#f04a4a"

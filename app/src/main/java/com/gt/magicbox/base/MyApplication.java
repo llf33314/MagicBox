@@ -40,7 +40,14 @@ public class MyApplication extends Application {
         Process.killProcess(Process.myPid());
 
     }
-
+    public static void logoutDeleteHawk(){
+        Hawk.put("isLogin",false);
+        Hawk.delete("busId");
+        Hawk.delete("shiftId");
+        Hawk.delete("ShopInfoBean");
+        Hawk.delete("deviceName");
+        Hawk.delete("reasonList");
+    }
     public static boolean isNeedUpdateApp() {
         return needUpdateApp;
     }

@@ -16,6 +16,7 @@ import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.PosRequestBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
+import com.gt.magicbox.bean.ReturnCauseBean;
 import com.gt.magicbox.bean.SearchOrderBean;
 import com.gt.magicbox.bean.ShiftRecordsAllBean;
 import com.gt.magicbox.bean.ShopInfoBean;
@@ -223,4 +224,12 @@ public interface ApiService {
 
     @POST(HttpConfig.SELECT_ORDER_BY_LAST_FOUR)
     Observable<BaseResponse<SearchOrderBean>> getSearchOrderByFour(@Query("busId") int busId, @Query("orderNo") String orderNo);
+
+    @POST(HttpConfig.REVAMP_EQ_NAME)
+    Observable<BaseResponse> revampEqName(@Query("name") String name,
+                                            @Query("eqId") int eqId);
+    @POST(HttpConfig.WXMEMBER_PAY_REFUND)
+    Observable<BaseResponse> returnMoney(@Query("orderNo") String orderNo, @Query("totalFee") double totalFee,
+                                         @Query("type") int type,@Query("shiftId")int shiftId,@Body ReturnCauseBean returnCauseBean);
+
 }

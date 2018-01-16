@@ -21,5 +21,8 @@
         <!--tab未选中状态图标-->
         <attr name="menuUnselectedIcon" format="reference" />
     </declare-styleable>
-
+    <declare-styleable name="IndicatorLayout">
+        <attr name="itemCount" format="integer" />
+        <!--itemCount 暂时支持1-4个-->
+    </declare-styleable>
 </resources>

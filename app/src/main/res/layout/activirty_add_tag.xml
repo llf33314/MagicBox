@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40"
+        android:background="#ececec"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/dp_18"
+        android:text="@string/return_reason_tag"
+        android:textColor="#333333"
+        android:textSize="16dp" />
+
+    <EditText
+        android:id="@+id/reasonEdit"
+        android:layout_width="@dimen/dp_300"
+        android:layout_height="@dimen/dp_46"
+        android:layout_below="@id/title"
+        android:layout_marginRight="@dimen/dp_16"
+        android:background="@null"
+        android:gravity="center_vertical"
+        android:hint="@string/limit_ten_words"
+        android:maxLength="10"
+        android:paddingLeft="@dimen/dp_20"
+        android:textColor="#333333"
+        android:textColorHint="#999999"
+        android:textSize="@dimen/dp_16" />
+
+    <RelativeLayout
+        android:id="@+id/clear"
+        android:layout_width="@dimen/dp_46"
+        android:layout_height="@dimen/dp_46"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/title">
+
+        <ImageView
+            android:layout_width="@dimen/dp_16"
+            android:layout_height="@dimen/dp_16"
+            android:layout_centerInParent="true"
+            android:src="@drawable/edit_reason_clear" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/reasonEdit"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:background="#e6e6e6" />
+
+    <Button
+        android:id="@+id/confirmSave"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@drawable/selector_member_pay"
+        android:enabled="false"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:textSize="@dimen/dp_18" />
+
+    <TextView
+        android:autoLink="all"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:id="@+id/typewritingLink"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_30"
+        android:layout_above="@id/confirmSave"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:text="@string/disable_use_chinese_typewriting"
+        android:textColor="@color/divide_gray_color" />
+</RelativeLayout>

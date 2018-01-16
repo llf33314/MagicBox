@@ -1,6 +1,7 @@
 package com.gt.magicbox.custom_display;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
@@ -23,16 +24,15 @@ public class IndicatorLayout extends LinearLayout {
 
     public IndicatorLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IndicatorLayout);
+        itemSize = a.getInteger(R.styleable.IndicatorLayout_itemCount, 3);
         initView(context);
     }
 
     public IndicatorLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initView(context);
-    }
-
-    public IndicatorLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IndicatorLayout);
+        itemSize = a.getInteger(R.styleable.IndicatorLayout_itemCount, 3);
         initView(context);
     }
 

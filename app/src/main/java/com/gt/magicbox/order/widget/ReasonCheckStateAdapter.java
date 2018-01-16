@@ -110,7 +110,7 @@ public class ReasonCheckStateAdapter extends RecyclerView.Adapter<ReasonCheckSta
 
     private void setSelected(ImageView imageView, boolean isSelect) {
         if (imageView != null) {
-            imageView.setImageResource(isSelect ? resIcon[0] : resIcon[1]);
+            imageView.setImageResource(!isSelect ? resIcon[0] : resIcon[1]);
         }
     }
 
@@ -119,5 +119,8 @@ public class ReasonCheckStateAdapter extends RecyclerView.Adapter<ReasonCheckSta
             setSelected(currentHolder.selectStatus, true);
         }
     }
-
+    public void updateAdapter(ArrayList<ReasonBean> beans){
+        this.beans=beans;
+        notifyDataSetChanged();
+    }
 }

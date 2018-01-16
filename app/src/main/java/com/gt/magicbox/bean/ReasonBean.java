@@ -8,4 +8,8 @@ package com.gt.magicbox.bean;
 
 public class ReasonBean {
     public String reason="";
+
+    public ReasonBean(String reason) {
+        this.reason = reason;
+    }
 }

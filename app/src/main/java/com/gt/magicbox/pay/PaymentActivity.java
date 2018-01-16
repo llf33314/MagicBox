@@ -2,6 +2,9 @@ package com.gt.magicbox.pay;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -410,6 +413,9 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
         if (bDecoded && !TextUtils.isEmpty(result)) {
             LogUtils.d("scanResult", "result=" + result);
             if (!isRequestingData) {
+                Uri notification = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.beep);
+                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                r.play();
                 isRequestingData = true;
                 if (type == TYPE_MEMBER_RECHARGE || type == TYPE_MEMBER_PAY) {
                     findMemberCardByPhone(result);

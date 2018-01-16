@@ -64,5 +64,8 @@ public class HttpConfig {
     public static final String FIND_DUOFEN_CARD_BY_MEMBER_ID_AND_MONEY ="magicBoxMember/findDuofenCardByMemberIdAndMoney";
     public static final String GET_ORDER_STATUS="magicBoxMobile/79B4DE7C/getOrderStatus";
     public static final String SELECT_ORDER_BY_LAST_FOUR="magicBoxMobile/79B4DE7C/selectOrderByLastFour";
+    public static final String REVAMP_EQ_NAME="magicBoxMobile/79B4DE7C/revampEqName";
+    public static final String WXMEMBER_PAY_REFUND="magicBoxMobile/79B4DE7C/wxmemberPayRefund";
+
 
 }

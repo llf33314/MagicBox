@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ececec">
+
+    <ImageView
+        android:id="@+id/step01_bg"
+        android:layout_width="@dimen/dp_330"
+        android:layout_height="@dimen/dp_353"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_62"
+        android:src="@drawable/typewriting02" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_106"
+        android:gravity="center"
+        android:text="@string/typewriting02tip"
+        android:textColor="#666666"
+        android:textSize="@dimen/dp_12" />
+
+    <TextView
+        android:layout_marginTop="@dimen/dp_284"
+        android:id="@+id/settingSuccess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/settings_success"
+        android:textColor="#f04a4a"
+        android:textSize="@dimen/dp_12"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/settingButton"
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="@dimen/dp_35"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_322"
+        android:background="@drawable/selector_typewriting_setting_button"
+        android:text="@string/settings" />
+
+    <Button
+        android:id="@+id/step01_next"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40"
+        android:layout_below="@id/step01_bg"
+        android:layout_marginLeft="@dimen/dp_14"
+        android:layout_marginRight="@dimen/dp_14"
+        android:layout_marginTop="@dimen/dp_24"
+        android:background="@drawable/selector_red_button"
+        android:text="@string/finish"
+        android:textColor="@color/white" />
+</RelativeLayout>

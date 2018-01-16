@@ -78,9 +78,9 @@
     <string name="update_later">稍后更新</string>
     <string name="update_immediately">立即更新</string>
     <string name="data_is_not_exit">非会员</string>
-    <string name="order_push_data" >"{\"busId\":36,\"businessUtilName\":\"shop.deeptel.com.cn/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f6b4f93015f6b5ff9d3001b\",\"eqCode\":\"863326012751264\",\"model\":53,\"money\":0.01,\"orderId\":1085,\"orderNo\":\"YD1509334972874\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-30 11:42:57\",\"type\":1}"</string>
+    <string name="order_push_data">"{\"busId\":36,\"businessUtilName\":\"shop.deeptel.com.cn/shops/web/cashier/CF946E2B/payCallBack?id=ff8080815f6b4f93015f6b5ff9d3001b\",\"eqCode\":\"863326012751264\",\"model\":53,\"money\":0.01,\"orderId\":1085,\"orderNo\":\"YD1509334972874\",\"pay_type\":0,\"status\":\"success\",\"time\":\"2017-10-30 11:42:57\",\"type\":1}"</string>
     <string name="please_use_wechat_code">请扫描微信支付授权码</string>
-    
+
     <string name="please_check_customer_display_connect">请检查收银系统的客显端口设置和连线</string>
     <string name="please_select_baud_rate">请选择模式</string>
     <string name="please_input_baud_rate">请输入模式</string>
@@ -121,6 +121,25 @@
     <string name="return_money_way">退款方式</string>
     <string name="confirm_return_money">确认退款</string>
     <string name="close">关闭</string>
+    <string name="return_reason_tag">退款标签名称</string>
+    <string name="limit_ten_words">限制10个字内</string>
+    <string name="limit_15_words">限制15个字内</string>
+
+    <string name="save">保存</string>
+    <string name="disable_use_chinese_typewriting">无法使用中文输入法?</string>
+    <string name="settings">设置</string>
+    <string name="typewriting01tip">点击下面的“设置”按钮，将“谷歌拼音输入法”打开</string>
+    <string name="typewriting01toast">请先将谷歌输入法打开</string>
+    <string name="settings_success">设置成功</string>
+    <string name="typewriting02tip">将“谷歌拼音键盘”设置为默认键盘</string>
+    <string name="finish">完成</string>
+    <string name="device_name">设备名称：</string>
+    <string name="not_set">未设置</string>
+    <string name="saving">保存中...</string>
+    <string name="cannot_input_nothing">输入不能为空</string>
+    <string name="returning">退款中...</string>
+    <string name="return_order_list">返回订单列表</string>
+    <string name="return_success">退款成功</string>
 
 
 </resources>
