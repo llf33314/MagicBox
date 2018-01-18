@@ -156,15 +156,15 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     private boolean isCodePayRequesting = false;
     private MemberCardBean memberCardBean;
     private MemberCouponBean memberCouponBean;
-    private boolean isSuccessPay=false;
+    private boolean isSuccessPay = false;
+
     static {
         System.loadLibrary("iconv");
     }
 
     private Bitmap qrCodeBitmap;
     private String qrCodeUrl;
-    private long clickTime=0;
-
+    private long clickTime = 0;
 
 
     @Override
@@ -186,11 +186,11 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                displayService=null;
+                displayService = null;
             }
         };
-        Intent intent =new Intent(getApplicationContext(),CustomerDisplayService.class);
-        bindService(intent,customerDisplaySC, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(getApplicationContext(), CustomerDisplayService.class);
+        bindService(intent, customerDisplaySC, Context.BIND_AUTO_CREATE);
 
     }
 
@@ -198,7 +198,13 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         if (this.getIntent() != null) {
             type = this.getIntent().getIntExtra("type", 0);
             LogUtils.d(TAG, "type=" + type);
-
+            print.setVisibility(View.VISIBLE);
+            print.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PrinterConnectService.printQrCode(orderNo, "" + money, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT), qrCodeUrl);
+                }
+            });
             switch (type) {
                 case TYPE_CUSTOMER_DISPLAY_PAY:
                 case TYPE_MEMBER_RECHARGE:
@@ -440,8 +446,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
                         imageView.setImageBitmap(bitmap);
                         qrCodeBitmap = bitmap;
-                        //qrCodeUrl= QrCodeUtils.scanningImage(qrCodeBitmap);
-                        // LogUtils.d("qrCodeUrl="+qrCodeUrl);
+                        qrCodeUrl= QrCodeUtils.scanningImage(qrCodeBitmap);
+                        LogUtils.d("qrCodeUrl="+qrCodeUrl);
                         //initCameraViews();
                         codeCameraManager = new CodeCameraManager(getApplicationContext(), preview, QRCodePayActivity.this);
                         codeCameraManager.initCamera();
@@ -505,7 +511,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                         payMode = scanCodePayResultBean.payType;
                     }
                     payResult(success, "" + money);
-                    isSuccessPay=true;
+                    isSuccessPay = true;
                 }
             }
         });
@@ -547,8 +553,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         if (socketIOManager != null) {
             socketIOManager.disSocket();
         }
-        if (type==TYPE_CUSTOMER_DISPLAY_PAY){
-            if (displayService!=null&&!isSuccessPay) {
+        if (type == TYPE_CUSTOMER_DISPLAY_PAY) {
+            if (displayService != null && !isSuccessPay) {
                 displayService.deleteUnPaidOrderTask(orderId);
             }
         }
@@ -556,7 +562,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
     @Override
     protected void onDestroy() {
-        if (customerDisplaySC!=null) {
+        if (customerDisplaySC != null) {
             unbindService(customerDisplaySC);
         }
         super.onDestroy();
@@ -667,7 +673,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         }
     }
 
-    @OnClick({R.id.wechatPay, R.id.aliPay, R.id.printQrCode, R.id.confirmOrder})
+    @OnClick({R.id.wechatPay, R.id.aliPay, R.id.confirmOrder})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.wechatPay:
@@ -680,13 +686,9 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 aliPay.setImageResource(R.drawable.alipay_selected);
                 payMode = 1;
                 break;
-            case R.id.printQrCode:
-
-                PrinterConnectService.printQrCode(orderNo, ""+money, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT), qrCodeBitmap);
-                break;
             case R.id.confirmOrder:
-                if (SystemClock.uptimeMillis()-clickTime<1500)return;
-                clickTime= SystemClock.uptimeMillis();
+                if (SystemClock.uptimeMillis() - clickTime < 1500) return;
+                clickTime = SystemClock.uptimeMillis();
                 getOrderStatus();
                 break;
         }
@@ -705,7 +707,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                         if (dialog != null) {
                             dialog.dismiss();
                         }
-                        if (data!=null&&data.getCode()==0){
+                        if (data != null && data.getCode() == 0) {
                             payResult(true, "" + money);
                         }
 
@@ -762,7 +764,7 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         if (bDecoded && !TextUtils.isEmpty(result)) {
             LogUtils.e("quck", "onDecodeResult" + type + "    " + result);
             if (!isCodePayRequesting) {
-                Uri notification = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.beep);
+                Uri notification = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.beep);
                 Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                 r.play();
                 if (payMode == BaseConstant.PAY_ON_WECHAT) {

@@ -140,6 +140,7 @@
     <string name="returning">退款中...</string>
     <string name="return_order_list">返回订单列表</string>
     <string name="return_success">退款成功</string>
+    <string name="print">打印</string>
 
 
 </resources>

@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     android:background="#ececec"
     >
+    <ViewStub
+        android:layout="@layout/layout_camera_preview"
+        android:id="@+id/viewStubPreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <include
         android:id="@+id/searchToolbar"
         layout="@layout/search_toolbar"

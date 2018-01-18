@@ -28,19 +28,19 @@ import java.io.ByteArrayOutputStream;
  */
 
 public class QrCodeUtils {
-    public static String scagnningImage(Bitmap obmp) {
-        String message="";
-        int width = obmp.getWidth();
-        int height = obmp.getHeight();
+    public static String scanningImage(Bitmap qrCodeBitmap) {
+        String message = "";
+        int width = qrCodeBitmap.getWidth();
+        int height = qrCodeBitmap.getHeight();
         int[] data = new int[width * height];
-        obmp.getPixels(data, 0, width, 0, 0, width, height);
+        qrCodeBitmap.getPixels(data, 0, width, 0, 0, width, height);
         RGBLuminanceSource source = new RGBLuminanceSource(width, height, data);
         BinaryBitmap bitmap1 = new BinaryBitmap(new HybridBinarizer(source));
         QRCodeReader reader = new QRCodeReader();
         Result re = null;
         try {
             re = reader.decode(bitmap1);
-            message=re.getText();
+            message = re.getText();
         } catch (NotFoundException e) {
             e.printStackTrace();
         } catch (ChecksumException e) {
@@ -52,5 +52,4 @@ public class QrCodeUtils {
 
         return message;
     }
-
 }

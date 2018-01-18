@@ -34,6 +34,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 /**
  * Created by wzb on 2017/7/11 0011.
@@ -232,4 +233,6 @@ public interface ApiService {
     Observable<BaseResponse> returnMoney(@Query("orderNo") String orderNo, @Query("totalFee") double totalFee,
                                          @Query("type") int type,@Query("shiftId")int shiftId,@Body ReturnCauseBean returnCauseBean);
 
+    @GET(HttpConfig.SELECT_ORDER_LIST_MAP_BY_ORDER_NO)
+    Observable<BaseResponse<OrderListResultBean.OrderItemBean>> searchOrderByNo(@Query("orderNo") String orderNo,@Query("busId") int busId);
 }

@@ -490,7 +490,7 @@ public class PrinterConnectService extends Service {
      * 打印付款二维码
      * @return
      */
-    public static int printQrCode(String orderNo ,String money, String time, Bitmap qrCode) {
+    public static int printQrCode(String orderNo ,String money, String time, String qrCodeUrl) {
         if (mGpService == null) {
             showHintNotConnectDialog();
             return PRINTER_NOT_INTI;
@@ -513,7 +513,7 @@ public class PrinterConnectService extends Service {
             //这里很关键   打印机类型是ESC 还是TSC 暂时测试这么用
             int printType = mGpService.getPrinterCommandType(mPrinterIndex);
             if (printType == GpCom.ESC_COMMAND) {
-                EscCommand esc = PrintESCOrTSCUtil.getQrCodeEsc(orderNo , money,  time, qrCode);
+                EscCommand esc = PrintESCOrTSCUtil.getQrCodeEsc(orderNo , money,  time, qrCodeUrl);
                 return sendEscDataToPrinter(esc);
             } else {
                 ToastUtil.getInstance().showToast("请连接正确类型打印机");

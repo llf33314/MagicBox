@@ -1,8 +1,12 @@
 package com.gt.magicbox.order;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -10,6 +14,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -23,6 +28,7 @@ import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.SearchOrderBean;
 import com.gt.magicbox.bean.UpdateOrderListUIBean;
+import com.gt.magicbox.camera.CodeCameraManager;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
@@ -36,14 +42,20 @@ import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuCreator;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuItem;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuListView;
 import com.gt.magicbox.pay.ChosePayModeActivity;
+import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.gt.magicbox.widget.SearchView;
 import com.orhanobut.hawk.Hawk;
+import com.synodata.scanview.view.CodePreview;
+import com.synodata.scanview.view.Preview$IDecodeListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +71,7 @@ import io.reactivex.functions.Consumer;
  * Created by jack-lin on 2017/9/13 0013.
  */
 
-public class OrderListActivity extends BaseActivity {
+public class OrderListActivity extends BaseActivity implements Preview$IDecodeListener {
     private static final String TAG = OrderListActivity.class.getSimpleName();
     @BindView(R.id.dropDownMenu)
     DropDownMenu dropDownMenu;
@@ -69,6 +81,12 @@ public class OrderListActivity extends BaseActivity {
     SearchView searchView;
     @BindView(R.id.searchToolbar)
     RelativeLayout searchToolbar;
+    @BindView(R.id.viewStubPreview)
+    ViewStub viewStubPreview;
+    private CodePreview codePreview;
+    private CodeCameraManager codeCameraManager;
+    private boolean isCodePayRequesting;
+
     private SwipeMenuListView swipeMenuListView;
     private OrderListAdapter orderListAdapter;
     @BindView(R.id.listView)
@@ -88,7 +106,9 @@ public class OrderListActivity extends BaseActivity {
     private final int LIMIT_SEVEN_DAY = 2;
     private final int LIMIT_FIFTEEN_DAY = 3;
 
-    private String[] payStatus = {"未支付", "已支付", "已退款"};
+    // private String[] payStatus = {"未支付", "已支付", "已退款"};
+    private String[] payStatus = {"未支付", "已支付"};
+
     private final int STATUS_UNPAID = 0;
     private final int STATUS_PAID = 1;
     private final int STATUS_RETURN = 2;
@@ -117,6 +137,14 @@ public class OrderListActivity extends BaseActivity {
         }
         if (type == TYPE_ORDER_SEARCH) {
             initSearchListView();
+            viewStubPreview.inflate();
+            codePreview = (CodePreview) findViewById(R.id.preview);
+            if (codePreview != null) {
+                LogUtils.d("codePreview != null");
+                codeCameraManager = new CodeCameraManager(getApplicationContext(), codePreview, OrderListActivity.this);
+                codeCameraManager.initCamera();
+            } else LogUtils.d("codePreview == null");
+
         }
     }
 
@@ -124,7 +152,6 @@ public class OrderListActivity extends BaseActivity {
         goneToolBar();
         dropDownMenu.setVisibility(View.GONE);
         searchToolbar.setVisibility(View.VISIBLE);
-        BaseConstant.isCanSwipe = true;
         searchView.getSearchEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -534,5 +561,97 @@ public class OrderListActivity extends BaseActivity {
             case R.id.searchView:
                 break;
         }
+    }
+
+    @Override
+    public void onDecodeResult(boolean bDecoded, String result, String type) {
+        if (bDecoded && !TextUtils.isEmpty(result)) {
+            LogUtils.e("quck", "onDecodeResult" + type + "    " + result);
+            if (!isCodePayRequesting) {
+                isCodePayRequesting = true;
+                Uri notification = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.beep);
+                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                r.play();
+                boolean isSupportOrder = false;
+                for (int i = 0; i < BaseConstant.ORDER_HEADER.length; i++) {
+                    if (result.contains(BaseConstant.ORDER_HEADER[i])) {
+                        if (result.startsWith(BaseConstant.ORDER_HEADER[i])) {
+                            getSearchOrderByNo(result);
+                        } else {
+                            String orderNo = result.substring(result.indexOf(BaseConstant.ORDER_HEADER[i]));
+                            getSearchOrderByNo(orderNo);
+                        }
+                        isSupportOrder = true;
+                        break;
+                    }
+                }
+                if (!isSupportOrder) {
+                    new HintDismissDialog(OrderListActivity.this, "暂不支持搜索该类型订单")
+                            .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    isCodePayRequesting = false;
+                                }
+                            })
+                            .setCancelText("确认")
+                            .show();
+                }
+            }
+        }
+    }
+
+    private void getSearchOrderByNo(String orderNo) {
+        HttpCall.getApiService()
+                .searchOrderByNo(orderNo, Hawk.get("busId", 0))
+                .compose(ResultTransformer.<OrderListResultBean.OrderItemBean>transformer())//线程处理 预处理
+                .subscribe(new BaseObserver<OrderListResultBean.OrderItemBean>() {
+                    @Override
+                    public void onSuccess(OrderListResultBean.OrderItemBean data) {
+                        LogUtils.d(TAG, "getSearchOrderByNo onSuccess  ");
+                        if (orderListAdapter != null) {
+                            if (data != null) {
+                                Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
+                                intent.putExtra("OrderItemBean", data);
+                                startActivity(intent);
+                                AppManager.getInstance().finishActivity();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtils.d(TAG, "getSearchOrderByNo onError");
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                        new HintDismissDialog(OrderListActivity.this, "该订单不存在")
+                                .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                        isCodePayRequesting = false;
+                                    }
+                                })
+                                .setCancelText("确认")
+                                .show();
+                        super.onError(e);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        LogUtils.d(TAG, "getSearchOrderByNo onFailure");
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                        super.onFailure(code, msg);
+                    }
+                });
+    }
+
+    @Override
+    protected void onStop() {
+        if (codeCameraManager != null) {
+            codeCameraManager.releaseCamera();
+        }
+        super.onStop();
     }
 }

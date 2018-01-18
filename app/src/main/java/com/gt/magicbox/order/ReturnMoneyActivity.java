@@ -113,12 +113,13 @@ public class ReturnMoneyActivity extends BaseActivity {
             content = BaseConstant.PAY_TYPE[orderItemBean.type];
 
         } else if (orderItemBean.type == BaseConstant.PAY_ON_ALIPAY) {
-            content = BaseConstant.PAY_TYPE[orderItemBean.type] + "<font color=\"#999999\">" + "(魔盒端暂不支持支付宝退款)" + "</font>";
+            content = BaseConstant.PAY_TYPE[orderItemBean.type] + "<font color=\"#999999\">" + "(魔盒端暂不支持)" + "</font>";
             first.setEnabled(false);
             returnType = BaseConstant.PAY_ON_CASH;
+            second.setChecked(true);
+
         } else {
             content = BaseConstant.PAY_TYPE[orderItemBean.type] + "<font color=\"#999999\">" + "(原路退回)" + "</font>";
-            second.setChecked(true);
         }
 
         first.setText(Html.fromHtml(content));
@@ -233,6 +234,10 @@ public class ReturnMoneyActivity extends BaseActivity {
                 ToastUtil.getInstance().showToast("输入退款金额有误");
                 return;
             }
+        }
+        if (returnActuallyMoney == 0) {
+            ToastUtil.getInstance().showToast("输入退款金额有误");
+            return;
         }
         HttpCall.getApiService()
                 .returnMoney(orderItemBean.order_no, returnActuallyMoney, returnType, Hawk.get("shiftId", 0), new ReturnCauseBean(reason))

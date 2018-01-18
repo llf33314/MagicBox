@@ -20,5 +20,7 @@ public class BaseConstant {
     public static final int PAY_ON_BANK_CARD=4;
     public static long clickTime;
     public static final int DEFAULT_LIMIT_MONEY =50000;
+    /* 支持的订单类型*/
+    public static final String [] ORDER_HEADER={"MB","YD","JYP","NO"};
 
 }

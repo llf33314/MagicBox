@@ -38,4 +38,16 @@
         android:paddingTop="@dimen/dp_14"
         android:src="@drawable/order_title_search"
         android:visibility="gone" />
+
+    <TextView
+        android:textColor="@color/white"
+        android:id="@+id/print"
+        android:layout_width="@dimen/dp_60"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/btn_gray_null"
+        android:gravity="center"
+        android:text="@string/print"
+        android:textSize="16dp"
+        android:visibility="gone" />
 </RelativeLayout>

@@ -42,6 +42,7 @@ public class BaseActivity extends RxAppCompatActivity {
     private TextView toolBarTitle;
     private ImageView toolBarBack;
     private ImageView search;
+    protected TextView print;
     private ShortcutMenuDialog shortcutMenuDialog;
     private View activityView;
     @Override
@@ -57,6 +58,7 @@ public class BaseActivity extends RxAppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mToolbar = (RelativeLayout) findViewById(R.id.base_toolbar);
         toolBarTitle = (TextView) findViewById(R.id.toolbar_title);
+        print = (TextView) findViewById(R.id.print);
         toolBarBack = (ImageView) findViewById(R.id.toolbar_back);
         search=(ImageView) findViewById(R.id.search);
         AppManager.getInstance().addActivity(this);
