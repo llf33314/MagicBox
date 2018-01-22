@@ -27,10 +27,10 @@ import java.util.ArrayList;
  */
 
 public class MemberChooseActivity extends BaseActivity {
-    private String[] itemNameArray = {"会员充值", "新增会员"};
-    private Integer[] imageResArray = {R.drawable.member_recharge, R.drawable.member_add};
-    private int[] colorNormalArray = {0xfffdd451, 0xfffc7473};
-    private int[] colorFocusedArray = {0x99fdd451, 0x99fc7473};
+    private String[] itemNameArray = {"会员充值", "充值记录", "新增会员"};
+    private Integer[] imageResArray = {R.drawable.member_recharge, R.drawable.member_recharge_history, R.drawable.member_add};
+    private int[] colorNormalArray = {0xfffdd451, 0xffff9a54, 0xfffc7473};
+    private int[] colorFocusedArray = {0x99fdd451, 0x99ff9a54, 0x99fc7473};
     private ArrayList<GridItem> homeData = new ArrayList<>();
     private ListView home_grid;
     private HomeGridViewAdapter gridViewAdapter;
@@ -47,7 +47,7 @@ public class MemberChooseActivity extends BaseActivity {
     private void initView() {
         initViewData();
         home_grid = (ListView) findViewById(R.id.listView);
-        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData, 2);
+        gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData, 3);
         home_grid.setAdapter(gridViewAdapter);
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -56,17 +56,17 @@ public class MemberChooseActivity extends BaseActivity {
                 switch (i) {
                     case 0:
                         if (Constant.product == BaseConstant.PRODUCTS[0]) {
-                            intent=new Intent(MemberChooseActivity.this,PaymentActivity.class);
-                            intent.putExtra("type",4);
+                            intent = new Intent(MemberChooseActivity.this, PaymentActivity.class);
+                            intent.putExtra("type", 4);
                             startActivity(intent);
                         } else if (Constant.product == BaseConstant.PRODUCTS[1]) {
                             intent = new Intent(MemberChooseActivity.this, VerificationChoseActivity.class);
-                            intent.putExtra("type",4);
+                            intent.putExtra("type", 4);
                             startActivity(intent);
                         }
                         break;
-                    case 1:
-                        intent =new Intent(MemberChooseActivity.this,AddMemberActivity.class);
+                    case 2:
+                        intent = new Intent(MemberChooseActivity.this, AddMemberActivity.class);
                         startActivity(intent);
                         break;
                 }

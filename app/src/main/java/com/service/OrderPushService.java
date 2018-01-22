@@ -8,6 +8,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -57,7 +58,7 @@ public class OrderPushService extends Service {
     public static final String TAG = "OrderPushService";
     private Socket mSocket;
     private PushBinder binder=new PushBinder();
-
+    private Handler handler=new Handler();
     private Ringtone mRingtone;
     @Nullable
     @Override
@@ -161,34 +162,41 @@ public class OrderPushService extends Service {
             json=json.replaceAll("\\\\","");
             JSONObject orderObject= new JSONObject(json);
             if (orderObject!=null) {
-                int orderId = orderObject.getInt("orderId");
-                double money =  orderObject.getDouble("money");
-                String orderNo=orderObject.getString("orderNo");
+                final int orderId = orderObject.getInt("orderId");
+                final double money =  orderObject.getDouble("money");
+                //String orderNo=orderObject.getString("orderNo");
                 int type=orderObject.getInt("pay_type");
                 if (type<0||type>1) {
                     //暂时支持微信或支付宝
                     type = 0;
                 }
                 LogUtils.d(TAG," money="+money);
-                if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
-                    Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    LogUtils.d("payMode="+type);
-                    intent.putExtra("type", QRCodePayActivity.TYPE_SERVER_PUSH);
-                    intent.putExtra("orderId",orderId);
-                    intent.putExtra("money", money);
-                    intent.putExtra("orderNo",orderNo);
-                    intent.putExtra("payMode",type);
-                    startActivity(intent);
-                }else if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
-                    Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("customerType", ChosePayModeActivity.TYPE_ORDER_PUSH);
-                    intent.putExtra("orderNo",orderNo);
-                    intent.putExtra("money", money);
-                    intent.putExtra("payMode",type);
-                    startActivity(intent);
-                }
+                final int finalType = type;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (Constant.product.equals(BaseConstant.PRODUCTS[0])){
+                            Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            LogUtils.d("payMode="+ finalType);
+                            intent.putExtra("type", QRCodePayActivity.TYPE_SERVER_PUSH);
+                            intent.putExtra("orderId",orderId);
+                            intent.putExtra("money", money);
+                            // intent.putExtra("orderNo",orderNo);
+                            intent.putExtra("payMode", finalType);
+                            startActivity(intent);
+                        }else if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
+                            Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra("customerType", ChosePayModeActivity.TYPE_ORDER_PUSH);
+                            //  intent.putExtra("orderNo",orderNo);
+                            intent.putExtra("money", money);
+                            intent.putExtra("payMode", finalType);
+                            startActivity(intent);
+                        }
+                    }
+                },500);
+
 
             }
         } catch (JSONException e) {

@@ -90,7 +90,7 @@ public interface ApiService {
     @POST(HttpConfig.DELETE_NOT_PAY_ORDER)
     Observable<BaseResponse> deleteNotPayOrder(@Query("eqId") int eqId, @Query("orderId") long orderId);
 
-    @GET("magicBoxMobile/{orderId}/{shiftId}/{busId}//79B4DE7C/payQR")
+    @GET("magicBoxMobile/{orderId}/{shiftId}/{busId}/79B4DE7C/payQR")
     Observable<BaseResponse<CreatedOrderBean>> getCreatedQRCodeUrl(@Path("orderId") int orderId, @Path("shiftId") int shiftId,
                                                                    @Path("busId") int busId);
 

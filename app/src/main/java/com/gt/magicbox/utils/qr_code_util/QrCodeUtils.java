@@ -3,14 +3,20 @@ package com.gt.magicbox.utils.qr_code_util;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
+import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
+import com.google.zxing.EncodeHintType;
 import com.google.zxing.FormatException;
+import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 
 import net.sourceforge.zbar.Config;
@@ -20,6 +26,8 @@ import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Description:
@@ -51,5 +59,27 @@ public class QrCodeUtils {
 
 
         return message;
+    }
+    public static Bitmap generateBitmap(String content,int width, int height) {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        Map<EncodeHintType, String> hints = new HashMap<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        try {
+            BitMatrix encode = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, width, height, hints);
+            int[] pixels = new int[width * height];
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    if (encode.get(j, i)) {
+                        pixels[i * width + j] = 0x00000000;
+                    } else {
+                        pixels[i * width + j] = 0xffffffff;
+                    }
+                }
+            }
+            return Bitmap.createBitmap(pixels, 0, width, width, height, Bitmap.Config.RGB_565);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -52,7 +52,7 @@ public class CouponQRActivity extends BaseActivity {
         int busId= Hawk.get("busId");
         String code=intent.getStringExtra("code");
         qrName.setText(intent.getStringExtra("brandName"));
-        String imageUrl= Constant.BASE_URL+"magicBoxMember/"+busId+"/"+code+"/getQRCode";
+        String imageUrl= Constant.YJ_BASE_URL+"magicBoxMember/"+busId+"/"+code+"/getQRCode";
         LogUtils.d("imageUrl="+imageUrl);
         //默认是有缓存
         Glide.with(this).load(imageUrl).apply(GlideUtils.getInstance().noneCacheOpt()).into(qrCodeIv);

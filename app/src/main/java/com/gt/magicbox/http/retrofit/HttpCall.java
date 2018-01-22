@@ -38,7 +38,7 @@ public class HttpCall {
                     .build();
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(Constant.BASE_URL)
+                    .baseUrl(Constant.YJ_BASE_URL)
                     .client(okHttpClient)
                     .addConverterFactory(StringConverterFactory.create()) //String 转换
                     .addConverterFactory(GsonConverterFactory.create())
