@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.gt.magicbox.R;
 import com.gt.magicbox.bean.UpdateBadgeBean;
 import com.gt.magicbox.bean.UpdateMainBadgeBean;
+import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.DrawableUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
 
@@ -27,6 +28,8 @@ import java.util.ArrayList;
  */
 
 public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
+    private int[] logoWidthAry;
+    private int[] logoHeightAry;
     private Context mContext;
     private int layoutResourceId;
     private ArrayList<GridItem> mGridData = new ArrayList<GridItem>();
@@ -35,15 +38,16 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
     private int logoHeight;
     private int displayAreaHeight;
     private ViewHolder holder;
-    public HomeGridViewAdapter(@NonNull Context context, int resource, ArrayList<GridItem> objects,int heightCount) {
+
+    public HomeGridViewAdapter(@NonNull Context context, int resource, ArrayList<GridItem> objects, int heightCount) {
         super(context, resource);
         this.mContext = context;
         this.layoutResourceId = resource;
         this.mGridData = objects;
         int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
-        int toolbarHeight =(int) mContext.getResources().getDimension(R.dimen.toolbar_height);
-        displayAreaHeight = screenHeight - toolbarHeight -ScreenUtils.getStatusHeight();
-        itemHeight = displayAreaHeight / heightCount ;
+        int toolbarHeight = (int) mContext.getResources().getDimension(R.dimen.toolbar_height);
+        displayAreaHeight = screenHeight - toolbarHeight - ScreenUtils.getStatusHeight();
+        itemHeight = displayAreaHeight / heightCount;
     }
 
     @Override
@@ -73,10 +77,17 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
             holder.badge = (TextView) convertView.findViewById(R.id.badge);
             holder.textView = (TextView) convertView.findViewById(R.id.name_item);
             holder.imageView = (ImageView) convertView.findViewById(R.id.img_item);
-            if (logoHeight>0&&logoWidth>0){
-                RelativeLayout.LayoutParams  layoutParams= (RelativeLayout.LayoutParams) holder.imageView.getLayoutParams();
-                layoutParams.width=logoWidth;
-                layoutParams.height=logoHeight;
+            if (logoHeight > 0 && logoWidth > 0) {//设置所有LOGO大小一样
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.imageView.getLayoutParams();
+                layoutParams.width = logoWidth;
+                layoutParams.height = logoHeight;
+                holder.imageView.setLayoutParams(layoutParams);
+            }
+            if (logoWidthAry != null && logoHeightAry != null &&
+                    logoWidthAry.length == mGridData.size() && logoHeightAry.length == mGridData.size()) {//设置每个LOGO不同大小
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.imageView.getLayoutParams();
+                layoutParams.width = logoWidthAry[position];
+                layoutParams.height = logoHeightAry[position];
                 holder.imageView.setLayoutParams(layoutParams);
             }
             convertView.setTag(holder);
@@ -89,13 +100,13 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
                     item.getFocusedColor()));
             holder.textView.setText(item.getName());
             holder.imageView.setBackgroundResource(item.getImgRes());
-            if (item.getMessageCount()>0){
+            if (item.getMessageCount() > 0) {
                 holder.badge.setVisibility(View.VISIBLE);
-                holder.badge.setText(""+item.getMessageCount());
-                if (item.getMessageCount()>999){
-                    holder.badge.setText(""+999);
+                holder.badge.setText("" + item.getMessageCount());
+                if (item.getMessageCount() > 999) {
+                    holder.badge.setText("" + 999);
                 }
-            }else {
+            } else {
                 holder.badge.setVisibility(View.INVISIBLE);
 
             }
@@ -114,18 +125,39 @@ public class HomeGridViewAdapter extends ArrayAdapter<GridItem> {
         this.mGridData = mGridData;
         notifyDataSetChanged();
     }
-    public void setLogoSize(int width,int height){
-        logoWidth=width;
-        logoHeight=height;
+
+    public void setLogoSize(int width, int height) {
+        logoWidth = width;
+        logoHeight = height;
     }
 
     /**
      * 更新右上角红色数字
-         数字
-         第几个菜单
+     * 数字
+     * 第几个菜单
      */
-    public void updateBadge(UpdateBadgeBean bean){
+    public void updateBadge(UpdateBadgeBean bean) {
         this.mGridData.get(bean.getPosition()).setMessageCount(bean.getMessageCount());
         notifyDataSetChanged();
     }
+
+    /**
+     * 在这里转成px
+     *
+     * @param logoWidthAry dp单位
+     */
+    public void setLogoWidthAry(int[] logoWidthAry) {
+        this.logoWidthAry = logoWidthAry;
+        for (int i = 0; i < logoWidthAry.length; i++) {
+            logoWidthAry[i] = ConvertUtils.dp2px(logoWidthAry[i]);
+        }
+    }
+
+    public void setLogoHeightAry(int[] logoHeightAry) {
+        this.logoHeightAry = logoHeightAry;
+        for (int i = 0; i < logoHeightAry.length; i++) {
+            logoHeightAry[i] = ConvertUtils.dp2px(logoHeightAry[i]);
+        }
+    }
+
 }

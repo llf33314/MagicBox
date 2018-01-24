@@ -121,6 +121,9 @@
             android:launchMode="singleTask" />
         <activity android:name=".setting.DeviceInfoActivity" />
         <activity
+            android:name=".setting.SettingsActivity"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".setting.ScanCodeTest"
             android:launchMode="singleTask" />
         <activity
@@ -135,6 +138,9 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".member.MemberRechargeActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".member.RechargeHistoryActivity"
             android:launchMode="singleTask" />
         <activity
             android:name=".member.MemberDoResultActivity"

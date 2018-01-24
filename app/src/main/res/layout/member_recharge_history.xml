@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/searchToolbar"
+        layout="@layout/search_toolbar"
+        android:visibility="gone"
+        />
+    <com.gt.magicbox.order.widget.pulltorefresh.PullToRefreshSwipeListView
+        android:layout_marginTop="@dimen/dp_50"
+        android:id="@+id/listView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="@drawable/list_divider"
+        android:dividerHeight="@dimen/dp_1"
+        android:fadingEdge="none"
+        android:scrollbars="none">
+    </com.gt.magicbox.order.widget.pulltorefresh.PullToRefreshSwipeListView>
+
+    <com.gt.magicbox.order.widget.DropDownMenu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/dropDownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/searchToolbar"
+        app:dividerColor="#ffffff"
+        app:maskColor="#88888888"
+        app:menuBackgroundColor="#ffffff"
+        app:menuSelectedIcon="@drawable/ic_img_up"
+        app:menuTextSize="16sp"
+        app:menuUnselectedIcon="@drawable/ic_img_down"
+        app:textSelectedColor="#f04a4a"
+        app:textUnselectedColor="#333333"
+        app:underlineColor="#e1e1e1" />
+</RelativeLayout>

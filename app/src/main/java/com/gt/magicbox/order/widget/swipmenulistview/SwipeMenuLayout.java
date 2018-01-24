@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
+import android.widget.ListAdapter;
 
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseConstant;
@@ -43,7 +44,7 @@ public class SwipeMenuLayout extends FrameLayout {
     private int MAX_VELOCITYX = -dp2px(500);
     private ScrollerCompat mOpenScroller;
     private ScrollerCompat mCloseScroller;
-    private OrderListAdapter orderListAdapter;
+    private ListAdapter orderListAdapter;
     private int mBaseX;
     private int position;
     private Interpolator mCloseInterpolator;
@@ -56,10 +57,10 @@ public class SwipeMenuLayout extends FrameLayout {
     }
 
 
-    public SwipeMenuLayout(OrderListAdapter orderListAdapter, View contentView, SwipeMenuView menuView,
+    public SwipeMenuLayout(ListAdapter adapter, View contentView, SwipeMenuView menuView,
                            Interpolator closeInterpolator, Interpolator openInterpolator) {
         super(contentView.getContext());
-        this.orderListAdapter = orderListAdapter;
+        this.orderListAdapter = adapter;
         mCloseInterpolator = closeInterpolator;
         mOpenInterpolator = openInterpolator;
         mContentView = contentView;

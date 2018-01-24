@@ -43,7 +43,6 @@ import com.gt.magicbox.camera.CodeCameraManager;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.retrofit.HttpCall;
-import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.http.socket.SocketIOManager;
@@ -55,36 +54,26 @@ import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
 import com.gt.magicbox.utils.qr_code_util.QrCodeUtils;
-import com.gt.magicbox.utils.voice.PlaySound;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadFrom;
-import com.obsessive.zbar.CameraManager;
-import com.obsessive.zbar.CameraPreview;
 import com.orhanobut.hawk.Hawk;
 import com.service.CustomerDisplayService;
 import com.synodata.scanview.view.CodePreview;
 import com.synodata.scanview.view.Preview$IDecodeListener;
 
-import net.sourceforge.zbar.Config;
-import net.sourceforge.zbar.Image;
-import net.sourceforge.zbar.ImageScanner;
-import net.sourceforge.zbar.Symbol;
-import net.sourceforge.zbar.SymbolSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.socket.emitter.Emitter;
 
@@ -143,11 +132,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
     private CodeCameraManager codeCameraManager;
     private Camera mCamera;
-    private CameraPreview mPreview;
     private Handler autoFocusHandler;
-    private CameraManager mCameraManager;
     private boolean previewing = true;
-    private ImageScanner mImageScanner = null;
     private Rect fillRect = null;
     private String orderNo = "";
     private long orderId;
@@ -582,59 +568,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     }
 
 
-    private void releaseCamera() {
-        if (mCamera != null) {
-            previewing = false;
-            mCamera.setPreviewCallback(null);
-            mCamera.release();
-            mCamera = null;
-        }
-    }
 
-    private Runnable doAutoFocus = new Runnable() {
-        public void run() {
-            if (previewing)
-                mCamera.autoFocus(autoFocusCB);
-        }
-    };
-    Camera.PreviewCallback previewCb = new Camera.PreviewCallback() {
-        public void onPreviewFrame(byte[] data, Camera camera) {
-            Camera.Size size = camera.getParameters().getPreviewSize();
 
-            fillRect = new Rect(0, 0, size.width, size.height);
-            Image barcode = new Image(size.width, size.height, "Y800");
-            barcode.setData(data);
-            barcode.setCrop(fillRect.left, fillRect.top, fillRect.width(),
-                    fillRect.height());
-
-            int result = mImageScanner.scanImage(barcode);
-            String resultStr = null;
-
-            if (result != 0) {
-                SymbolSet syms = mImageScanner.getResults();
-                for (Symbol sym : syms) {
-                    resultStr = sym.getData();
-                }
-            }
-
-            if (!TextUtils.isEmpty(resultStr)) {
-                if (!isCodePayRequesting) {
-                    if (payMode == BaseConstant.PAY_ON_WECHAT) {
-                        getCodePayResult(resultStr, orderNo);
-                    } else if (payMode == BaseConstant.PAY_ON_ALIPAY) {
-                        getCodeAliPayResult(resultStr, orderNo);
-                    }
-                }
-            }
-        }
-    };
-
-    // Mimic continuous auto-focusing
-    Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {
-        public void onAutoFocus(boolean success, Camera camera) {
-            autoFocusHandler.postDelayed(doAutoFocus, 1000);
-        }
-    };
 
     private void memberRecharge() {
         LogUtils.d(TAG, "memberRecharge type=" + type);

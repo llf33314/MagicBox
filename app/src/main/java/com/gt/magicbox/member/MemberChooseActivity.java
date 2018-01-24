@@ -12,6 +12,7 @@ import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
+import com.gt.magicbox.bean.MemberRechargeHistoryBean;
 import com.gt.magicbox.coupon.CouponChoseActivity;
 import com.gt.magicbox.main.GridItem;
 import com.gt.magicbox.main.HomeGridViewAdapter;
@@ -49,6 +50,7 @@ public class MemberChooseActivity extends BaseActivity {
         home_grid = (ListView) findViewById(R.id.listView);
         gridViewAdapter = new HomeGridViewAdapter(this, R.layout.home_grid_item, homeData, 3);
         home_grid.setAdapter(gridViewAdapter);
+        gridViewAdapter.setLogoSize((int)getResources().getDimension(R.dimen.dp_50),(int)getResources().getDimension(R.dimen.dp_50));
         home_grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -64,6 +66,10 @@ public class MemberChooseActivity extends BaseActivity {
                             intent.putExtra("type", 4);
                             startActivity(intent);
                         }
+                        break;
+                    case 1:
+                        intent = new Intent(MemberChooseActivity.this, RechargeHistoryActivity.class);
+                        startActivity(intent);
                         break;
                     case 2:
                         intent = new Intent(MemberChooseActivity.this, AddMemberActivity.class);

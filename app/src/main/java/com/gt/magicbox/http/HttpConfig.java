@@ -69,5 +69,13 @@ public class HttpConfig {
     public static final String SELECT_ORDER_LIST_MAP_BY_ORDER_NO="magicBoxMobile/79B4DE7C/selectOrderListMapByOrderNo";
 
 
+    /**WXMP相关接口*/
+
+    public static final String QUERY_WX_SHOP_BY_BUS_ID="8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryWxShopByBusId.do";
+
+
+    /**会员服务相关接口*/
+    public static final String RECHARGE_LOG="memberAPI/member/rechargeLog";
+
 
 }

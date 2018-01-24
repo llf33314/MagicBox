@@ -27,18 +27,18 @@
         android:scrollbars="none">
     </com.gt.magicbox.order.widget.pulltorefresh.PullToRefreshSwipeListView>
     <com.gt.magicbox.order.widget.DropDownMenu xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_below="@id/searchToolbar"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/dropDownMenu"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:dividerColor="#ffffff"
-        app:maskColor="#88888888"
-        app:menuBackgroundColor="#ffffff"
-        app:menuSelectedIcon="@drawable/ic_img_up"
-        app:menuTextSize="16sp"
-        app:menuUnselectedIcon="@drawable/ic_img_down"
-        app:textSelectedColor="#f04a4a"
-        app:textUnselectedColor="#333333"
-        app:underlineColor="#e1e1e1" />
+    android:layout_below="@id/searchToolbar"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dropDownMenu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:dividerColor="#ffffff"
+    app:maskColor="#88888888"
+    app:menuBackgroundColor="#ffffff"
+    app:menuSelectedIcon="@drawable/ic_img_up"
+    app:menuTextSize="16sp"
+    app:menuUnselectedIcon="@drawable/ic_img_down"
+    app:textSelectedColor="#f04a4a"
+    app:textUnselectedColor="#333333"
+    app:underlineColor="#e1e1e1" />
 </RelativeLayout>

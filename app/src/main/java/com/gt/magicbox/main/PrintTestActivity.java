@@ -31,7 +31,6 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 
-import org.apache.commons.lang.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -214,80 +213,80 @@ public class PrintTestActivity extends BaseActivity {
     }
 
     void sendReceipt() {
-        EscCommand esc = new EscCommand();
-        esc.addPrintAndFeedLines((byte) 1);
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
-        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
-        esc.addText("多粉餐厅（赛格）\n"); // 打印文字
-        esc.addPrintAndLineFeed();
-
-		/* 打印文字 */
-        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
-        esc.addText("--------------------------------\n");// 打印文字
-        esc.addText("单号：12345678987445775\n"); // 打印文字
-        esc.addText("--------------------------------\n");
-        esc.addText("消费总额：60.00\n");
-        esc.addText("--------------------------------\n");
-        esc.addText("会员折扣：8.5\n");
-        esc.addText("抵扣方式：100粉币（-10.00）\n");
-        esc.addText("实付金额：46.10\n");
-        esc.addText("支付方式：微信支付\n");
-        esc.addText("会员折扣：8.5\n");
-        esc.addText("--------------------------------\n");
-        esc.addText("开单时间：2017-07-21 14:23\n");
-        esc.addText("收银员：\n");
-        esc.addText("--------------------------------\n");
-        esc.addText("联系电话：0752-3851585\n");
-        esc.addText("地址：惠州市惠城区赛格假日广场1007室\n");
-        esc.addText("--------------------------------\n");
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
-        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
-        esc.addText("欢迎再次光临！\n"); // 打印文字
-        esc.addPrintAndFeedLines((byte)5);
-
-
-
-
-        Vector<Byte> datas = esc.getCommand(); // 发送数据
-        Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
-        byte[] bytes = ArrayUtils.toPrimitive(Bytes);
-        String sss = Base64.encodeToString(bytes, Base64.DEFAULT);
-        int rs;
-        try {
-            rs = mGpService.sendEscCommand(mPrinterIndex, sss);
-            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rs];
-            if (r != GpCom.ERROR_CODE.SUCCESS) {
-                ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
-            }
-        } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        EscCommand esc = new EscCommand();
+//        esc.addPrintAndFeedLines((byte) 1);
+//        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
+//        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
+//        esc.addText("多粉餐厅（赛格）\n"); // 打印文字
+//        esc.addPrintAndLineFeed();
+//
+//		/* 打印文字 */
+//        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
+//        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
+//        esc.addText("--------------------------------\n");// 打印文字
+//        esc.addText("单号：12345678987445775\n"); // 打印文字
+//        esc.addText("--------------------------------\n");
+//        esc.addText("消费总额：60.00\n");
+//        esc.addText("--------------------------------\n");
+//        esc.addText("会员折扣：8.5\n");
+//        esc.addText("抵扣方式：100粉币（-10.00）\n");
+//        esc.addText("实付金额：46.10\n");
+//        esc.addText("支付方式：微信支付\n");
+//        esc.addText("会员折扣：8.5\n");
+//        esc.addText("--------------------------------\n");
+//        esc.addText("开单时间：2017-07-21 14:23\n");
+//        esc.addText("收银员：\n");
+//        esc.addText("--------------------------------\n");
+//        esc.addText("联系电话：0752-3851585\n");
+//        esc.addText("地址：惠州市惠城区赛格假日广场1007室\n");
+//        esc.addText("--------------------------------\n");
+//        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
+//        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
+//        esc.addText("欢迎再次光临！\n"); // 打印文字
+//        esc.addPrintAndFeedLines((byte)5);
+//
+//
+//
+//
+//        Vector<Byte> datas = esc.getCommand(); // 发送数据
+//        Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
+//        byte[] bytes = ArrayUtils.toPrimitive(Bytes);
+//        String sss = Base64.encodeToString(bytes, Base64.DEFAULT);
+//        int rs;
+//        try {
+//            rs = mGpService.sendEscCommand(mPrinterIndex, sss);
+//            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rs];
+//            if (r != GpCom.ERROR_CODE.SUCCESS) {
+//                ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
+//            }
+//        } catch (RemoteException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
     }
 
     void sendReceiptBmp(int i) {
-        EscCommand esc = new EscCommand();
-        /* 打印图片 */
-        esc.addText("Print bitmap!\n"); // 打印文字openPortDialogueClicked
-        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard_0);
-        esc.addRastBitImage(b, 384, 0); // 打印图片
-        esc.addText("第 " + i + " 份\n"); // 打印文字
-
-        Vector<Byte> datas = esc.getCommand(); // 发送数据
-        Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
-        byte[] bytes = ArrayUtils.toPrimitive(Bytes);
-        String str = Base64.encodeToString(bytes, Base64.DEFAULT);
-        int rel;
-        try {
-            rel = mGpService.sendEscCommand(mPrinterIndex, str);
-            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
-            if (r != GpCom.ERROR_CODE.SUCCESS) {
-                ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
-            }
-        } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        EscCommand esc = new EscCommand();
+//        /* 打印图片 */
+//        esc.addText("Print bitmap!\n"); // 打印文字openPortDialogueClicked
+//        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.keyboard_0);
+//        esc.addRastBitImage(b, 384, 0); // 打印图片
+//        esc.addText("第 " + i + " 份\n"); // 打印文字
+//
+//        Vector<Byte> datas = esc.getCommand(); // 发送数据
+//        Byte[] Bytes = datas.toArray(new Byte[datas.size()]);
+//        byte[] bytes = ArrayUtils.toPrimitive(Bytes);
+//        String str = Base64.encodeToString(bytes, Base64.DEFAULT);
+//        int rel;
+//        try {
+//            rel = mGpService.sendEscCommand(mPrinterIndex, str);
+//            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
+//            if (r != GpCom.ERROR_CODE.SUCCESS) {
+//                ToastUtil.getInstance().showToast(GpCom.getErrorText(r));
+//            }
+//        } catch (RemoteException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
     }
 }

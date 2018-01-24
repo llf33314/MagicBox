@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_84"
+        android:background="@drawable/selector_member_recharge_item">
+
+        <TextView
+            android:id="@+id/orderNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_10"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="#333333"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/orderNo"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="#bdbdbd"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_27"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_12"
+            android:src="@drawable/member_arrow_right" />
+
+        <TextView
+            android:id="@+id/money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_8"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_toLeftOf="@id/arrow"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="#333333"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/dp_19"
+            android:background="#e6e6e6" />
+    </RelativeLayout>
+</RelativeLayout>

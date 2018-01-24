@@ -18,11 +18,11 @@ import com.gt.magicbox.order.OrderListAdapter;
 public class SwipeMenuAdapter implements WrapperListAdapter,
         SwipeMenuView.OnItemClickListener {
 
-    private OrderListAdapter mAdapter;
+    private ListAdapter mAdapter;
     private Context mContext;
     private SwipeMenuListView.OnMenuItemClickListener onMenuItemClickListener;
 
-    public SwipeMenuAdapter(Context context, OrderListAdapter adapter) {
+    public SwipeMenuAdapter(Context context, ListAdapter adapter) {
         mAdapter = adapter;
         mContext = context;
     }

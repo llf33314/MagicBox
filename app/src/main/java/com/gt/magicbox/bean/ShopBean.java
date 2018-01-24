@@ -1,5 +1,6 @@
 package com.gt.magicbox.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,7 +9,7 @@ import java.util.List;
  * Buddha bless, never BUG!
  */
 
-public class ShopBean {
+public class ShopBean  {
 
     /**
      * code : 0

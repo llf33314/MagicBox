@@ -107,9 +107,8 @@ public class DropDownMenu extends LinearLayout {
      *
      * @param tabTexts
      * @param popupViews
-     * @param contentView
      */
-    public void setDropDownMenu(@NonNull List<String> tabTexts, @NonNull List<View> popupViews, @NonNull View contentView) {
+    public void setDropDownMenu(@NonNull List<String> tabTexts, @NonNull List<View> popupViews) {
         if (tabTexts.size() != popupViews.size()) {
             throw new IllegalArgumentException("params not match, tabTexts.size() should be equal popupViews.size()");
         }
@@ -117,7 +116,7 @@ public class DropDownMenu extends LinearLayout {
         for (int i = 0; i < tabTexts.size(); i++) {
             addTab(tabTexts, i);
         }
-       // containerView.addView(contentView, 0);
+        // containerView.addView(contentView, 0);
 
         maskView = new View(getContext());
         maskView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
@@ -173,6 +172,12 @@ public class DropDownMenu extends LinearLayout {
         }
     }
 
+    public void clearTabChildView() {
+        if (tabMenuView != null && tabMenuView.getChildCount() > 0) {
+            tabMenuView.removeAllViews();
+        }
+    }
+
     /**
      * 改变tab文字
      *
@@ -198,7 +203,7 @@ public class DropDownMenu extends LinearLayout {
         if (current_tab_position != -1) {
             ((TextView) tabMenuView.getChildAt(current_tab_position)).setTextColor(textUnselectedColor);
             ((TextView) tabMenuView.getChildAt(current_tab_position)).setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    getResources().getDrawable(menuUnselectedIcon),null);
+                    getResources().getDrawable(menuUnselectedIcon), null);
 
             popupMenuViews.setVisibility(View.GONE);
             popupMenuViews.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.dd_menu_out));
@@ -243,13 +248,13 @@ public class DropDownMenu extends LinearLayout {
                     current_tab_position = i;
                     ((TextView) tabMenuView.getChildAt(i)).setTextColor(textSelectedColor);
                     ((TextView) tabMenuView.getChildAt(i)).setCompoundDrawablesWithIntrinsicBounds(null, null,
-                            getResources().getDrawable(menuSelectedIcon) ,null);
+                            getResources().getDrawable(menuSelectedIcon), null);
                 }
             } else {
                 //设置其他未点击tab的状态
                 ((TextView) tabMenuView.getChildAt(i)).setTextColor(textUnselectedColor);
                 ((TextView) tabMenuView.getChildAt(i)).setCompoundDrawablesWithIntrinsicBounds(null, null,
-                        getResources().getDrawable(menuUnselectedIcon) ,null);
+                        getResources().getDrawable(menuUnselectedIcon), null);
                 popupMenuViews.getChildAt(i / 2).setVisibility(View.GONE);
             }
         }

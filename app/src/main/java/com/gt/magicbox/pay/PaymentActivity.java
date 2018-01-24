@@ -20,7 +20,6 @@ import com.gt.magicbox.bean.CouponVerificationBean;
 import com.gt.magicbox.bean.MemberCardBean;
 import com.gt.magicbox.bean.MemberCouponBean;
 import com.gt.magicbox.camera.CodeCameraManager;
-import com.gt.magicbox.camera.ZBarCameraManager;
 import com.gt.magicbox.coupon.CouponVerificationSuccess;
 import com.gt.magicbox.coupon.VerificationActivity;
 import com.gt.magicbox.http.BaseResponse;
@@ -38,12 +37,10 @@ import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
-import com.service.CustomerDisplayService;
 import com.synodata.scanview.view.CodePreview;
 import com.synodata.scanview.view.Preview$IDecodeListener;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Description:
@@ -51,7 +48,7 @@ import butterknife.ButterKnife;
  * @author jack-lin
  * @date 2017/7/18 0018
  */
-
+@Deprecated
 public class PaymentActivity extends BaseActivity implements Preview$IDecodeListener {
     private final String TAG = PaymentActivity.class.getSimpleName();
     @BindView(R.id.preview)
@@ -60,7 +57,6 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
     private KeyboardView keyboardView;
     private int type = 0;
     private double orderMoney = 0;
-    private ZBarCameraManager zBarCameraManager;
     private MemberCardBean memberCardBean;
     public static final int TYPE_INPUT = 0;
     public static final int TYPE_CALC = 1;

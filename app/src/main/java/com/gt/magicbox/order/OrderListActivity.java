@@ -548,7 +548,7 @@ public class OrderListActivity extends BaseActivity implements Preview$IDecodeLi
         //这里添加 内容显示区域,可以是任何布局
 
 
-        dropDownMenu.setDropDownMenu(Arrays.asList(headers), popupViews, pullToRefreshSwipeListView);
+        dropDownMenu.setDropDownMenu(Arrays.asList(headers), popupViews);
 
     }
 

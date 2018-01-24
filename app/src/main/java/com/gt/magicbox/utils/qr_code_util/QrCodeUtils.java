@@ -1,14 +1,12 @@
 package com.gt.magicbox.utils.qr_code_util;
 
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.FormatException;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
@@ -17,15 +15,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.gt.magicbox.utils.commonutil.LogUtils;
 
-import net.sourceforge.zbar.Config;
-import net.sourceforge.zbar.Image;
-import net.sourceforge.zbar.ImageScanner;
-import net.sourceforge.zbar.Symbol;
-import net.sourceforge.zbar.SymbolSet;
-
-import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
