@@ -36,7 +36,7 @@ public class FixedMoneySettingActivity extends BaseActivity {
     @BindView(R.id.recyclerView)
     XCRecyclerView recyclerView;
     private Button footerButton;
-
+    private final int MAX_COUNT = 6;
     public static final int FOOTER_MODE_ADD = 0;
     public static final int FOOTER_MODE_SAVE = 1;
 
@@ -50,13 +50,13 @@ public class FixedMoneySettingActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fixed_money_setting);
         initRecycleView();
+        updateFooterView();
 
     }
 
 
     private void initRecycleView() {
-        //final ArrayList<FixedMoneyBean> list = Hawk.get("fixedMoneyList", new ArrayList<FixedMoneyBean>());
-        ArrayList<FixedMoneyBean> list = new ArrayList<FixedMoneyBean>();
+        final ArrayList<FixedMoneyBean> list = Hawk.get("fixedMoneyList", new ArrayList<FixedMoneyBean>());
         if (list.size() == 0) {
             mode = FOOTER_MODE_ADD;
             list.add(new FixedMoneyBean(0));
@@ -70,12 +70,27 @@ public class FixedMoneySettingActivity extends BaseActivity {
             @Override
             public void onClick(View view, Object item, int position) {
                 footerButton.setText(getResources().getText(R.string.save));
+                footerButton.setVisibility(View.VISIBLE);
                 originList = Hawk.get("fixedMoneyList", new ArrayList<FixedMoneyBean>());
                 editList.clear();
                 editList.add(originList.get(position));
                 adapter.setEditMode(editList);
                 mode = FOOTER_MODE_SAVE;
                 currentIndex = position;
+            }
+        });
+        adapter.setDeleteOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(View view, Object item, int position) {
+                originList = Hawk.get("fixedMoneyList", new ArrayList<FixedMoneyBean>());
+                if (position > -1 && position < originList.size()) {
+                    originList.remove(position);
+                    Hawk.put("fixedMoneyList", originList);
+                    adapter.updateData(originList);
+                    mode = FOOTER_MODE_ADD;
+
+                    updateFooterView();
+                }
             }
         });
         recyclerView.addItemDecoration(new SpaceItemDecoration(ConvertUtils.dp2px(10), SpaceItemDecoration.SPACE_BOTTOM));
@@ -89,10 +104,12 @@ public class FixedMoneySettingActivity extends BaseActivity {
                     switch (mode) {
                         case FOOTER_MODE_ADD:
                             footerButton.setText(getResources().getText(R.string.save));
+                            footerButton.setVisibility(View.VISIBLE);
                             editList.clear();
                             editList.add(new FixedMoneyBean(0));
                             adapter.setEditMode(editList);
                             mode = FOOTER_MODE_SAVE;
+                            currentIndex = -1;
                             break;
                         case FOOTER_MODE_SAVE:
                             if (adapter.getEditText() != null) {
@@ -106,11 +123,18 @@ public class FixedMoneySettingActivity extends BaseActivity {
                                             Hawk.put("fixedMoneyList", arrayList);
                                             adapter.updateData(arrayList);
                                             KeyboardUtils.hideSoftInput(v);
+                                        } else if (currentIndex == -1) {
+                                            arrayList.add(new FixedMoneyBean(money));
+                                            Hawk.put("fixedMoneyList", arrayList);
+                                            adapter.updateData(arrayList);
+                                            KeyboardUtils.hideSoftInput(v);
                                         }
                                     } catch (NumberFormatException e) {
 
                                     }
                                 }
+                                mode = FOOTER_MODE_ADD;
+                                updateFooterView();
                             }
                             break;
                     }
@@ -119,5 +143,15 @@ public class FixedMoneySettingActivity extends BaseActivity {
         }
         recyclerView.setAdapter(adapter);
 
+    }
+
+    private void updateFooterView() {
+        final ArrayList<FixedMoneyBean> list = Hawk.get("fixedMoneyList", new ArrayList<FixedMoneyBean>());
+        if (list.size() >= MAX_COUNT) {
+            footerButton.setVisibility(View.GONE);
+        } else {
+            footerButton.setVisibility(View.VISIBLE);
+            footerButton.setText(getResources().getText(R.string.add));
+        }
     }
 }

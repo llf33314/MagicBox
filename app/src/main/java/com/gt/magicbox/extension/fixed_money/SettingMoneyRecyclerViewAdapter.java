@@ -75,7 +75,7 @@ public class SettingMoneyRecyclerViewAdapter extends BaseRecyclerAdapter<FixedMo
                 }
             });
         }
-        if (bean.money <= 0) {
+        if (bean.money ==-1) {
             holder.findView(R.id.noData).setVisibility(View.VISIBLE);
         }
     }
