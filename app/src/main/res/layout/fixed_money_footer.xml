@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_43"
+    android:layout_marginTop="@dimen/dp_26">
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/dp_13"
+        android:layout_marginRight="@dimen/dp_13"
+        android:background="@drawable/selector_red_button"
+        android:text="@string/add"
+        android:textColor="@color/white"
+        android:textSize="@dimen/dp_15"></Button>
+</RelativeLayout>

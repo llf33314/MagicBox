@@ -3,7 +3,7 @@
     android:id="@+id/pushLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f04a4a">
+    android:background="#f3f3f3">
 
     <ImageView
         android:id="@+id/qrCodeBg"
@@ -15,21 +15,71 @@
         android:layout_marginTop="@dimen/dp_20"
         android:src="@drawable/shape_match_bg" />
 
+    <RelativeLayout
+        android:id="@+id/supportLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_48"
+        android:layout_marginLeft="@dimen/dp_14"
+        android:layout_marginRight="@dimen/dp_14"
+        android:layout_marginTop="@dimen/dp_20">
+        <TextView
+            android:layout_marginLeft="@dimen/dp_60"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:rotation="180"
+            android:text="支付宝支付"
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_12" />
+
+        <ImageView
+            android:layout_marginLeft="@dimen/dp_140"
+            android:layout_width="@dimen/dp_25"
+            android:layout_height="@dimen/dp_25"
+            android:layout_centerVertical="true"
+            android:src="@drawable/pay_support_alipay" />
+        <TextView
+            android:layout_marginRight="@dimen/dp_100"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:rotation="180"
+            android:text="微信支付"
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_12" />
+        <ImageView
+            android:layout_marginRight="@dimen/dp_60"
+            android:layout_alignParentRight="true"
+            android:layout_width="@dimen/dp_25"
+            android:layout_height="@dimen/dp_25"
+            android:layout_centerVertical="true"
+            android:src="@drawable/pay_support_wechat" />
+        <View
+            android:background="#eeeeee"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1"/>
+    </RelativeLayout>
+
     <TextView
+        android:layout_below="@id/supportLayout"
         android:id="@+id/push_customer_money"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_45"
+        android:layout_marginTop="@dimen/dp_20"
         android:gravity="center"
         android:rotation="180"
         android:text="¥168"
         android:textColor="#000000"
-        android:textSize="@dimen/dp_25" />
+        android:textSize="@dimen/dp_27" />
 
     <ImageView
         android:id="@+id/push_qrCode"
-        android:layout_width="@dimen/dp_226"
-        android:layout_height="@dimen/dp_226"
+        android:layout_width="@dimen/dp_230"
+        android:layout_height="@dimen/dp_230"
         android:layout_below="@id/push_customer_money"
         android:layout_centerHorizontal="true"
         android:rotation="180" />
@@ -43,67 +93,31 @@
         android:rotation="180"
         android:text="@string/pay_code_aim_tip"
         android:textColor="#333333"
-        android:textSize="@dimen/dp_17" />
+        android:textSize="@dimen/dp_20" />
 
-    <TextView
-        android:id="@+id/push_cashier_money"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/push_qrCode"
-        android:layout_marginTop="@dimen/dp_50"
-        android:gravity="center"
-        android:text="¥168"
-        android:textColor="#000000"
-        android:textSize="@dimen/dp_25"
-        android:visibility="gone" />
 
-    <View
-        android:id="@+id/dividerLine"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"
-        android:layout_below="@id/tip"
-        android:layout_marginLeft="@dimen/dp_14"
-        android:layout_marginRight="@dimen/dp_14"
-        android:layout_marginTop="@dimen/dp_4"
-        android:background="#eeeeee" />
 
     <Button
-        android:layout_marginTop="@dimen/dp_10"
+        android:layout_margin="@dimen/dp_14"
         android:id="@+id/confirmOrder"
-        android:layout_width="@dimen/dp_226"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/dp_37"
-        android:layout_below="@id/dividerLine"
+        android:layout_below="@id/qrCodeBg"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/btn_check_selector"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@drawable/selector_red_button"
         android:text="@string/confirm_pay"
         android:textColor="@color/white"
         android:textSize="@dimen/dp_18" />
 
     <TextView
-        android:gravity="center"
+        android:layout_marginTop="-5dp"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_30"
         android:layout_below="@id/confirmOrder"
+        android:gravity="center"
         android:text="@string/confirm_pay_tip"
         android:textColor="#666666"
         android:textSize="@dimen/dp_13" />
 
-    <ImageView
-        android:id="@+id/wechatPay"
-        android:layout_width="@dimen/dp_51"
-        android:layout_height="@dimen/dp_62"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/dp_25"
-        android:layout_marginLeft="@dimen/dp_75"
-        android:src="@drawable/wechat_selected" />
-
-    <ImageView
-        android:id="@+id/aliPay"
-        android:layout_width="@dimen/dp_61"
-        android:layout_height="@dimen/dp_56"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="@dimen/dp_25"
-        android:layout_marginRight="@dimen/dp_70"
-        android:src="@drawable/alipay_unselected" />
 </RelativeLayout>

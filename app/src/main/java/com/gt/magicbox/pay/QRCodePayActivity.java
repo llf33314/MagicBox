@@ -93,10 +93,6 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     TextView cashierMoney;
     @BindView(R.id.reChosePay)
     Button reChosePay;
-    @BindView(R.id.wechatPay)
-    ImageView wechatPay;
-    @BindView(R.id.aliPay)
-    ImageView aliPay;
     @BindView(R.id.normalPayLayout)
     LinearLayout normalPayLayout;
     @BindView(R.id.qrCodeBg)
@@ -105,8 +101,6 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     TextView pushCustomerMoney;
     @BindView(R.id.push_qrCode)
     ImageView pushQrCode;
-    @BindView(R.id.push_cashier_money)
-    TextView pushCashierMoney;
     @BindView(R.id.pushLayout)
     RelativeLayout pushLayout;
     @BindView(R.id.preview)
@@ -205,10 +199,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     }
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
-                    showPayMode(payMode);
                     pushLayout.setVisibility(View.VISIBLE);
                     normalPayLayout.setVisibility(View.GONE);
-                    showMoney(pushCashierMoney, "" + money);
                     showMoney(pushCustomerMoney, "" + money);
                     getQRCodeURL(money, payMode, shiftId);
                     break;
@@ -221,10 +213,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
                     pushLayout.setVisibility(View.VISIBLE);
                     normalPayLayout.setVisibility(View.GONE);
-                    showMoney(pushCashierMoney, "" + money);
                     showMoney(pushCustomerMoney, "" + money);
                     payResultSocket(orderNo);
-                    showPayMode(payMode);
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
                     showMoney(cashierMoney, "" + money);
@@ -240,10 +230,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
                     shiftId = Hawk.get("shiftId");
                     if (shiftId == null || shiftId < 0) shiftId = 0;
-                    showPayMode(payMode);
                     pushLayout.setVisibility(View.VISIBLE);
                     normalPayLayout.setVisibility(View.GONE);
-                    showMoney(pushCashierMoney, "" + money);
                     showMoney(pushCustomerMoney, "" + money);
                     getCreatedQRCodeURL(orderId, shiftId);
                     break;
@@ -432,8 +420,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                     public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
                         imageView.setImageBitmap(bitmap);
                         qrCodeBitmap = bitmap;
-                        qrCodeUrl= QrCodeUtils.scanningImage(qrCodeBitmap);
-                        LogUtils.d("qrCodeUrl="+qrCodeUrl);
+                        qrCodeUrl = QrCodeUtils.scanningImage(qrCodeBitmap);
+                        LogUtils.d("qrCodeUrl=" + qrCodeUrl);
                         //initCameraViews();
                         codeCameraManager = new CodeCameraManager(getApplicationContext(), preview, QRCodePayActivity.this);
                         codeCameraManager.initCamera();
@@ -568,9 +556,6 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     }
 
 
-
-
-
     private void memberRecharge() {
         LogUtils.d(TAG, "memberRecharge type=" + type);
 
@@ -608,21 +593,13 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         }
     }
 
-    @OnClick({R.id.wechatPay, R.id.aliPay, R.id.confirmOrder})
+    @OnClick({R.id.confirmOrder})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.wechatPay:
-                wechatPay.setImageResource(R.drawable.wechat_selected);
-                aliPay.setImageResource(R.drawable.alipay_unselected);
-                payMode = 0;
-                break;
-            case R.id.aliPay:
-                wechatPay.setImageResource(R.drawable.wechat_unselected);
-                aliPay.setImageResource(R.drawable.alipay_selected);
-                payMode = 1;
-                break;
             case R.id.confirmOrder:
-                if (SystemClock.uptimeMillis() - clickTime < 1500) return;
+                if (SystemClock.uptimeMillis() - clickTime < 1500) {
+                    return;
+                }
                 clickTime = SystemClock.uptimeMillis();
                 getOrderStatus();
                 break;
@@ -681,18 +658,6 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 });
     }
 
-    private void showPayMode(int payMode) {
-        switch (payMode) {
-            case 0:
-                wechatPay.setImageResource(R.drawable.wechat_selected);
-                aliPay.setImageResource(R.drawable.alipay_unselected);
-                break;
-            case 1:
-                wechatPay.setImageResource(R.drawable.wechat_unselected);
-                aliPay.setImageResource(R.drawable.alipay_selected);
-                break;
-        }
-    }
 
     @Override
     public void onDecodeResult(boolean bDecoded, String result, String type) {
@@ -702,9 +667,9 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                 Uri notification = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.beep);
                 Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                 r.play();
-                if (payMode == BaseConstant.PAY_ON_WECHAT) {
+                if (result.startsWith("1")) {
                     getCodePayResult(result, orderNo);
-                } else if (payMode == BaseConstant.PAY_ON_ALIPAY) {
+                } else if (result.startsWith("2") || result.startsWith("3")) {
                     getCodeAliPayResult(result, orderNo);
                 }
             }

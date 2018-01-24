@@ -14,6 +14,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.MyApplication;
 import com.gt.magicbox.bean.UpdateMoreBadgeBean;
+import com.gt.magicbox.extension.ExtensionActivity;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.setting.SettingsActivity;
 import com.gt.magicbox.setting.printersetting.PrinterSettingActivity;
@@ -72,7 +73,8 @@ public class MoreActivity extends BaseActivity {
                 Intent intent;
                 switch (i) {
                     case 0:
-
+                        intent = new Intent(MoreActivity.this, ExtensionActivity.class);
+                        startActivity(intent);
                         break;
                     case 1:
                         intent = new Intent(MoreActivity.this, SettingsActivity.class);
@@ -101,6 +103,7 @@ public class MoreActivity extends BaseActivity {
         });
 
     }
+
     private void initViewData() {
         for (int i = 0; i < itemNameArray.length; i++) {
             GridItem item = new GridItem();

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_enabled="false">
+        <shape>
+            <corners android:radius="5dp" />
+            <solid android:color="@color/wifi_connection_tv_color" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/button_deep_red" android:state_pressed="true"></item>
+    <item>
+        <shape>
+            <corners android:radius="5dp" />
+            <solid android:color="@color/white" />
+        </shape>
+    </item>
+</selector>

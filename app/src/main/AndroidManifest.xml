@@ -145,6 +145,15 @@
         <activity
             android:name=".member.MemberDoResultActivity"
             android:launchMode="singleTask" />
+        <activity
+            android:name=".extension.ExtensionActivity"
+            android:launchMode="singleTask" />
+        <activity
+        android:name=".extension.fixed_money.FixedMoneyNoDataActivity"
+        android:launchMode="singleTask" />
+        <activity
+            android:name=".extension.fixed_money.FixedMoneySettingActivity"
+            android:launchMode="singleTask" />
         <activity android:name=".setting.VolumeSettingActivity" />
         <activity android:name=".setting.printersetting.PrinterSettingActivity" />
         <activity android:name=".setting.printersetting.bluetooth.BluetoothSettingActivity" />

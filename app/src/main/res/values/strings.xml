@@ -142,5 +142,12 @@
     <string name="return_success">退款成功</string>
     <string name="print">打印</string>
 
+    <string name="fixed_money_no_data_tip">您还没有设置固定金额哦～</string>
+    <string name="click_add">点击添加</string>
+    <string name="edit">编辑</string>
+    <string name="fixed_money">固定金额</string>
+    <string name="add">添加</string>
+    <string name="add_fixed_money">添加固定金额</string>
+    <string name="please_input_money">请输入金额</string>
 
 </resources>
