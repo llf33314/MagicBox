@@ -9,6 +9,7 @@
     <string name="wechat">微信</string>
     <string name="cash">现金</string>
     <string name="card">银行卡</string>
+    <string name="wechat_zfb">微信/支付宝</string>
 
     <string name="member_card">会员卡</string>
 
@@ -149,5 +150,7 @@
     <string name="add">添加</string>
     <string name="add_fixed_money">添加固定金额</string>
     <string name="please_input_money">请输入金额</string>
+    <string name="fixed_money_pay">固定金额收款</string>
+    <string name="setting_money">设置金额</string>
 
 </resources>

@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
     <RelativeLayout
         android:id="@+id/pay_wechat"
-        android:background="@drawable/selector_wechat_pay"
+        android:background="@drawable/selector_code_pay"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp">
@@ -21,13 +21,14 @@
                 android:layout_marginTop="15dp"
                 android:layout_gravity="center"
                 android:textColor="@color/white"
-                android:text="@string/wechat"
+                android:text="@string/wechat_zfb"
                 android:textSize="16sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
     </RelativeLayout>
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/pay_zfb"
         android:background="@drawable/selector_zfb_pay"
         android:layout_weight="1"

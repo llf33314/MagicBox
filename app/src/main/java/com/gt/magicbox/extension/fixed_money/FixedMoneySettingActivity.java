@@ -59,7 +59,7 @@ public class FixedMoneySettingActivity extends BaseActivity {
         final ArrayList<FixedMoneyBean> list = Hawk.get("fixedMoneyList", new ArrayList<FixedMoneyBean>());
         if (list.size() == 0) {
             mode = FOOTER_MODE_ADD;
-            list.add(new FixedMoneyBean(0));
+            list.add(new FixedMoneyBean(-1));
         }
         LinearLayoutManager layoutManager = new LinearLayoutManager(FixedMoneySettingActivity.this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -112,29 +112,30 @@ public class FixedMoneySettingActivity extends BaseActivity {
                             currentIndex = -1;
                             break;
                         case FOOTER_MODE_SAVE:
-                            if (adapter.getEditText() != null) {
+                            if (adapter.getEditText() != null&&!TextUtils.isEmpty(adapter.getEditText().getEditableText().toString())) {
                                 ArrayList<FixedMoneyBean> arrayList = Hawk.get("fixedMoneyList", new ArrayList<FixedMoneyBean>());
                                 String editTextString = adapter.getEditText().getEditableText().toString();
-                                if (!TextUtils.isEmpty(editTextString)) {
                                     try {
                                         Double money = Double.parseDouble(editTextString);
-                                        if (currentIndex > -1 && currentIndex < arrayList.size()) {
+                                        if (currentIndex > -1 && currentIndex < arrayList.size()&&money>0) {
                                             arrayList.set(currentIndex, new FixedMoneyBean(money));
                                             Hawk.put("fixedMoneyList", arrayList);
                                             adapter.updateData(arrayList);
                                             KeyboardUtils.hideSoftInput(v);
-                                        } else if (currentIndex == -1) {
+                                            mode = FOOTER_MODE_ADD;
+                                            updateFooterView();
+                                        } else if (currentIndex == -1&&money>0) {
                                             arrayList.add(new FixedMoneyBean(money));
                                             Hawk.put("fixedMoneyList", arrayList);
                                             adapter.updateData(arrayList);
                                             KeyboardUtils.hideSoftInput(v);
+                                            mode = FOOTER_MODE_ADD;
+                                            updateFooterView();
                                         }
                                     } catch (NumberFormatException e) {
 
                                     }
-                                }
-                                mode = FOOTER_MODE_ADD;
-                                updateFooterView();
+
                             }
                             break;
                     }

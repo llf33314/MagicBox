@@ -97,9 +97,6 @@ public class ChosePayModeActivity extends BaseActivity {
             case R.id.pay_wechat:
                 startERCodePay(0);
                 break;
-            case R.id.pay_zfb:
-                startERCodePay(1);
-                break;
             case R.id.pay_member:
                 if (memberCardBean != null) {
                     if (memberCardBean.money < money) {

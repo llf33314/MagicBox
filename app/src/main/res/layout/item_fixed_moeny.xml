@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical">
+    <Button
+        android:id="@+id/name_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:background="@drawable/selector_white_no_border_button"
+        android:gravity="center"
+        android:textColor="@drawable/selector_text_color"
+        android:textSize="21sp" />
+</RelativeLayout>

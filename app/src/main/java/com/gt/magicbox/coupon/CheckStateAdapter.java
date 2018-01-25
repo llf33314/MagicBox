@@ -67,8 +67,6 @@ public class CheckStateAdapter extends RecyclerView.Adapter<CheckStateAdapter.St
                     currentHolder = holder;
                 }
                 notifyDataSetChanged();
-
-                //  holder.tvState.setPressed(selectedPosition == position);
             }
         });
     }

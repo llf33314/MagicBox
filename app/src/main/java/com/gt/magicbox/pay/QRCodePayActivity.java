@@ -443,7 +443,6 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
             spannableString.setSpan(absoluteSizeSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
         }
         textView.setText(spannableString);
-
     }
 
     private void payResultSocket(final String orderNo) {

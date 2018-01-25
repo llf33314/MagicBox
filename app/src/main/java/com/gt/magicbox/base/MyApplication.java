@@ -47,6 +47,7 @@ public class MyApplication extends Application {
         Hawk.delete("ShopInfoBean");
         Hawk.delete("deviceName");
         Hawk.delete("reasonList");
+        Hawk.delete("fixedMoneyList");
     }
     public static boolean isNeedUpdateApp() {
         return needUpdateApp;

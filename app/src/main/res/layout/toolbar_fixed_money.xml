@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/toolbar_height"
+    android:background="@color/colorPrimary">
+
+
+    <ImageView
+        android:id="@+id/fix_toolbar_back"
+        android:layout_width="@dimen/toolbar_height"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@drawable/btn_gray_null"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:src="@drawable/back" />
+
+    <TextView
+        android:id="@+id/toolbar_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/fix_toolbar_back"
+        android:gravity="center_vertical"
+        android:lines="1"
+        android:text="@string/fixed_money_pay"
+        android:textColor="@color/white"
+        android:textSize="22sp" />
+
+
+    <TextView
+        android:id="@+id/setting"
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/btn_gray_null"
+        android:gravity="center"
+        android:text="@string/setting_money"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:visibility="visible" />
+</RelativeLayout>
