@@ -48,7 +48,6 @@ import butterknife.BindView;
  * @author jack-lin
  * @date 2017/7/18 0018
  */
-@Deprecated
 public class PaymentActivity extends BaseActivity implements Preview$IDecodeListener {
     private final String TAG = PaymentActivity.class.getSimpleName();
     @BindView(R.id.preview)
@@ -336,7 +335,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                         @Override
                         public void onError(Throwable e) {
                             LogUtils.d(TAG, "memberRecharge onError e" + e.getMessage());
-                            new HintDismissDialog(PaymentActivity.this, "核销失败:"+e.getMessage())
+                            new HintDismissDialog(PaymentActivity.this, "核销失败:" + e.getMessage())
                                     .setDialogOnDismissListener(new DialogInterface.OnDismissListener() {
                                         @Override
                                         public void onDismiss(DialogInterface dialog) {
@@ -409,7 +408,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
         if (bDecoded && !TextUtils.isEmpty(result)) {
             LogUtils.d("scanResult", "result=" + result);
             if (!isRequestingData) {
-                Uri notification = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.beep);
+                Uri notification = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.beep);
                 Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
                 r.play();
                 isRequestingData = true;

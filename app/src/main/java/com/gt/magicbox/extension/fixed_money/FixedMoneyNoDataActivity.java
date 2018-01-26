@@ -161,8 +161,6 @@ public class FixedMoneyNoDataActivity extends BaseActivity implements Preview$ID
                     if (lastPosition != position) {
                         lastPosition = position;
                         initPay();
-                    } else {
-                        lastPosition = -1;
                     }
                 }
             });

@@ -87,13 +87,8 @@ public class FixedMoneyGridAdapter extends RecyclerView.Adapter<FixedMoneyGridAd
                 if (onItemClickListener != null) {
                     onItemClickListener.OnItemClick(v, holder, position);
                 }
-                if (position == selectedPosition) {
-                    selectedPosition = -1;
-                    currentHolder = null;
-                } else {
                     selectedPosition = position; //选择的position赋值给参数，
                     currentHolder = holder;
-                }
                 notifyDataSetChanged();
 
             }

@@ -133,6 +133,7 @@ public class OrderListActivity extends BaseActivity implements Preview$IDecodeLi
         type = getIntent().getIntExtra("type", 0);
         registerUpdateUI();
         if (type == TYPE_ORDER_LIST) {
+            setToolBarTitle("订单记录");
             initOrderListView();
         }
         if (type == TYPE_ORDER_SEARCH) {
@@ -179,7 +180,7 @@ public class OrderListActivity extends BaseActivity implements Preview$IDecodeLi
     private void initOrderListView() {
         getOrderList(0, 10);
         if (getSearch() != null) {
-            getSearch().setVisibility(View.VISIBLE);
+            getSearch().setVisibility(View.GONE);
             getSearch().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

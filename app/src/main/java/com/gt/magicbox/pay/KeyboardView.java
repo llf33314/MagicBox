@@ -187,9 +187,10 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                             numberString.append("0");
                         }
                     } else {
-                        if (numberString.length() == maxLength - 1) {
+                        LogUtils.d("numberString.length() =" + numberString.length() + "   maxLength=" + maxLength);
+                        if (numberString.length() == 4) {
                             numberString.append("0");
-                        } else {
+                        } else if (numberString.length() <= 3) {
                             numberString.append("00");
                         }
                     }
