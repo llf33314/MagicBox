@@ -76,7 +76,6 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
     public static final int TYPE_MEMBER_RECHARGE_CASH = 5;
     private int afterPointLent = 0;
     private static final String[] OPERATOR = {"÷", "×", "-", "+"};
-
     public KeyboardView(Context context) {
         this(context, null);
     }
@@ -188,9 +187,13 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
                         }
                     } else {
                         LogUtils.d("numberString.length() =" + numberString.length() + "   maxLength=" + maxLength);
-                        if (numberString.length() == 4) {
-                            numberString.append("0");
-                        } else if (numberString.length() <= 3) {
+                        if (keyboardType == TYPE_INPUT_MONEY || keyboardType == TYPE_CHARGE) {
+                            if (numberString.length() == 4) {
+                                numberString.append("0");
+                            } else if (numberString.length() <= 3) {
+                                numberString.append("00");
+                            }
+                        } else {
                             numberString.append("00");
                         }
                     }

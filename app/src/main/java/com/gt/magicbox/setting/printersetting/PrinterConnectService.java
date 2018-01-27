@@ -263,7 +263,7 @@ public class PrinterConnectService extends Service {
             if (state==GpDevice.STATE_NONE ||state==GpDevice.STATE_LISTEN ){
                 rel = mGpService.openPort(mPrinterIndex, PortParameters.USB, mUsbDevice.getDeviceName(), 0);
                 GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
-               ToastUtil.getInstance().showToast("result :" + String.valueOf(r));
+             //  ToastUtil.getInstance().showToast("result :" + String.valueOf(r));
             }
             return rel;
 

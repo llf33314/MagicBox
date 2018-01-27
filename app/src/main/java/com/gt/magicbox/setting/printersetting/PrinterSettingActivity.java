@@ -10,6 +10,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.custom_display.MatchActivity;
 import com.gt.magicbox.main.MainActivity;
+import com.gt.magicbox.setting.AutoPrintSettingActivity;
 import com.gt.magicbox.setting.printersetting.bluetooth.BluetoothSettingActivity;
 import com.gt.magicbox.setting.printersetting.usb.RxBusUsbMsg;
 import com.gt.magicbox.utils.RxBus;
@@ -37,7 +38,7 @@ public class PrinterSettingActivity extends BaseActivity {
         setToolBarTitle("硬件设置");
     }
 
-    @OnClick({R.id.tv_config_bt, R.id.tv_config_usb, R.id.tv_config_show})
+    @OnClick({R.id.tv_config_bt, R.id.tv_config_usb, R.id.tv_config_show,R.id.tv_auto_print_config})
     public void onViewClicked(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -51,6 +52,10 @@ public class PrinterSettingActivity extends BaseActivity {
             case R.id.tv_config_show:
                 AppManager.getInstance().finishActivity(MainActivity.class);
                 intent = new Intent(PrinterSettingActivity.this, MatchActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.tv_auto_print_config:
+                intent = new Intent(PrinterSettingActivity.this, AutoPrintSettingActivity.class);
                 startActivity(intent);
                 break;
         }

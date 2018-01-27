@@ -152,5 +152,8 @@
     <string name="please_input_money">请输入金额</string>
     <string name="fixed_money_pay">固定金额收款</string>
     <string name="setting_money">设置金额</string>
+    <string name="pay_auto_print">支付自动打印</string>
+    <string name="exchange_auto_print">交班自动打印</string>
+    <string name="auto_print_setting">自动打印设置</string>
 
 </resources>

@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.gt.magicbox.Constant;
@@ -45,6 +46,7 @@ import com.gt.magicbox.utils.qr_code_util.QrCodeUtils;
 import com.gt.magicbox.widget.CustomGridLayoutManager;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
+import com.gt.magicbox.widget.PayFinishToast;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
@@ -501,15 +503,11 @@ public class FixedMoneyNoDataActivity extends BaseActivity implements Preview$ID
                         public void onSuccess(PayCodeResultBean data) {
                             LogUtils.i(TAG, "onSuccess");
                             isCodePayRequesting = false;
-
                             if (data != null && data.code == 1) {
                                 isCodePayRequesting = false;
-
                             } else if (data != null && data.code == -1) {
                                 showCodePayFailDialog(data.msg);
-
                             }
-
                         }
 
                         @Override
@@ -549,6 +547,7 @@ public class FixedMoneyNoDataActivity extends BaseActivity implements Preview$ID
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    PayFinishToast.makeText(getApplicationContext(), "收款成功", Toast.LENGTH_LONG).show();
                     initPay();
                 }
             });

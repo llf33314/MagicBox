@@ -13,7 +13,7 @@ public class Constant {
      * 0-测试 || 1-堡垒 || 2-正式
      *( 切换环境APP需要重新登录)
      */
-    public static final int ENV = 2;
+    public static final int ENV =2;
     public static final String product = "MagicBox";
 
     /**

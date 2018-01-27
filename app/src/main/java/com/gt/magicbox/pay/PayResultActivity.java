@@ -85,14 +85,17 @@ public class PayResultActivity extends BaseActivity {
         setContentView(R.layout.activity_pay_result);
         setToolBarTitle("");
         initView();
-        double money=Double.valueOf(String.format("%.2f", Double.parseDouble(message)));
-        LogUtils.d("PayResultActivity onCreate payType="+payType);
-        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$"+ PlaySound.getCapitalValueOf(money),payType);
+        double money = Double.valueOf(String.format("%.2f", Double.parseDouble(message)));
+        LogUtils.d("PayResultActivity onCreate payType=" + payType);
+        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(money), payType);
 
         //playSound();
 
         if (payType == TYPE_CASH) {
             createCashOrder(message);
+        }
+        if (Hawk.get("payAutoPrint", false)) {
+            payPrint();
         }
     }
 
@@ -100,7 +103,7 @@ public class PayResultActivity extends BaseActivity {
         if (this.getIntent() != null) {
             boolean success = getIntent().getBooleanExtra("success", true);
             payType = getIntent().getIntExtra("payType", 0);
-            LogUtils.d("PayResultActivity initView payType="+payType);
+            LogUtils.d("PayResultActivity initView payType=" + payType);
 
             message = getIntent().getStringExtra("message");
             orderNo = getIntent().getStringExtra("orderNo");
@@ -126,24 +129,7 @@ public class PayResultActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.printButton:
-                if (payType == TYPE_CASH) {
-                    if (cashOrderBean != null)
-                        orderNo = cashOrderBean.getMagicBoxOrder().getOrderNo();
-                    else orderNo = "";
-                }
-                StaffBean.StaffListBean staffListBean = Hawk.get("StaffListBean");
-                if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
-                    PrintManager printManager = new PrintManager(PayResultActivity.this);
-                    printManager.startPrintReceiptByText(orderNo, message + "元",
-                            payType, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT)
-                            , staffListBean != null && !TextUtils.isEmpty(staffListBean.getName()) ? staffListBean.getName() : "空");
-                } else {
-                    PrinterConnectService.printEsc0829(orderNo, message + "元",
-                            staffListBean != null && !TextUtils.isEmpty(staffListBean.getName()) ? staffListBean.getName() : "空"
-                            , payType, "");
-
-                }
-                // RxBus.get().post(new PrintBean(message));
+                payPrint();
                 break;
         }
     }
@@ -162,7 +148,7 @@ public class PayResultActivity extends BaseActivity {
     private void createCashOrder(String money) {
         HttpCall.getApiService()
                 .createCashOrder(PhoneUtils.getIMEI(), money, 2, Hawk.get("shiftId", 0)
-                ,Hawk.get("shopId",0),Hawk.get("shopName",""))
+                        , Hawk.get("shopId", 0), Hawk.get("shopName", ""))
                 .compose(ResultTransformer.<CashOrderBean>transformer())//线程处理 预处理
                 .compose(new DialogTransformer().<CashOrderBean>transformer()) //显示对话框
                 .subscribe(new BaseObserver<CashOrderBean>() {
@@ -232,5 +218,30 @@ public class PayResultActivity extends BaseActivity {
 
             }
         });
+    }
+
+    /**
+     * 小票打印
+     */
+    private void payPrint() {
+        if (payType == TYPE_CASH) {
+            if (cashOrderBean != null) {
+                orderNo = cashOrderBean.getMagicBoxOrder().getOrderNo();
+            } else {
+                orderNo = "";
+            }
+        }
+        StaffBean.StaffListBean staffListBean = Hawk.get("StaffListBean");
+        if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
+            PrintManager printManager = new PrintManager(PayResultActivity.this);
+            printManager.startPrintReceiptByText(orderNo, message + "元",
+                    payType, TimeUtils.millis2String(System.currentTimeMillis(), DEFAULT_FORMAT)
+                    , staffListBean != null && !TextUtils.isEmpty(staffListBean.getName()) ? staffListBean.getName() : "空");
+        } else {
+            PrinterConnectService.printEsc0829(orderNo, message + "元",
+                    staffListBean != null && !TextUtils.isEmpty(staffListBean.getName()) ? staffListBean.getName() : "空"
+                    , payType, "");
+
+        }
     }
 }

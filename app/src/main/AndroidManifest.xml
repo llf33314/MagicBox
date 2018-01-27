@@ -71,6 +71,9 @@
             android:name=".setting.typewriting.TypewritingGuideActivity"
             android:launchMode="singleTask"></activity>
         <activity
+            android:name=".setting.AutoPrintSettingActivity"
+            android:launchMode="singleTask"></activity>
+        <activity
             android:name=".main.MainActivity"
             android:launchMode="singleTask" />
         <activity
@@ -149,8 +152,8 @@
             android:name=".extension.ExtensionActivity"
             android:launchMode="singleTask" />
         <activity
-        android:name=".extension.fixed_money.FixedMoneyNoDataActivity"
-        android:launchMode="singleTask" />
+            android:name=".extension.fixed_money.FixedMoneyNoDataActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".extension.fixed_money.FixedMoneySettingActivity"
             android:launchMode="singleTask" />

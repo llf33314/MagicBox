@@ -14,7 +14,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
         <ImageView
-            android:background="@drawable/pay_wetchat"
+            android:layout_gravity="center"
+            android:background="@drawable/pay_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
             <TextView

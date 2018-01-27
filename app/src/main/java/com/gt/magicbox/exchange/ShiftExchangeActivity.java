@@ -44,10 +44,11 @@ import static com.gt.magicbox.base.BaseConstant.clickTime;
  */
 
 public class ShiftExchangeActivity extends BaseActivity {
-     @BindView(R.id.rv_shift_exchange)
-     RecyclerView rvExchange;
+    @BindView(R.id.rv_shift_exchange)
+    RecyclerView rvExchange;
 
     private ShiftRecordsAllBean.ShiftRecordsBean shiftRecordsBean;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +58,7 @@ public class ShiftExchangeActivity extends BaseActivity {
         init();
     }
 
-    private void init(){
+    private void init() {
 
         setBackOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,23 +68,23 @@ public class ShiftExchangeActivity extends BaseActivity {
         });
 
         HttpCall.getApiService()
-                .getNowSR(Hawk.get("shiftId",0))
+                .getNowSR(Hawk.get("shiftId", 0))
                 .compose(ResultTransformer.<ShiftRecordsAllBean>transformer())
                 .compose(new DialogTransformer().<ShiftRecordsAllBean>transformer())
                 .subscribe(new BaseObserver<ShiftRecordsAllBean>() {
                     @Override
                     protected void onSuccess(ShiftRecordsAllBean shiftRecordsAllBean) {
-                        shiftRecordsBean=shiftRecordsAllBean.getShiftRecords();
-                        List<MapBean<String, String>>  listBean=getListBean(shiftRecordsBean);
-                        rvExchange.setAdapter(new LineRecyclerAdapter(ShiftExchangeActivity.this,listBean));
+                        shiftRecordsBean = shiftRecordsAllBean.getShiftRecords();
+                        List<MapBean<String, String>> listBean = getListBean(shiftRecordsBean);
+                        rvExchange.setAdapter(new LineRecyclerAdapter(ShiftExchangeActivity.this, listBean));
                     }
                 });
     }
 
-    private  List<MapBean<String, String>>  getListBean(ShiftRecordsAllBean.ShiftRecordsBean shiftRecordsBean){
+    private List<MapBean<String, String>> getListBean(ShiftRecordsAllBean.ShiftRecordsBean shiftRecordsBean) {
 
-        List<MapBean<String, String>>  listBean=new ArrayList<MapBean<String, String>>();
-        if (shiftRecordsBean!=null) {
+        List<MapBean<String, String>> listBean = new ArrayList<MapBean<String, String>>();
+        if (shiftRecordsBean != null) {
             listBean.add(new MapBean<String, String>("当班人：", shiftRecordsBean.getStaffName()));
             listBean.add(new MapBean<String, String>("门店：", shiftRecordsBean.getShopName()));
             listBean.add(new MapBean<String, String>("设备号：", shiftRecordsBean.getEqId() + ""));
@@ -92,7 +93,7 @@ public class ShiftExchangeActivity extends BaseActivity {
             listBean.add(new MapBean<String, String>("实际应收总额：", shiftRecordsBean.getMoney() + ""));
             listBean.add(new MapBean<String, String>("微信支付：", shiftRecordsBean.getWechatMoney() + ""));
             listBean.add(new MapBean<String, String>("支付宝：", shiftRecordsBean.getAlipayMoney() + ""));
-            if (Constant.product.equals(BaseConstant.PRODUCTS[1])){
+            if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
                 listBean.add(new MapBean<String, String>("银行卡：", shiftRecordsBean.getBankMoney() + ""));
             }
             listBean.add(new MapBean<String, String>("会员卡支付：", shiftRecordsBean.getMemberMoney() + ""));
@@ -120,7 +121,7 @@ public class ShiftExchangeActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.staff_dialog_out_work:
                 //打印下班单 并且清空shithId
-                new HintDismissDialog(ShiftExchangeActivity.this,"是否现在下班").setCancelText("取消")
+                new HintDismissDialog(ShiftExchangeActivity.this, "是否现在下班").setCancelText("取消")
                         .setOnCancelClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -131,12 +132,15 @@ public class ShiftExchangeActivity extends BaseActivity {
                             public void onClick(View v) {
                                 Hawk.delete("shiftId");
                                 if (shiftRecordsBean != null) {
-                                    if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
-                                        PrintManager printManager=new PrintManager(ShiftExchangeActivity.this);
-                                        printManager.startPrintExchangeByText(shiftRecordsBean);
-                                    } else {
-                                        PrinterConnectService.printEscExchange(shiftRecordsBean);
+                                    if (Hawk.get("exchangeAutoPrint", false)) {
+                                        if (Constant.product.equals(BaseConstant.PRODUCTS[1])) {
+                                            PrintManager printManager = new PrintManager(ShiftExchangeActivity.this);
+                                            printManager.startPrintExchangeByText(shiftRecordsBean);
+                                        } else {
+                                            PrinterConnectService.printEscExchange(shiftRecordsBean);
+                                        }
                                     }
+
                                 }
                                 onBackPressed();
                             }
@@ -146,20 +150,20 @@ public class ShiftExchangeActivity extends BaseActivity {
         }
     }
 
-    private void startMain(){
-        Intent intent=new Intent(this, MainActivity.class);
+    private void startMain() {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode==KeyEvent.KEYCODE_BACK){
-            if (SystemClock.uptimeMillis()-clickTime<1500){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (SystemClock.uptimeMillis() - clickTime < 1500) {
                 return false;
-            }else {
+            } else {
                 startMain();
             }
-            clickTime= SystemClock.uptimeMillis();
+            clickTime = SystemClock.uptimeMillis();
         }
         return super.onKeyDown(keyCode, event);
     }
