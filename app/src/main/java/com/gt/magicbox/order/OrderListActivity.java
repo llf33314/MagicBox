@@ -106,8 +106,7 @@ public class OrderListActivity extends BaseActivity implements Preview$IDecodeLi
     private final int LIMIT_SEVEN_DAY = 2;
     private final int LIMIT_FIFTEEN_DAY = 3;
 
-    // private String[] payStatus = {"未支付", "已支付", "已退款"};
-    private String[] payStatus = {"未支付", "已支付"};
+    private String[] payStatus = {"未支付", "已支付", "已退款"};
 
     private final int STATUS_UNPAID = 0;
     private final int STATUS_PAID = 1;

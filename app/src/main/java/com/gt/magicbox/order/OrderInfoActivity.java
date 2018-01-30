@@ -85,11 +85,9 @@ public class OrderInfoActivity extends BaseActivity {
 
                 break;
             case R.id.refund:
-                dialog = new MoreFunctionDialog(OrderInfoActivity.this, "退款功能正在开发中,敬请期待", R.style.HttpRequestDialogStyle);
-                dialog.show();
-//                Intent intent = new Intent(OrderInfoActivity.this, ReturnMoneyActivity.class);
-//                intent.putExtra("orderItemBean",orderItemBean);
-//                startActivity(intent);
+                Intent intent = new Intent(OrderInfoActivity.this, ReturnMoneyActivity.class);
+                intent.putExtra("orderItemBean",orderItemBean);
+                startActivity(intent);
                 break;
         }
     }

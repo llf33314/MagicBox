@@ -155,5 +155,9 @@
     <string name="pay_auto_print">支付自动打印</string>
     <string name="exchange_auto_print">交班自动打印</string>
     <string name="auto_print_setting">自动打印设置</string>
+    <string name="return_reason_tag_list">退款原因标签列表</string>
+    <string name="add_new_tag">新增标签</string>
+    <string name="return_money_scan_code_tip">退款时,授权人请扫描此二维码</string>
+    <string name="return_money_qr_code">退款授权码</string>
 
 </resources>

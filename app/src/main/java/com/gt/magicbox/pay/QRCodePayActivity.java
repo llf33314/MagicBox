@@ -151,8 +151,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_code_pay);
-        dialog = new LoadingProgressDialog(QRCodePayActivity.this);
-        dialog.show();
+        //dialog = new LoadingProgressDialog(QRCodePayActivity.this);
+        //dialog.show();
         init();
         initBindService();
     }
@@ -263,14 +263,14 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
                     @Override
                     public void onError(Throwable e) {
-                        dialog.dismiss();
+                        //dialog.dismiss();
                         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        dialog.dismiss();
+                       // dialog.dismiss();
                         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                         super.onFailure(code, msg);
                     }
@@ -300,14 +300,14 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
                     @Override
                     public void onError(Throwable e) {
-                        dialog.dismiss();
+                        //dialog.dismiss();
                         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        dialog.dismiss();
+                      //  dialog.dismiss();
                         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                         super.onFailure(code, msg);
                     }
@@ -425,12 +425,12 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                         //initCameraViews();
                         codeCameraManager = new CodeCameraManager(getApplicationContext(), preview, QRCodePayActivity.this);
                         codeCameraManager.initCamera();
-                        dialog.dismiss();
+                      //  dialog.dismiss();
                     }
 
                     @Override
                     public void onLoadFailed(ImageView imageView, String s, Drawable drawable) {
-                        dialog.dismiss();
+                        //dialog.dismiss();
                     }
                 });
     }

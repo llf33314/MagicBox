@@ -92,7 +92,9 @@
         <activity
             android:name=".order.ReturnMoneySuccessActivity"
             android:launchMode="singleTask" />
-
+        <activity
+            android:name=".order.EditReasonListActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".main.MoreActivity"
             android:launchMode="singleTask" />

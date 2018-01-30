@@ -12,10 +12,9 @@
         android:background="@drawable/white_radius_10_bg">
 
         <RelativeLayout
-            android:id="@+id/payPrintSetting"
+            android:id="@+id/layout1"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_57"
-            android:background="@drawable/btn_shallow_gray_null">
+            android:layout_height="@dimen/dp_57">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -42,14 +41,17 @@
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
                 android:background="@color/divide_gray_color" />
+
+            <View
+                android:id="@+id/payPrintSetting"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/exchangePrintSetting"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_57"
-            android:layout_below="@id/payPrintSetting"
-            android:background="@drawable/btn_shallow_gray_null">
+            android:layout_below="@id/layout1">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -70,6 +72,12 @@
                 app:sb_checked="false"
                 app:sb_checked_color="#f04a4a"
                 app:sb_show_indicator="false" />
+
+            <View
+                android:id="@+id/exchangePrintSetting"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
         </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

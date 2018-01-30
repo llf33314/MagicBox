@@ -102,6 +102,8 @@ public class RechargeHistoryActivity extends BaseActivity {
     List<RechargeSEntity> data = new ArrayList<>();
     private RechargeOrderListAdapter rechargeOrderListAdapter;
     private SwipeMenuListView swipeMenuListView;
+    private int currentShopId;
+    private ShopBean shopBean;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,7 +131,9 @@ public class RechargeHistoryActivity extends BaseActivity {
         if (!DuoFriendUtils.isMainShop()) {
             headers = new String[]{currentShop.getShopName()};
             shopFilter = new String[]{currentShop.getShopName()};
+        } else {
         }
+        currentShopId = Hawk.get("shopId", 0);
         initDropMenuView();
     }
 
@@ -153,9 +157,11 @@ public class RechargeHistoryActivity extends BaseActivity {
                 mMenuAdapter1.setSelectedPosition(position);
                 dropDownMenu.setTabText(shopFilter[position]);
                 dropDownMenu.closeMenu();
-                switch (position) {
-                    default:
-                        break;
+                if (shopBean != null && position < shopBean.getData().size()) {
+                    currentShopId = shopBean.getData().get(position).getId();
+                    data.clear();
+                    rechargeOrderListAdapter.setData(data);
+                    runRechargeLog(1);
                 }
             }
         });
@@ -213,7 +219,7 @@ public class RechargeHistoryActivity extends BaseActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String string = response.body().string();
-                    ShopBean shopBean = new Gson().fromJson(string, ShopBean.class);
+                    shopBean = new Gson().fromJson(string, ShopBean.class);
                     Log.d("queryWxShopByBusId", "onResponse string=" + string);
 
                     if (shopBean != null && shopBean.getData() != null) {
@@ -248,10 +254,14 @@ public class RechargeHistoryActivity extends BaseActivity {
             jsonObject.put("curPage", curPage);
             jsonObject.put("startTime", startTime);
             jsonObject.put("pageSize", 10);
+            if (currentShopId > 0) {
+                LogUtils.d("currentShopId=" + currentShopId);
+                jsonObject.put("shopId", currentShopId);
+            }
             String result = SignHttpUtils.WxmppostByHttp(Constant.MEMBER_BASE_URL + HttpConfig.RECHARGE_LOG, jsonObject,
                     "MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM");
             MemberRechargeHistoryBean memberRechargeHistoryBean = new Gson().fromJson(result, MemberRechargeHistoryBean.class);
-            if (memberRechargeHistoryBean != null&&memberRechargeHistoryBean.getData()!=null) {
+            if (memberRechargeHistoryBean != null && memberRechargeHistoryBean.getData() != null) {
                 LogUtils.d("rechargeLog memberRechargeHistoryBean=" + result);
 
                 LogUtils.d("rechargeLog memberRechargeHistoryBean.size=" + memberRechargeHistoryBean.getData().getRechargeS().size());

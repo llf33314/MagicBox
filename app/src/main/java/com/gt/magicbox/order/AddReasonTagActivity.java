@@ -18,6 +18,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.bean.ReasonBean;
 import com.gt.magicbox.setting.typewriting.TypewritingGuideActivity;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
@@ -28,7 +29,9 @@ import butterknife.OnClick;
 
 /**
  * Description:
- * Created by jack-lin on 2018/1/12 0012.
+ *
+ * @author jack-lin
+ * @date 2018/1/12 0012
  * Buddha bless, never BUG!
  */
 
@@ -44,15 +47,25 @@ public class AddReasonTagActivity extends BaseActivity {
     @BindView(R.id.typewritingLink)
     TextView typewritingLink;
 
+    public static final int TYPE_ADD = 0;
+    public static final int TYPE_EDIT = 1;
+    private int type = 0;
+    private String content = "";
+    private int index = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activirty_add_tag);
         ButterKnife.bind(this);
+        type = this.getIntent().getIntExtra("type", 0);
+        content = this.getIntent().getStringExtra("content");
+        index = this.getIntent().getIntExtra("index", 0);
         initView();
     }
 
     private void initView() {
+        reasonEdit.setText(content);
         reasonEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -84,10 +97,21 @@ public class AddReasonTagActivity extends BaseActivity {
                 reasonEdit.setText("");
                 break;
             case R.id.confirmSave:
-                ArrayList<ReasonBean> reasonList = Hawk.get("reasonList", new ArrayList<ReasonBean>());
-                reasonList.add(0,new ReasonBean(reasonEdit.getText().toString()));
-                Hawk.put("reasonList", reasonList);
-                RxBus.get().post(new ReasonBean(""));
+                String editText = reasonEdit.getText().toString();
+                if (!TextUtils.isEmpty(editText)) {
+                    ArrayList<ReasonBean> reasonList = Hawk.get("reasonList", new ArrayList<ReasonBean>());
+                    if (type == TYPE_ADD) {
+                        reasonList.add(0, new ReasonBean(reasonEdit.getText().toString()));
+                        Hawk.put("reasonList", reasonList);
+                        RxBus.get().post(new ReasonBean(""));
+                    } else if (type == TYPE_EDIT) {
+                        reasonList.set(index, new ReasonBean(reasonEdit.getText().toString()));
+                        Hawk.put("reasonList", reasonList);
+                        RxBus.get().post(new ReasonBean(""));
+                    }
+                } else {
+                    ToastUtil.getInstance().showToast("原因标签不能为空");
+                }
                 finish();
                 break;
             case R.id.typewritingLink:

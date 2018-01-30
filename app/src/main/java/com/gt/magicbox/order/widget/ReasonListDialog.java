@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import com.gt.magicbox.R;
 import com.gt.magicbox.bean.ReasonBean;
 import com.gt.magicbox.order.AddReasonTagActivity;
+import com.gt.magicbox.order.EditReasonListActivity;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ScreenUtils;
 
@@ -117,7 +118,7 @@ public class ReasonListDialog extends Dialog {
                 }
                 break;
             case R.id.addReason:
-                Intent intent = new Intent(context, AddReasonTagActivity.class);
+                Intent intent = new Intent(context, EditReasonListActivity.class);
                 context.startActivity(intent);
                 break;
         }

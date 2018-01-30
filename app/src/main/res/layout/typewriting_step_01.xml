@@ -52,7 +52,6 @@
         android:layout_marginRight="@dimen/dp_14"
         android:layout_marginTop="@dimen/dp_24"
         android:background="@drawable/selector_red_button"
-        android:enabled="false"
         android:text="@string/next_step"
         android:textColor="@color/white" />
 </RelativeLayout>

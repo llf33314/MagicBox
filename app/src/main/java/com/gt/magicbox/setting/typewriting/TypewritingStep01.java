@@ -59,15 +59,15 @@ public class TypewritingStep01 extends Fragment {
         nextButton = (Button) view.findViewById(R.id.step01_next);
         settingButton = (Button) view.findViewById(R.id.settingButton);
         settingSuccess = (TextView) view.findViewById(R.id.settingSuccess);
-        nextButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (nextButton.isEnabled() == false) {
-                    ToastUtil.getInstance().showToast(getString(R.string.typewriting01toast));
-                }
-                return false;
-            }
-        });
+//        nextButton.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (nextButton.isEnabled() == false) {
+//                    ToastUtil.getInstance().showToast(getString(R.string.typewriting01toast));
+//                }
+//                return false;
+//            }
+//        });
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,13 +87,13 @@ public class TypewritingStep01 extends Fragment {
     public void onResume() {
         String ss = Settings.Secure.getString(getActivity().getContentResolver(),
                 Settings.Secure.ENABLED_INPUT_METHODS);
-        if (ss.equals(GOOGLE_PINYIN)) {
-            nextButton.setEnabled(true);
-            settingSuccess.setVisibility(View.VISIBLE);
-        } else {
-            nextButton.setEnabled(false);
-            settingSuccess.setVisibility(View.INVISIBLE);
-        }
+//        if (ss.equals(GOOGLE_PINYIN)) {
+//            nextButton.setEnabled(true);
+//            settingSuccess.setVisibility(View.VISIBLE);
+//        } else {
+//            nextButton.setEnabled(false);
+//            settingSuccess.setVisibility(View.INVISIBLE);
+//        }
         LogUtils.d("imm=" + ss);
         super.onResume();
     }

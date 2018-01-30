@@ -59,15 +59,15 @@ public class TypewritingStep02 extends Fragment {
         nextButton = (Button) view.findViewById(R.id.step01_next);
         settingButton = (Button) view.findViewById(R.id.settingButton);
         settingSuccess = (TextView) view.findViewById(R.id.settingSuccess);
-        nextButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (nextButton.isEnabled() == false) {
-                    ToastUtil.getInstance().showToast(getString(R.string.typewriting01toast));
-                }
-                return false;
-            }
-        });
+//        nextButton.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (nextButton.isEnabled() == false) {
+//                    ToastUtil.getInstance().showToast(getString(R.string.typewriting01toast));
+//                }
+//                return false;
+//            }
+//        });
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,22 +87,16 @@ public class TypewritingStep02 extends Fragment {
     public void onResume() {
         String ss = Settings.Secure.getString(getActivity().getContentResolver(),
                 Settings.Secure.DEFAULT_INPUT_METHOD);
-        if (ss.equals(GOOGLE_PINYIN)) {
-            nextButton.setEnabled(true);
-            settingSuccess.setVisibility(View.VISIBLE);
-        } else {
-            nextButton.setEnabled(false);
-            settingSuccess.setVisibility(View.INVISIBLE);
-        }
         LogUtils.d("imm=" + ss);
         super.onResume();
     }
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        LogUtils.d("hidden="+isVisibleToUser);
+        LogUtils.d("hidden=" + isVisibleToUser);
 
-        if(isVisibleToUser){
+        if (isVisibleToUser) {
             //TODO now visible to user
         } else {
             //TODO now invisible to user

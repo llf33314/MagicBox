@@ -23,13 +23,13 @@
             android:layout_width="@dimen/dp_48"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:background="@drawable/btn_gray">
+            android:background="@drawable/btn_shallow_gray_null">
 
             <ImageView
-                android:layout_width="@dimen/dp_23"
-                android:layout_height="@dimen/dp_23"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
                 android:layout_centerInParent="true"
-                android:src="@drawable/reason_add" />
+                android:src="@drawable/reason_dialog_edit_list" />
         </RelativeLayout>
     </RelativeLayout>
 

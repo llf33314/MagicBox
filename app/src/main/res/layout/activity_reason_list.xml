@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/reasonListTextView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40"
+        android:background="#ececec"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/dp_18"
+        android:text="@string/return_reason_tag_list"
+        android:textColor="#333333"
+        android:textSize="@dimen/dp_16" />
+
+    <Button
+        android:id="@+id/confirmAdd"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@drawable/selector_member_pay"
+        android:text="@string/add_new_tag"
+        android:textColor="@color/white"
+        android:textSize="@dimen/dp_18" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/reasonRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/confirmAdd"
+        android:layout_below="@id/reasonListTextView"
+        android:gravity="center_vertical" />
+</RelativeLayout>

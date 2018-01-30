@@ -34,6 +34,7 @@ public class HttpConfig {
     public static final String SOCKET_ANDROID_AUTH_KEY = "dfmagicboxsocket_";
     public static final String SOCKET_ORDER_AUTH_KEY = "dfmagicboxsocket_order";
     public static final String SOCKET_FOLLOW_AUTH_KEY = "MagicBox_Key_";
+    public static final String SOCKET_RETURN_MONEY_AUTH_KEY = "checkRelatedWx";
 
     public static final String PAYMENT_URL="magicBoxMobile/79B4DE7C/payQR.do";
     public static final String ORDER_URL="magicBoxMobile/79B4DE7C/order.do";
@@ -67,7 +68,7 @@ public class HttpConfig {
     public static final String REVAMP_EQ_NAME="magicBoxMobile/79B4DE7C/revampEqName";
     public static final String WXMEMBER_PAY_REFUND="magicBoxMobile/79B4DE7C/wxmemberPayRefund";
     public static final String SELECT_ORDER_LIST_MAP_BY_ORDER_NO="magicBoxMobile/79B4DE7C/selectOrderListMapByOrderNo";
-
+    public static final String CHECK_RELATED_WX="magicBoxRefundAuthorization/checkRelatedWx/36/79B4DE7C/92";
 
     /**WXMP相关接口*/
 

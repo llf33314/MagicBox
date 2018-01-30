@@ -1,6 +1,5 @@
 package com.gt.magicbox.order;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -18,39 +17,40 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.gt.magicbox.Constant;
 import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.ReasonBean;
-import com.gt.magicbox.bean.ReturnCauseBean;
-import com.gt.magicbox.bean.UpdateMainBadgeBean;
-import com.gt.magicbox.http.BaseResponse;
-import com.gt.magicbox.http.retrofit.HttpCall;
-import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
-import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.http.HttpConfig;
+import com.gt.magicbox.http.socket.SocketIOManager;
 import com.gt.magicbox.order.widget.ReasonCheckStateAdapter;
 import com.gt.magicbox.order.widget.ReasonListDialog;
 import com.gt.magicbox.utils.CashierInputFilter;
 import com.gt.magicbox.utils.KeyboardUtils;
 import com.gt.magicbox.utils.RxBus;
-import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.LogUtils;
+import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
-import com.gt.magicbox.widget.LoadingProgressDialog;
+import com.gt.magicbox.widget.ReturnMoneyQRCodeDialog;
 import com.orhanobut.hawk.Hawk;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
+import io.socket.emitter.Emitter;
 
 /**
  * Description:
- * Created by jack-lin on 2018/1/9 0009.
+ *
+ * @author jack-lin
+ * @date 2018/1/9 0009
  * Buddha bless, never BUG!
  */
 
@@ -84,6 +84,7 @@ public class ReturnMoneyActivity extends BaseActivity {
     private int returnType;
     private double returnActuallyMoney = 0;
     private String reason = "";
+    private SocketIOManager socketIOManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -216,14 +217,13 @@ public class ReturnMoneyActivity extends BaseActivity {
                 public void OnItemClick(View view, ReasonCheckStateAdapter.StateHolder holder, int position) {
                     reason = list.get(position).reason;
                     selectReasonTextView.setText(list.get(position).reason + " >");
+                    reason = selectReasonTextView.getText().toString();
                 }
             });
         }
     }
 
     private void returnOrderMoney() {
-        final LoadingProgressDialog dialog = new LoadingProgressDialog(ReturnMoneyActivity.this, getString(R.string.returning));
-        dialog.show();
         String returnMoneyString = returnMoney.getEditableText().toString();
         returnActuallyMoney = orderItemBean.money;
         if (!TextUtils.isEmpty(returnMoneyString)) {
@@ -239,42 +239,57 @@ public class ReturnMoneyActivity extends BaseActivity {
             ToastUtil.getInstance().showToast("输入退款金额有误");
             return;
         }
-        HttpCall.getApiService()
-                .returnMoney(orderItemBean.order_no, returnActuallyMoney, returnType, Hawk.get("shiftId", 0), new ReturnCauseBean(reason))
-                .compose(ResultTransformer.<BaseResponse>transformerNoData())//线程处理 预处理
-                .subscribe(new BaseObserver<BaseResponse>() {
-                    @Override
-                    public void onSuccess(BaseResponse data) {
-                        LogUtils.d(TAG, "returnMoney onSuccess ");
-                        if (dialog != null) {
-                            dialog.dismiss();
-                        }
-                        Intent intent = new Intent(ReturnMoneyActivity.this, ReturnMoneySuccessActivity.class);
-                        intent.putExtra("returnMoney", returnActuallyMoney);
-                        intent.putExtra("returnType", returnType);
-                        startActivity(intent);
-                        AppManager.getInstance().finishActivity();
-                        AppManager.getInstance().finishActivity(OrderInfoActivity.class);
-                    }
+        showQrCodeDialog();
+    }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        LogUtils.d(TAG, "returnMoney onError e" + e.getMessage());
-                        if (dialog != null) {
-                            dialog.dismiss();
-                        }
+    private void showQrCodeDialog() {
+        if (orderItemBean != null) {
+            connectSocket();
+            String content = Constant.YJ_BASE_URL + HttpConfig.CHECK_RELATED_WX + "?orderNo=" + orderItemBean.order_no
+                    + "&totalFee=" + returnActuallyMoney + "&type=" + returnType + "&cause=" + reason + "&shiftId=" + Hawk.get("shiftId", 0);
+            ReturnMoneyQRCodeDialog
+                    returnMoneyQRCodeDialog = new ReturnMoneyQRCodeDialog(ReturnMoneyActivity.this, content);
+            returnMoneyQRCodeDialog.show();
+        }
+    }
 
-                        super.onError(e);
-                    }
+    private void connectSocket() {
+        socketIOManager = new SocketIOManager(Constant.SOCKET_SERVER_URL);
+        socketIOManager.setOnConnect(new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                LogUtils.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_RETURN_MONEY_AUTH_KEY + orderItemBean.order_no);
+                socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_RETURN_MONEY_AUTH_KEY + orderItemBean.order_no);
+                LogUtils.d(SocketIOManager.TAG, "call: send android auth over");
+            }
+        });
+        socketIOManager.setSocketEvent(new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONObject data = (JSONObject) args[0];
+                LogUtils.d(SocketIOManager.TAG, " args[0]=" + args[0]);
 
-                    @Override
-                    public void onFailure(int code, String msg) {
-                        if (dialog != null) {
-                            dialog.dismiss();
-                        }
-                        LogUtils.d(TAG, "returnMoney onFailure msg=" + msg);
-                        super.onFailure(code, msg);
-                    }
-                });
+                String retData = null;
+                try {
+                    retData = data.get("message").toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    retData = "";
+                }
+                LogUtils.d(SocketIOManager.TAG, "retData=" + retData);
+                if (retData.equals("success")) {
+
+                }
+            }
+        });
+        socketIOManager.connectSocket();
+    }
+
+    @Override
+    protected void onStop() {
+        if (socketIOManager != null) {
+            socketIOManager.disSocket();
+        }
+        super.onStop();
     }
 }
