@@ -26,6 +26,7 @@ import com.gt.magicbox.R;
 import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.OrderListResultBean;
+import com.gt.magicbox.bean.QueryOrderBean;
 import com.gt.magicbox.bean.SearchOrderBean;
 import com.gt.magicbox.bean.UpdateOrderListUIBean;
 import com.gt.magicbox.camera.CodeCameraManager;
@@ -42,14 +43,11 @@ import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuCreator;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuItem;
 import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuListView;
 import com.gt.magicbox.pay.ChosePayModeActivity;
-import com.gt.magicbox.pay.PaymentActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.utils.RxBus;
-import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
-import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
 import com.gt.magicbox.widget.SearchView;
@@ -62,7 +60,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
 
@@ -603,17 +600,17 @@ public class OrderListActivity extends BaseActivity implements Preview$IDecodeLi
     private void getSearchOrderByNo(String orderNo) {
         HttpCall.getApiService()
                 .searchOrderByNo(orderNo, Hawk.get("busId", 0))
-                .compose(ResultTransformer.<OrderListResultBean.OrderItemBean>transformer())//线程处理 预处理
-                .subscribe(new BaseObserver<OrderListResultBean.OrderItemBean>() {
+                .compose(ResultTransformer.<QueryOrderBean>transformer())
+                .subscribe(new BaseObserver<QueryOrderBean>() {
                     @Override
-                    public void onSuccess(OrderListResultBean.OrderItemBean data) {
+                    public void onSuccess(QueryOrderBean data) {
                         LogUtils.d(TAG, "getSearchOrderByNo onSuccess  ");
                         if (orderListAdapter != null) {
                             if (data != null) {
-                                Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
-                                intent.putExtra("OrderItemBean", data);
-                                startActivity(intent);
-                                AppManager.getInstance().finishActivity();
+//                                Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
+//                                intent.putExtra("OrderItemBean", data);
+//                                startActivity(intent);
+//                                AppManager.getInstance().finishActivity();
                             }
                         }
                     }

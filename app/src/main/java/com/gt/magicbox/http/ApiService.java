@@ -16,6 +16,7 @@ import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.PayCodeResultBean;
 import com.gt.magicbox.bean.PosRequestBean;
 import com.gt.magicbox.bean.QRCodeBitmapBean;
+import com.gt.magicbox.bean.QueryOrderBean;
 import com.gt.magicbox.bean.ReturnCauseBean;
 import com.gt.magicbox.bean.SearchOrderBean;
 import com.gt.magicbox.bean.ShiftRecordsAllBean;
@@ -34,7 +35,6 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import retrofit2.http.QueryMap;
 
 /**
  * Created by wzb on 2017/7/11 0011.
@@ -68,7 +68,7 @@ public interface ApiService {
                                         @Query("login_name") String user,
                                         @Query("password") String pwd);
 
-    @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/{shopId}/{busId}/79B4DE7C/payQR")
+    @GET("magicBoxMobile/{eqCode}/{money}/{type}/{shiftId}/{shopId}/{busId}/79B4DE7C/payQRNew")
     Observable<BaseResponse<QRCodeBitmapBean>> getQRCodeUrl(@Path("eqCode") String eqCode, @Path("money") double money,
                                                             @Path("type") int type, @Path("shiftId") int shiftId
             , @Path("shopId") int shopId, @Path("busId") int busId, @Query("shopName") String shopName);
@@ -90,7 +90,7 @@ public interface ApiService {
     @POST(HttpConfig.DELETE_NOT_PAY_ORDER)
     Observable<BaseResponse> deleteNotPayOrder(@Query("eqId") int eqId, @Query("orderId") long orderId);
 
-    @GET("magicBoxMobile/{orderId}/{shiftId}/{busId}/79B4DE7C/payQR")
+    @GET("magicBoxMobile/{orderId}/{shiftId}/{busId}/79B4DE7C/payQRNew")
     Observable<BaseResponse<CreatedOrderBean>> getCreatedQRCodeUrl(@Path("orderId") int orderId, @Path("shiftId") int shiftId,
                                                                    @Path("busId") int busId);
 
@@ -229,10 +229,10 @@ public interface ApiService {
     @POST(HttpConfig.REVAMP_EQ_NAME)
     Observable<BaseResponse> revampEqName(@Query("name") String name,
                                             @Query("eqId") int eqId);
-    @POST(HttpConfig.WXMEMBER_PAY_REFUND)
+    @POST(HttpConfig.WX_MEMBER_PAY_REFUND)
     Observable<BaseResponse> returnMoney(@Query("orderNo") String orderNo, @Query("totalFee") double totalFee,
                                          @Query("type") int type,@Query("shiftId")int shiftId,@Body ReturnCauseBean returnCauseBean);
 
     @GET(HttpConfig.SELECT_ORDER_LIST_MAP_BY_ORDER_NO)
-    Observable<BaseResponse<OrderListResultBean.OrderItemBean>> searchOrderByNo(@Query("orderNo") String orderNo,@Query("busId") int busId);
+    Observable<BaseResponse<QueryOrderBean>> searchOrderByNo(@Query("orderNo") String orderNo, @Query("busId") int busId);
 }

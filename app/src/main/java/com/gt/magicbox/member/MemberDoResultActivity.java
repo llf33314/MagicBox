@@ -126,26 +126,11 @@ public class MemberDoResultActivity extends BaseActivity {
     }
 
     private void playMemberPayVoice() {
-        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(realMoney), 5)
-                .setAppendListener(new VoiceUtils.AppendListener() {
-                    @Override
-                    public void append() {
-                        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(balance), 7)
-                                .setAppendListener(null);
-                    }
-                });
-
+        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(realMoney), 5);
     }
 
     private void playMemberRechargeVoice() {
-        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(rechargeMoney), 6)
-                .setAppendListener(new VoiceUtils.AppendListener() {
-                    @Override
-                    public void append() {
-                        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(balance), 7)
-                                .setAppendListener(null);
-                    }
-                });
+        VoiceUtils.with(getApplicationContext()).playMergeWavFile("$" + PlaySound.getCapitalValueOf(rechargeMoney), 6);
     }
 
     @OnClick(R.id.confirmButton)

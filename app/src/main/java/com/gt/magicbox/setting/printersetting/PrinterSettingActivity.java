@@ -2,6 +2,7 @@ package com.gt.magicbox.setting.printersetting;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
@@ -38,12 +39,12 @@ public class PrinterSettingActivity extends BaseActivity {
         setToolBarTitle("硬件设置");
     }
 
-    @OnClick({R.id.tv_config_bt, R.id.tv_config_usb, R.id.tv_config_show,R.id.tv_auto_print_config})
+    @OnClick({R.id.tv_config_bt, R.id.tv_config_usb, R.id.tv_config_show, R.id.tv_auto_print_config})
     public void onViewClicked(View view) {
         Intent intent;
         switch (view.getId()) {
             case R.id.tv_config_bt:
-                intent = new Intent(PrinterSettingActivity.this, BluetoothSettingActivity.class);
+                intent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
                 startActivity(intent);
                 break;
             case R.id.tv_config_usb:

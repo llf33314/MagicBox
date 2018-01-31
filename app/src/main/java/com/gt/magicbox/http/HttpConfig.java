@@ -66,7 +66,7 @@ public class HttpConfig {
     public static final String GET_ORDER_STATUS="magicBoxMobile/79B4DE7C/getOrderStatus";
     public static final String SELECT_ORDER_BY_LAST_FOUR="magicBoxMobile/79B4DE7C/selectOrderByLastFour";
     public static final String REVAMP_EQ_NAME="magicBoxMobile/79B4DE7C/revampEqName";
-    public static final String WXMEMBER_PAY_REFUND="magicBoxMobile/79B4DE7C/wxmemberPayRefund";
+    public static final String WX_MEMBER_PAY_REFUND ="magicBoxMobile/79B4DE7C/wxmemberPayRefund";
     public static final String SELECT_ORDER_LIST_MAP_BY_ORDER_NO="magicBoxMobile/79B4DE7C/selectOrderListMapByOrderNo";
     public static final String CHECK_RELATED_WX="magicBoxRefundAuthorization/checkRelatedWx/36/79B4DE7C/92";
 

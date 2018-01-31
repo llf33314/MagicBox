@@ -1,5 +1,6 @@
 package com.gt.magicbox.order;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -23,6 +24,7 @@ import com.gt.magicbox.base.BaseActivity;
 import com.gt.magicbox.base.BaseConstant;
 import com.gt.magicbox.bean.OrderListResultBean;
 import com.gt.magicbox.bean.ReasonBean;
+import com.gt.magicbox.bean.UpdateOrderListUIBean;
 import com.gt.magicbox.http.HttpConfig;
 import com.gt.magicbox.http.socket.SocketIOManager;
 import com.gt.magicbox.order.widget.ReasonCheckStateAdapter;
@@ -30,8 +32,8 @@ import com.gt.magicbox.order.widget.ReasonListDialog;
 import com.gt.magicbox.utils.CashierInputFilter;
 import com.gt.magicbox.utils.KeyboardUtils;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.LogUtils;
-import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.widget.ReturnMoneyQRCodeDialog;
 import com.orhanobut.hawk.Hawk;
@@ -204,6 +206,7 @@ public class ReturnMoneyActivity extends BaseActivity {
             @Override
             public void OnItemClick(View view, ReasonCheckStateAdapter.StateHolder holder, int position) {
                 selectReasonTextView.setText(list.get(position).reason + " >");
+                reason = selectReasonTextView.getText().toString().replace(">", "");
             }
         });
     }
@@ -215,9 +218,9 @@ public class ReturnMoneyActivity extends BaseActivity {
             dialog.setOnItemClickListener(new ReasonCheckStateAdapter.OnItemClickListener() {
                 @Override
                 public void OnItemClick(View view, ReasonCheckStateAdapter.StateHolder holder, int position) {
-                    reason = list.get(position).reason;
                     selectReasonTextView.setText(list.get(position).reason + " >");
-                    reason = selectReasonTextView.getText().toString();
+                    reason = selectReasonTextView.getText().toString().replace(">", "");
+                    LogUtils.d("updateReasonDialog reason=" + reason);
                 }
             });
         }
@@ -277,8 +280,19 @@ public class ReturnMoneyActivity extends BaseActivity {
                     retData = "";
                 }
                 LogUtils.d(SocketIOManager.TAG, "retData=" + retData);
-                if (retData.equals("success")) {
-
+                if (retData.equals("\"success\"")) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            RxBus.get().post(new UpdateOrderListUIBean(1));
+                            AppManager.getInstance().finishActivity(OrderInfoActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), OrderInfoActivity.class);
+                            orderItemBean.status = 2;
+                            intent.putExtra("OrderItemBean", orderItemBean);
+                            startActivity(intent);
+                            AppManager.getInstance().finishActivity();
+                        }
+                    });
                 }
             }
         });

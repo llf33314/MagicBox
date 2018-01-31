@@ -151,8 +151,8 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_code_pay);
-        //dialog = new LoadingProgressDialog(QRCodePayActivity.this);
-        //dialog.show();
+        dialog = new LoadingProgressDialog(QRCodePayActivity.this);
+        dialog.show();
         init();
         initBindService();
     }
@@ -198,11 +198,13 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
                     }
                     shiftId = Hawk.get("shiftId");
-                    if (shiftId == null || shiftId < 0) shiftId = 0;
+                    if (shiftId == null || shiftId < 0) {
+                        shiftId = 0;
+                    }
+                    getQRCodeURL(money, payMode, shiftId);
                     pushLayout.setVisibility(View.VISIBLE);
                     normalPayLayout.setVisibility(View.GONE);
                     showMoney(pushCustomerMoney, "" + money);
-                    getQRCodeURL(money, payMode, shiftId);
                     break;
                 case TYPE_SERVER_PUSH:
 
@@ -263,14 +265,14 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
                     @Override
                     public void onError(Throwable e) {
-                        //dialog.dismiss();
+                        dialog.dismiss();
                         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                       // dialog.dismiss();
+                        dialog.dismiss();
                         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                         super.onFailure(code, msg);
                     }
@@ -300,14 +302,14 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
 
                     @Override
                     public void onError(Throwable e) {
-                        //dialog.dismiss();
+                        dialog.dismiss();
                         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                         super.onError(e);
                     }
 
                     @Override
                     public void onFailure(int code, String msg) {
-                      //  dialog.dismiss();
+                        dialog.dismiss();
                         AppManager.getInstance().finishActivity(QRCodePayActivity.class);
                         super.onFailure(code, msg);
                     }
@@ -408,31 +410,14 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
     }
 
     private void showQRCodeView(String url) {
+        dialog.dismiss();
+        Bitmap bitmap = QrCodeUtils.generateBitmap(url, 150, 150);
+        pushQrCode.setImageBitmap(bitmap);
+        qrCodeUrl = url;
+        LogUtils.d("qrCodeUrl=" + qrCodeUrl);
+        codeCameraManager = new CodeCameraManager(getApplicationContext(), preview, QRCodePayActivity.this);
+        codeCameraManager.initCamera();
         // TODO Auto-generated method stub
-        BitmapUtils bitmapUtils = new BitmapUtils(this);
-        // 加载网络图片
-        ImageView imageView;
-        imageView = pushQrCode;
-
-        bitmapUtils.display(imageView,
-                url, new BitmapLoadCallBack<ImageView>() {
-                    @Override
-                    public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
-                        imageView.setImageBitmap(bitmap);
-                        qrCodeBitmap = bitmap;
-                        qrCodeUrl = QrCodeUtils.scanningImage(qrCodeBitmap);
-                        LogUtils.d("qrCodeUrl=" + qrCodeUrl);
-                        //initCameraViews();
-                        codeCameraManager = new CodeCameraManager(getApplicationContext(), preview, QRCodePayActivity.this);
-                        codeCameraManager.initCamera();
-                      //  dialog.dismiss();
-                    }
-
-                    @Override
-                    public void onLoadFailed(ImageView imageView, String s, Drawable drawable) {
-                        //dialog.dismiss();
-                    }
-                });
     }
 
     private void showMoney(TextView textView, String numberString) {
@@ -450,7 +435,6 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
         socketIOManager.setOnConnect(new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                //String UUID = PhoneUtils.getIMEI();
                 String UUID = orderNo;
                 LogUtils.d(SocketIOManager.TAG, "auth key : " + HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
                 socketIOManager.getSocket().emit(HttpConfig.SOCKET_ANDROID_AUTH, HttpConfig.SOCKET_ANDROID_AUTH_KEY + UUID);
