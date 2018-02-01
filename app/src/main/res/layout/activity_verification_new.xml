@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ececec"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/nickNameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/nickName"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:gravity="center_vertical"
+            android:text="@string/ensure"
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_16" />
+
+        <TextView
+            android:id="@+id/phone"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dp_16"
+            android:gravity="center_vertical"
+            android:text="@string/ensure"
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_16" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/totalMoneyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40"
+        android:layout_marginTop="@dimen/dp_14"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:gravity="center_vertical"
+            android:text="@string/total_money"
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_16" />
+
+        <TextView
+            android:id="@+id/totalMoney"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dp_16"
+            android:gravity="center_vertical"
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_16" />
+
+        <View
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e6e6e6" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/discountLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/memberDiscount"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:gravity="center_vertical"
+            android:textColor="#333333"
+            android:textSize="@dimen/dp_16" />
+
+        <com.suke.widget.SwitchButton
+            android:id="@+id/paySwitchButton"
+            android:layout_width="@dimen/dp_54"
+            android:layout_height="@dimen/dp_37"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_14"
+            app:sb_checked="true"
+            app:sb_checked_color="#f04a4a"
+            app:sb_show_indicator="false" />
+        <View
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e6e6e6" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:background="@color/white"
+        android:id="@+id/couponLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_122">
+
+    </RelativeLayout>
+</LinearLayout>
