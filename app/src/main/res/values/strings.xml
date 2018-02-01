@@ -162,5 +162,6 @@
     <string name="return_money_scan_code_tip">退款时,授权人请扫描此二维码</string>
     <string name="return_money_qr_code">退款授权码</string>
     <string name="order_info">订单详情</string>
+    <string name="total_money">合计金额</string>
 
 </resources>

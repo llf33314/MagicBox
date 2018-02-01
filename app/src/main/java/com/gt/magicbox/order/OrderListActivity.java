@@ -45,6 +45,7 @@ import com.gt.magicbox.order.widget.swipmenulistview.SwipeMenuListView;
 import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.utils.RxBus;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
@@ -225,12 +226,20 @@ public class OrderListActivity extends BaseActivity implements Preview$IDecodeLi
                             intent.putExtra("money", orderItemBean.money);
                             startActivity(intent);
                         } else if (Constant.product.equals(BaseConstant.PRODUCTS[0])) {
+                            if (type==TYPE_ORDER_SEARCH){
+                                if (codeCameraManager != null) {
+                                    codeCameraManager.releaseCamera();
+                                }
+                            }
                             Intent intent = new Intent(getApplicationContext(), QRCodePayActivity.class);
                             intent.putExtra("type", QRCodePayActivity.TYPE_CREATED_PAY);
                             intent.putExtra("orderId", orderItemBean.id);
                             intent.putExtra("money", orderItemBean.money);
                             intent.putExtra("payMode", orderItemBean.type);
                             startActivityForResult(intent, RESULT_FROM_PAY);
+                            if (type==TYPE_ORDER_SEARCH){
+                                AppManager.getInstance().finishActivity();
+                            }
                         }
 
                     } else if (orderItemBean.status == 1) {
