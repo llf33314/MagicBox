@@ -18,6 +18,8 @@
     <string name="charge">找零:</string>
     <string name="print_receipt">打印小票</string>
     <string name="confirm">确认</string>
+    <string name="ensure">确定</string>
+
     <string name="confirm_pay">收款确认</string>
     <string name="confirm_pay_tip">支付成功，页面未刷新时请点击</string>
 
@@ -159,5 +161,6 @@
     <string name="add_new_tag">新增标签</string>
     <string name="return_money_scan_code_tip">退款时,授权人请扫描此二维码</string>
     <string name="return_money_qr_code">退款授权码</string>
+    <string name="order_info">订单详情</string>
 
 </resources>

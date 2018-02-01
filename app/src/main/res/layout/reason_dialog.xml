@@ -55,7 +55,7 @@
         android:layout_height="@dimen/dp_52"
         android:background="@drawable/selector_white_no_border"
         android:gravity="center"
-        android:text="@string/close"
+        android:text="@string/ensure"
         android:textColor="#f04a4a"
         android:textSize="@dimen/dp_16" />
 </LinearLayout>

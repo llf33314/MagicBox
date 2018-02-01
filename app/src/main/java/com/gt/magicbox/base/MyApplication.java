@@ -45,6 +45,7 @@ public class MyApplication extends Application {
         Hawk.delete("busId");
         Hawk.delete("shiftId");
         Hawk.delete("ShopInfoBean");
+        Hawk.delete("StaffListBean");
         Hawk.delete("deviceName");
         Hawk.delete("reasonList");
         Hawk.delete("fixedMoneyList");

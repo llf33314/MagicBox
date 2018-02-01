@@ -38,6 +38,7 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
 import com.gt.magicbox.http.socket.SocketIOManager;
+import com.gt.magicbox.pay.QRCodePayActivity;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
@@ -278,33 +279,14 @@ public class FixedMoneyNoDataActivity extends BaseActivity implements Preview$ID
     }
 
     private void showQRCodeView(String url) {
+        dialog.dismiss();
+        Bitmap bitmap = QrCodeUtils.generateBitmap(url, 150, 150);
+        pushQrCode.setImageBitmap(bitmap);
+        qrCodeUrl = url;
+        LogUtils.d("qrCodeUrl=" + qrCodeUrl);
+        codeCameraManager = new CodeCameraManager(getApplicationContext(), preview, FixedMoneyNoDataActivity.this);
+        codeCameraManager.initCamera();
         // TODO Auto-generated method stub
-        BitmapUtils bitmapUtils = new BitmapUtils(this);
-        // 加载网络图片
-        ImageView imageView;
-        imageView = pushQrCode;
-
-        bitmapUtils.display(imageView,
-                url, new BitmapLoadCallBack<ImageView>() {
-                    @Override
-                    public void onLoadCompleted(ImageView imageView, String s, Bitmap bitmap, BitmapDisplayConfig bitmapDisplayConfig, BitmapLoadFrom bitmapLoadFrom) {
-                        imageView.setImageBitmap(bitmap);
-                        qrCodeBitmap = bitmap;
-                        qrCodeUrl = QrCodeUtils.scanningImage(qrCodeBitmap);
-                        LogUtils.d("qrCodeUrl=" + qrCodeUrl);
-                        //initCameraViews();
-                        codeCameraManager = new CodeCameraManager(getApplicationContext(), preview, FixedMoneyNoDataActivity.this);
-                        codeCameraManager.initCamera();
-                        if (dialog != null) {
-                            dialog.dismiss();
-                        }
-                    }
-
-                    @Override
-                    public void onLoadFailed(ImageView imageView, String s, Drawable drawable) {
-                        dialog.dismiss();
-                    }
-                });
     }
 
     private void payResultSocket(final String orderNo) {

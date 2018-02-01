@@ -176,7 +176,7 @@ public class OrderListActivity extends BaseActivity implements Preview$IDecodeLi
     private void initOrderListView() {
         getOrderList(0, 10);
         if (getSearch() != null) {
-            getSearch().setVisibility(View.GONE);
+            getSearch().setVisibility(View.VISIBLE);
             getSearch().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

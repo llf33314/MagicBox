@@ -78,6 +78,7 @@ public class OrderInfoActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_info);
+        setToolBarTitle(getString(R.string.order_info));
         initData();
         initView(keyValueView);
     }
@@ -157,7 +158,7 @@ public class OrderInfoActivity extends BaseActivity {
 
     private void getSearchOrderByNo(String orderNo) {
         HttpCall.getApiService()
-                .searchOrderByNo(orderNo, Hawk.get("busId", 0))
+                .searchOrderByNo(orderNo, Hawk.get("childBusId", 0))
                 .compose(ResultTransformer.<QueryOrderBean>transformer())
                 .subscribe(new BaseObserver<QueryOrderBean>() {
                     @Override
@@ -176,7 +177,7 @@ public class OrderInfoActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        LogUtils.d(TAG, "getSearchOrderByNo onFailure");
+                        LogUtils.d(TAG, "getSearchOrderByNo onFailure busId="+Hawk.get("busId", 0));
                         super.onFailure(code, msg);
                     }
                 });
@@ -199,7 +200,6 @@ public class OrderInfoActivity extends BaseActivity {
             returnMoneyView.setAdapter(adapter);
             returnMoneyView.setVisibility(View.VISIBLE);
             printPaper.setVisibility(View.VISIBLE);
-
         }
     }
 }

@@ -37,7 +37,7 @@ public class OrderListAdapter extends BaseAdapter {
     private static final int TYPE_ORDER_ITEM = 1;
     private HeadButtonViewHolder headButtonViewHolder;
     private OrderItemViewHolder viewHolder;
-    private HashMap<Integer,RelativeLayout> swipeLayoutMap=new HashMap<>();
+    private HashMap<Integer, RelativeLayout> swipeLayoutMap = new HashMap<>();
     private List<OrderListResultBean.OrderItemBean> data = new ArrayList<>();
     private LayoutInflater mInflater;
     private Context context;
@@ -46,6 +46,7 @@ public class OrderListAdapter extends BaseAdapter {
             , R.drawable.order_list_bank_card};
     private static final DateFormat DEFAULT_FORMAT = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
     private static final DateFormat ONLY_DATE_FORMAT = new SimpleDateFormat("yyyy年 MM月 dd日", Locale.getDefault());
+
     public OrderListAdapter(Context context, List<OrderListResultBean.OrderItemBean> data) {
         this.context = context;
         this.data = data;
@@ -98,14 +99,14 @@ public class OrderListAdapter extends BaseAdapter {
                     viewHolder.timeTitle = (TextView) convertView.findViewById(R.id.timeTitle);
                     viewHolder.orderStatus = (TextView) convertView.findViewById(R.id.order_status);
                     viewHolder.orderIcon = (ImageView) convertView.findViewById(R.id.item_icon);
-                    viewHolder.swipeLayout=(RelativeLayout)convertView.findViewById(R.id.swipeLayout);
+                    viewHolder.swipeLayout = (RelativeLayout) convertView.findViewById(R.id.swipeLayout);
                     convertView.setTag(viewHolder);
-                    LogUtils.d("TYPE_ORDER_ITEM position="+position+" orderItemBean.time="+orderItemBean.time);
+                    LogUtils.d("TYPE_ORDER_ITEM position=" + position + " orderItemBean.time=" + orderItemBean.time);
 
                 } else {
                     viewHolder = (OrderItemViewHolder) convertView.getTag();
                 }
-                if (swipeLayoutMap.get(position)==null) {
+                if (swipeLayoutMap.get(position) == null) {
                     swipeLayoutMap.put(position, viewHolder.swipeLayout);
                 }
                 String timeTitle = TimeUtils.millis2String(orderItemBean.time, ONLY_DATE_FORMAT);
@@ -116,6 +117,13 @@ public class OrderListAdapter extends BaseAdapter {
                     }
                     if (orderItemBean.type >= 0 && orderItemBean.type < icons.length) {
                         viewHolder.orderIcon.setImageResource(icons[orderItemBean.type]);
+                    }
+                    if (orderItemBean.status == 0 && (orderItemBean.type == 0 || orderItemBean.type == 1)) {
+                        /**
+                         * 未支付订单类型微信和支付宝用扫码图标显示
+                         */
+                        viewHolder.orderIcon.setImageResource(R.drawable.order_list_code);
+
                     }
 
                     viewHolder.orderNo.setText(orderItemBean.order_no + "   " + TimeUtils.millis2String(orderItemBean.time, DEFAULT_FORMAT));
@@ -157,6 +165,7 @@ public class OrderListAdapter extends BaseAdapter {
         ImageView orderIcon;
         public RelativeLayout swipeLayout;
     }
+
     class HeadButtonViewHolder {
         Button payOrder;
         Button noPayOrder;
@@ -170,6 +179,7 @@ public class OrderListAdapter extends BaseAdapter {
     public HeadButtonViewHolder getHeadButtonViewHolder() {
         return headButtonViewHolder;
     }
+
     public OrderItemViewHolder getViewHolder() {
         return viewHolder;
     }
