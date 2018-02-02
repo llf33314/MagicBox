@@ -22,6 +22,7 @@ import com.gt.magicbox.bean.MemberCouponBean;
 import com.gt.magicbox.camera.CodeCameraManager;
 import com.gt.magicbox.coupon.CouponVerificationSuccess;
 import com.gt.magicbox.coupon.VerificationActivity;
+import com.gt.magicbox.coupon.VerificationNewActivity;
 import com.gt.magicbox.http.BaseResponse;
 import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
@@ -283,7 +284,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                                 if (type == TYPE_MEMBER_RECHARGE)
                                     intent = new Intent(getApplicationContext(), MemberRechargeActivity.class);
                                 else if (type == TYPE_COUPON_VERIFICATION || type == TYPE_MEMBER_PAY) {
-                                    intent = new Intent(getApplicationContext(), VerificationActivity.class);
+                                    intent = new Intent(getApplicationContext(), VerificationNewActivity.class);
                                     intent.putExtra("orderMoney", orderMoney);
                                 }
                                 intent.putExtra("MemberCardBean", bean);

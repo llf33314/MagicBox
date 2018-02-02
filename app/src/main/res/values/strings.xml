@@ -13,7 +13,7 @@
 
     <string name="member_card">会员卡</string>
 
-    <string name="paid_in_amount">实收金额:</string>
+    <string name="paid_in_amount">实收金额</string>
     <string name="should_paid">应收金额:</string>
     <string name="charge">找零:</string>
     <string name="print_receipt">打印小票</string>
@@ -163,5 +163,7 @@
     <string name="return_money_qr_code">退款授权码</string>
     <string name="order_info">订单详情</string>
     <string name="total_money">合计金额</string>
+    <string name="to_settle_accounts">去结算</string>
+    <string name="discount_card_name">折扣卡</string>
 
 </resources>
