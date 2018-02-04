@@ -87,7 +87,6 @@ public class ReturnMoneyActivity extends BaseActivity {
     private double returnActuallyMoney = 0;
     private String reason = "";
     private SocketIOManager socketIOManager;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +105,7 @@ public class ReturnMoneyActivity extends BaseActivity {
 
     private void initView() {
         money.setText("¥ " + orderItemBean.money);
-        returnMoney.setText("" + orderItemBean.money);
+        returnMoney.setHint("" + orderItemBean.money);
         setEditTextSelectionAtRight(returnMoney);
         editLastString = returnMoney.getEditableText().toString();
         InputFilter[] filters = {new CashierInputFilter(orderItemBean.money)};
@@ -248,7 +247,8 @@ public class ReturnMoneyActivity extends BaseActivity {
     private void showQrCodeDialog() {
         if (orderItemBean != null) {
             connectSocket();
-            String content = Constant.YJ_BASE_URL + HttpConfig.CHECK_RELATED_WX + "?orderNo=" + orderItemBean.order_no
+            String content = Constant.YJ_BASE_URL +"magicBoxRefundAuthorization/checkRelatedWx/"+Hawk.get("busId",0)+
+                    "/79B4DE7C/"+Hawk.get("eqId",0)+ "?orderNo=" + orderItemBean.order_no
                     + "&totalFee=" + returnActuallyMoney + "&type=" + returnType + "&cause=" + reason + "&shiftId=" + Hawk.get("shiftId", 0);
             ReturnMoneyQRCodeDialog
                     returnMoneyQRCodeDialog = new ReturnMoneyQRCodeDialog(ReturnMoneyActivity.this, content);

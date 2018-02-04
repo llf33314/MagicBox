@@ -21,6 +21,7 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.utils.DoubleCalcUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.orhanobut.hawk.Hawk;
@@ -109,6 +110,7 @@ public class VerificationNewActivity extends BaseActivity {
     private double discountMoney = 0;
     private MemberCouponBean memberCouponBean;
     private int lastPosition = -1;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,22 +124,25 @@ public class VerificationNewActivity extends BaseActivity {
         }
         initView();
     }
-    private void initView(){
-        if (memberCardBean!=null){
-            if (!TextUtils.isEmpty(memberCardBean.ctName)){
-                if(getString(R.string.discount_card_name).equals(memberCardBean.ctName)){
+
+    private void initView() {
+        if (memberCardBean != null) {
+            if (!TextUtils.isEmpty(memberCardBean.ctName)) {
+                if (getString(R.string.discount_card_name).equals(memberCardBean.ctName)) {
                     discountLayout.setVisibility(View.VISIBLE);
                     calcDiscountLayout.setVisibility(View.VISIBLE);
-                    memberDiscount.setText("会员折扣("+memberCardBean.discount+"折)");
-                    calcDiscountLeft.setText("会员折扣("+memberCardBean.discount+"折)");
-                    calcDiscountRight.setText("-¥"+((10-memberCardBean.discount)/10.0)*orderMoney);
+                    memberDiscount.setText("会员折扣(" + memberCardBean.discount + "折)");
+                    calcDiscountLeft.setText("会员折扣(" + memberCardBean.discount + "折)");
+                    calcDiscountRight.setText("-¥" + getMemberDiscount());
                     discountSwitchButton.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(SwitchButton view, boolean isChecked) {
-                            if (isChecked){
+                            if (isChecked) {
                                 calcDiscountLayout.setVisibility(View.VISIBLE);
-                            }else {
+                                discountMoney = getMemberDiscount();
+                            } else {
                                 calcDiscountLayout.setVisibility(View.GONE);
+                                discountMoney = 0;
                             }
                         }
                     });
@@ -145,9 +150,15 @@ public class VerificationNewActivity extends BaseActivity {
             }
         }
     }
-    private double calcMemberDiscount(){
-        return 0;
+
+    private double getMemberDiscount() {
+        try {
+            return DoubleCalcUtils.keepDecimalPoint(2, ((10 - memberCardBean.discount) / 10.0) * orderMoney);
+        } catch (Exception e) {
+            return 0;
+        }
     }
+
     private void getMemberAvailableCouponData() {
         if (null != memberCardBean) {
             HttpCall.getApiService()
@@ -183,6 +194,7 @@ public class VerificationNewActivity extends BaseActivity {
                     });
         }
     }
+
     private void initCouponRecyclerView(RecyclerView recyclerView, final List<MemberCouponBean> data) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -216,6 +228,7 @@ public class VerificationNewActivity extends BaseActivity {
         recyclerView.addItemDecoration(new SpaceItemDecoration(ConvertUtils.dp2px(5), SpaceItemDecoration.SPACE_RIGHT));
 
     }
+
     public double subtract(double d1, double d2) {
 
         BigDecimal bd1 = new BigDecimal(Double.toString(d1));
