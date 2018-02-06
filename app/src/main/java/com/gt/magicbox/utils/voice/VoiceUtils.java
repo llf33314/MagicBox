@@ -10,6 +10,7 @@ import com.gt.magicbox.utils.DoubleCalcUtils;
 import com.gt.magicbox.utils.WavMergeUtil;
 import com.gt.magicbox.utils.commonutil.FileUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
+import com.gt.magicbox.utils.commonutil.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -308,5 +309,25 @@ public class VoiceUtils {
 
     public interface AppendListener {
         public void append();
+    }
+
+    public static void playSound(int res) {
+        MediaPlayer mp = null;
+        try {
+            mp = MediaPlayer.create(Utils.getContext(), res);
+            if (mp != null) {
+                mp.start();
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+            }
+        });
     }
 }

@@ -44,7 +44,7 @@ public class PrinterSettingActivity extends BaseActivity {
         Intent intent;
         switch (view.getId()) {
             case R.id.tv_config_bt:
-                intent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+                intent = new Intent(PrinterSettingActivity.this, BluetoothSettingActivity.class);
                 startActivity(intent);
                 break;
             case R.id.tv_config_usb:

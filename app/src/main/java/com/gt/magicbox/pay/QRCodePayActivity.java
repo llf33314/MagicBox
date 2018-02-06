@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.gt.magicbox.Constant;
@@ -53,9 +54,12 @@ import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.PhoneUtils;
 import com.gt.magicbox.utils.commonutil.TimeUtils;
+import com.gt.magicbox.utils.commonutil.ToastUtil;
 import com.gt.magicbox.utils.qr_code_util.QrCodeUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.gt.magicbox.widget.LoadingProgressDialog;
+import com.gt.magicbox.widget.PayFinishToast;
+import com.gt.magicbox.widget.TextDialogToast;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.bitmap.callback.BitmapLoadCallBack;
@@ -329,6 +333,9 @@ public class QRCodePayActivity extends BaseActivity implements Preview$IDecodeLi
                             if (data != null && data.code == 1) {
                                 if (!TextUtils.isEmpty(data.msg) && data.msg.startsWith(getString(R.string.please_use_wechat_code))) {
                                     showCodePayFailDialog(getString(R.string.please_use_wechat_code));
+                                }
+                                if (!TextUtils.isEmpty(data.msg) && data.msg.contains("输入密码")){
+                                    showCodePayFailDialog("用户支付中,需要输入密码");
                                 }
                             }
                         }

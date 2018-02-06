@@ -1,5 +1,6 @@
 package com.gt.magicbox.coupon;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +22,9 @@ import com.gt.magicbox.http.retrofit.HttpCall;
 import com.gt.magicbox.http.rxjava.observable.DialogTransformer;
 import com.gt.magicbox.http.rxjava.observable.ResultTransformer;
 import com.gt.magicbox.http.rxjava.observer.BaseObserver;
+import com.gt.magicbox.pay.ChosePayModeActivity;
 import com.gt.magicbox.utils.DoubleCalcUtils;
+import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.orhanobut.hawk.Hawk;
@@ -32,6 +35,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Description:
@@ -104,6 +108,14 @@ public class VerificationNewActivity extends BaseActivity {
     Button chosePay;
     @BindView(R.id.cancel)
     Button cancel;
+    @BindView(R.id.cardTypeInfo)
+    TextView cardTypeInfo;
+    @BindView(R.id.cardTypeLayout)
+    RelativeLayout cardTypeLayout;
+    @BindView(R.id.balance)
+    TextView balance;
+    @BindView(R.id.balanceLayout)
+    RelativeLayout balanceLayout;
     private MemberCardBean memberCardBean;
     private double orderMoney;
     private double paidInAmountMoney = 0;//实付金额
@@ -120,6 +132,7 @@ public class VerificationNewActivity extends BaseActivity {
         if (this.getIntent() != null) {
             memberCardBean = (MemberCardBean) this.getIntent().getSerializableExtra("MemberCardBean");
             orderMoney = getIntent().getDoubleExtra("orderMoney", 0);
+            paidInAmountMoney = orderMoney;
             getMemberAvailableCouponData();
         }
         initView();
@@ -127,6 +140,23 @@ public class VerificationNewActivity extends BaseActivity {
 
     private void initView() {
         if (memberCardBean != null) {
+            if (!TextUtils.isEmpty(memberCardBean.nickName)) {
+                nickName.setText(memberCardBean.nickName);
+            }
+            if (!TextUtils.isEmpty(memberCardBean.phone)) {
+                phone.setText(memberCardBean.phone);
+            }
+            if (!TextUtils.isEmpty(memberCardBean.gradeName) && !TextUtils.isEmpty(memberCardBean.ctName)) {
+                cardTypeInfo.setText(memberCardBean.ctName + "(" + memberCardBean.gradeName + ")");
+            } else {
+                cardTypeLayout.setVisibility(View.GONE);
+            }
+            if (memberCardBean.ctName.equals(getResources().getString(R.string.value_card_name))) {
+                balanceLayout.setVisibility(View.VISIBLE);
+                balance.setText(memberCardBean.money + "元");
+            }
+            textPaidInAmount.setText("¥" + paidInAmountMoney);
+            totalMoney.setText("¥" + orderMoney);
             if (!TextUtils.isEmpty(memberCardBean.ctName)) {
                 if (getString(R.string.discount_card_name).equals(memberCardBean.ctName)) {
                     discountLayout.setVisibility(View.VISIBLE);
@@ -172,6 +202,8 @@ public class VerificationNewActivity extends BaseActivity {
                             if (data != null) {
                                 LogUtils.i(TAG, "onSuccess size=" + data.size());
                                 if (data.size() > 0) {
+                                    calcCouponLayout.setVisibility(View.VISIBLE);
+                                    couponLayout.setVisibility(View.VISIBLE);
                                     initCouponRecyclerView(couponView, data);
                                 } else if (data.size() == 0) {
                                     couponLayout.setVisibility(View.GONE);
@@ -206,12 +238,12 @@ public class VerificationNewActivity extends BaseActivity {
                 LogUtils.d("lastPosition=" + lastPosition + "  position=" + position);
                 if (lastPosition != position) {
                     memberCouponBean = data.get(position);
-                    //calculateCoupon(data.get(position));
+                    calculateCoupon(data.get(position));
                     lastPosition = position;
                 } else {
                     lastPosition = -1;
                     memberCouponBean = null;
-                    //calculateCoupon(null);
+                    calculateCoupon(null);
                 }
             }
         });
@@ -226,6 +258,58 @@ public class VerificationNewActivity extends BaseActivity {
         });
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new SpaceItemDecoration(ConvertUtils.dp2px(5), SpaceItemDecoration.SPACE_RIGHT));
+
+    }
+
+    @OnClick({R.id.chose_pay, R.id.cancel})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.chose_pay:
+                Intent intent = new Intent(getApplicationContext(), ChosePayModeActivity.class);
+                intent.putExtra("customerType", ChosePayModeActivity.TYPE_MEMBER_PAY);
+                intent.putExtra("money", paidInAmountMoney);
+                intent.putExtra("discountAfterMoney", paidInAmountMoney);
+                intent.putExtra("discountMoney", discountMoney);
+
+                intent.putExtra("memberCardBean", memberCardBean);
+                if (memberCouponBean != null) {
+                    intent.putExtra("memberCouponBean", memberCouponBean);
+                }
+                startActivity(intent);
+                AppManager.getInstance().finishActivity();
+                break;
+            case R.id.cancel:
+                AppManager.getInstance().finishActivity();
+                break;
+        }
+    }
+
+    private void calculateCoupon(MemberCouponBean memberCouponBean) {
+        if (memberCouponBean != null) {
+            if (memberCouponBean.getDiscount() > 0) {
+                paidInAmountMoney = multiply(orderMoney / 10, memberCouponBean.getDiscount());
+                discountMoney = subtract(orderMoney, paidInAmountMoney);
+                calcCouponRight.setText("-¥" + discountMoney);
+                textPaidInAmount.setText("¥" + paidInAmountMoney);
+            } else if (memberCouponBean.getReduce_cost() > 0 && orderMoney >= memberCouponBean.getReduce_cost()) {
+                paidInAmountMoney = subtract(orderMoney, memberCouponBean.getReduce_cost());
+                textPaidInAmount.setText("¥" + paidInAmountMoney);
+                discountMoney = memberCouponBean.getReduce_cost();
+                calcCouponRight.setText("-¥" + discountMoney);
+
+            } else {
+                calcCouponRight.setText("-¥" + 0);
+                paidInAmountMoney = orderMoney;
+                textPaidInAmount.setText("实收金额:¥" + paidInAmountMoney);
+                discountMoney = 0;
+            }
+        } else {
+            paidInAmountMoney = orderMoney;
+            textPaidInAmount.setText("¥" + paidInAmountMoney);
+            discountMoney = 0;
+            calcCouponRight.setText("-¥" + 0);
+
+        }
 
     }
 

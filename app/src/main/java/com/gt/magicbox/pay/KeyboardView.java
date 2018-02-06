@@ -24,6 +24,8 @@ import com.gt.magicbox.utils.SpannableStringUtils;
 import com.gt.magicbox.utils.commonutil.ConvertUtils;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.StringUtils;
+import com.gt.magicbox.utils.voice.PlaySound;
+import com.gt.magicbox.utils.voice.VoiceUtils;
 import com.orhanobut.hawk.Hawk;
 
 import java.math.BigDecimal;
@@ -481,6 +483,7 @@ public class KeyboardView extends RelativeLayout implements View.OnClickListener
             if (!TextUtils.isEmpty(numberString)) {
                 double money = Double.parseDouble(numberString.toString());
                 if (money != 0) {
+                    VoiceUtils.with(getContext()).playMergeWavFile(PlaySound.getCapitalValueOf(money), 0);
                     onKeyboardDoListener.quickPay(money);
                 }
             }

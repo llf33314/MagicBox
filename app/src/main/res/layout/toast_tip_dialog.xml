@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00000000">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="@dimen/dp_320"
+        android:layout_height="@dimen/dp_220"
+        android:background="@drawable/white_radius_bg"
+        android:gravity="center"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_43">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_43"
+                android:textSize="20sp"
+                android:text="提示"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:textColor="@color/black"
+                />
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/close"
+                android:layout_marginRight="@dimen/dp_15"
+                android:layout_alignParentRight="true"
+                android:gravity="center_vertical"
+                android:textColor="#333333"
+                android:textSize="24dp"
+                android:text="x"
+                android:layout_width="30dp"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+        <View
+            style="@style/gray_line"
+            />
+
+        <TextView
+            android:id="@+id/dialog_dismiss_msg"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingLeft="@dimen/dp_20"
+            android:paddingRight="@dimen/dp_20"
+            android:textColor="@color/login_input_color"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_55"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/dp_10"
+            android:gravity="center"
+            >
+            <Button
+                android:id="@+id/dialog_dismiss_cancel"
+                android:layout_width="@dimen/dp_120"
+                android:layout_height="match_parent"
+                android:textSize="18sp"
+                android:text="取消"
+                android:textColor="@color/theme_orange"
+                android:background="@drawable/btn_orange_border_and_white"
+                android:visibility="gone"
+                android:lines="1"
+                />
+            <Button
+                android:id="@+id/dialog_dismiss_ok"
+                android:layout_width="@dimen/dp_120"
+                android:layout_height="match_parent"
+                android:textSize="18sp"
+                android:text="确认"
+                android:textColor="@color/white"
+                android:background="@drawable/selector_red_button"
+                android:layout_marginLeft="@dimen/dp_30"
+                android:visibility="gone"
+                android:lines="1"
+                />
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+</RelativeLayout>

@@ -36,6 +36,8 @@ import com.gt.magicbox.utils.NetworkUtils;
 import com.gt.magicbox.utils.commonutil.AppManager;
 import com.gt.magicbox.utils.commonutil.LogUtils;
 import com.gt.magicbox.utils.commonutil.ToastUtil;
+import com.gt.magicbox.utils.voice.PlaySound;
+import com.gt.magicbox.utils.voice.VoiceUtils;
 import com.gt.magicbox.widget.HintDismissDialog;
 import com.orhanobut.hawk.Hawk;
 import com.synodata.scanview.view.CodePreview;
@@ -71,6 +73,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
     private Runnable handlerRunnable;
     private CodeCameraManager codeCameraManager;
     private MemberCouponBean memberCouponBean;
+    private Integer[] resNumber = {R.raw.sound0, R.raw.sound1, R.raw.sound2, R.raw.sound3, R.raw.sound4, R.raw.sound5, R.raw.sound6, R.raw.sound7, R.raw.sound8, R.raw.sound9};
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -208,6 +211,10 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyboardView != null)
             if (keyCode >= KeyEvent.KEYCODE_NUMPAD_0 && keyCode <= KeyEvent.KEYCODE_NUMPAD_9) {
+                int index = keyCode - KeyEvent.KEYCODE_NUMPAD_0;
+                if (index < resNumber.length && index >= 0) {
+                    VoiceUtils.playSound(resNumber[index]);
+                }
                 if (type == TYPE_INPUT) {
                     keyboardView.inputWithCalc("" + (keyCode - 144));
                 } else {
@@ -215,6 +222,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                 }
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_DOT) {
+                VoiceUtils.playSound(R.raw.sounddot);
                 if (type == TYPE_INPUT) {
                     keyboardView.inputWithCalc(".");
                 } else if (type == TYPE_MEMBER_CALC || type == TYPE_CALC) {
@@ -222,6 +230,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                 }
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_DEL) {
+                VoiceUtils.playSound(R.raw.calc_delete);
                 if (type == TYPE_INPUT) {
                     keyboardView.externalKeyboardDelete();
                 } else {
@@ -231,20 +240,25 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
             } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
                 if (type == TYPE_INPUT) {
                     keyboardView.quickPay();
+
                 } else {
                     keyboardView.enter();
                 }
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_MULTIPLY && type == TYPE_INPUT) {
+                VoiceUtils.playSound(R.raw.calc_multiply);
                 keyboardView.inputWithCalc("×");
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_ADD && type == TYPE_INPUT) {
+                VoiceUtils.playSound(R.raw.calc_add);
                 keyboardView.inputWithCalc("+");
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_SUBTRACT && type == TYPE_INPUT) {
+                VoiceUtils.playSound(R.raw.calc_subtract);
                 keyboardView.inputWithCalc("-");
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_NUMPAD_DIVIDE && type == TYPE_INPUT) {
+                VoiceUtils.playSound(R.raw.calc_divided);
                 keyboardView.inputWithCalc("÷");
                 return true;
             }
@@ -284,7 +298,7 @@ public class PaymentActivity extends BaseActivity implements Preview$IDecodeList
                                 if (type == TYPE_MEMBER_RECHARGE)
                                     intent = new Intent(getApplicationContext(), MemberRechargeActivity.class);
                                 else if (type == TYPE_COUPON_VERIFICATION || type == TYPE_MEMBER_PAY) {
-                                    intent = new Intent(getApplicationContext(), VerificationNewActivity.class);
+                                    intent = new Intent(getApplicationContext(), VerificationActivity.class);
                                     intent.putExtra("orderMoney", orderMoney);
                                 }
                                 intent.putExtra("MemberCardBean", bean);

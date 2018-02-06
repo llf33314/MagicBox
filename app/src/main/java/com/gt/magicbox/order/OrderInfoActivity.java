@@ -129,6 +129,9 @@ public class OrderInfoActivity extends BaseActivity {
                     printPaper.setVisibility(View.GONE);
                     getSearchOrderByNo(orderItemBean.order_no);
                 }
+                if (orderItemBean.type == BaseConstant.PAY_ON_MEMBER_CARD) {
+                    refund.setVisibility(View.GONE);
+                }
 
             }
         }
@@ -177,7 +180,7 @@ public class OrderInfoActivity extends BaseActivity {
 
                     @Override
                     public void onFailure(int code, String msg) {
-                        LogUtils.d(TAG, "getSearchOrderByNo onFailure busId="+Hawk.get("busId", 0));
+                        LogUtils.d(TAG, "getSearchOrderByNo onFailure busId=" + Hawk.get("busId", 0));
                         super.onFailure(code, msg);
                     }
                 });

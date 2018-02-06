@@ -165,6 +165,9 @@
     <string name="total_money">合计金额</string>
     <string name="to_settle_accounts">去结算</string>
     <string name="discount_card_name">折扣卡</string>
+    <string name="value_card_name">储值卡</string>
+
     <string name="card_type">卡类型</string>
+    <string name="balance">余额</string>
 
 </resources>

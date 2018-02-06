@@ -224,7 +224,7 @@ public class PrintESCOrTSCUtil {
         esc.addText("--------------------------------\n");
         esc.addText("消费总额："); // 打印文字
         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 取消倍高倍宽
-        esc.addText(money+"\n");
+        esc.addText(money+"元\n");
         esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
 
         esc.addText("--------------------------------\n\n");
